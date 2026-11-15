@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -562,7 +562,7 @@ table.data td.n, table.data th.n { text-align: right; }
   background: radial-gradient(120% 140% at 0% 0%, rgba(111, 208, 220, 0.55), transparent 60%), radial-gradient(90% 120% at 100% 100%, rgba(233, 138, 166, 0.28), transparent 60%), var(--primary-container); }
 .action.wide .ic { background: var(--primary); color: var(--on-primary); }
 .action.wide .body-m { color: inherit; opacity: 0.8; }
-button.card.drafts { display: flex; align-items: center; width: 100%; gap: 14px; margin-top: 16px; background: var(--tertiary-container); color: var(--on-tertiary-container); box-shadow: none; text-align: left; }
+button.card.drafts, a.card.drafts { text-decoration: none; display: flex; align-items: center; width: 100%; gap: 14px; margin-top: 16px; background: var(--tertiary-container); color: var(--on-tertiary-container); box-shadow: none; text-align: left; }
 .drafts .ic { width: 40px; height: 40px; border-radius: 12px; background: var(--tertiary); color: var(--on-tertiary); display: flex; align-items: center; justify-content: center; flex: none; }
 .drafts .grow { display: block; }
 .drafts b { display: block; font: 500 16px/22px var(--font); }
@@ -738,6 +738,20 @@ a.li { text-decoration: none; }
 /* phones: comfortable reading size, and nothing wider than the screen */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 img, video { max-width: 100%; }
+/* which view you're in, and the switch to the other one */
+.view-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px 0 10px; border: 0; border-radius: 999px;
+  background: var(--surface-high); color: var(--on-surface); font: 500 13px/1 var(--font); white-space: nowrap; cursor: pointer; flex: none; }
+.view-chip .ms { font-size: 18px; }
+.view-chip.playing { background: var(--tertiary-container); color: var(--on-tertiary-container); }
+@media (max-width: 420px) { .bar-chip { display: none; } .view-chip { padding: 0 10px 0 8px; font-size: 12px; } }
+/* Our direction: pinned at the top of Ideas */
+.card.direction { margin-bottom: 18px; background: var(--secondary-container); color: var(--on-secondary-container); box-shadow: none; }
+.direction .ic { width: 40px; height: 40px; border-radius: 12px; background: var(--secondary); color: var(--on-secondary); display: flex; align-items: center; justify-content: center; flex: none; }
+.direction .body-m { color: inherit; opacity: .85; margin-top: 2px; }
+.dir-list { display: grid; gap: 8px; margin-top: 14px; }
+.dir-item { display: block; width: 100%; text-align: left; border: 0; border-radius: 14px; padding: 12px 14px; background: var(--surface-lowest, #fff); color: var(--on-surface); cursor: pointer; }
+.dir-item b { display: block; font: 500 15px/20px var(--font); margin-bottom: 4px; }
+.dir-item span { display: block; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
 </style>
 
   <script>
@@ -1016,6 +1030,15 @@ var TIDE_SCHEMAS = {
       ['triage', 'Triage', 'json'], ['reply', 'Reply', 'text'], ['adminNotes', 'Admin notes', 'text'], ['closed', 'Closed', 'date'], ['updated', 'Updated', 'date'],
       ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'], ['aiQueued', 'AI asked', 'date'],
       ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
+    ]
+  },
+  // the mission, the audience and what matters: context that steers everything (LogicDirection.gs)
+  direction: {
+    sheet: 'Our Direction',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['title', 'Name', 'text'],
+      ['body', 'In our words', 'text'], ['order', 'Order', 'number'], ['fromIdea', 'Moved from idea', 'text'],
+      ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date'], ['updatedBy', 'Updated by', 'text']
     ]
   },
   // screenshots and links to posts that inspire her (LogicInspo.gs)
@@ -1474,7 +1497,8 @@ function createTideLogic(env) {
     var e = pr.edition || {}, a = sales[pr.id] || { original: '', prints: [] };
     var size = Number(e.size) || s.editionSize, days = Number(e.bufferDays) || s.editionBufferDays;
     var out = { mode: '', size: size, listed: e.listed || '', bufferDays: days, opensOn: e.listed ? shiftDay(e.listed, days) : '',
-      sold: a.original, quickSize: Math.max(1, Math.ceil(size * s.quickEditionPct / 100)) };
+      sold: a.original, quickSize: Math.max(1, Math.ceil(size * s.quickEditionPct / 100)),
+      openSold: a.prints.filter(function (p) { return !a.original || p.date < a.original; }).reduce(function (n, p) { return n + p.qty; }, 0) };
     if (a.original) {
       out.quick = !!(e.listed && a.original < out.opensOn);
       out.limit = out.quick ? out.quickSize : size;
@@ -1557,8 +1581,8 @@ function createTideLogic(env) {
       var st = editionState(pr, s, today, sales), ed = null;
       if (st.mode === 'headstart' || st.mode === 'waiting') {
         var days = st.opensOn ? Math.max(0, Math.round((Date.parse(st.opensOn) - Date.parse(today)) / 86400000)) : null;
-        ed = { mode: 'headstart', daysLeft: days, days: st.bufferDays, size: st.size, quickSize: st.quickSize, waiting: st.mode === 'waiting' };
-      } else if (st.mode === 'open') ed = { mode: 'open', size: st.size };
+        ed = { mode: 'headstart', daysLeft: days, days: st.bufferDays, size: st.size, quickSize: st.quickSize, waiting: st.mode === 'waiting', opened: st.openSold };
+      } else if (st.mode === 'open') ed = { mode: 'open', size: st.size, days: st.bufferDays, quickSize: st.quickSize, opened: st.openSold };
       else if (st.mode === 'limited' || st.mode === 'soldout') ed = { mode: st.mode, left: st.left, limit: st.limit, size: st.size, quick: !!st.quick };
       var products = [];
       var sizes = list(pr.variants).filter(function (v) { return v.price > 0; });
@@ -1970,9 +1994,11 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(), inspoTags: inspo.tags, reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: role === 'admin' ? hub.snapshot() : null,
-      website: env.site ? { preview: env.site.previewUrl(), lastPublished: String(settings().sitePublishedAt || '') } : null,
+      aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
+      me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
+      website: env.site ? { preview: env.site.previewUrl(), live: env.site.liveUrl ? env.site.liveUrl() : '', lastPublished: String(settings().sitePublishedAt || '') } : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
         kinds: T.KINDS, timelines: T.TIMELINES, priorities: T.PRIORITIES, stages: T.STAGES, sizes: T.SIZES,
@@ -2061,6 +2087,9 @@ function createTideLogic(env) {
   // ---------- inspiration (LogicInspo.gs)
   var inspo = tideInspo(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, startTopic: talk.api.startTopic });
 
+  // ---------- our direction (LogicDirection.gs)
+  var direction = tideDirection(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso });
+
   // ---------- getting set up in the app (LogicSetup.gs)
   var setup = tideSetup(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
     loadBacklog: talk.api.loadBacklog, addNote: notebook.addNote });
@@ -2081,6 +2110,7 @@ function createTideLogic(env) {
     publish: publish,
     notebook: notebook,
     talk: talk,
+    direction: direction,
     recordOnlineSales: recordOnlineSales,
     siteData: siteData,
     publishFeed: publishFeed,
@@ -2093,6 +2123,7 @@ function createTideLogic(env) {
   Object.keys(talk.api).forEach(function (k) { out.api[k] = talk.api[k]; });
   Object.keys(setup.api).forEach(function (k) { out.api[k] = setup.api[k]; });
   Object.keys(inspo.api).forEach(function (k) { out.api[k] = inspo.api[k]; });
+  Object.keys(direction.api).forEach(function (k) { out.api[k] = direction.api[k]; });
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   return out;
 }
@@ -3980,7 +4011,7 @@ function tideTalk(env, t) {
     var res = env.lock(function () {
       var tp = topic(id);
       if (tp.aiStatus !== 'Failed') return { ok: true };
-      queue(id, tp.aiJob || 'round', { claude: env.features.research });
+      queue(id, tp.aiJob || 'round');   // the normal route: the PC's model first when that's on
       return { ok: true };
     });
     if (env.talkNow) env.talkNow(id);
@@ -4277,8 +4308,8 @@ function tideSetup(env, t) {
     var steps = [
       { key: 'people', title: 'Who uses it', done: people.artists.length > 0, required: true,
         text: people.artists.length ? 'Shared with ' + people.artists.concat(people.admins).join(', ') + '.' : 'Add ' + env.brand.artistName + '’s Google address so she can open it.' },
-      { key: 'claude', title: 'Switch on the AI', done: !!env.features.research, required: true,
-        text: env.features.research ? 'Claude is on: questions, write-ups, research and drafts all work.' : 'Paste a Claude API key so Talk it through, research and drafts work.' },
+      { key: 'claude', title: 'Switch on the AI', done: !!(env.features.claudeKey != null ? env.features.claudeKey : env.features.research), required: true,
+        text: (env.features.claudeKey != null ? env.features.claudeKey : env.features.research) ? 'Claude is on: questions, write-ups, research and drafts all work.' : 'Paste a Claude API key so Talk it through, research and drafts work.' },
       { key: 'basics', title: 'The basics', done: on(st.setupBasicsDone), required: true, text: 'GST, card fee, usual markup and the weekly goal.' },
       { key: 'starter', title: 'Starter content', done: loaded, required: true,
         text: loaded ? 'Products and brand notes are in.' : 'Her product ideas into Products, and what we’ve decided about the brand into the Notebook.' },
@@ -4296,7 +4327,7 @@ function tideSetup(env, t) {
     var artists = emails(p.artists), admins = emails(p.admins);
     if (!artists.length) t.fail('Add ' + env.brand.artistName + '’s Google address.');
     if (artists.some(function (e) { return admins.indexOf(e) >= 0; })) t.fail('One address can’t be both the artist and an admin.');
-    return env.setup.setPeople(admins, artists);
+    return env.setup.setPeople(admins, artists, p.swap == null ? null : (p.swap ? artists : []));
   }
 
   function saveClaudeKey(key) {
@@ -4350,9 +4381,22 @@ function tideSetup(env, t) {
   }
   function welcomed() { t.need(['artist']); env.settings.set({ artistWelcomed: true }); return { ok: true }; }
   /** Admin only, and only when asked: the addresses and keys the PC tools and the Everygen task need. */
+  /** Admin: this month's Claude spending, and the monthly cap (US dollars; 0 = Claude off). */
+  function spend() { t.need(['admin']); return env.setup.spend ? env.setup.spend() : null; }
+  function saveClaudeBudget(usd) {
+    t.need(['admin']);
+    var n = Number(usd);
+    if (!(n >= 0) || n > 500) t.fail('Choose a monthly limit between $0 and $500.');
+    return env.setup.setBudget(Math.round(n * 100) / 100);
+  }
+  function saveClaudeUpgrade(job, on) {
+    t.need(['admin']);
+    if (['research', 'checks', 'footage'].indexOf(job) < 0) t.fail('That job can’t be upgraded.');
+    return env.setup.setUpgrade(job, !!on);
+  }
   function connections() { t.need(['admin']); return env.setup.connections(); }
 
-  return { status: status, api: { setupStatus: status, savePeople: savePeople, saveClaudeKey: saveClaudeKey, saveBasics: saveBasics, loadStarter: loadStarter, markSetupStep: markStep, artistWelcomed: welcomed, setupConnections: connections } };
+  return { status: status, spend: spend, api: { saveClaudeBudget: saveClaudeBudget, saveClaudeUpgrade: saveClaudeUpgrade, setupStatus: status, savePeople: savePeople, saveClaudeKey: saveClaudeKey, saveBasics: saveBasics, loadStarter: loadStarter, markSetupStep: markStep, artistWelcomed: welcomed, setupConnections: connections } };
 }
 
 /**
@@ -4526,6 +4570,82 @@ function tideReports(env, t) {
   return { snapshot: snapshot, kinds: R.KINDS, statuses: R.STATUS, api: { sendReport: sendReport, updateReport: updateReport, retriageReport: retriage } };
 }
 
+/**
+ * Tide Book: Our direction. The mission, the audience, what matters: short statements in their own words that
+ * steer the business. They are not ideas (nothing here is researched or turned into a product); they are
+ * context. Every AI job (research, Talk it through, product steps, notes, post drafts, the PC's model) reads
+ * them, so suggestions and production follow the same direction. Private: never published.
+ */
+
+var TIDE_DIRECTION = { MAX_TITLE: 80, MAX_BODY: 4000, MAX_CONTEXT: 6000 };
+
+function tideDirection(env, t) {
+  var D = TIDE_DIRECTION;
+  function all() {
+    return t.rows('direction').filter(function (r) { return !r.deleted; })
+      .sort(function (a, b) { return (Number(a.order) || 0) - (Number(b.order) || 0) || (a.created < b.created ? -1 : 1); });
+  }
+  function get(id) { var x = all().filter(function (r) { return r.id === id; })[0]; if (!x) t.fail('That has been removed.'); return x; }
+  function clean(p) {
+    var title = t.text(p.title, D.MAX_TITLE), body = t.text(p.body, D.MAX_BODY);
+    if (!title) t.fail('Give it a short name, like Mission or Who it’s for.');
+    if (!body) t.fail('Write it in your own words.');
+    return { title: title, body: body };
+  }
+
+  function addDirection(p) {
+    var role = t.need(['admin', 'artist']), c = clean(p || {});
+    return env.lock(function () {
+      var id = env.nextId('DR', 4), now = t.nowIso();
+      env.table('direction').append({ id: id, created: now, createdBy: env.user.email || role, title: c.title, body: c.body,
+        order: all().length + 1, fromIdea: '', deleted: false, updated: now, updatedBy: env.user.email || role });
+      return { id: id };
+    });
+  }
+  function updateDirection(id, p) {
+    var role = t.need(['admin', 'artist']), c = clean(p || {});
+    return env.lock(function () {
+      get(id);
+      env.table('direction').update(id, { title: c.title, body: c.body, updated: t.nowIso(), updatedBy: env.user.email || role });
+      return { ok: true };
+    });
+  }
+  function deleteDirection(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () { get(id); env.table('direction').update(id, { deleted: true, updated: t.nowIso() }); return { ok: true }; });
+  }
+  /** An idea that is really a mission or direction: moved across in its own words, and taken off the ideas list. */
+  function ideaToDirection(ideaId) {
+    var role = t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var idea = t.rows('ideas').filter(function (r) { return r.id === ideaId; })[0];
+      if (!idea) t.fail('That idea has been removed.');
+      var id = env.nextId('DR', 4), now = t.nowIso();
+      env.table('direction').append({ id: id, created: idea.created || now, createdBy: idea.createdBy || role, title: t.text(idea.title, D.MAX_TITLE) || 'Our direction',
+        body: t.text(idea.note || idea.title, D.MAX_BODY), order: all().length + 1, fromIdea: idea.id, deleted: false, updated: now, updatedBy: env.user.email || role });
+      env.table('ideas').remove(idea.id);
+      return { id: id, message: 'Moved to Our direction. Tide Book will use it to steer ideas and production.' };
+    });
+  }
+
+  function snapshot() {
+    return all().map(function (r) { return { id: r.id, title: r.title, body: r.body, updated: r.updated, by: r.updatedBy || r.createdBy }; });
+  }
+  /** What every AI prompt is given. */
+  function context() {
+    var rows = all(); if (!rows.length) return '';
+    var text = rows.map(function (r) { return '## ' + r.title + '\n' + r.body; }).join('\n\n');
+    if (text.length > D.MAX_CONTEXT) text = text.slice(0, D.MAX_CONTEXT) + '…';
+    return '<our_direction>\n' +
+      'In their own words, what steers this business. Let it shape every suggestion, product, post and judgement, ' +
+      'and say so when something pulls against it. It is private context: never quote it in anything public, and ' +
+      'never mention her health or personal life in public writing unless the work itself raises it.\n\n' + text + '\n</our_direction>';
+  }
+
+  return { context: context, snapshot: snapshot,
+    api: { addDirection: addDirection, updateDirection: updateDirection, deleteDirection: deleteDirection, ideaToDirection: ideaToDirection } };
+}
+
 </script>
 <script>
 /**
@@ -4548,7 +4668,7 @@ function tideReports(env, t) {
   var db = null;
   try { var saved = sessionStorage.getItem(KEY); if (saved) db = JSON.parse(saved); } catch (e) { db = null; }
   var fresh = !db;
-  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], topics: [], pipeline: [], inspiration: [], reports: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
+  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], topics: [], pipeline: [], inspiration: [], reports: [], direction: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
   var studioAsked = false;
   function save() { try { sessionStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* too big for this tab's storage: carry on in memory */ } }
 
@@ -4563,8 +4683,8 @@ function tideReports(env, t) {
       today: function () { return dayStr(new Date()); },
       table: function (name) {
         return {
-          all: function () { return db[name]; },
-          append: function (row) { db[name].push(clone(row)); save(); },
+          all: function () { if (!db[name]) db[name] = []; return db[name]; },
+          append: function (row) { (db[name] = db[name] || []).push(clone(row)); save(); },
           update: function (id, fields) {
             var r = db[name].filter(function (x) { return x.id === id; })[0];
             if (!r) throw new Error('Could not find ' + id + '.');
@@ -5191,6 +5311,7 @@ function tideReports(env, t) {
         <div class="bar-title" id="bar-title" aria-hidden="true"></div>
       </div>
       <span class="bar-chip">Denise Duffy &middot; Visual Artist</span>
+      <button class="view-chip press" id="view-btn" type="button" hidden><span class="ms" aria-hidden="true">swap_horiz</span><span class="vc-t"></span></button>
       <button class="icon-btn press" id="report-btn" type="button" aria-label="Suggestions and problems" title="Suggestions and problems"><span class="ms" aria-hidden="true">feedback</span></button>
       <button class="icon-btn press" id="settings-btn" type="button" aria-label="Admin" title="Admin" hidden><span class="ms" aria-hidden="true">settings</span></button>
     </div>
@@ -6105,7 +6226,31 @@ var Kit = (function () {
   var gear = document.getElementById('settings-btn');
   if (gear && ADMIN) { gear.hidden = false; gear.addEventListener('click', function () { K.haptic(); go('settings'); }); }
 
+  // swapping views: shows which view you're in; a tap flips to the other one
+  function viewSwitch() {
+    var b = document.getElementById('view-btn'), me = S.data && S.data.me;
+    if (!b || !me || !me.canSwap) { if (b) b.hidden = true; return; }
+    var other = ADMIN ? 'artist' : 'admin', mine = ADMIN ? 'Admin view' : cap(artist()) + '’s view';
+    b.hidden = false; b.classList.toggle('playing', me.role !== me.real);
+    b.querySelector('.vc-t').textContent = ADMIN ? 'Admin' : cap(artist());
+    b.title = 'You’re in the ' + mine.toLowerCase() + '. Tap to switch.';
+    b.setAttribute('aria-label', 'You’re in the ' + mine.toLowerCase() + '. Switch to the ' + (other === 'admin' ? 'admin view' : cap(artist()) + '’s view'));
+    if (b.wired) return;
+    b.wired = true;
+    b.addEventListener('click', function () {
+      K.haptic();
+      K.confirm({ title: 'Switch to the ' + (other === 'admin' ? 'admin view' : cap(artist()) + '’s view') + '?',
+        text: other === 'admin' ? 'You’ll see and can do everything the admin can: money, settings and publishing.' : 'You’ll see Tide Book exactly as ' + cap(artist()) + ' does, and can do what she can.',
+        confirmLabel: 'Switch' }).then(function (yes) {
+        if (!yes) return;
+        document.cookie = 'tb_view=' + other + '; path=/; max-age=31536000; SameSite=Lax';
+        location.reload();
+      });
+    });
+  }
+
   function renderNav() {
+    viewSwitch();
     var nav = $('#nav');
     nav.textContent = '';
     var waiting = needsList().length;
@@ -6309,6 +6454,11 @@ var Kit = (function () {
       main.appendChild(rise(sec, n++));
     }
     n = talkCards(main, n);
+    if (S.data.website && S.data.website.live) {
+      main.appendChild(rise(h('a', { class: 'card pad press soft drafts', href: S.data.website.live, target: '_blank', rel: 'noopener' },
+        h('span', { class: 'ic' }, icon('language')),
+        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'Have a wander. It shows the latest every time you open it.' })), icon('open_in_new')), n++));
+    }
     main.appendChild(rise(h('div', { style: 'margin:4px 0 14px' }, btn('outlined', 'Save something that inspired you', { icon: 'favorite', block: true, onclick: function () { openInspo(null); } })), n++));
 
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = rest ? 0 : S.data.questions.length;
@@ -6403,6 +6553,54 @@ var Kit = (function () {
           x.health ? chip('Sensitive', 'high') : null)));
   }
 
+  // ---------------------------------------------------------------- Our direction (context, not ideas)
+  function directionCard() {
+    var list = S.data.direction || [];
+    var card = h('section', { class: 'card pad direction', 'aria-label': 'Our direction' },
+      h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' },
+        h('span', { class: 'ic' }, icon('explore')),
+        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: 'Our direction' }),
+          h('p', { class: 'body-m', text: 'The mission, who it’s for, and what matters. Not ideas to research: Tide Book reads these to steer every idea, product and post.' }))));
+    if (list.length) {
+      var l = h('div', { class: 'dir-list' });
+      list.forEach(function (d) {
+        l.appendChild(h('button', { class: 'dir-item press', type: 'button', onclick: function () { openDirection(d.id); } },
+          h('b', { text: d.title }), h('span', { text: d.body.length > 180 ? d.body.slice(0, 180).replace(/\s+\S*$/, '') + '…' : d.body })));
+      });
+      card.appendChild(l);
+    }
+    card.appendChild(h('div', { style: 'margin-top:12px' }, btn(list.length ? 'text' : 'tonal', list.length ? 'Add to our direction' : 'Add our mission', { icon: 'add', onclick: function () { openDirection(null); } })));
+    return card;
+  }
+  function openDirection(id) {
+    var d = id ? byId(S.data.direction || [], id) : null, f = { title: d ? d.title : (S.data.direction || []).length ? '' : 'Mission', body: d ? d.body : '' }, dirty = false;
+    K.sheet({
+      title: d ? d.title : 'Add to our direction', tall: true, guard: function () { return dirty; },
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-bottom:14px;color:var(--on-surface-variant)', text: 'In your own words. Some to start with: Mission, Who it’s for, What we’ll never do, How it should feel. It stays private: it steers Tide Book’s suggestions and is never put on the website.' }));
+        var title = K.textField({ label: 'Name', value: f.title, maxlength: 80, onInput: function (v) { f.title = v; dirty = true; } });
+        ctl.body.appendChild(title);
+        ctl.body.appendChild(K.textField({ label: 'In your words', value: f.body, multiline: true, rows: 9, maxlength: 4000, onInput: function (v) { f.body = v; dirty = true; } }));
+        if (d) ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Last changed ' + K.dateLabel(d.updated) + '.' }));
+        if (d) ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, btn('text', 'Remove', { icon: 'delete', onclick: function (e) {
+          var b = e.currentTarget;
+          K.confirm({ title: 'Remove “' + d.title + '”?', text: 'Tide Book will stop using it to steer things.', confirmLabel: 'Remove' }).then(function (yes) {
+            if (!yes) return; K.setBusy(b, true);
+            api('deleteDirection', d.id).then(refresh).then(function () { dirty = false; render(); ctl.close(); toast('Removed.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+          });
+        } })));
+        var save = btn('filled', d ? 'Save changes' : 'Add it', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          K.setBusy(save, true);
+          (d ? api('updateDirection', d.id, f) : api('addDirection', f)).then(refresh)
+            .then(function () { dirty = false; K.haptic('success'); render(); toast(d ? 'Saved.' : 'Added. Tide Book will use it to steer things.'); ctl.close(); })
+            .catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
+
   function viewIdeas(main) {
     var tab = ['talk', 'products', 'notebook', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = tab === 'notebook', T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
@@ -6418,6 +6616,7 @@ var Kit = (function () {
     if (tab === 'talk') return viewTalk(main);
     if (tab === 'products') return viewProducts(main);
     if (tab === 'inspo') return viewInspo(main);
+    main.appendChild(rise(directionCard(), 1));
     var ideas = S.data.ideas;
     if (ADMIN) {
       main.appendChild(rise(K.choices({
@@ -6495,14 +6694,17 @@ var Kit = (function () {
 
         // 1. people
         var others = st.people.admins.filter(function (e) { return e !== st.people.owner; });
-        var pf = { artist: st.people.artists.join(', '), admins: others.join(', ') };
+        var pf = { artist: st.people.artists.join(', '), admins: others.join(', '), swap: (st.people.swap || []).length > 0 };
         var pBody = h('div', { class: 'field-gap' },
           K.textField({ label: cap(artist()) + '’s Google address', type: 'email', value: pf.artist, onInput: function (v) { pf.artist = v; } }),
+          h('div', { class: 'row', style: 'gap:12px;align-items:center;justify-content:space-between;margin:2px 0 14px' },
+            h('span', { class: 'body-m', text: cap(artist()) + ' can switch to the admin view too' }),
+            K.switchBtn({ checked: (st.people.swap || []).length > 0, label: cap(artist()) + ' can switch to the admin view too', onChange: function (v) { pf.swap = v; } })),
           K.textField({ label: 'Other admins (optional)', value: pf.admins, help: 'You’re in already' + (st.people.owner ? ' (' + st.people.owner + ')' : '') + '. Separate several with commas.', onInput: function (v) { pf.admins = v; } }),
           btn('tonal', 'Save and share', { icon: 'send', onclick: function (e) {
             K.setBusy(e.currentTarget, true);
             var split = function (v) { return v.split(/[,\s]+/).filter(String); };
-            api('savePeople', { artists: split(pf.artist), admins: split(pf.admins) }).then(function () { reopen('Shared. They can open Tide Book with the app link.'); })
+            api('savePeople', { artists: split(pf.artist), admins: split(pf.admins), swap: pf.swap }).then(function () { reopen('Shared. They can open Tide Book with the app link.'); })
               .catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
           } }));
         ctl.body.appendChild(stepCard(by('people'), pBody));
@@ -7652,6 +7854,16 @@ var Kit = (function () {
             .catch(function (e) { K.setBusy(mk, false); fail(e); });
         });
         row.appendChild(mk);
+        var dir = btn('outlined', 'It’s our direction, not an idea', { icon: 'explore' });
+        dir.addEventListener('click', function () {
+          K.confirm({ title: 'Move to Our direction?', text: 'It leaves the ideas list, isn’t researched, and Tide Book uses it to steer ideas, products and posts instead. Your words stay as they are.', confirmLabel: 'Move it' }).then(function (yes) {
+            if (!yes) return; K.setBusy(dir, true);
+            api('ideaToDirection', x.id).then(function (res) { return refresh().then(function () { return res; }); })
+              .then(function (res) { dirty = false; render(); ctl.close(); toast(res.message); })
+              .catch(function (e) { K.setBusy(dir, false); fail(e); });
+          });
+        });
+        row.appendChild(dir);
         if (ADMIN && x.kind === 'Content') {
           var cal = btn('outlined', 'Add to calendar', { icon: 'calendar_month' });
           cal.addEventListener('click', function () {
@@ -7696,14 +7908,15 @@ var Kit = (function () {
     var grid = h('div', { class: 'grid' });
     shown.forEach(function (p, i) { grid.appendChild(rise(printCard(p), 2 + i)); });
     main.appendChild(grid);
-    if (ADMIN && S.data.website) {
+    if (S.data.website) {
       var w = S.data.website;
       main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-top:18px' },
         h('div', { class: 'title-m', text: 'The website' }),
-        h('p', { class: 'body-m', style: 'margin:6px 0 12px;color:var(--on-surface-variant)', text: 'Live artworks, their photos, prices, products and edition states. The preview updates straight away; the public site changes when you publish.' + (w.lastPublished ? ' Last published ' + K.dateLabel(w.lastPublished) + '.' : ' Not published from Tide Book yet.') }),
+        h('p', { class: 'body-m', style: 'margin:6px 0 12px;color:var(--on-surface-variant)', text: ADMIN ? 'Live artworks, their photos, prices, products and edition states. The preview updates straight away; the public site changes when you publish.' + (w.lastPublished ? ' Last published ' + K.dateLabel(w.lastPublished) + '.' : ' Not published from Tide Book yet.') : 'Your website always shows the latest version. Preview shows your newest changes before ' + adminName() + ' sends them out.' }),
         h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' },
+          w.live ? h('a', { class: 'btn tonal press', href: w.live, target: '_blank', rel: 'noopener' }, icon('language'), h('span', { text: 'Open the website' })) : null,
           h('a', { class: 'btn outlined press', href: w.preview, target: '_blank', rel: 'noopener' }, icon('visibility'), h('span', { text: 'Preview' })),
-          btn('filled', 'Publish to website', { icon: 'rocket_launch', onclick: function (e) {
+          !ADMIN ? null : btn('filled', 'Publish to website', { icon: 'rocket_launch', onclick: function (e) {
             var b = e.currentTarget;
             K.confirm({ title: 'Publish the website?', text: 'The public site will show exactly what the preview shows: every live artwork with its photos and prices.', confirmLabel: 'Publish' }).then(function (yes) {
               if (!yes) return;
@@ -8997,11 +9210,39 @@ var Kit = (function () {
     } });
     as.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
       h('div', { class: 'switch-row' }, h('div', {}, h('div', { class: 'title-m', text: 'Use the PC’s models first' }),
-        h('div', { class: 'body-m', text: 'Notebook expands run free on the PC. Claude gets them when asked, when the PC’s model hands over, or for prices, suppliers and rules.' })),
+        h('div', { class: 'body-m', text: 'Notebook expands, Talk it through, product steps and report sorting run free on the PC. Claude gets them when asked, when the PC’s model hands over, or for prices, suppliers and rules.' })),
         K.switchBtn({ checked: af.localFirst, label: 'Use the PC’s models first', onChange: function (v) { af.localFirst = v; } })),
       K.textField({ label: 'Claude takes over after', suffix: 'min', inputmode: 'numeric', value: af.localFallbackMins,
         help: 'If the PC hasn’t picked a note up by then. 0 means always wait for the PC.', onInput: function (v) { af.localFallbackMins = K.num(v); } }),
       note(seen, 'computer', ai.pcOnline ? 'good' : ''), aiSave));
+    // what Claude has cost this month, and the cap
+    var sp = S.data.aiSpend;
+    if (sp) {
+      var bud = { v: sp.budget }, pct = sp.budget > 0 ? Math.min(100, Math.round(sp.usd / sp.budget * 100)) : 100;
+      var usd = function (x) { return 'US$' + (x < 10 ? x.toFixed(2) : Math.round(x)); };
+      as.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest);margin-top:12px' },
+        h('div', { class: 'title-m', text: 'Claude this month: ' + usd(sp.usd) + (sp.budget > 0 ? ' of ' + usd(sp.budget) : '') }),
+        h('div', { class: 'meter', style: 'height:6px;border-radius:3px;background:var(--surface-high);overflow:hidden' },
+          h('div', { style: 'height:100%;width:' + pct + '%;background:' + (sp.paused ? 'var(--error)' : 'var(--primary)') })),
+        h('p', { class: 'body-m', text: sp.budget <= 0 ? 'Claude is off: only the PC’s free model is used.' : sp.paused ? 'The limit’s reached, so Claude has stopped until next month. The PC’s free model carries on; idea research and post drafts wait.' :
+          sp.calls + ' Claude answer' + (sp.calls === 1 ? '' : 's') + ' so far.' }),
+        h('div', { class: 'title-m', style: 'margin-top:6px', text: 'Upgrade to Claude Sonnet for' }),
+        h('p', { class: 'body-m', text: 'Everything else uses Claude Haiku, the cheapest. Sonnet costs about 20 times as much per word, so it’s only worth it where quality really matters.' }),
+        [['research', 'Idea research', 'Decides what’s worth making, and gets the better web search. About 10¢ an idea on Sonnet.'],
+          ['checks', 'Product checks', 'Costs, suppliers and rules, from what the model knows. About 3¢ each on Sonnet.'],
+          ['footage', 'Looking at footage', 'Describes photos and clips for posts. Lots of pictures, so Haiku is the better buy.']].map(function (j) {
+          var on = !!(sp.upgrades || {})[j[0]];
+          return h('div', { class: 'switch-row' }, h('div', {}, h('div', { class: 'title-m', text: j[1] }), h('div', { class: 'body-m', text: j[2] })),
+            K.switchBtn({ checked: on, label: 'Use Claude Sonnet for ' + j[1].toLowerCase(), onChange: function (v) {
+              api('saveClaudeUpgrade', j[0], v).then(refresh).then(function () { K.haptic('success'); render(); toast(j[1] + (v ? ': Claude Sonnet.' : ': Claude Haiku.')); }).catch(fail);
+            } }));
+        }),
+        K.textField({ label: 'Monthly limit (US dollars)', prefix: '$', inputmode: 'decimal', value: bud.v, help: 'Claude stops at this amount until next month. 0 turns Claude off.', onInput: function (v) { bud.v = v; } }),
+        btn('tonal', 'Save limit', { icon: 'savings', block: true, onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('saveClaudeBudget', K.num(bud.v)).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+        } })));
+    }
     main.appendChild(rise(as, n++));
 
     // Everygen edits
