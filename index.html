@@ -320,6 +320,11 @@ body:has(.mock) .hero { height: calc(100svh - 30px); }
 .pocket p { max-width: 620px; margin: 0 auto 14px; font-size: 17px; line-height: 1.6; }
 .pocket a { color: var(--ocean); }
 
+/* nothing may be wider than the screen: decorative washes were pushing phones sideways */
+html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
+.bloomy { overflow-x: clip; }
+.bloomy::before { inset: -10% 0 !important; }
+
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
 .lg.on { opacity: 1; pointer-events: auto; }
