@@ -687,6 +687,11 @@ body.intro-hold .hero .accent, body.intro-hold .hero .cta, body.intro-hold .hero
   background: radial-gradient(55% 50% at var(--lx, 50%) var(--ly, 38%), rgba(255, 250, 238, .5), transparent 70%),
               linear-gradient(var(--la, 115deg), rgba(6, 18, 32, 0) 35%, rgba(6, 18, 32, .35)); }
 
+/* the opening wave: the curl draws first, then the swells roll in under it */
+.mark.wave path:nth-of-type(2) { transition-delay: .35s; }
+.mark.wave path:nth-of-type(3) { transition-delay: .6s; }
+.mark.wave path:nth-of-type(4) { transition-delay: .8s; }
+
 </style>
 </head>
 <body>
@@ -1656,6 +1661,17 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     return '<svg class="mark ' + (cls || '') + '" viewBox="0 0 100 100" aria-hidden="true">' + flowerPaths().map(function (d) { return '<path d="' + d + '"/>'; }).join('') +
       '<circle cx="50" cy="50" r="8" style="stroke-dasharray:2 2.4"/>' + dots + '</svg>';
   }
+  // the opening mark: one ink line of a curling wave over two swells, with a little foam (drawn like the flower was)
+  function waveSVG(cls) {
+    var paths = [
+      'M8 70 C 22 70, 30 58, 40 46 C 50 33, 66 26, 78 32 C 88 37, 88 50, 79 54 C 72 57, 66 51, 70 46 C 73 42, 79 44, 78 49',
+      'M40 46 C 46 58, 58 66, 74 67 C 82 68, 88 66, 94 63',
+      'M6 79 C 20 75, 32 83, 46 79 S 72 75, 94 79',
+      'M16 88 C 29 85, 40 91, 54 88 S 76 85, 88 88'
+    ];
+    var foam = [[58, 29], [64, 25], [71, 23], [52, 34]].map(function (c) { return '<circle class="dot" cx="' + c[0] + '" cy="' + c[1] + '" r="1.3"/>'; }).join('');
+    return '<svg class="mark wave ' + (cls || '') + '" viewBox="0 0 100 100" aria-hidden="true">' + paths.map(function (d) { return '<path d="' + d + '"/>'; }).join('') + foam + '</svg>';
+  }
   function measure(svg) { svg.querySelectorAll('path').forEach(function (p) { try { p.style.setProperty('--len', Math.ceil(p.getTotalLength()) + 1); } catch (e) {} }); }
 
   // ---- watercolour edge mask: a soft rectangle with a ragged, bleeding edge, drawn once on a canvas ----
@@ -1697,7 +1713,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   if (!REDUCED && (location.hash === '' || location.hash === '#/' || location.hash === '#')) {
     var intro = document.createElement('div');
     intro.className = 'intro';
-    intro.innerHTML = '<div class="wash"></div><div style="position:relative;text-align:center">' + flowerSVG('draw') + '<div class="nm">Denise Duffy</div></div>';
+    intro.innerHTML = '<div class="wash"></div><div style="position:relative;text-align:center">' + waveSVG('draw') + '<div class="nm">Denise Duffy</div></div>';
     document.body.appendChild(intro);
     document.body.classList.add('intro-hold');
     setTimeout(function () { document.body.classList.remove('intro-hold'); }, 2350);
