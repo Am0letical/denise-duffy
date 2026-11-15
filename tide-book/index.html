@@ -757,6 +757,16 @@ img, video { max-width: 100%; }
 .suggest .choice { font-size: 13px; min-height: 32px; }
 .ex-q { padding: 10px 0; border-top: 1px solid var(--outline-variant, rgba(0,0,0,.08)); }
 .ex-q:first-of-type { border-top: 0; }
+/* market research on a product */
+.research-kv { margin: 6px 0 4px; }
+.research-kv dd .body-s { color: var(--on-surface-variant); margin-top: 2px; }
+.research-list { margin-top: 14px; }
+.research-list .label-s { margin-bottom: 6px; }
+.research-row { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--outline-variant, rgba(0,0,0,.08)); }
+.research-row:first-of-type { border-top: 0; }
+.research-row a { color: var(--primary); }
+.research-row .body-s { color: var(--on-surface-variant); }
+.prompt-box { width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--outline-variant, rgba(0,0,0,.12)); background: var(--surface-lowest, #fff); color: var(--on-surface); font: 400 13px/18px ui-monospace, monospace; resize: vertical; }
 </style>
 
   <script>
@@ -866,7 +876,7 @@ var TIDE_SCHEMAS = {
       ['researchStatus', 'Research status', 'text'], ['viability', 'Viability', 'number'],
       ['summary', 'Summary', 'text'], ['research', 'Research', 'json'], ['researchedAt', 'Researched', 'date'],
       ['researchTries', 'Research tries', 'number'], ['researchNote', 'Research note', 'text'],
-      ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date']
+      ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date'], ['website', 'Website change', 'json']
     ]
   },
   prints: {
@@ -1022,7 +1032,8 @@ var TIDE_SCHEMAS = {
       ['listing', 'Listing and posts', 'json'], ['approvals', 'Sign-offs', 'json'], ['risks', 'Risks', 'json'], ['log', 'History', 'json'],
       ['updated', 'Updated', 'date'], ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'],
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'],
-      ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text']
+      ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
+      ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number']
     ]
   },
   // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
@@ -1569,6 +1580,63 @@ function createTideLogic(env) {
    * title, story, series, photos (file ids, copied out by the publisher), prices, products and edition state.
    */
   /** Admin: rebuilds the public website from Tide Book and publishes it (on the PC: env.site). */
+  // ---------- website changes: asked for in Tide Book, approved, then done by Claude Code from a prompt ----------
+  function ideaRow(id) { var x = rows('ideas').filter(function (r) { return r.id === id; })[0]; if (!x) fail('That idea has been removed.'); return x; }
+  function websiteRequest(id) {
+    var role = need(['admin', 'artist']);
+    return env.lock(function () {
+      var it = ideaRow(id);
+      if (it.website && it.website.status !== 'Done') return { ok: true, already: true };
+      var ch = { website: { status: 'Requested', at: nowIso(), by: role }, updated: nowIso() };
+      if (it.researchStatus === 'Queued') ch.researchStatus = 'Skipped';      // not a product: no market research
+      env.table('ideas').update(id, ch);
+      if (role === 'artist') publish.push('admin', 'Website change to approve', it.title);
+      return { ok: true };
+    });
+  }
+  function websitePrompt(it) {
+    // whoever wrote the idea (the approver is the admin, so anyone else who wrote it is the artist)
+    var mine = String(it.createdBy || '').toLowerCase() === String(env.user.email || '').toLowerCase();
+    var who = mine ? (env.brand.adminName || 'the admin') : env.brand.artistName;
+    var photos = list(it.photoIds).map(function (f) { return '- ' + (env.site && env.site.filePath ? env.site.filePath(f) : f); });
+    return [
+      'Website change request ' + it.id + ' from Tide Book, approved ' + niceDay(env.today()) + '.',
+      '',
+      'Title: ' + it.title,
+      'Asked for by: ' + who,
+      'In their words:',
+      String(it.note || it.title).trim().split('\n').map(function (l) { return '> ' + l; }).join('\n'),
+      photos.length ? '\nPhotos attached (on the PC):\n' + photos.join('\n') : '',
+      '',
+      'Please make this change to ' + env.brand.artistName + '’s website' + (env.site && env.site.siteFolder ? ' (' + env.site.siteFolder() + ': site.html, site.css, brand.js; build with build_site.py)' : '') + ':',
+      '1. If anything is unclear, ask me short questions with options first.',
+      '2. Keep to the brand and Our direction in Tide Book, and the privacy rule (nothing about health, family names or worries without her OK).',
+      '3. Check it at phone and desktop width, privacy-check the build, publish it to the live site, and tell me what changed.',
+      '4. Then mark it done in Tide Book (Ideas › ' + it.title + ' › Website change › Done).'
+    ].filter(function (l) { return l !== null; }).join('\n');
+  }
+  function approveWebsite(id) {
+    need(['admin']);
+    return env.lock(function () {
+      var it = ideaRow(id);
+      if (!it.website) fail('Mark it as a website change first.');
+      var prompt = websitePrompt(it), file = env.site && env.site.saveRequest ? env.site.saveRequest(it.id, prompt) : '';
+      env.table('ideas').update(id, { website: Object.assign({}, it.website, { status: 'Approved', approvedAt: nowIso(), prompt: prompt, file: file }), updated: nowIso() });
+      publish.push('artist', 'Your website change is approved', it.title);
+      return { ok: true, prompt: prompt, file: file };
+    });
+  }
+  function websiteDone(id) {
+    need(['admin']);
+    return env.lock(function () {
+      var it = ideaRow(id);
+      if (!it.website) fail('That isn’t a website change.');
+      env.table('ideas').update(id, { website: Object.assign({}, it.website, { status: 'Done', doneAt: nowIso() }), updated: nowIso() });
+      publish.push('artist', 'Your website change is live', it.title);
+      return { ok: true };
+    });
+  }
+
   function publishWebsite() {
     need(['admin']);
     if (!env.site) fail('Publishing the website works on the PC version of Tide Book.');
@@ -1949,7 +2017,9 @@ function createTideLogic(env) {
       status: T.ARTIST_STATUS[it.stage] || 'Received', thumbIds: list(it.thumbIds),
       photoUrls: photoIds.map(function (x) { return env.files.viewUrl(x); }),
       approvalRequest: it.approvalRequest || '', approvalState: it.approvalState || '',
-      artistComment: it.artistComment || '', linkedTo: it.linkedTo || ''
+      artistComment: it.artistComment || '', linkedTo: it.linkedTo || '',
+      website: it.website ? { status: it.website.status, at: it.website.at, by: it.website.by, approvedAt: it.website.approvedAt || '', doneAt: it.website.doneAt || '',
+        prompt: role === 'admin' ? it.website.prompt || '' : '', file: role === 'admin' ? it.website.file || '' : '' } : null
     };
     if (role === 'admin') {
       out.createdBy = it.createdBy; out.folderUrl = it.folderUrl; out.health = it.health === true;
@@ -2108,7 +2178,8 @@ function createTideLogic(env) {
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, publishWebsite: publishWebsite
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, publishWebsite: publishWebsite,
+      websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
     },
     research: research,
     studio: content.studio,
@@ -4175,6 +4246,28 @@ function tideTalk(env, t) {
   }
 
   // ---------------------------------------------------------------- the product pipeline
+  /** The legal and practical checks every product gets (Australia). Product-specific ones come from its research. */
+  function standardChecks() {
+    var a = env.brand.artistName || 'the artist';
+    return [
+      'Consumer law: refunds and returns wording is fair (no “no refunds”); a faulty item can always be refunded or replaced (ACL)',
+      'Product safety: check productsafety.gov.au for a mandatory standard, ban or warning for this kind of product',
+      'Claims: nothing about health, healing, calm or “eco” that can’t be backed up (ACCC; TGA for anything therapeutic)',
+      'Giving back: any Sea Shelter or charity wording says exactly what goes where, and it’s true',
+      'Posting: every part checked against Australia Post’s dangerous and prohibited goods list',
+      'Label: business name and contact on the product or packaging, plus care or warning notes if it needs them',
+      'Copyright: artwork, photos, fonts and sayings are ' + a + '’s own or licensed for selling',
+      'Insurance: public and product liability cover checked for selling this',
+      'Records: price, fees and costs set in Tide Book, so GST and income tax come out right'
+    ];
+  }
+  function checkKey(s) { return String(s || '').toLowerCase().replace(/[^a-z]+/g, ' ').trim().slice(0, 40); }
+  function withChecks(existing, extra, from) {
+    var have = {}; t.list(existing).forEach(function (c) { have[checkKey(c.item)] = true; });
+    return t.list(existing).concat(t.list(extra).filter(function (s) { var k = checkKey(s); if (!k || have[k]) return false; have[k] = true; return true; })
+      .map(function (s) { return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(s, 300), status: 'To check', note: '', from: from || '' }; }));
+  }
+
   function addItem(p) {
     var id = env.nextId('PP', 4), now = t.nowIso();
     var stage = K.STAGES.indexOf(p.stage) >= 0 ? p.stage : 'Idea';
@@ -4185,8 +4278,11 @@ function tideTalk(env, t) {
       checks: t.list(p.checks).slice(0, 30).map(function (c) { return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(c.item, 300), status: K.CHECK_STATUS.indexOf(c.status) >= 0 ? c.status : 'To check', note: t.text(c.note, 300) }; }),
       parts: t.list(p.parts).slice(0, 30).map(function (x) { return { part: t.text(x.part, 120), supplier: t.text(x.supplier, 120), cost: Math.max(0, Number(x.cost) || 0), qty: Math.max(1, Math.round(Number(x.qty) || 1)) }; }),
       pricing: { price: Math.max(0, Number(p.price) || 0) }, sample: { status: 'Not ordered', notes: '' }, listing: { copy: '', posts: [] },
-      approvals: {}, risks: cleanList(p.risks, 10, 300), log: [{ at: now, text: 'Started at ' + stage }], updated: now, aiJob: '', aiStatus: ''
+      approvals: {}, risks: cleanList(p.risks, 10, 300), log: [{ at: now, text: 'Started at ' + stage }], updated: now, aiJob: '', aiStatus: '',
+      research: null, researchStatus: 'Queued', researchAt: '', researchNote: '', researchTries: 0
     });
+    var made = item(id);
+    env.table('pipeline').update(id, { checks: withChecks(made.checks, standardChecks(), 'standard') });
     return id;
   }
   function createItem(p) {
@@ -4327,19 +4423,88 @@ function tideTalk(env, t) {
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
         sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: t.list(K.GATES[r.stage]), blockers: blockers(r),
         needsMe: t.list(K.GATES[r.stage]).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked,
+        research: r.research || null, researchStatus: r.researchStatus || '', researchAt: r.researchAt || '', researchNote: r.researchNote || '',
         log: t.list(r.log).slice(-12).reverse(), aiStatus: r.aiStatus || '', aiJob: r.aiJob || '', aiNote: r.aiNote || '', aiBy: r.aiBy || '', updated: r.updated
       };
     }).sort(function (a, b) { return K.STAGES.indexOf(a.stage) - K.STAGES.indexOf(b.stage) || (a.updated < b.updated ? 1 : -1); });
     return { topics: topics, pipeline: items, stages: K.STAGES, kinds: K.KINDS, checkStatus: K.CHECK_STATUS, sampleStatus: K.SAMPLE_STATUS, goal: goal };
   }
 
+  // ---------------------------------------------------------------- market research for products
+  var research = {
+    standardChecks: standardChecks,
+    pending: function () {
+      return t.rows('pipeline').filter(function (r) { return r.researchStatus === 'Queued' && r.parked !== true; }).map(function (r) {
+        return { id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, decisions: t.list(r.decisions), parts: t.list(r.parts), price: Number((r.pricing || {}).price) || 0 };
+      });
+    },
+    sent: function (ids) { env.lock(function () { t.list(ids).forEach(function (id) { env.table('pipeline').update(id, { researchStatus: 'Researching', researchNote: '' }); }); }); },
+    save: function (id, res, by) {
+      res = res || {};
+      var num = function (v) { v = Number(v); return isFinite(v) && v > 0 ? Math.round(v * 100) / 100 : 0; };
+      var d = res.demand || {}, c = res.costing || {};
+      var clean = {
+        by: t.text(by || 'Claude', 60), summary: t.text(res.summary, 800),
+        viability: Math.max(0, Math.min(100, Math.round(Number(res.viability) || 0))),
+        verdict: ['Strong', 'Promising', 'Uncertain', 'Weak'].indexOf(res.verdict) >= 0 ? res.verdict : 'Uncertain',
+        demand: { level: ['Low', 'Moderate', 'Strong'].indexOf(d.level) >= 0 ? d.level : 'Low', low: Math.max(0, Math.round(Number(d.monthly_low) || 0)), high: Math.max(0, Math.round(Number(d.monthly_high) || 0)), reasoning: t.text(d.reasoning, 400) },
+        suppliers: t.list(res.suppliers).slice(0, 5).map(function (s) { s = s || {}; return { name: t.text(s.name, 100), what: t.text(s.what, 160), unit: num(s.unit_cost_aud), minOrder: t.text(s.min_order, 80), where: t.text(s.location, 80), url: /^https?:\/\//.test(s.url) ? t.text(s.url, 400) : '' }; }).filter(function (s) { return s.name; }),
+        costing: { low: num(c.unit_cost_low), high: num(c.unit_cost_high), price: num(c.suggested_price), notes: t.text(c.notes, 400) },
+        comparables: t.list(res.comparables).slice(0, 6).map(function (x) { x = x || {}; return { name: t.text(x.name, 120), price: num(x.price_aud), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.name; }),
+        risks: cleanList(res.risks, 4, 240),
+        legal: cleanList(res.legal_checks, 8, 300),
+        sources: t.list(res.sources).slice(0, 10).map(function (x) { x = x || {}; return { title: t.text(x.title, 120), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.url; })
+      };
+      var pushed = null;
+      env.lock(function () {
+        var r = rowOf(id); if (!r) return;
+        env.table('pipeline').update(id, { research: clean, researchStatus: 'Done', researchAt: t.nowIso(), researchNote: '',
+          checks: withChecks(r.checks, clean.legal, 'research'), log: logAdd(r, 'Market research in: ' + clean.verdict.toLowerCase() + ', ' + clean.viability + '/100') });
+        pushed = r.title;
+      });
+      if (pushed && t.push) t.push('admin', pushed + ': market research is in', clean.verdict + ', ' + clean.viability + '/100. Suppliers, costing and demand are on the product.');
+      return true;
+    },
+    fail: function (id, why, permanent) {
+      env.lock(function () {
+        var r = rowOf(id); if (!r) return;
+        var tries = (Number(r.researchTries) || 0) + 1, again = !permanent && tries < K.MAX_TRIES;
+        env.table('pipeline').update(id, { researchStatus: again ? 'Queued' : 'Failed', researchTries: tries, researchNote: t.text(why, 300) });
+      });
+    }
+  };
+  /** Research (again) on request. */
+  function researchItem(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var r = item(id);
+      if (r.researchStatus === 'Queued' || r.researchStatus === 'Researching') return { ok: true, already: true };
+      env.table('pipeline').update(id, { researchStatus: 'Queued', researchTries: 0, researchNote: '' });
+      return { ok: true };
+    });
+  }
+  /** Admin, once: the standard checks on every product, and research queued for any that has none. */
+  function prepareProducts() {
+    t.need(['admin']);
+    return env.lock(function () {
+      var n = 0, q = 0;
+      t.rows('pipeline').forEach(function (r) {
+        var checks = withChecks(r.checks, standardChecks(), 'standard'), ch = {};
+        if (checks.length !== t.list(r.checks).length) { ch.checks = checks; n++; }
+        if (!r.research && r.researchStatus !== 'Queued' && r.researchStatus !== 'Researching') { ch.researchStatus = 'Queued'; ch.researchTries = 0; q++; }
+        if (Object.keys(ch).length) env.table('pipeline').update(r.id, ch);
+      });
+      return { checksAdded: n, researchQueued: q };
+    });
+  }
+
   /** Queues an AI job on any row (used by Reports). Returns the route, or '' if no AI is available. */
   function queueJob(id, job) { try { return env.lock(function () { return queue(id, job); }); } catch (e) { return ''; } }
 
   return {
-    ai: ai, local: local, snapshot: snapshot, queueJob: queueJob,
+    ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
-      createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, draftItem: draftItem, loadBacklog: loadBacklog }
+      createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts }
   };
 }
 
@@ -7134,8 +7299,13 @@ var Kit = (function () {
   function talkCards(main, n) {
     var T = talkData(), waiting = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; });
     var oks = T.pipeline.filter(function (p) { return p.needsMe; });
-    if (!waiting.length && !oks.length) return n;
+    var webs = ADMIN ? S.data.ideas.filter(function (x) { return x.website && x.website.status === 'Requested'; }) : [];
+    if (!waiting.length && !oks.length && !webs.length) return n;
     var sec = section('Waiting for you');
+    webs.forEach(function (x) {
+      sec.appendChild(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openIdea(x.id); } },
+        h('span', { class: 'ic' }, icon('language')), h('span', { class: 'grow' }, h('b', { text: 'Website change to approve' }), h('span', { class: 'body-m', text: x.title })), icon('chevron_right')));
+    });
     waiting.forEach(function (tp) {
       sec.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
         h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' }, h('span', { class: 'ic' }, icon('forum')),
@@ -7363,6 +7533,65 @@ var Kit = (function () {
     });
   }
 
+  /** Market research on a product: viability, projected demand, costing, suppliers, comparables, and what next. */
+  function researchCard(p, f, reopen, saveFirst, touch) {
+    var R = p.research, sec = sheetSection('Market research');
+    function link(text, url) { return url ? h('a', { href: url, target: '_blank', rel: 'noopener', text: text }) : h('span', { text: text }); }
+    function ask(e) {
+      var b = e.target.closest('button'); if (b) K.setBusy(b, true);
+      saveFirst().then(function () { return api('researchItem', p.id); }).then(refresh).then(function () { toast('Researching. It’s usually here within the hour.'); reopen(); }).catch(fail);
+    }
+    if (!R) {
+      var waiting = p.researchStatus === 'Queued' || p.researchStatus === 'Researching';
+      if (waiting) sec.appendChild(note(window.TIDE_DEMO ? 'In the real app, market research appears here: suppliers, costing, projected demand and viability.' : 'Market research is on its way: suppliers, costing, projected demand and viability. Usually here within the hour.', 'travel_explore'));
+      else if (p.researchStatus === 'Failed') sec.appendChild(note('The research didn’t finish' + (p.researchNote ? ': ' + p.researchNote : '.'), 'warning', 'warn'));
+      if (!waiting) sec.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', p.researchStatus === 'Failed' ? 'Try again' : 'Research it', { icon: 'travel_explore', onclick: ask })));
+      return sec;
+    }
+    var money2 = function (n) { return n ? money(n, { cents: n < 20 }) : '?'; };
+    var head = h('div', { class: 'row', style: 'gap:14px;align-items:center;margin-bottom:10px' }, K.ring(R.viability),
+      h('div', { class: 'grow' }, h('div', { class: 'title-m', text: R.verdict + ' · ' + R.viability + '/100' }), h('p', { class: 'body-m', text: R.summary })));
+    sec.appendChild(head);
+    var d = R.demand || {}, c = R.costing || {};
+    sec.appendChild(h('dl', { class: 'kv research-kv' },
+      h('dt', { text: 'Projected demand' }), h('dd', {}, h('b', { text: d.level + ' · about ' + d.low + (d.high > d.low ? '–' + d.high : '') + ' a month' }), d.reasoning ? h('div', { class: 'body-s', text: d.reasoning }) : null),
+      h('dt', { text: 'Cost to make' }), h('dd', {}, h('b', { text: money2(c.low) + (c.high > c.low ? '–' + money2(c.high) : '') + ' each' }), c.notes ? h('div', { class: 'body-s', text: c.notes }) : null),
+      h('dt', { text: 'Suggested price' }), h('dd', {}, h('b', { text: money2(c.price) }))));
+    if (R.suppliers.length) {
+      var sl = h('div', { class: 'research-list' }, h('div', { class: 'label-s', text: 'Suppliers' }));
+      R.suppliers.forEach(function (s) {
+        sl.appendChild(h('div', { class: 'research-row' },
+          h('div', { class: 'grow' }, h('div', { class: 'body-m', style: 'font-weight:500' }, link(s.name, s.url)),
+            h('div', { class: 'body-s', text: [s.what, s.unit ? money2(s.unit) + ' each' : '', s.minOrder ? 'min ' + s.minOrder : '', s.where].filter(Boolean).join(' · ') })),
+          h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+            f.parts.push({ part: s.what || s.name, supplier: s.name, cost: s.unit || 0, qty: 1 }); touch();
+            saveFirst().then(refresh).then(function () { toast('Added as a part. Check the cost and quantity.'); reopen(); }).catch(fail);
+          } }, icon('add'), 'Add as a part')));
+      });
+      sec.appendChild(sl);
+    }
+    if (R.comparables.length) {
+      var cl = h('div', { class: 'research-list' }, h('div', { class: 'label-s', text: 'Similar things for sale' }));
+      R.comparables.forEach(function (x) { cl.appendChild(h('div', { class: 'research-row' }, h('div', { class: 'grow body-m' }, link(x.name, x.url)), h('b', { class: 'body-m', text: money2(x.price) }))); });
+      sec.appendChild(cl);
+    }
+    if (R.risks.length) sec.appendChild(h('div', { class: 'research-list' }, h('div', { class: 'label-s', text: 'Risks' }), h('ul', { class: 'talk-list' }, R.risks.map(function (x) { return h('li', { text: x }); }))));
+    if (R.legal.length) sec.appendChild(h('p', { class: 'body-s', style: 'margin-top:8px', text: R.legal.length + ' legal check' + (R.legal.length === 1 ? '' : 's') + ' for this product ' + (R.legal.length === 1 ? 'was' : 'were') + ' added to its checklist below.' }));
+    if (R.sources.length) {
+      var src = h('details', { class: 'talk-past', style: 'margin-top:10px' }, h('summary', { text: 'Sources (' + R.sources.length + ')' }));
+      R.sources.forEach(function (x) { src.appendChild(h('div', { class: 'body-s', style: 'padding:3px 0' }, link(x.title || x.url, x.url))); });
+      sec.appendChild(src);
+    }
+    var nx = h('div', { class: 'chip-wrap', style: 'margin-top:12px' });
+    if (c.price && c.price !== f.price) nx.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+      f.price = c.price; touch(); saveFirst().then(refresh).then(function () { toast('Price set to ' + money2(c.price) + '.'); reopen(); }).catch(fail);
+    } }, icon('sell'), 'Use ' + money2(c.price) + ' as the price'));
+    nx.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: ask }, icon('refresh'), 'Research again'));
+    sec.appendChild(h('div', {}, h('div', { class: 'label-s', style: 'margin-top:12px', text: 'What next?' }), nx));
+    sec.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: 'From ' + (R.by || 'Claude') + ' · ' + (p.researchAt ? ago(p.researchAt) : '') + ' · check prices with the supplier before ordering' }));
+    return sec;
+  }
+
   function openItem(id) {
     var p = byId(talkData().pipeline, id);
     if (!p) return;
@@ -7387,6 +7616,7 @@ var Kit = (function () {
         ctlRef = ctl;
         var si = T.stages.indexOf(p.stage);
         ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
+        ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Parked. Bring it back when you’re ready.', 'pause_circle')));
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
         if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (p.aiNote ? ': ' + p.aiNote : '.'), 'warning', 'warn')));
@@ -8028,6 +8258,38 @@ var Kit = (function () {
           s6.appendChild(h('div', { class: 'field-gap' }, req, askBtn));
           ctl.body.appendChild(s6);
         }
+
+        // a website change: asked for here, approved by the admin, then a prompt for Claude Code
+        var ws = sheetSection('Website change'), W = x.website;
+        if (!W) ws.appendChild(btn('outlined', 'It’s a website change', { icon: 'language', block: true, onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('websiteRequest', x.id).then(refresh).then(function () { render(); toast(ADMIN ? 'Marked as a website change. Approve it when you’re ready.' : 'Sent to ' + adminName() + ' to approve.'); ctl.close(); setTimeout(function () { openIdea(x.id); }, 260); })
+            .catch(function (err) { K.setBusy(b, false); fail(err); });
+        } }));
+        else if (W.status === 'Requested') {
+          ws.appendChild(note('Asked for ' + ago(W.at) + '. ' + (ADMIN ? 'Approve it to make the prompt for Claude.' : 'Waiting for ' + adminName() + ' to approve.'), 'language'));
+          if (ADMIN) ws.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Approve, and make the prompt', { icon: 'verified', block: true, onclick: function (e) {
+            var b = e.currentTarget; K.setBusy(b, true);
+            api('approveWebsite', x.id).then(refresh).then(function () { K.haptic('success'); render(); ctl.close(); setTimeout(function () { openIdea(x.id); }, 260); })
+              .catch(function (err) { K.setBusy(b, false); fail(err); });
+          } })));
+        } else if (W.status === 'Approved') {
+          if (!ADMIN) ws.appendChild(note('Approved ' + ago(W.approvedAt) + '. It’s on its way to your website.', 'verified', 'good'));
+          else {
+            ws.appendChild(note('Approved. Copy the prompt into Claude, or just tell Claude: “Do website request ' + x.id + '”' + (W.file ? ' (it’s saved on the PC)' : '') + '.', 'content_copy'));
+            var ta = h('textarea', { class: 'prompt-box', readonly: true, rows: 9 }); ta.value = W.prompt;
+            ws.appendChild(ta);
+            ws.appendChild(h('div', { class: 'chip-wrap', style: 'margin-top:8px' },
+              h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+                (navigator.clipboard ? navigator.clipboard.writeText(W.prompt) : Promise.reject()).then(function () { toast('Copied. Paste it into Claude.'); })
+                  .catch(function () { ta.select(); toast('Selected: copy it from here.'); });
+              } }, icon('content_copy'), 'Copy the prompt'),
+              h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+                api('websiteDone', x.id).then(refresh).then(function () { render(); toast('Marked as done.'); ctl.close(); }).catch(fail);
+              } }, icon('check'), 'It’s done')));
+          }
+        } else ws.appendChild(note('On the website ' + ago(W.doneAt) + '.', 'check_circle', 'good'));
+        ctl.body.appendChild(ws);
 
         var s7 = sheetSection('Take it further');
         var row = h('div', { class: 'btn-row' });
