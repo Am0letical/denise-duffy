@@ -647,6 +647,7 @@ a.li { text-decoration: none; }
 .li.acct { padding: 0 4px 0 0; }
 .acct-go { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; min-height: 72px; padding: 10px 8px 10px 16px; color: inherit; text-decoration: none; }
 .acct-go.is-pressed { background: var(--surface-mid); transform: none; }
+button.acct-go { border: 0; background: none; text-align: left; font: inherit; }
 
 /* ---------- sheets and dialogs ---------- */
 .layer { position: fixed; inset: 0; z-index: 50; }
@@ -996,6 +997,13 @@ var TIDE_SCHEMAS = {
     columns: [
       ['id', 'ID', 'text'], ['name', 'Name', 'text'], ['kind', 'Kind', 'text'], ['url', 'Web address', 'text'],
       ['login', 'Login it is under', 'text'], ['notes', 'Notes', 'text'], ['status', 'Status', 'text'], ['updated', 'Updated', 'date']
+    ]
+  },
+  consent: {
+    sheet: 'Consent',
+    columns: [
+      ['id', 'ID', 'text'], ['term', 'Name or topic', 'text'], ['kind', 'Kind', 'text'], ['status', 'Go or no go', 'text'],
+      ['note', 'Note', 'text'], ['decidedBy', 'Decided by', 'text'], ['decidedOn', 'Decided on', 'day'], ['updated', 'Updated', 'date']
     ]
   },
   calendar: {
@@ -1665,10 +1673,28 @@ function createTideLogic(env) {
     return { ok: true };
   }
 
+  /**
+   * The consent register: names and topics marked "No go" never go out in public (posts, the website)
+   * until they're switched to "Go". Phrases marked "Go" are cleared first, so an approved phrase can
+   * contain a word that's otherwise a no go. Returns the first no-go entry the text mentions, or ''.
+   */
+  function consentHit(textIn) {
+    var all = rows('consent').filter(function (c) { return c.term && c.status !== 'Removed'; });
+    var esc = function (s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+'); };
+    var s = String(textIn || '');
+    all.filter(function (c) { return c.status === 'Go'; }).forEach(function (c) { s = s.replace(new RegExp(esc(c.term), 'gi'), ' '); });
+    var hit = '';
+    all.filter(function (c) { return c.status !== 'Go'; }).some(function (c) {
+      if (new RegExp('(^|[^A-Za-z0-9])' + esc(c.term) + '(s|\'s|’s)?(?=$|[^A-Za-z0-9])', 'i').test(s)) { hit = c.term; return true; }
+      return false;
+    });
+    return hit;
+  }
+
   function publishWebsite() {
     need(['admin', 'artist']);
     if (!env.site) fail('Publishing the website works on the PC version of Tide Book.');
-    var r = env.site.publish();
+    var r = env.site.publish(consentHit);
     env.settings.set({ sitePublishedAt: nowIso() });
     return r;
   }
@@ -2171,7 +2197,7 @@ function createTideLogic(env) {
   // ---------- content studio (LogicContent.gs)
   var content = tideContent(env, {
     fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf, checkImage: checkImage,
-    publish: publish
+    publish: publish, consentHit: consentHit
   });
 
   // ---------- admin hub (LogicHub.gs)
@@ -2217,6 +2243,7 @@ function createTideLogic(env) {
     direction: direction,
     recordOnlineSales: recordOnlineSales,
     siteData: siteData,
+    consentHit: consentHit,
     publishFeed: publishFeed,
     fyOf: fyOf
   };
@@ -2276,8 +2303,8 @@ function tideContent(env, t) {
   function clashOf(c) {
     if (c.type !== 'Post') return '';
     if (c.clash) return String(c.clash);
-    var words = env.privateWords, text = [c.title, c.caption, c.hashtags, c.onScreen].join(' ');
-    if (words && words.test(text)) return 'It mentions family or a private worry, which needs its own yes.';
+    var hit = t.consentHit ? t.consentHit([c.title, c.caption, c.hashtags, c.onScreen].join(' ')) : '';
+    if (hit) return 'It mentions “' + hit + '”, which is a no go in Consent (Settings). Change the post, or switch it to Go there once they’ve said yes.';
     return '';
   }
   function approversFor(c) { return clashOf(c) ? C.CLASH_APPROVERS : C.POST_APPROVERS; }
@@ -2903,7 +2930,8 @@ function tideContent(env, t) {
 var TIDE_HUB = {
   CONTACT_KINDS: ['Customer', 'Stockist', 'Supplier', 'Gallery', 'Press', 'Professional', 'Other'],
   ACCOUNT_KINDS: ['Social', 'Store', 'Money', 'Email and tools', 'Government', 'Other'],
-  DEFAULT_LISTS: ['Newsletter']
+  DEFAULT_LISTS: ['Newsletter'],
+  CONSENT_KINDS: ['Person', 'Topic']
 };
 
 function tideHub(env, t) {
@@ -3040,6 +3068,37 @@ function tideHub(env, t) {
     });
   }
 
+  // ---------- consent: names and topics, each a go or a no go, remembered
+  function saveConsent(id, p) {
+    t.need(['admin', 'artist']);
+    p = p || {};
+    var term = t.text(p.term, 80).replace(/\s+/g, ' ');
+    if (term.length < 2) t.fail('Type the name or topic.');
+    var out = {
+      term: term, kind: H.CONSENT_KINDS.indexOf(p.kind) >= 0 ? p.kind : 'Person',
+      status: p.status === 'Go' ? 'Go' : 'No go', note: t.text(p.note, 500), updated: t.nowIso()
+    };
+    return env.lock(function () {
+      var twin = t.rows('consent').filter(function (c) { return c.status !== 'Removed' && c.id !== id && String(c.term).toLowerCase() === term.toLowerCase(); })[0];
+      if (twin) t.fail('“' + twin.term + '” is already in the list.');
+      var old = id ? t.find('consent', id) : null;
+      if (!old || old.status !== out.status || old.term !== out.term) { out.decidedBy = env.user.role; out.decidedOn = env.today(); }
+      if (old) { env.table('consent').update(id, out); return { id: id }; }
+      out.id = env.nextId('CS', 3);
+      env.table('consent').append(out);
+      return { id: out.id };
+    });
+  }
+
+  function removeConsent(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      t.find('consent', id);
+      env.table('consent').update(id, { status: 'Removed', updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
+
   // ---------- what the admin screens load
   function snapshot() {
     var contacts = t.rows('contacts').filter(function (c) { return c.status !== 'Archived'; }).map(function (c) {
@@ -3060,14 +3119,18 @@ function tideHub(env, t) {
       accounts: t.rows('accounts').filter(function (a) { return a.status !== 'Removed'; }).map(function (a) {
         return { id: a.id, name: a.name, kind: a.kind, url: a.url, login: a.login || '', notes: a.notes || '' };
       }),
-      contactKinds: H.CONTACT_KINDS, accountKinds: H.ACCOUNT_KINDS
+      consent: t.rows('consent').filter(function (c) { return c.term && c.status !== 'Removed'; }).map(function (c) {
+        return { id: c.id, term: c.term, kind: c.kind || 'Person', status: c.status === 'Go' ? 'Go' : 'No go', note: c.note || '',
+          decidedBy: c.decidedBy || '', decidedOn: c.decidedOn || '' };
+      }).sort(function (a, b) { return a.term.toLowerCase() < b.term.toLowerCase() ? -1 : 1; }),
+      contactKinds: H.CONTACT_KINDS, accountKinds: H.ACCOUNT_KINDS, consentKinds: H.CONSENT_KINDS
     };
   }
 
   return {
     api: {
       saveContact: saveContact, archiveContact: archiveContact, importContacts: importContacts,
-      saveAccount: saveAccount, removeAccount: removeAccount
+      saveAccount: saveAccount, removeAccount: removeAccount, saveConsent: saveConsent, removeConsent: removeConsent
     },
     snapshot: snapshot
   };
@@ -10035,12 +10098,12 @@ var Kit = (function () {
   function viewAdmin(main) {
     pageTitle(main, ADMIN ? 'Admin' : 'Settings', ADMIN ? 'Contacts, email lists, accounts and settings.' : 'Your contacts, lists, accounts and business settings.');
     if (!ADMIN && S.adminTab === 'reports') S.adminTab = 'settings';
-    var tabs = [{ value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'settings', label: 'Settings' }];
+    var tabs = [{ value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'consent', label: 'Consent' }, { value: 'settings', label: 'Settings' }];
     if (ADMIN) tabs.unshift({ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined });
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.adminTab, onChange: function (v) { S.adminTab = v; S.animate = true; render(); }, options: tabs
     })), 1));
-    ({ reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, settings: viewSettings }[S.adminTab] || tabContacts)(main);
+    ({ reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, consent: tabConsent, settings: viewSettings }[S.adminTab] || tabContacts)(main);
   }
 
   function tabContacts(main) {
@@ -10244,6 +10307,75 @@ var Kit = (function () {
           if (!f.url.trim()) { toast('Add the web address.'); url.input.focus(); return; }
           K.setBusy(save, true);
           api('saveAccount', a ? a.id : null, f).then(refresh).then(function () { dirty = false; K.haptic('success'); render(); toast('Saved.'); ctl.close(); })
+            .catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------ Consent: names and topics, go or no go
+  function consentChip(status) { return status === 'Go' ? chip('Go', 'approved', 'check_circle') : chip('No go', 'high', 'block'); }
+  function whoDecided(c) {
+    var who = c.decidedBy === 'admin' ? S.data.brand.adminName : c.decidedBy === 'artist' ? S.data.brand.artistName : '';
+    return [who, c.decidedOn ? K.dayLabel(String(c.decidedOn).slice(0, 10), true) : ''].filter(String).join(', ');
+  }
+  function tabConsent(main) {
+    var hub = S.data.hub, items = hub.consent || [];
+    main.appendChild(rise(note('Names and topics that may or may not appear in public. Anything marked no go stops a post or the website from going out until it’s changed. Switch a name to go once that person has said yes. Tide Book remembers each answer.', 'verified'), 1));
+    if (!items.length) main.appendChild(rise(h('div', { style: 'margin-top:16px' }, emptyState('verified', 'Nothing here yet', 'Add a family member’s name or a private topic, and say whether it’s a go.')), 2));
+    [['No go', 'Kept out of public'], ['Go', 'Cleared to share']].forEach(function (g, i) {
+      var group = items.filter(function (c) { return c.status === g[0]; });
+      if (!group.length) return;
+      var sec = section(g[1]), list = h('div', { class: 'list' });
+      group.forEach(function (c) {
+        var flip = c.status === 'Go' ? 'No go' : 'Go';
+        list.appendChild(h('div', { class: 'li acct' },
+          h('button', { type: 'button', class: 'acct-go press', 'aria-label': 'Edit ' + c.term, onclick: function () { openConsent(c.id); } },
+            h('div', { class: 'th-blank' }, icon(c.kind === 'Topic' ? 'sticky_note_2' : 'contacts')),
+            h('div', { class: 'grow' }, h('div', { class: 'li-head' }, c.term, ' ', consentChip(c.status)),
+              h('div', { class: 'li-sup', text: [c.note, whoDecided(c)].filter(String).join(' · ') }))),
+          btn('text', flip === 'Go' ? 'Make go' : 'Make no go', { onclick: function (ev) {
+            var b = ev.currentTarget; K.setBusy(b, true);
+            api('saveConsent', c.id, { term: c.term, kind: c.kind, note: c.note, status: flip }).then(refresh)
+              .then(function () { K.haptic('success'); render(); toast(c.term + ' is now ' + (flip === 'Go' ? 'a go.' : 'a no go.')); })
+              .catch(function (e) { K.setBusy(b, false); fail(e); });
+          } })));
+      });
+      sec.appendChild(list);
+      main.appendChild(rise(sec, 2 + i));
+    });
+    fab(main, 'Add name or topic', 'add', function () { openConsent(null); });
+  }
+
+  function openConsent(id) {
+    var hub = S.data.hub, c = id ? byId(hub.consent || [], id) : null, dirty = false;
+    if (id && !c) return;
+    var f = c ? { term: c.term, kind: c.kind, status: c.status, note: c.note } : { term: '', kind: 'Person', status: 'No go', note: '' };
+    K.sheet({
+      title: c ? c.term : 'Add a name or topic', tall: true, guard: function () { return dirty; },
+      build: function (ctl) {
+        function touch() { dirty = true; }
+        var term = K.textField({ label: 'Name or topic', value: f.term, maxlength: 80, onInput: function (v) { f.term = v; touch(); },
+          help: 'Add each spelling or nickname on its own, e.g. a first name and a pet name.' });
+        ctl.body.appendChild(h('div', { class: 'field-gap' }, term,
+          h('div', { class: 'label-s', text: 'Is it a person or a topic?' }),
+          K.choices({ label: 'This is a', value: f.kind, options: hub.consentKinds || ['Person', 'Topic'], onChange: function (v) { f.kind = v; touch(); } }),
+          h('div', { class: 'label-s', text: 'Can it appear in public?' }),
+          K.choices({ label: 'Can it appear in public?', value: f.status, options: ['No go', 'Go'], onChange: function (v) { f.status = v; touch(); } }),
+          K.textField({ label: 'Note', value: f.note, multiline: true, maxlength: 500, onInput: function (v) { f.note = v; touch(); },
+            help: 'Optional: who said yes and when, or why it stays private.' })));
+        if (c && c.decidedOn) ctl.body.appendChild(h('div', { class: 'li-sup', style: 'margin-top:12px', text: 'Last decided: ' + whoDecided(c) }));
+        if (c) {
+          ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Remove from the list', { danger: true, icon: 'delete', onclick: function () {
+            api('removeConsent', c.id).then(refresh).then(function () { dirty = false; render(); toast('Removed.'); ctl.close(); }).catch(fail);
+          } })));
+        }
+        var save = btn('filled', c ? 'Save changes' : 'Save', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          if (f.term.trim().length < 2) { toast('Type the name or topic.'); term.input.focus(); return; }
+          K.setBusy(save, true);
+          api('saveConsent', c ? c.id : null, f).then(refresh).then(function () { dirty = false; K.haptic('success'); render(); toast('Saved.'); ctl.close(); })
             .catch(function (e) { K.setBusy(save, false); fail(e); });
         });
         ctl.foot.appendChild(save);
