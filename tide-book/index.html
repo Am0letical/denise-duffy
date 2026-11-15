@@ -1273,7 +1273,7 @@ function createTideLogic(env) {
 
   function requeueResearch(id) {
     need(['admin', 'artist']);
-    if (!env.features.research) fail('Research is not switched on yet. See the setup guide.');
+    if (!env.features.research) fail(env.user.role === 'admin' ? 'Research is not switched on yet. See the setup guide.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     return env.lock(function () {
       find('ideas', id);
       env.table('ideas').update(id, { researchStatus: 'Queued', researchTries: 0, researchNote: '', updated: nowIso() });
@@ -1693,7 +1693,7 @@ function createTideLogic(env) {
 
   function publishWebsite() {
     need(['admin', 'artist']);
-    if (!env.site) fail('Publishing the website works on the PC version of Tide Book.');
+    if (!env.site) fail(env.user.role === 'admin' ? 'Publishing the website works on the PC version of Tide Book.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     var r = env.site.publish(consentHit);
     env.settings.set({ sitePublishedAt: nowIso() });
     return r;
@@ -2304,7 +2304,7 @@ function tideContent(env, t) {
     if (c.type !== 'Post') return '';
     if (c.clash) return String(c.clash);
     var hit = t.consentHit ? t.consentHit([c.title, c.caption, c.hashtags, c.onScreen].join(' ')) : '';
-    if (hit) return 'It mentions “' + hit + '”, which is a no go in Consent (Settings). Change the post, or switch it to Go there once they’ve said yes.';
+    if (hit) return 'It mentions “' + hit + '”, which you’ve kept private. Change the post, or mark it Go in Consent.';
     return '';
   }
   function approversFor(c) { return clashOf(c) ? C.CLASH_APPROVERS : C.POST_APPROVERS; }
@@ -2536,7 +2536,7 @@ function tideContent(env, t) {
 
   function requestSuggestions() {
     t.need(['admin', 'artist']);
-    if (!env.features.studio) t.fail('Automatic suggestions are not switched on yet. See the setup guide.');
+    if (!env.features.studio) t.fail(env.user.role === 'admin' ? 'Automatic suggestions are not switched on yet. See the setup guide.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     env.settings.set({ studioShotsAsked: t.nowIso() });
     env.requestStudio();
     return { ok: true };
@@ -3770,7 +3770,7 @@ function tideNotes(env, t) {
     t.need(['admin', 'artist']);
     opts = opts || {};
     var route = opts.claude || !localFirst() ? 'claude' : 'local';
-    if (route === 'claude' && !env.features.research) t.fail('Claude isn’t switched on yet. It needs the API key (setup guide, step 8).');
+    if (route === 'claude' && !env.features.research) t.fail(env.user.role === 'admin' ? 'Claude isn’t switched on yet. It needs the API key (setup guide, step 8).' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     var queued = env.lock(function () {
       var n = get(id);
       if (!String(n.body || '').trim()) t.fail('Write a little in the note first.');
@@ -4061,7 +4061,7 @@ function tideTalk(env, t) {
     var route = opts.claude || needsFacts || !localFirst() ? 'claude' : 'local';
     if (route === 'claude' && !env.features.research) {
       if (localFirst()) route = 'local';
-      else t.fail('The AI isn’t switched on yet. It needs the Claude API key (setup guide, step 8) or the PC helper.');
+      else t.fail(env.user.role === 'admin' ? 'The AI isn’t switched on yet. It needs the Claude API key (setup guide, step 8) or the PC helper.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     }
     env.table(tableOf(id)).update(id, { aiJob: job, aiStatus: 'Queued', aiRoute: route, aiQueued: t.nowIso(), aiTries: 0, aiNote: '',
       aiWhy: route === 'claude' ? t.text(opts.why || (needsFacts ? 'Needs current facts' : ''), 200) : '' });
@@ -5006,7 +5006,7 @@ function tideReports(env, t) {
     t.need(['admin']);
     get(id);
     var route = t.queueJob(id, 'triage');
-    if (!route) t.fail('The AI isn’t switched on yet (Get set up → Switch on the AI).');
+    if (!route) t.fail(env.user.role === 'admin' ? 'The AI isn’t switched on yet (Get set up → Switch on the AI).' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     if (env.talkNow) env.talkNow(id);
     return { ok: true };
   }
@@ -7603,7 +7603,7 @@ var Kit = (function () {
           h('div', { class: 'talk-bar' }, h('i', { style: 'width:' + pct + '%' }))));
 
         if (tp.aiStatus === 'Failed') {
-          ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('It got stuck' + (tp.aiNote ? ': ' + tp.aiNote : '.'), 'warning', 'warn')));
+          ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('It got stuck' + (ADMIN && tp.aiNote ? ': ' + tp.aiNote : '. Try it again.'), 'warning', 'warn')));
           ctl.body.appendChild(btn('tonal', 'Try again', { icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('retryTopic', id).then(refresh).then(reopen).catch(fail); } }));
         } else if (tp.status === 'Thinking' || tp.status === 'Wrapping') {
           ctl.body.appendChild(note(tp.status === 'Wrapping' ? 'Writing it all up… You can close this; it’ll be filed when it’s done.' : 'Thinking of the next questions… You can close this; they’ll be waiting on Home.', 'hourglass_top'));
@@ -7763,7 +7763,7 @@ var Kit = (function () {
     if (!R) {
       var waiting = p.researchStatus === 'Queued' || p.researchStatus === 'Researching';
       if (waiting) sec.appendChild(note(window.TIDE_DEMO ? 'In the real app, market research appears here: suppliers, costing, projected demand and viability.' : 'Market research is on its way: suppliers, costing, projected demand and viability. Usually here within the hour.', 'travel_explore'));
-      else if (p.researchStatus === 'Failed') sec.appendChild(note('The research didn’t finish' + (p.researchNote ? ': ' + p.researchNote : '.'), 'warning', 'warn'));
+      else if (p.researchStatus === 'Failed') sec.appendChild(note('The research didn’t finish' + (ADMIN && p.researchNote ? ': ' + p.researchNote : '. Tap Research again.'), 'warning', 'warn'));
       if (!waiting) sec.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', p.researchStatus === 'Failed' ? 'Try again' : 'Research it', { icon: 'travel_explore', onclick: ask })));
       return sec;
     }
@@ -7807,7 +7807,7 @@ var Kit = (function () {
     } }, icon('sell'), 'Use ' + money2(c.price) + ' as the price'));
     nx.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: ask }, icon('refresh'), 'Research again'));
     sec.appendChild(h('div', {}, h('div', { class: 'label-s', style: 'margin-top:12px', text: 'What next?' }), nx));
-    sec.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: 'From ' + String(R.by || 'Claude').replace(/^Claude (\w)/, function (x, c) { return 'Claude ' + c.toUpperCase(); }) + ' · ' + (p.researchAt ? ago(p.researchAt) : '') + ' · check prices with the supplier before ordering' }));
+    sec.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: (ADMIN ? 'From ' + String(R.by || 'Claude').replace(/^Claude (\w)/, function (x, c) { return 'Claude ' + c.toUpperCase(); }) + ' · ' : '') + (p.researchAt ? ago(p.researchAt) : '') + ' · check prices with the supplier before ordering' }));
     return sec;
   }
 
@@ -7815,7 +7815,7 @@ var Kit = (function () {
   function tldr(points) {
     points = points.filter(Boolean).slice(0, 3);
     if (!points.length) return null;
-    return h('div', { class: 'tldr', role: 'note', 'aria-label': 'In short' }, h('span', { class: 'tldr-k', text: 'TL;DR' }),
+    return h('div', { class: 'tldr', role: 'note', 'aria-label': 'In short' }, h('span', { class: 'tldr-k', text: 'In short' }),
       h('ul', {}, points.map(function (p) { return h('li', { text: p }); })));
   }
   function firstBit(s, n) { s = String(s || '').replace(/\s+/g, ' ').trim(); var m = s.match(/^.{20,}?[.!?](\s|$)/); s = m ? m[0].trim() : s; return s.length > (n || 90) ? s.slice(0, (n || 90) - 1).replace(/\s+\S*$/, '') + '…' : s; }
@@ -7857,7 +7857,7 @@ var Kit = (function () {
         ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Parked. Bring it back when you’re ready.', 'pause_circle')));
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
-        if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (p.aiNote ? ': ' + p.aiNote : '.'), 'warning', 'warn')));
+        if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (ADMIN && p.aiNote ? ': ' + p.aiNote : '. Try it again.'), 'warning', 'warn')));
 
         var s1 = sheetSection('What it is');
         s1.appendChild(h('div', { class: 'field-gap' },
@@ -7886,7 +7886,7 @@ var Kit = (function () {
           ck.textContent = '';
           f.checks.forEach(function (c, i) {
             ck.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
-              h('div', { class: 'body-m', text: c.item }), c.ai ? h('div', { class: 'body-s', style: 'color:var(--on-surface-variant);margin-top:2px', text: 'Drafted by AI: verify it' }) : null,
+              h('div', { class: 'body-m', text: c.item }), c.ai ? h('div', { class: 'body-s', style: 'color:var(--on-surface-variant);margin-top:2px', text: 'A suggestion: worth a double-check' }) : null,
               h('div', { class: 'row check-row' }, h('div', { class: 'grow' }, K.choices({ row: true, label: 'Status', value: c.status, options: T.checkStatus, onChange: function (v) { c.status = v; touch(); } })),
                 K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); })),
               K.textField({ suggest: ['Confirmed', 'Waiting to hear back', 'Needs a quote', 'Not needed'], suggestReplace: true, label: 'Note', value: c.note, compact: true, maxlength: 300, onInput: function (v) { c.note = v; touch(); } })));
@@ -8011,7 +8011,7 @@ var Kit = (function () {
       listEl.textContent = '';
       if (!shown.length) {
         listEl.appendChild(emptyState('sticky_note_2', S.data.notebook.length ? 'No notes match' : 'No notes yet',
-          'Jot an idea down however it comes. Link notes with [[ ]], and let Claude help grow them.'));
+          'Jot an idea down however it comes, then tap Expand to grow it.'));
         return;
       }
       var l = h('div', { class: 'list' });
@@ -8137,7 +8137,7 @@ var Kit = (function () {
           var thinking = n.expandStatus === 'Queued' || n.expandStatus === 'Expanding';
           if (thinking) {
             var onPc = n.expandRoute === 'local', also = n.links.length + n.backlinks.length ? ' and the notes linked to it' : '';
-            s3.appendChild(note(onPc
+            s3.appendChild(!ADMIN ? note('Working on it' + also + '. Usually under a minute.', 'auto_awesome') : note(onPc
               ? 'The PC is thinking about this note' + also + '.' + (ai.pcOnline ? ' It usually takes under a minute.' : ' The PC hasn’t checked in lately' + (ai.fallbackMins && ai.claude ? ', so Claude will take it if it’s not picked up within ' + ai.fallbackMins + ' minutes.' : '; it will be done when the PC is back on.'))
               : 'Claude is thinking about this note' + also + '. It usually takes under a minute.' + (n.expandWhy && n.expandWhy !== 'Asked for Claude' ? ' Sent to Claude because: ' + n.expandWhy + '.' : ''), onPc ? 'computer' : 'hourglass_top'));
             poll = setInterval(function () {
@@ -8147,30 +8147,30 @@ var Kit = (function () {
               }).catch(function () {});
             }, 4000);
           } else if (n.expandStatus === 'Failed') {
-            s3.appendChild(note(n.expandNote || 'Claude couldn’t finish this one.', 'error', 'warn'));
+            s3.appendChild(note(ADMIN ? n.expandNote || 'Claude couldn’t finish this one.' : 'That one didn’t come through. Try again.', 'error', 'warn'));
           }
           var ex = n.expansion;
           if (ex) s3.appendChild(expansionCard(n, ex, ctl));
           if (!thinking) {
             var local = ai.localFirst;
             function run(b, method) {
-              if (method === 'askClaude' || !local) { if (!ai.claude) { toast('Claude isn’t switched on yet (setup guide, step 8).', 'error'); return; } }
+              if (method === 'askClaude' || !local) { if (!ai.claude) { toast(ADMIN ? 'Claude isn’t switched on yet (setup guide, step 8).' : 'Expanding isn’t available right now.', 'error'); return; } }
               K.setBusy(b, true);
               (dirty ? save() : Promise.resolve()).then(function () { return api(method, n.id); })
                 .then(refresh).then(function () { reopen(n.id); })
                 .catch(function (e) { K.setBusy(b, false); fail(e); });
             }
-            var expand = btn(ex ? 'tonal' : 'filled', ex ? 'Expand again' : local ? 'Expand this idea' : 'Expand with Claude', { icon: 'auto_awesome', block: true });
+            var expand = btn(ex ? 'tonal' : 'filled', ex ? 'Expand again' : local || !ADMIN ? 'Expand this idea' : 'Expand with Claude', { icon: 'auto_awesome', block: true });
             expand.addEventListener('click', function () { run(expand, 'expandNote'); });
             var row = h('div', { class: 'field-gap', style: 'margin-top:12px' }, expand);
             var fromPc = ex && /^PC/.test(ex.by || '');
             if (local && ai.claude && (fromPc || !ex)) {
-              var claudeBtn = btn('outlined', 'Ask Claude instead', { icon: 'auto_awesome', block: true });
+              var claudeBtn = btn('outlined', ADMIN ? 'Ask Claude instead' : 'Go deeper', { icon: 'auto_awesome', block: true });
               claudeBtn.addEventListener('click', function () { run(claudeBtn, 'askClaude'); });
               row.appendChild(claudeBtn);
             }
             s3.appendChild(row);
-            if (!ex) s3.appendChild(h('p', { class: 'label-s', style: 'margin:8px 4px 0', text: (local
+            if (!ex) s3.appendChild(h('p', { class: 'label-s', style: 'margin:8px 4px 0', text: !ADMIN ? 'Turns your note into goals, questions and a next step. Your words stay as you wrote them.' : (local
               ? 'The PC’s own model reads this note and the ones linked to it first, free. Anything about prices, suppliers or rules, or that it isn’t sure of, goes on to Claude. '
               : 'Claude reads this note and the ones linked to it. ') + 'It sorts goals from guesses, asks what it needs to, and suggests a next step. Your words stay as you wrote them.' }));
           }
@@ -8183,7 +8183,7 @@ var Kit = (function () {
           else more.appendChild(btn('text', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { ctl.close(); setTimeout(function () { openIdea(n.ideaId); }, 260); } }));
           more.appendChild(btn('text', 'Earlier versions', { icon: 'history', block: true, onclick: function () { openHistory(n, ctl); } }));
           more.appendChild(btn('text', 'Delete note', { icon: 'delete', block: true, danger: true, onclick: function () {
-            K.confirm({ title: 'Delete this note?', text: 'Links to it will show as not made yet. The earlier versions are kept in the Sheet.', confirmLabel: 'Delete', danger: true })
+            K.confirm({ title: 'Delete this note?', text: ADMIN ? 'Links to it will show as not made yet. The earlier versions are kept in the Sheet.' : 'It will be gone from your notebook.', confirmLabel: 'Delete', danger: true })
               .then(function (yes) { if (yes) api('deleteNote', n.id).then(refresh).then(function () { dirty = false; ctl.close(); toast('Deleted.'); }).catch(fail); });
           } }));
           s4.appendChild(more);
@@ -8264,7 +8264,7 @@ var Kit = (function () {
         api('addDirection', { title: n.title, body: String(n.body || '').slice(0, 4000) }).then(refresh).then(function () { toast('Added to Our direction.'); }).catch(fail);
       } }, icon('explore'), 'Add to Our direction')));
     card.appendChild(nx);
-    if (n.expandedAt) card.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: 'From ' + (ex.by || 'Claude') + ' · ' + ago(n.expandedAt) + ' · kept separate from your note' }));
+    if (n.expandedAt) card.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: (ADMIN ? 'From ' + (ex.by || 'Claude') + ' · ' : '') + ago(n.expandedAt) + ' · kept separate from your note' }));
     return card;
   }
 
@@ -8383,17 +8383,17 @@ var Kit = (function () {
     function rerun(label) {
       return btn('text', label, { icon: 'refresh', sm: true, onclick: function (e) {
         K.setBusy(e.currentTarget, true);
-        api('requeueResearch', x.id).then(refresh).then(function () { render(); toast('Queued for research.'); ctl.close(); }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
+        api('requeueResearch', x.id).then(refresh).then(function () { render(); toast(ADMIN ? 'Queued for research.' : 'Fresh research is on its way.'); ctl.close(); }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
       } });
     }
     if (researching(x)) { sec.appendChild(note('Being researched now. This usually takes a few minutes, and can take up to an hour.', 'travel_explore')); if (!x.research) return sec; }
     if (x.researchStatus === 'Skipped') {
-      sec.appendChild(note(S.data.features.research ? 'Not researched yet.' : 'Not researched. Automatic research isn’t switched on yet (see Settings).', 'info'));
+      sec.appendChild(note(S.data.features.research || !ADMIN ? 'No research yet.' : 'Not researched. Automatic research isn’t switched on yet (see Settings).', 'info'));
       if (S.data.features.research) sec.appendChild(h('div', { style: 'margin-top:8px' }, rerun('Research this idea')));
       return sec;
     }
     if (x.researchStatus === 'Failed') {
-      sec.appendChild(note('Research didn’t finish. ' + (x.researchNote || ''), 'warning', 'warn'));
+      sec.appendChild(note(ADMIN ? 'Research didn’t finish. ' + (x.researchNote || '') : 'The research didn’t come through. Tap Research again.', 'warning', 'warn'));
       sec.appendChild(h('div', { style: 'margin-top:8px' }, rerun('Try again')));
       if (!x.research) return sec;
     }
@@ -8480,7 +8480,7 @@ var Kit = (function () {
         // its notes, from the notebook
         var mineNotes = notesFor(x.id), sn = sheetSection('Notes');
         if (mineNotes.length) { var nl = h('div', { class: 'list' }); mineNotes.forEach(function (nn) { nl.appendChild(noteRow(nn)); }); sn.appendChild(nl); }
-        else sn.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 8px', text: 'Rough thoughts about this idea live here. Claude can help expand them.' }));
+        else sn.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 8px', text: 'Rough thoughts about this idea live here. Tap Expand to grow them.' }));
         sn.appendChild(btn('text', 'New note for this idea', { icon: 'edit_note', onclick: function () { ctl.close(); setTimeout(function () { openNote(null, { ideaId: x.id }); }, 260); } }));
         ctl.body.appendChild(sn);
 
@@ -9090,8 +9090,8 @@ var Kit = (function () {
       K.setBusy(b, false);
       K.sheet({ title: 'Records for your accountant', build: function (ctl) {
         if (res.savedTo) {
-          ctl.body.appendChild(h('p', { class: 'body-m', text: 'Saved on the PC as spreadsheet files (one per tab), ready to email to your accountant:' }));
-          ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-top:8px;word-break:break-all;font-weight:500', text: res.savedTo }));
+          ctl.body.appendChild(h('p', { class: 'body-m', text: ADMIN ? 'Saved on the PC as spreadsheet files (one per tab), ready to email to your accountant:' : 'Your records are saved as spreadsheets, ready for your accountant. ' + adminName() + ' can send them over.' }));
+          if (ADMIN) ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-top:8px;word-break:break-all;font-weight:500', text: res.savedTo }));
         } else if (res.url) {
           ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-bottom:16px', text: 'A separate Google Sheet with this year’s summary and every record. Share it with your accountant from Google Sheets.' }));
           ctl.body.appendChild(h('a', { class: 'btn filled lg block press', href: res.url, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Open the export' })));
@@ -10089,7 +10089,7 @@ var Kit = (function () {
   }
   function copyText(text, done) {
     (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { K.haptic(); toast(done); })
-      .catch(function () { toast('Couldn’t copy here. Open the Sheet to copy them instead.'); });
+      .catch(function () { toast(ADMIN ? 'Couldn’t copy here. Open the Sheet to copy them instead.' : 'Couldn’t copy here.'); });
   }
   function listMembers(name) {
     return S.data.hub.contacts.filter(function (c) { return c.email && !c.unsubscribed && c.lists.indexOf(name) >= 0; });
@@ -10178,7 +10178,7 @@ var Kit = (function () {
         ctl.body.append(s1, s2, s3, s4);
         if (c) {
           ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Remove this contact', { danger: true, icon: 'delete', onclick: function () {
-            K.confirm({ title: 'Remove ' + (c.name || c.email) + '?', text: 'They come off every list. The record stays in the Sheet, marked as archived.', confirmLabel: 'Remove', danger: true }).then(function (yes) {
+            K.confirm({ title: 'Remove ' + (c.name || c.email) + '?', text: ADMIN ? 'They come off every list. The record stays in the Sheet, marked as archived.' : 'They come off every list.', confirmLabel: 'Remove', danger: true }).then(function (yes) {
               if (!yes) return;
               api('archiveContact', c.id).then(refresh).then(function () { dirty = false; render(); toast('Contact removed.'); ctl.close(); }).catch(fail);
             });
@@ -10255,10 +10255,10 @@ var Kit = (function () {
 
   function tabAccounts(main) {
     var hub = S.data.hub;
-    main.appendChild(rise(note('Shortcuts to the places the business is run from. Note which login each is under, but never a password: keep those in a password manager.', 'lock'), 1));
+    main.appendChild(rise(note('Shortcuts to the places the business is run from.', 'lock'), 1));
     var groups = {}, order = [];
     hub.accounts.forEach(function (a) { if (!groups[a.kind]) { groups[a.kind] = []; order.push(a.kind); } groups[a.kind].push(a); });
-    if (S.data.sheetUrl) {
+    if (ADMIN && S.data.sheetUrl) {
       var built = section('Tide Book');
       built.appendChild(h('div', { class: 'list' }, h('a', { class: 'li press', href: S.data.sheetUrl, target: '_blank', rel: 'noopener' },
         h('div', { class: 'th-blank' }, icon('table_view')), h('div', { class: 'grow' }, h('div', { class: 'li-head', text: 'The Sheet' }), h('div', { class: 'li-sup', text: 'Every record behind this app' })), icon('open_in_new'))));
@@ -10295,7 +10295,7 @@ var Kit = (function () {
           K.choices({ label: 'Kind of account', value: f.kind, options: hub.accountKinds, onChange: function (v) { f.kind = v; touch(); } }),
           K.textField({ label: 'Which login it’s under', value: f.login, maxlength: 120, onInput: function (v) { f.login = v; touch(); }, help: 'The username or email address only.' }),
           K.textField({ label: 'Notes', value: f.notes, multiline: true, maxlength: 1000, onInput: function (v) { f.notes = v; touch(); } }),
-          note('Never put a password here. Anyone who can open the Sheet could read it.', 'lock', 'warn')));
+          note('Never put a password here. Keep those in a password manager.', 'lock', 'warn')));
         if (a) {
           ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Remove this account', { danger: true, icon: 'delete', onclick: function () {
             api('removeAccount', a.id).then(refresh).then(function () { dirty = false; render(); toast('Removed.'); ctl.close(); }).catch(fail);
@@ -10322,7 +10322,7 @@ var Kit = (function () {
   }
   function tabConsent(main) {
     var hub = S.data.hub, items = hub.consent || [];
-    main.appendChild(rise(note('Names and topics that may or may not appear in public. Anything marked no go stops a post or the website from going out until it’s changed. Switch a name to go once that person has said yes. Tide Book remembers each answer.', 'verified'), 1));
+    main.appendChild(rise(note('Who and what you’re happy to share.', 'verified'), 1));
     if (!items.length) main.appendChild(rise(h('div', { style: 'margin-top:16px' }, emptyState('verified', 'Nothing here yet', 'Add a family member’s name or a private topic, and say whether it’s a go.')), 2));
     [['No go', 'Kept out of public'], ['Go', 'Cleared to share']].forEach(function (g, i) {
       var group = items.filter(function (c) { return c.status === g[0]; });
@@ -10357,14 +10357,14 @@ var Kit = (function () {
       build: function (ctl) {
         function touch() { dirty = true; }
         var term = K.textField({ label: 'Name or topic', value: f.term, maxlength: 80, onInput: function (v) { f.term = v; touch(); },
-          help: 'Add each spelling or nickname on its own, e.g. a first name and a pet name.' });
+          help: 'Add nicknames on their own too.' });
         ctl.body.appendChild(h('div', { class: 'field-gap' }, term,
           h('div', { class: 'label-s', text: 'Is it a person or a topic?' }),
           K.choices({ label: 'This is a', value: f.kind, options: hub.consentKinds || ['Person', 'Topic'], onChange: function (v) { f.kind = v; touch(); } }),
           h('div', { class: 'label-s', text: 'Can it appear in public?' }),
           K.choices({ label: 'Can it appear in public?', value: f.status, options: ['No go', 'Go'], onChange: function (v) { f.status = v; touch(); } }),
           K.textField({ label: 'Note', value: f.note, multiline: true, maxlength: 500, onInput: function (v) { f.note = v; touch(); },
-            help: 'Optional: who said yes and when, or why it stays private.' })));
+            help: 'Optional.' })));
         if (c && c.decidedOn) ctl.body.appendChild(h('div', { class: 'li-sup', style: 'margin-top:12px', text: 'Last decided: ' + whoDecided(c) }));
         if (c) {
           ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Remove from the list', { danger: true, icon: 'delete', onclick: function () {
