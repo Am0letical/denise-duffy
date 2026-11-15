@@ -1212,8 +1212,8 @@ function createTideLogic(env) {
       if ('timeline' in ch) out.timeline = oneOf(ch.timeline, T.TIMELINES, 'a timeline');
       if ('priority' in ch) out.priority = oneOf(ch.priority, T.PRIORITIES, 'a priority');
       if ('scope' in ch) { out.scope = normaliseScope(ch.scope); material = material || scopeTexts(out.scope) !== scopeTexts(it.scope); }
-      if (role === 'admin') {
-        if ('adminNotes' in ch) out.adminNotes = text(ch.adminNotes, 5000);
+      if (role === 'admin' && 'adminNotes' in ch) out.adminNotes = text(ch.adminNotes, 5000);
+      {   // she owns her ideas: stage and the sensitive flag are hers to set too
         if ('health' in ch && env.features.health) out.health = ch.health === true;
         if ('stage' in ch && ch.stage !== it.stage) {
           out.stage = oneOf(ch.stage, T.STAGES, 'a stage');
@@ -1234,7 +1234,7 @@ function createTideLogic(env) {
   }
 
   function addToCalendar(id) {
-    need(['admin']);
+    need(['admin', 'artist']);
     return env.lock(function () {
       var it = find('ideas', id);
       if (it.kind !== 'Content') fail('Only content ideas go to the calendar.');
@@ -1264,7 +1264,7 @@ function createTideLogic(env) {
   }
 
   function requeueResearch(id) {
-    need(['admin']);
+    need(['admin', 'artist']);
     if (!env.features.research) fail('Research is not switched on yet. See the setup guide.');
     return env.lock(function () {
       find('ideas', id);
@@ -1666,7 +1666,7 @@ function createTideLogic(env) {
   }
 
   function publishWebsite() {
-    need(['admin']);
+    need(['admin', 'artist']);
     if (!env.site) fail('Publishing the website works on the PC version of Tide Book.');
     var r = env.site.publish();
     env.settings.set({ sitePublishedAt: nowIso() });
@@ -1911,7 +1911,7 @@ function createTideLogic(env) {
 
   /** dryRun returns what would be added without saving anything. */
   function importSales(csvText, channel, dryRun) {
-    need(['admin']);
+    need(['admin', 'artist']);
     oneOf(channel, T.SALE_CHANNELS, 'which channel these sales came from');
     var grid = parseCsv(csvText);
     if (grid.length < 2) fail('Paste the export including its header row.');
@@ -2010,7 +2010,7 @@ function createTideLogic(env) {
 
   // ---------- settings
   function saveSettings(ch) {
-    need(['admin']);
+    need(['admin', 'artist']);
     ch = ch || {};
     var out = {};
     if ('gstRegisteredFrom' in ch) {
@@ -2049,9 +2049,9 @@ function createTideLogic(env) {
       website: it.website ? { status: it.website.status, at: it.website.at, by: it.website.by, approvedAt: it.website.approvedAt || '', doneAt: it.website.doneAt || '',
         prompt: role === 'admin' ? it.website.prompt || '' : '', file: role === 'admin' ? it.website.file || '' : '' } : null
     };
-    if (role === 'admin') {
+    {   // everything about her ideas is hers to see, research included; only the admin's own notes stay private
       out.createdBy = it.createdBy; out.folderUrl = it.folderUrl; out.health = it.health === true;
-      out.adminNotes = it.adminNotes || ''; out.stageChanged = it.stageChanged;
+      out.adminNotes = role === 'admin' ? it.adminNotes || '' : ''; out.stageChanged = it.stageChanged;
       out.researchStatus = it.researchStatus || 'Skipped';
       out.viability = (it.viability === '' || it.viability == null) ? null : Number(it.viability);
       out.summary = it.summary || ''; out.research = it.research || null; out.researchedAt = it.researchedAt || '';
@@ -2098,7 +2098,7 @@ function createTideLogic(env) {
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
       notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
-      hub: role === 'admin' ? hub.snapshot() : null,
+      hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
       website: env.site ? { preview: env.site.previewUrl(), live: env.site.liveUrl ? env.site.liveUrl() : '', lastPublished: String(settings().sitePublishedAt || '') } : null,
@@ -2929,7 +2929,7 @@ function tideHub(env, t) {
   // ---------- contacts
   /** id is null to add a new contact. */
   function saveContact(id, p) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     p = p || {};
     var out = {
       name: t.text(p.name, 120), organisation: t.text(p.organisation, 120),
@@ -2962,7 +2962,7 @@ function tideHub(env, t) {
   }
 
   function archiveContact(id) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     return env.lock(function () {
       t.find('contacts', id);
       env.table('contacts').update(id, { status: 'Archived', lists: [], updated: t.nowIso() });
@@ -2975,7 +2975,7 @@ function tideHub(env, t) {
    * People already saved are added to the list. Anyone unsubscribed is left alone.
    */
   function importContacts(pasted, listName, source) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     var list = cleanLists([listName])[0];
     if (!list) t.fail('Choose which list these people are joining.');
     var how = t.text(source, 200);
@@ -3013,7 +3013,7 @@ function tideHub(env, t) {
 
   // ---------- accounts (bookmarks, never passwords)
   function saveAccount(id, p) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     p = p || {};
     var url = t.text(p.url, 500);
     if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
@@ -3032,7 +3032,7 @@ function tideHub(env, t) {
   }
 
   function removeAccount(id) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     return env.lock(function () {
       t.find('accounts', id);
       env.table('accounts').update(id, { status: 'Removed', updated: t.nowIso() });
@@ -3159,7 +3159,7 @@ function tidePublish(env, t) {
     return { ok: true, rest: rest() };
   }
   function setCover(printId) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     if (printId && !t.rows('prints').filter(function (p) { return p.id === printId; }).length) t.fail('Unknown print.');
     env.settings.set({ coverPrintId: t.text(printId, 20) });
     return { ok: true };
@@ -3346,7 +3346,7 @@ function tidePublish(env, t) {
       if (!c || ['Approved', 'Scheduled', 'Failed', 'Held'].indexOf(c.status) < 0) t.fail('Only approved posts can be scheduled.');
       if (!on('postingEnabled')) t.fail('Posting isn’t switched on yet (Admin › Settings).');
       if (!networksFor(c).length) t.fail(c.format + 's are posted by hand.');
-      var at = when === 'now' ? (role === 'admin' ? iso(nowMs() + 60000) : t.fail('Only an admin can post straight away.')) : nextSlot(takenSlots().filter(function (x) { return x !== c.scheduledAt; }));
+      var at = when === 'now' ? iso(nowMs() + 60000) : nextSlot(takenSlots().filter(function (x) { return x !== c.scheduledAt; }));
       env.table('content').update(id, { status: 'Scheduled', scheduledAt: at, preflight: preflight(c), postError: '', updated: t.nowIso() });
       return { ok: true, at: at };
     });
@@ -3470,8 +3470,10 @@ function tidePublish(env, t) {
 
   // ------------------------------------------------------------------ settings and accounts (admin)
   function savePosting(ch) {
-    t.need(['admin']);
+    var role = t.need(['admin', 'artist']);
     ch = ch || {};
+    // her posting times are hers; the switches, credits and buzz topics stay with the admin
+    if (role === 'artist') { var mine = {}; ['slotTimes', 'postsPerDay'].forEach(function (k) { if (k in ch) mine[k] = ch[k]; }); ch = mine; }
     var out = {};
     if ('postingEnabled' in ch) {
       if (ch.postingEnabled === true) needDirect();
@@ -4312,7 +4314,6 @@ function tideTalk(env, t) {
     var role = t.need(['admin', 'artist']);
     return env.lock(function () {
       var tp = topic(id);
-      if (role === 'artist' && tp.createdBy !== 'artist') t.fail('Only the person who started it can remove it.');
       env.table('topics').update(id, { deleted: true, updated: t.nowIso() });
       return { ok: true };
     });
@@ -4359,7 +4360,7 @@ function tideTalk(env, t) {
   }
   /** Admin: the AI picked the wrong kind. Files it again under the right one (nothing already made is removed). */
   function refileTopic(id, kind) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     t.oneOf(kind, K.KINDS, 'what kind of thing it is');
     var tp = topic(id);
     if (tp.status !== 'Done') t.fail('It isn’t written up yet.');
@@ -6637,11 +6638,11 @@ var Kit = (function () {
   // ------------------------------------------------------------------ navigation
   var NAV = ADMIN
     ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['money', 'Money', 'account_balance_wallet']]
-    // the artist's side is lighter: sales are recorded from Home, and the books stay with the admin
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb']];
-  // Settings is admin-only and lives behind the gear in the top bar, so the bar stays at five.
+    // she runs the business, so she has the books too
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['money', 'Money', 'account_balance_wallet']];
+  // Settings lives behind the gear in the top bar, so the bar stays at five. The back-end parts are admin-only.
   var gear = document.getElementById('settings-btn');
-  if (gear && ADMIN) { gear.hidden = false; gear.addEventListener('click', function () { K.haptic(); go('settings'); }); }
+  if (gear) { gear.hidden = false; gear.addEventListener('click', function () { K.haptic(); go('settings'); }); }
 
   // swapping views: shows which view you're in; a tap flips to the other one
   function viewSwitch() {
@@ -6871,6 +6872,8 @@ var Kit = (function () {
       main.appendChild(rise(sec, n++));
     }
     n = talkCards(main, n);
+    var tdA = rest ? null : todoCard();
+    if (tdA) main.appendChild(rise(tdA, n++));
     if (S.data.website && S.data.website.live) {
       main.appendChild(rise(h('a', { class: 'card pad press soft drafts', href: S.data.website.live, target: '_blank', rel: 'noopener' },
         h('span', { class: 'ic' }, icon('language')),
@@ -7023,7 +7026,7 @@ var Kit = (function () {
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
     pageTitle(main, 'Ideas', tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
-      : ADMIN ? 'Ranked by ' + artist() + '’s priority, then by viability.' : 'Everything you’ve sent, and where it’s up to.');
+      : 'Ranked by ' + (ADMIN ? artist() + '’s' : 'your') + ' priority, then by viability.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: tab, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
       options: [{ value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
@@ -7035,11 +7038,12 @@ var Kit = (function () {
     if (tab === 'inspo') return viewInspo(main);
     main.appendChild(rise(directionCard(), 1));
     var ideas = S.data.ideas;
-    if (ADMIN) {
+    if (!ADMIN) needsList().filter(function (e) { return e.kind === 'idea'; }).forEach(function (e) { main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, needsCard(e)), 1)); });
+    if (true) {   // both see the full list: her ideas, ranked, with their research
       main.appendChild(rise(K.choices({
         row: true, label: 'Show', value: S.ideaFilter,
         options: [{ value: 'all', label: 'All' }, { value: 'review', label: 'To review' }, { value: 'progress', label: 'In progress' },
-          { value: 'needs', label: 'Needs ' + artist() }, { value: 'live', label: 'Live' }, { value: 'parked', label: 'Parked' }],
+          { value: 'needs', label: ADMIN ? 'Needs ' + artist() : 'Waiting on you' }, { value: 'live', label: 'Live' }, { value: 'parked', label: 'Parked' }],
         onChange: function (v) { S.ideaFilter = v; render(); }
       }), 1));
       var waiting = ideas.filter(researching);
@@ -7417,7 +7421,7 @@ var Kit = (function () {
   // ------------------------------------------------------------------ Talk it through
   var TALK_ICON = { Product: 'sell', Idea: 'lightbulb', Artwork: 'palette', Story: 'chat', 'App feature': 'settings', Other: 'sticky_note_2' };
   function talkData() { return S.data.talk || { topics: [], pipeline: [], stages: [], kinds: [], checkStatus: [], sampleStatus: [], goal: 200 }; }
-  function myTopic(tp) { return tp.mine || ADMIN; }
+  function myTopic(tp) { return true; }   // she owns the business: every topic is hers to answer
   function topicChip(tp) {
     if (tp.aiStatus === 'Failed') return chip('Stuck', 'high', 'warning');
     if (tp.status === 'Your turn') return tp.mine ? chip('Your turn', 'approved', 'forum') : chip('Waiting for ' + tp.by, 'outline', 'forum');
@@ -7612,7 +7616,7 @@ var Kit = (function () {
           if (f.noteId && byId(S.data.notebook, f.noteId)) fl.appendChild(btn('outlined', 'Open the note', { icon: 'sticky_note_2', block: true, onclick: function () { ctl.close(); setTimeout(function () { openNote(f.noteId); }, 280); } }));
           if (f.pipelineId && byId(talkData().pipeline, f.pipelineId)) fl.appendChild(btn('outlined', 'Open it in Products', { icon: 'sell', block: true, onclick: function () { ctl.close(); setTimeout(function () { openItem(f.pipelineId); }, 280); } }));
           if (f.ideaId && byId(S.data.ideas, f.ideaId)) fl.appendChild(btn('outlined', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { ctl.close(); setTimeout(function () { openIdea(f.ideaId); }, 280); } }));
-          if (ADMIN) fl.appendChild(btn('text', 'File it as something else', { icon: 'category', onclick: function () {
+          fl.appendChild(btn('text', 'File it as something else', { icon: 'category', onclick: function () {
             K.pickFromList({ title: 'What is it?', options: talkData().kinds }).then(function (k) {
               if (k === undefined) return;
               api('refileTopic', id, k).then(refresh).then(function () { toast('Filed as ' + k.toLowerCase() + '.'); reopen(); }).catch(fail);
@@ -7635,7 +7639,7 @@ var Kit = (function () {
           });
           ctl.body.appendChild(det);
         }
-        if (tp.mine || ADMIN) ctl.body.appendChild(h('div', { style: 'text-align:center;margin-top:18px' }, btn('text', 'Remove this topic', { danger: true, icon: 'delete', onclick: function () {
+        ctl.body.appendChild(h('div', { style: 'text-align:center;margin-top:18px' }, btn('text', 'Remove this topic', { danger: true, icon: 'delete', onclick: function () {
           K.confirm({ title: 'Remove this topic?', text: 'Anything already filed (a note, a product, an idea) stays.', confirmLabel: 'Remove', danger: true }).then(function (yes) {
             if (!yes) return; api('deleteTopic', id).then(refresh).then(function () { ctl.close(); toast('Removed.'); }).catch(fail);
           });
@@ -7654,7 +7658,7 @@ var Kit = (function () {
   }
   function viewProducts(main) {
     var T = talkData(), showParked = S.pipeFilter === 'parked';
-    main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('From idea to live. ' + cap(artist()) + ' OKs the sample and the listing’s look and words; ' + adminName() + ' OKs decisions, costs, suppliers and rules; both OK going live. First goal: ' + money(T.goal) + ' a week.', 'sell')), 2));
+    main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('From idea to live. ' + (ADMIN ? cap(artist()) + '’s' : 'Your') + ' OK moves each stage on; ' + adminName() + ' is asked too only if a check finds a problem or the price doesn’t cover the costs. First goal: ' + money(T.goal) + ' a week.', 'sell')), 2));
     main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({ row: true, label: 'Show', value: showParked ? 'parked' : 'active',
       options: [{ value: 'active', label: 'Active' }, { value: 'parked', label: 'Parked' }], onChange: function (v) { S.pipeFilter = v; render(); } })), 2));
     var items = T.pipeline.filter(function (p) { return showParked ? p.parked : !p.parked; }), i = 3;
@@ -8377,12 +8381,12 @@ var Kit = (function () {
       build: function (ctl) {
         function touch() { dirty = true; }
         ctl.body.appendChild(tldr([
-          [x.kind, x.priority + ' priority', ADMIN ? stageLabel(x.stage) : x.status].filter(Boolean).join(' · '),
-          x.website ? 'Website change · ' + x.website.status.toLowerCase() : ADMIN && x.viability != null ? (x.research && x.research.verdict ? x.research.verdict + ' · ' : '') + x.viability + '/100 viability' : '',
+          [x.kind, x.priority + ' priority', stageLabel(x.stage)].filter(Boolean).join(' · '),
+          x.website ? 'Website change · ' + x.website.status.toLowerCase() : x.viability != null ? (x.research && x.research.verdict ? x.research.verdict + ' · ' : '') + x.viability + '/100 viability' : '',
           firstBit(x.summary || x.note)
         ]));
         ctl.body.appendChild(h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' },
-          chip(ADMIN ? stageLabel(x.stage) : x.status, K.slug(ADMIN ? x.stage : x.status)),
+          chip(stageLabel(x.stage), K.slug(x.stage)),
           chip(x.kind, 'outline', KIND_ICON[x.kind]),
           x.approvalState && x.approvalState !== 'Pending' ? chip(artist() + ': ' + x.approvalState.toLowerCase(), K.slug(x.approvalState)) : null,
           x.linkedTo ? chip(x.linkedTo, 'outline', 'link') : null));
@@ -8393,7 +8397,7 @@ var Kit = (function () {
             : needsCard({ kind: 'idea', item: x }, function () { ctl.close(); })));
         }
         if (ADMIN && x.artistComment) ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, note(artist() + ' said: “' + x.artistComment + '”', 'chat')));
-        if (ADMIN) ctl.body.appendChild(researchBlock(x, ctl));
+        ctl.body.appendChild(researchBlock(x, ctl));
 
         var s1 = sheetSection('The idea');
         var title = K.textField({ label: 'Name of the idea', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } });
@@ -8417,8 +8421,8 @@ var Kit = (function () {
         sn.appendChild(btn('text', 'New note for this idea', { icon: 'edit_note', onclick: function () { ctl.close(); setTimeout(function () { openNote(null, { ideaId: x.id }); }, 260); } }));
         ctl.body.appendChild(sn);
 
-        if (ADMIN) {
-          var s5 = sheetSection('Admin');
+        {   // where it's up to: hers to set too; the admin's notes and questions stay on the admin side
+          var s5 = sheetSection(ADMIN ? 'Admin' : 'Where it’s up to');
           var stack = h('div', { class: 'field-gap' },
             K.pickField({ label: 'Stage', value: f.stage, options: S.data.options.stages.map(function (st) { return { value: st, label: stageLabel(st) }; }),
               onChange: function (v) { f.stage = v; touch(); } }));
@@ -8427,10 +8431,11 @@ var Kit = (function () {
               h('div', { class: 'body-m', text: 'Needs ' + artist() + '’s approval before it’s posted' })),
               K.switchBtn({ checked: f.health, label: 'Sensitive topic', onChange: function (v) { f.health = v; touch(); } })));
           }
-          stack.appendChild(K.textField({ label: 'Admin notes', value: f.adminNotes, multiline: true, maxlength: 5000, onInput: function (v) { f.adminNotes = v; touch(); }, help: 'Only admins see these.' }));
+          if (ADMIN) stack.appendChild(K.textField({ label: 'Admin notes', value: f.adminNotes, multiline: true, maxlength: 5000, onInput: function (v) { f.adminNotes = v; touch(); }, help: 'Only admins see these.' }));
           s5.appendChild(stack);
           ctl.body.appendChild(s5);
-
+        }
+        if (ADMIN) {
           var s6 = sheetSection('Ask ' + artist());
           var req = K.textField({ suggest: ['Happy with the price?', 'Happy with the colours?', 'OK to put this on sale?', 'Which version do you like best?'], label: 'What needs checking?', multiline: true, maxlength: 500, value: x.approvalState === 'Pending' ? x.approvalRequest : '' });
           var askBtn = btn('tonal', x.approvalState === 'Pending' ? 'Update the request' : 'Send to ' + artist(), { icon: 'send', block: true });
@@ -8496,7 +8501,7 @@ var Kit = (function () {
           });
         });
         row.appendChild(dir);
-        if (ADMIN && x.kind === 'Content') {
+        if (x.kind === 'Content') {
           var cal = btn('outlined', 'Add to calendar', { icon: 'calendar_month' });
           cal.addEventListener('click', function () {
             K.setBusy(cal, true);
@@ -8512,7 +8517,7 @@ var Kit = (function () {
         save.addEventListener('click', function () {
           if (!f.title.trim()) { toast('Give the idea a name.'); title.input.focus(); return; }
           var ch = { title: f.title, note: f.note, kind: f.kind, timeline: f.timeline, priority: f.priority, scope: f.scope };
-          if (ADMIN) { ch.stage = f.stage; ch.adminNotes = f.adminNotes; if (S.data.features.health) ch.health = f.health; }
+          ch.stage = f.stage; if (S.data.features.health) ch.health = f.health; if (ADMIN) ch.adminNotes = f.adminNotes;
           K.setBusy(save, true);
           api('updateIdea', x.id, ch).then(function () { return uploadAll('idea', x.id, f.files); }).then(refresh)
             .then(function () { dirty = false; K.haptic('success'); render(); toast('Saved.'); ctl.close(); })
@@ -8544,11 +8549,11 @@ var Kit = (function () {
       var w = S.data.website;
       main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-top:18px' },
         h('div', { class: 'title-m', text: 'The website' }),
-        h('p', { class: 'body-m', style: 'margin:6px 0 12px;color:var(--on-surface-variant)', text: ADMIN ? 'Live artworks, their photos, prices, products and edition states. The preview updates straight away; the public site changes when you publish.' + (w.lastPublished ? ' Last published ' + K.dateLabel(w.lastPublished) + '.' : ' Not published from Tide Book yet.') : 'Your website always shows the latest version. Preview shows your newest changes before ' + adminName() + ' sends them out.' }),
+        h('p', { class: 'body-m', style: 'margin:6px 0 12px;color:var(--on-surface-variant)', text: ADMIN ? 'Live artworks, their photos, prices, products and edition states. The preview updates straight away; the public site changes when you publish.' + (w.lastPublished ? ' Last published ' + K.dateLabel(w.lastPublished) + '.' : ' Not published from Tide Book yet.') : 'Live artworks, their photos, prices and products. Preview shows your newest changes; publish when you’re happy and the public site updates.' + (w.lastPublished ? ' Last published ' + K.dateLabel(w.lastPublished) + '.' : '') }),
         h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' },
           w.live ? h('a', { class: 'btn tonal press', href: w.live, target: '_blank', rel: 'noopener' }, icon('language'), h('span', { text: 'Open the website' })) : null,
           h('a', { class: 'btn outlined press', href: w.preview, target: '_blank', rel: 'noopener' }, icon('visibility'), h('span', { text: 'Preview' })),
-          !ADMIN ? null : btn('filled', 'Publish to website', { icon: 'rocket_launch', onclick: function (e) {
+          btn('filled', 'Publish to website', { icon: 'rocket_launch', onclick: function (e) {
             var b = e.currentTarget;
             K.confirm({ title: 'Publish the website?', text: 'The public site will show exactly what the preview shows: every live artwork with its photos and prices.', confirmLabel: 'Publish' }).then(function (yes) {
               if (!yes) return;
@@ -8832,11 +8837,11 @@ var Kit = (function () {
         drawProducts();
         ctl.body.append(s1, s2, s3, s3b, edWrap, s4);
 
-        if (ADMIN) {
-          var s5 = sheetSection('Admin');
+        {
+          var s5 = sheetSection(ADMIN ? 'Admin' : 'More');
           var adminStack = h('div', { class: 'field-gap' },
-            K.textField({ label: 'Admin notes', value: f.adminNotes, multiline: true, maxlength: 5000, onInput: function (v) { f.adminNotes = v; dirty = true; }, help: 'Only admins see these.' }));
-          if (p) {
+            ADMIN ? K.textField({ label: 'Admin notes', value: f.adminNotes, multiline: true, maxlength: 5000, onInput: function (v) { f.adminNotes = v; dirty = true; }, help: 'Only admins see these.' }) : null);
+          if (p && ADMIN) {
             var req = K.textField({ suggest: ['Happy with the price?', 'Happy with the colours?', 'OK to put this on sale?', 'Which version do you like best?'], label: 'What needs checking?', multiline: true, maxlength: 500, value: p.approvalState === 'Pending' ? p.approvalRequest : '' });
             var askBtn = btn('tonal', 'Send question to ' + artist(), { icon: 'send', block: true });
             askBtn.addEventListener('click', function () {
@@ -8846,11 +8851,13 @@ var Kit = (function () {
                 .catch(function (e) { K.setBusy(askBtn, false); fail(e); });
             });
             adminStack.append(h('div', { class: 'label-s', style: 'margin:22px 4px -8px', text: 'Ask ' + artist() + ' a question about it' }), req, askBtn);
+          }
+          if (p) {
             if (p.thumbIds.length) {
               var isCover = S.data.coverPrintId === p.id;
-              adminStack.appendChild(btn(isCover ? 'text' : 'outlined', isCover ? 'On ' + artist() + '’s Home screen now' : 'Show on ' + artist() + '’s Home screen', { icon: 'wallpaper', block: true, disabled: isCover, onclick: function (e) {
+              adminStack.appendChild(btn(isCover ? 'text' : 'outlined', isCover ? (ADMIN ? 'On ' + artist() + '’s Home screen now' : 'On your Home screen now') : (ADMIN ? 'Show on ' + artist() + '’s Home screen' : 'Show on my Home screen'), { icon: 'wallpaper', block: true, disabled: isCover, onclick: function (e) {
                 K.setBusy(e.currentTarget, true);
-                api('setCover', p.id).then(refresh).then(function () { render(); toast('Done. It’s across the top of ' + artist() + '’s Home.'); ctl.close(); })
+                api('setCover', p.id).then(refresh).then(function () { render(); toast(ADMIN ? 'Done. It’s across the top of ' + artist() + '’s Home.' : 'Done. It’s across the top of your Home.'); ctl.close(); })
                   .catch(function (err) { fail(err); });
               } }));
             }
@@ -9314,7 +9321,7 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.contentTab, onChange: function (v) { S.contentTab = v; S.animate = true; render(); },
       options: [{ value: 'review', label: 'Review', count: (mine.length + S.data.questions.length) || undefined }, { value: 'footage', label: 'Footage' },
-        { value: 'plan', label: ADMIN ? 'Plan' : 'To film', count: shotsOpen.length || undefined }, { value: 'ready', label: 'Ready', count: outCount || undefined }]
+        { value: 'plan', label: 'Plan', count: shotsOpen.length || undefined }, { value: 'ready', label: 'Ready', count: outCount || undefined }]
     })), 1));
     ({ review: tabReview, footage: tabFootage, plan: tabPlan, ready: tabReady }[S.contentTab] || tabReview)(main, { posts: posts, mine: mine, ready: ready, all: all, shotsOpen: shotsOpen });
     fab(main, 'Add footage', 'add', function () { openAddFootage(); });
@@ -9453,7 +9460,7 @@ var Kit = (function () {
   function tabPlan(main, d) {
     var n = 1;
     // In the studio now
-    var active = ADMIN ? S.data.rounds.filter(function (r) { return r.stage !== 'Done' || Date.now() - Date.parse(r.created) < 3 * 86400000; }).slice(0, 6) : [];
+    var active = S.data.rounds.filter(function (r) { return r.stage !== 'Done' || Date.now() - Date.parse(r.created) < 3 * 86400000; }).slice(0, 6);
     if (active.length) {
       var sec = section('In the studio');
       active.forEach(function (r) {
@@ -9471,8 +9478,8 @@ var Kit = (function () {
       main.appendChild(rise(sec, n++));
     }
 
-    // Campaigns, the brief and notes are the admin's; the artist sees only what to film
-    if (ADMIN) {
+    // Campaigns, the brief and what it has learned: hers to run
+    {
     var cs = section('Campaigns', btn('text', 'New', { sm: true, icon: 'add', onclick: function () { openCampaign(null); } }));
     var live = S.data.campaigns.filter(function (c) { return c.status === 'Active'; });
     if (!live.length) cs.appendChild(note('A campaign is a goal with dates, like a Christmas print push or a lounge wear launch. Posts are planned towards it.', 'flag'));
@@ -9514,7 +9521,6 @@ var Kit = (function () {
     if (!d.shotsOpen.length && !listed.length) fs.appendChild(note('Suggestions for footage worth collecting appear here.', 'videocam'));
     main.appendChild(rise(fs, n++));
 
-    if (!ADMIN) return;
     // Brief and what it has learned (project + state)
     var b = S.data.brief;
     var bs = section('Brand brief', btn('text', 'Edit', { sm: true, icon: 'edit', onclick: openBrief }));
@@ -9772,7 +9778,7 @@ var Kit = (function () {
       K.setBusy(cancel, true);
       api('cancelSchedule', c.id).then(refresh).then(function () { K.haptic(); render(); toast('Cancelled. It’s back under Ready.'); }).catch(function (e) { K.setBusy(cancel, false); fail(e); });
     });
-    var now = ADMIN ? btn('text', 'Post now', { sm: true, icon: 'send' }) : null;
+    var now = btn('text', 'Post now', { sm: true, icon: 'send' });
     if (now) now.addEventListener('click', function () {
       K.confirm({ title: 'Post this now?', text: 'It goes out within a few minutes.', confirmLabel: 'Post now' }).then(function (yes) {
         if (!yes) return;
@@ -9902,8 +9908,7 @@ var Kit = (function () {
     if (st.direct) ps.appendChild(h('div', { class: 'card pad field-gap', style: 'margin-top:12px;--sheet-bg:var(--surface-lowest)' },
       sw('Post automatically', 'Once you’ve both approved, posts take the next posting time.', 'postingEnabled', !acct.connected),
       sw('Dry run', 'Schedule and check everything, but don’t post. Start with this on.', 'postingDryRun'),
-      K.textField({ label: 'Posting times', value: f.slotTimes, help: st.learnedSlots.length ? 'Learned from results: ' + st.learnedSlots.join(', ') + '. Saving new times replaces them.' : 'For example 09:00, 18:30. These move towards the best hours once results come in.', onInput: function (v) { f.slotTimes = v; } }),
-      K.textField({ label: 'Posts a day, at most', inputmode: 'numeric', value: f.postsPerDay, onInput: function (v) { f.postsPerDay = K.num(v); } })));
+      st.learnedSlots.length ? note('Posting times learned from results: ' + st.learnedSlots.join(', ') + '. Change them under When posts go out.', 'schedule') : null));
     main.appendChild(rise(ps, n++));
 
     // AI helpers: local models on the PC first
@@ -10028,10 +10033,12 @@ var Kit = (function () {
   }
 
   function viewAdmin(main) {
-    pageTitle(main, 'Admin', 'Contacts, email lists, accounts and settings.');
+    pageTitle(main, ADMIN ? 'Admin' : 'Settings', ADMIN ? 'Contacts, email lists, accounts and settings.' : 'Your contacts, lists, accounts and business settings.');
+    if (!ADMIN && S.adminTab === 'reports') S.adminTab = 'settings';
+    var tabs = [{ value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'settings', label: 'Settings' }];
+    if (ADMIN) tabs.unshift({ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined });
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
-      label: 'Show', value: S.adminTab, onChange: function (v) { S.adminTab = v; S.animate = true; render(); },
-      options: [{ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined }, { value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'settings', label: 'Settings' }]
+      label: 'Show', value: S.adminTab, onChange: function (v) { S.adminTab = v; S.animate = true; render(); }, options: tabs
     })), 1));
     ({ reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, settings: viewSettings }[S.adminTab] || tabContacts)(main);
   }
@@ -10293,6 +10300,23 @@ var Kit = (function () {
         .then(refresh).then(function () { K.haptic('success'); render(); toast('Settings saved.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
     });
     main.appendChild(rise(h('div', { style: 'margin-top:16px' }, save), 3));
+
+    // when posts go out: hers to set (suggested times and the buzz come from these)
+    var pt = section('When posts go out'), pf = { slotTimes: S.data.posting.slotTimes, postsPerDay: S.data.posting.postsPerDay };
+    var ptSave = btn('tonal', 'Save posting times', { icon: 'schedule', block: true, onclick: function () {
+      K.setBusy(ptSave, true);
+      api('savePosting', pf).then(refresh).then(function () { K.haptic('success'); render(); toast('Posting times saved.'); }).catch(function (e) { K.setBusy(ptSave, false); fail(e); });
+    } });
+    pt.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
+      K.textField({ label: 'Good times to post', value: pf.slotTimes, help: 'For example 09:00, 18:30. Approved posts are pencilled in at these times.', onInput: function (v) { pf.slotTimes = v; } }),
+      K.textField({ label: 'Posts a day, at most', inputmode: 'numeric', value: pf.postsPerDay, onInput: function (v) { pf.postsPerDay = K.num(v); } }), ptSave));
+    main.appendChild(rise(pt, 3));
+    if (!ADMIN) {
+      var stA = section('Online store');
+      stA.appendChild(h('div', { class: 'btn-row' }, btn('tonal', 'Import store orders', { icon: 'upload', onclick: openImport })));
+      main.appendChild(rise(stA, 4));
+      return;   // the rest (AI helpers, connections, Facebook) is the admin's back end
+    }
 
     var r = section('Research and content drafts');
     r.appendChild(S.data.features.research
