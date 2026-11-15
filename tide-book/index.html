@@ -713,6 +713,19 @@ a.li { text-decoration: none; }
 .ed-line .ms, .ed-line .material-symbols-rounded { font-size: 16px; }
 .ed-line.limited { color: var(--primary); } .ed-line.headstart, .ed-line.waiting { color: var(--on-surface-variant); }
 .ed-line.soldout { color: var(--error, #b3261e); }
+.talk-bar { height: 4px; border-radius: 4px; background: var(--surface-highest); margin-top: 8px; overflow: hidden; }
+.talk-bar i { display: block; height: 100%; background: var(--primary); border-radius: 4px; transition: width .6s ease; }
+.talk-q .choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.talk-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.talk-list li { line-height: 1.45; }
+.talk-past { margin-top: 16px; }
+.talk-past summary { cursor: pointer; font-weight: 500; padding: 8px 4px; }
+.talk-qa { padding: 8px 4px; border-top: 1px solid var(--outline-variant); }
+.stage-steps { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.stage-steps span { font-size: 11.5px; padding: 4px 9px; border-radius: 999px; background: var(--surface-highest); color: var(--on-surface-variant); }
+.stage-steps span.done { background: var(--success-container); color: var(--on-success-container); }
+.stage-steps span.on { background: var(--primary); color: var(--on-primary); }
+.card .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
 </style>
 
   <script>
@@ -794,7 +807,8 @@ var TIDE_SETTING_DEFAULTS = {
   coverPrintId: '', restUntil: '',
   lastBackupAt: '',         // set when the PC finishes a local backup (Backup.gs)
   // local models on the PC first, Claude when it escalates (LogicNotes.gs)
-  localFirst: false, localFallbackMins: 60, localSeenAt: '', localModel: ''
+  localFirst: false, localFallbackMins: 60, localSeenAt: '', localModel: '',
+  incomeGoalWeekly: 200    // the first weekly income goal; the product pipeline shows sales needed to reach it
 };
 
 /**
@@ -950,6 +964,31 @@ var TIDE_SCHEMAS = {
       ['expandWhy', 'Why Claude', 'text']
     ]
   },
+  // Talk it through (LogicTalk.gs): topics the artist names and answers questions about
+  topics: {
+    sheet: 'Talk It Through',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Started by', 'text'], ['title', 'Topic', 'text'],
+      ['detail', 'To start with', 'text'], ['status', 'Status', 'text'], ['rounds', 'Questions and answers', 'json'],
+      ['outcome', 'Written up', 'json'], ['filed', 'Filed as', 'json'], ['maxQ', 'Question limit', 'number'], ['deleted', 'Removed', 'bool'],
+      ['updated', 'Updated', 'date'], ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'],
+      ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
+    ]
+  },
+  // the product pipeline (LogicTalk.gs): idea to live, with split sign-offs
+  pipeline: {
+    sheet: 'Product Pipeline',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Created by', 'text'], ['title', 'Product', 'text'],
+      ['summary', 'Summary', 'text'], ['stage', 'Stage', 'text'], ['parked', 'Parked', 'bool'], ['fromTopic', 'From topic', 'text'],
+      ['ideaId', 'Idea', 'text'], ['artworkId', 'Artwork', 'text'], ['decisions', 'Decisions', 'json'], ['open', 'Open questions', 'json'],
+      ['checks', 'Checks', 'json'], ['parts', 'Parts and costs', 'json'], ['pricing', 'Pricing', 'json'], ['sample', 'Sample', 'json'],
+      ['listing', 'Listing and posts', 'json'], ['approvals', 'Sign-offs', 'json'], ['risks', 'Risks', 'json'], ['log', 'History', 'json'],
+      ['updated', 'Updated', 'date'], ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'],
+      ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'],
+      ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text']
+    ]
+  },
   notebookHistory: {
     sheet: 'Notebook History',
     columns: [
@@ -1046,6 +1085,10 @@ function createTideLogic(env) {
 
   function createIdea(p) {
     need(['admin', 'artist']);
+    return makeIdea(p);
+  }
+  /** Also used by Talk it through, from background jobs. */
+  function makeIdea(p) {
     p = p || {};
     var kind = oneOf(p.kind, T.KINDS, 'what kind of idea it is');
     var title = text(p.title, 120);
@@ -1776,6 +1819,7 @@ function createTideLogic(env) {
     pct('editionBufferDays', 'The original’s head start', 365);
     pct('editionSize', 'Prints after an original sells', 2000);
     pct('quickEditionPct', 'Run for a quick buyer', 100);
+    pct('incomeGoalWeekly', 'The weekly income goal', 100000);
     if ('priceRounding' in ch) out.priceRounding = oneOf(ch.priceRounding, ['dollar', 'five', 'none'], 'how to round prices');
     env.settings.set(out);
     return { ok: true };
@@ -1840,7 +1884,7 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role),
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role),
       hub: role === 'admin' ? hub.snapshot() : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
@@ -1920,6 +1964,10 @@ function createTideLogic(env) {
   // ---------- notebook (LogicNotes.gs)
   var notebook = tideNotes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, createIdea: createIdea });
 
+  // ---------- talk it through and the product pipeline (LogicTalk.gs)
+  var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf,
+    createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push });
+
   var out = {
     // Everything the screens are allowed to call.
     api: {
@@ -1935,6 +1983,7 @@ function createTideLogic(env) {
     studio: content.studio,
     publish: publish,
     notebook: notebook,
+    talk: talk,
     recordOnlineSales: recordOnlineSales,
     publishFeed: publishFeed,
     fyOf: fyOf
@@ -1943,6 +1992,7 @@ function createTideLogic(env) {
   Object.keys(hub.api).forEach(function (k) { out.api[k] = hub.api[k]; });
   Object.keys(publish.api).forEach(function (k) { out.api[k] = publish.api[k]; });
   Object.keys(notebook.api).forEach(function (k) { out.api[k] = notebook.api[k]; });
+  Object.keys(talk.api).forEach(function (k) { out.api[k] = talk.api[k]; });
   return out;
 }
 
@@ -3256,6 +3306,10 @@ function tideNotes(env, t) {
   // ---------------------------------------------------------------- screens
   function saveNote(p) {
     t.need(['admin', 'artist']);
+    return saveNoteCore(p);
+  }
+  /** Also used by Talk it through, which files topics from background jobs (no signed-in user). */
+  function saveNoteCore(p) {
     p = p || {};
     var title = t.text(p.title, 120), body = String(p.body == null ? '' : p.body).replace(/\r\n/g, '\n').slice(0, N.MAX_BODY);
     if (!title && !body.trim()) t.fail('Write something first.');
@@ -3310,7 +3364,7 @@ function tideNotes(env, t) {
     var v = t.rows('notebookHistory').filter(function (x) { return x.id === versionId && x.noteId === noteId; })[0];
     if (!v) t.fail('That version is no longer kept.');
     var n = get(noteId);
-    return saveNote({ id: noteId, revision: n.revision, title: v.title, body: v.body, ideaId: n.ideaId });
+    return saveNoteCore({ id: noteId, revision: n.revision, title: v.title, body: v.body, ideaId: n.ideaId });
   }
 
   function setting(k) { var v = env.settings.get()[k]; return v === undefined || v === null || v === '' ? TIDE_SETTING_DEFAULTS[k] : v; }
@@ -3529,11 +3583,551 @@ function tideNotes(env, t) {
   return {
     ai: ai,
     local: local,
+    addNote: saveNoteCore,
     api: { saveNote: saveNote, deleteNote: deleteNote, noteHistory: noteHistory, restoreVersion: restoreVersion, expandNote: expandNote, askClaude: askClaude, saveAi: saveAi, keepSuggestion: keepSuggestion, noteToIdea: noteToIdea },
     expand: expand,
     snapshot: snapshot
   };
 }
+
+/**
+ * Tide Book: "Talk it through" and the product pipeline. Shared by the app and the demo.
+ *
+ * Talk it through: the artist (or the admin) names a topic, anything at all. The AI asks 4-5 questions at a
+ * time, each with a few suggested answers and room for her own words, building on what she has said, until
+ * 10-20 have been answered (or she says that's enough). Then it writes the topic up the way a decisions log
+ * reads: a short summary, what was decided, what is still open, and what kind of thing it turned out to be.
+ * It is filed by kind:
+ *   - every topic becomes a Notebook note with the whole conversation, so nothing is lost;
+ *   - a product enters the product pipeline at Decisions;
+ *   - an idea becomes an Idea (which gets the usual market research);
+ *   - app features, artworks, stories and anything else stay as notes, listed for the admin.
+ * The admin can re-file a topic if the AI picked the wrong kind.
+ *
+ * The product pipeline: Idea > Questions > Decisions > Checks & costing > Sample > Listing & launch > Live.
+ * Sign-offs are split by strength: the artist approves the sample and the listing's look and words; the
+ * admin approves decisions, costs, suppliers and rules; both approve going live. The AI can draft the checks
+ * and parts list (flagged "to verify") and the listing and launch posts in her voice.
+ *
+ * AI work runs the same way as the Notebook (LogicNotes.gs): the PC's local model first when that's on,
+ * Claude when it escalates, the PC is off for too long, or the job needs current facts (checks and costing).
+ */
+
+var TIDE_TALK = {
+  MIN_Q: 10, MAX_Q: 20, PER_ROUND: 5, MORE_Q: 10,
+  KINDS: ['Product', 'Idea', 'Artwork', 'Story', 'App feature', 'Other'],
+  STAGES: ['Idea', 'Questions', 'Decisions', 'Checks & costing', 'Sample', 'Listing & launch', 'Live'],
+  // who signs off a stage before it can move on
+  GATES: { 'Idea': [], 'Questions': [], 'Decisions': ['admin'], 'Checks & costing': ['admin'], 'Sample': ['artist'], 'Listing & launch': ['artist', 'admin'] },
+  CHECK_STATUS: ['To check', 'OK', 'Problem'],
+  SAMPLE_STATUS: ['Not ordered', 'Ordered', 'Here', 'Approved', 'Needs changes'],
+  MAX_TRIES: 3, LOCAL_TRIES: 2, LOCAL_CLAIM_MINS: 15
+};
+
+function tideTalk(env, t) {
+  var K = TIDE_TALK;
+
+  function setting(k) { var v = env.settings.get()[k]; return v === undefined || v === null || v === '' ? TIDE_SETTING_DEFAULTS[k] : v; }
+  function localFirst() { var v = setting('localFirst'); return v === true || v === 'true' || v === 'TRUE'; }
+  function topic(id) { var x = t.rows('topics').filter(function (r) { return r.id === id; })[0]; if (!x) t.fail('That topic has been removed.'); return x; }
+  function item(id) { var x = t.rows('pipeline').filter(function (r) { return r.id === id; })[0]; if (!x) t.fail('That product has been removed.'); return x; }
+  function tableOf(id) { return /^TP/.test(id) ? 'topics' : /^PP/.test(id) ? 'pipeline' : ''; }
+  function rowOf(id) { var tb = tableOf(id); return tb ? t.rows(tb).filter(function (r) { return r.id === id; })[0] : null; }
+  function who(role) { return role === 'artist' ? env.brand.artistName : role === 'admin' ? (env.brand.adminName || 'admin') : ''; }
+  function asked(tp) { return t.list(tp.rounds).reduce(function (n, r) { return n + (r.answers ? t.list(r.answers).filter(function (a) { return !a.skip; }).length : 0); }, 0); }
+  function openRound(tp) { var r = t.list(tp.rounds); var last = r[r.length - 1]; return last && !last.answers ? last : null; }
+
+  // ---------------------------------------------------------------- the AI queue (both tables)
+  /** Queues an AI job on a topic or pipeline row. Facts-heavy jobs go straight to Claude when it's there. */
+  function queue(id, job, opts) {
+    opts = opts || {};
+    var needsFacts = job === 'checks';
+    var route = opts.claude || needsFacts || !localFirst() ? 'claude' : 'local';
+    if (route === 'claude' && !env.features.research) {
+      if (localFirst()) route = 'local';
+      else t.fail('The AI isn’t switched on yet. It needs the Claude API key (setup guide, step 8) or the PC helper.');
+    }
+    env.table(tableOf(id)).update(id, { aiJob: job, aiStatus: 'Queued', aiRoute: route, aiQueued: t.nowIso(), aiTries: 0, aiNote: '',
+      aiWhy: route === 'claude' ? t.text(opts.why || (needsFacts ? 'Needs current facts' : ''), 200) : '' });
+    return route;
+  }
+  function escalate(r, why) {
+    env.table(tableOf(r.id)).update(r.id, { aiStatus: 'Queued', aiRoute: 'claude', aiQueued: t.nowIso(), aiTries: 0, aiWhy: t.text(why, 200) });
+  }
+
+  /** What the AI needs for a job: the brief is assembled into prompts by Talk.gs (Google) or the demo. */
+  function context(id) {
+    var r = rowOf(id);
+    if (!r) t.fail('Not found.');
+    if (tableOf(id) === 'topics') {
+      return {
+        kind: 'topic', job: r.aiJob, title: r.title, detail: r.detail || '', by: who(r.createdBy),
+        rounds: t.list(r.rounds).map(function (rd) {
+          return { questions: t.list(rd.questions).map(function (q, i) {
+            var a = rd.answers ? t.list(rd.answers)[i] || {} : null;
+            return { question: q.question, options: t.list(q.options), answer: a ? (a.skip ? '(skipped)' : t.list(a.picked).map(function (p) { return q.options[p]; }).filter(Boolean).concat(a.text ? [a.text] : []).join('; ')) : null };
+          }) };
+        }),
+        answered: asked(r), min: K.MIN_Q, max: Number(r.maxQ) || K.MAX_Q, perRound: K.PER_ROUND
+      };
+    }
+    return {
+      kind: 'product', job: r.aiJob, title: r.title, summary: r.summary || '', stage: r.stage,
+      decisions: t.list(r.decisions), open: t.list(r.open), parts: t.list(r.parts), checks: t.list(r.checks),
+      sample: r.sample || {}, price: (r.pricing || {}).price || 0
+    };
+  }
+
+  function clean(x, n) { return t.text(x, n); }
+  function cleanList(a, max, n) { return t.list(a).slice(0, max).map(function (x) { return t.text(x, n); }).filter(String); }
+
+  /** Saves an AI answer to whichever job it was. */
+  function save(id, res, by) {
+    res = res || {};
+    var by2 = t.text(by || 'Claude', 60), pushOut = null;
+    env.lock(function () {
+      var r = rowOf(id);
+      if (!r || r.aiStatus !== 'Working') return;
+      var tb = tableOf(id), now = t.nowIso();
+      if (tb === 'topics' && r.aiJob === 'round') {
+        var qs = t.list(res.questions).slice(0, K.PER_ROUND).map(function (q) {
+          q = q || {};
+          var opts = cleanList(q.options, 4, 120);
+          return { question: clean(q.question, 300), why: clean(q.why, 200), options: opts, multi: q.multi === true };
+        }).filter(function (q) { return q.question; });
+        if (!qs.length) { wrapNow(r, 'No more questions'); return; }
+        var rounds = t.list(r.rounds).concat([{ questions: qs, readyToWrap: res.ready_to_wrap === true, by: by2, at: now }]);
+        env.table('topics').update(id, { rounds: rounds, status: 'Your turn', aiStatus: '', aiNote: '', updated: now });
+        pushOut = [r.createdBy, 'New questions about ' + r.title, qs.length + ' questions are ready when you are.'];
+      } else if (tb === 'topics' && r.aiJob === 'wrap') {
+        var kind = K.KINDS.indexOf(res.kind) >= 0 ? res.kind : 'Other';
+        var out = {
+          title: clean(res.title, 120) || r.title, summary: clean(res.summary, 1500), kind: kind,
+          decisions: cleanList(res.decisions, 20, 300), open: cleanList(res.open_questions || res.open, 10, 300),
+          nextStep: clean(res.next_step || res.nextStep, 400), by: by2, at: now
+        };
+        env.table('topics').update(id, { outcome: out, status: 'Done', aiStatus: '', aiNote: '', updated: now });
+        pushOut = ['admin', r.title + ': talked through', 'Filed as ' + kind.toLowerCase() + '. ' + out.summary.slice(0, 140)];
+      } else if (tb === 'pipeline' && r.aiJob === 'checks') {
+        var checks = t.list(r.checks).concat(t.list(res.checks).slice(0, 15).map(function (c) {
+          return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: clean(c && c.item, 300), status: 'To check', note: clean(c && c.how, 300), ai: true };
+        }).filter(function (c) { return c.item; }));
+        var parts = t.list(r.parts).length ? t.list(r.parts) : t.list(res.parts).slice(0, 20).map(function (p) {
+          return { part: clean(p && p.part, 120), supplier: clean(p && p.supplier, 120), cost: 0, qty: Math.max(1, Math.round(Number(p && p.qty) || 1)), ai: true };
+        }).filter(function (p) { return p.part; });
+        var risks = cleanList(res.risks, 10, 300);
+        env.table('pipeline').update(id, { checks: checks, parts: parts, risks: risks, aiStatus: '', aiNote: '', aiBy: by2, updated: now,
+          log: logAdd(r, by2 + ' drafted ' + checks.length + ' checks and ' + parts.length + ' parts (to verify)') });
+        pushOut = ['admin', r.title + ': checks drafted', 'Everything is marked "to check" until you confirm it.'];
+      } else if (tb === 'pipeline' && r.aiJob === 'copy') {
+        var listing = { copy: clean(res.listing, 3000), posts: cleanList(res.posts, 5, 1200), by: by2 };
+        env.table('pipeline').update(id, { listing: listing, aiStatus: '', aiNote: '', aiBy: by2, updated: now, log: logAdd(r, by2 + ' drafted the listing and launch posts') });
+        pushOut = ['both', r.title + ': words drafted', 'The listing and launch posts are ready to read.'];
+      }
+    });
+    if (pushOut && t.push) t.push(pushOut[0] === 'artist' || pushOut[0] === 'admin' || pushOut[0] === 'both' ? pushOut[0] : 'admin', pushOut[1], pushOut[2]);
+    var after = rowOf(id);
+    if (after && after.status === 'Done' && tableOf(id) === 'topics' && !(after.filed && after.filed.noteId)) file(id);
+    return true;
+  }
+  function logAdd(r, text) { return t.list(r.log).concat([{ at: t.nowIso(), text: t.text(text, 300) }]).slice(-60); }
+
+  var ai = {
+    pending: function () {
+      return ['topics', 'pipeline'].reduce(function (all, tb) {
+        return all.concat(t.rows(tb).filter(function (r) { return r.aiStatus === 'Queued' && r.aiRoute === 'claude'; }));
+      }, []);
+    },
+    sent: function (id) { env.lock(function () { if (rowOf(id)) env.table(tableOf(id)).update(id, { aiStatus: 'Working', aiClaimed: t.nowIso() }); }); },
+    context: context,
+    save: save,
+    fail: function (id, message, final) {
+      env.lock(function () {
+        var r = rowOf(id); if (!r || r.aiStatus !== 'Working') return;
+        var tries = (Number(r.aiTries) || 0) + 1;
+        env.table(tableOf(id)).update(id, { aiTries: tries, aiNote: t.text(message, 300), aiStatus: (final || tries >= K.MAX_TRIES) ? 'Failed' : 'Queued' });
+      });
+    },
+    fallback: function () {
+      var mins = Number(setting('localFallbackMins')) || 0, moved = 0;
+      if (!mins || !env.features.research) return 0;
+      env.lock(function () {
+        ['topics', 'pipeline'].forEach(function (tb) {
+          t.rows(tb).forEach(function (r) {
+            if (r.aiStatus === 'Queued' && r.aiRoute === 'local' && Date.parse(r.aiQueued) < env.now().getTime() - mins * 60000) { escalate(r, 'The PC didn’t pick it up within ' + mins + ' minutes'); moved++; }
+          });
+        });
+      });
+      return moved;
+    }
+  };
+
+  /** The PC helper's side: same rules as the Notebook. Job ids are the row ids (TP… or PP…). */
+  var local = {
+    next: function (max) {
+      var now = env.now().getTime(), out = [];
+      env.lock(function () {
+        ['topics', 'pipeline'].forEach(function (tb) {
+          t.rows(tb).forEach(function (r) {
+            if (r.aiStatus === 'Working' && r.aiRoute === 'local' && Date.parse(r.aiClaimed) < now - K.LOCAL_CLAIM_MINS * 60000) env.table(tb).update(r.id, { aiStatus: 'Queued' });
+          });
+          t.rows(tb).filter(function (r) { return r.aiStatus === 'Queued' && r.aiRoute === 'local'; }).forEach(function (r) {
+            if (out.length >= Math.max(1, Math.min(5, Number(max) || 1))) return;
+            env.table(tb).update(r.id, { aiStatus: 'Working', aiClaimed: t.nowIso() });
+            out.push(r.id);
+          });
+        });
+      });
+      return out.map(function (id) { return { id: id, context: context(id) }; });
+    },
+    done: function (id, result, model) {
+      var r = rowOf(id), res = result || {};
+      if (!r || r.aiStatus !== 'Working' || r.aiRoute !== 'local') return { ok: false, why: 'Not waiting for the PC.' };
+      if (res.needs_claude === true && env.features.research) {
+        env.lock(function () { escalate(r, 'The PC’s model passed it on: ' + (t.text(res.claude_reason, 160) || 'needs a stronger model')); });
+        return { ok: true, escalated: true };
+      }
+      save(id, res, 'PC (' + t.text(model || 'local model', 40) + ')');
+      return { ok: true, escalated: false };
+    },
+    fail: function (id, why) {
+      var out = { ok: true, escalated: false };
+      env.lock(function () {
+        var r = rowOf(id); if (!r || r.aiStatus !== 'Working' || r.aiRoute !== 'local') return;
+        var tries = (Number(r.aiTries) || 0) + 1;
+        if (tries >= K.LOCAL_TRIES && env.features.research) { escalate(r, 'The PC’s model couldn’t do it: ' + t.text(why, 140)); out.escalated = true; }
+        else env.table(tableOf(id)).update(id, { aiTries: tries, aiNote: t.text(why, 300), aiStatus: tries >= K.LOCAL_TRIES ? 'Failed' : 'Queued' });
+      });
+      return out;
+    }
+  };
+
+  // ---------------------------------------------------------------- talk it through: screens
+  function startTopic(p) {
+    var role = t.need(['admin', 'artist']);
+    p = p || {};
+    var title = t.text(p.title, 120);
+    if (!title) t.fail('What would you like to talk through?');
+    var res = env.lock(function () {
+      var id = env.nextId('TP', 4), now = t.nowIso();
+      env.table('topics').append({ id: id, created: now, createdBy: role, title: title, detail: t.text(p.detail, 2000), status: 'Thinking',
+        rounds: [], outcome: null, filed: null, maxQ: K.MAX_Q, updated: now, aiJob: '', aiStatus: '' });
+      queue(id, 'round');
+      return { id: id };
+    });
+    if (env.talkNow) env.talkNow(res.id);
+    return res;
+  }
+
+  /** answers: one per question in the open round: {picked: [option indexes], text, skip}. wrap: that's enough for now. */
+  function answerRound(id, answers, opts) {
+    t.need(['admin', 'artist']);
+    opts = opts || {};
+    var res = env.lock(function () {
+      var tp = topic(id), round = openRound(tp);
+      if (!round) t.fail('These questions have already been answered.');
+      var clean = round.questions.map(function (q, i) {
+        var a = t.list(answers)[i] || {};
+        var picked = t.list(a.picked).map(Number).filter(function (n) { return n >= 0 && n < q.options.length; });
+        if (!q.multi) picked = picked.slice(0, 1);
+        var text = t.text(a.text, 2000), skip = a.skip === true || (!picked.length && !text);
+        return { picked: skip ? [] : picked, text: skip ? '' : text, skip: skip };
+      });
+      var rounds = t.list(tp.rounds).slice();
+      rounds[rounds.length - 1] = Object.assign({}, round, { answers: clean, answeredAt: t.nowIso(), answeredBy: env.user.role });
+      env.table('topics').update(id, { rounds: rounds, updated: t.nowIso() });
+      var n = asked(Object.assign({}, tp, { rounds: rounds })), max = Number(tp.maxQ) || K.MAX_Q;
+      var enough = opts.wrap === true || n >= max || (n >= K.MIN_Q && round.readyToWrap);
+      if (enough) { env.table('topics').update(id, { status: 'Wrapping' }); queue(id, 'wrap'); }
+      else { env.table('topics').update(id, { status: 'Thinking' }); queue(id, 'round'); }
+      return { ok: true, wrapping: enough, answered: n };
+    });
+    if (env.talkNow) env.talkNow(id);
+    return res;
+  }
+  function wrapNow(tp, why) { env.table('topics').update(tp.id, { status: 'Wrapping', aiNote: t.text(why, 200) }); queue(tp.id, 'wrap'); }
+
+  /** After it's written up: a few more questions on the same topic. */
+  function keepTalking(id) {
+    t.need(['admin', 'artist']);
+    var res = env.lock(function () {
+      var tp = topic(id);
+      if (tp.status !== 'Done') t.fail('Finish the current questions first.');
+      env.table('topics').update(id, { status: 'Thinking', maxQ: asked(tp) + K.MORE_Q, updated: t.nowIso() });
+      queue(id, 'round');
+      return { ok: true };
+    });
+    if (env.talkNow) env.talkNow(id);
+    return res;
+  }
+  function retryTopic(id) {
+    t.need(['admin', 'artist']);
+    var res = env.lock(function () {
+      var tp = topic(id);
+      if (tp.aiStatus !== 'Failed') return { ok: true };
+      queue(id, tp.aiJob || 'round', { claude: env.features.research });
+      return { ok: true };
+    });
+    if (env.talkNow) env.talkNow(id);
+    return res;
+  }
+  function deleteTopic(id) {
+    var role = t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var tp = topic(id);
+      if (role === 'artist' && tp.createdBy !== 'artist') t.fail('Only the person who started it can remove it.');
+      env.table('topics').update(id, { deleted: true, updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
+
+  /** The conversation as a note, laid out like a decisions log. */
+  function noteBody(tp) {
+    var o = tp.outcome || {}, lines = [];
+    lines.push('Talked through by ' + who(tp.createdBy) + (tp.detail ? '. To start with: ' + tp.detail : '.'), '');
+    if (o.summary) lines.push('**Summary**', o.summary, '');
+    if (t.list(o.decisions).length) { lines.push('**Decided**'); t.list(o.decisions).forEach(function (d) { lines.push('- ' + d); }); lines.push(''); }
+    if (t.list(o.open).length) { lines.push('**Still open**'); t.list(o.open).forEach(function (d) { lines.push('- ' + d); }); lines.push(''); }
+    if (o.nextStep) lines.push('**Next step:** ' + o.nextStep, '');
+    lines.push('**The conversation**');
+    t.list(tp.rounds).forEach(function (rd, ri) {
+      if (!rd.answers) return;
+      lines.push('', '_Round ' + (ri + 1) + '_');
+      rd.questions.forEach(function (q, i) {
+        var a = t.list(rd.answers)[i] || {};
+        var ans = a.skip ? '(skipped)' : t.list(a.picked).map(function (p) { return q.options[p]; }).concat(a.text ? ['“' + a.text + '”'] : []).join('; ');
+        lines.push('- ' + q.question + ' → ' + ans);
+      });
+    });
+    return lines.join('\n');
+  }
+
+  /** Files a finished topic: always a note; a product into the pipeline; an idea into Ideas. */
+  function file(id) {
+    var tp = topic(id), o = tp.outcome || {}, filed = Object.assign({}, tp.filed || {});
+    var title = t.text('Talk: ' + (o.title || tp.title), 120);
+    if (!filed.noteId) {
+      var taken = t.rows('notebook').some(function (n) { return !n.deleted && n.title.toLowerCase() === title.toLowerCase(); });
+      try { filed.noteId = t.saveNote({ title: taken ? t.text(title + ' (' + id + ')', 120) : title, body: noteBody(tp) }).id; } catch (e) { filed.noteError = String(e.message || e); }
+    }
+    if (o.kind === 'Product' && !filed.pipelineId) {
+      filed.pipelineId = env.lock(function () { return addItem({ title: o.title || tp.title, summary: o.summary, stage: 'Decisions', fromTopic: id, decisions: o.decisions, open: t.list(o.open).map(function (q) { return { q: q, a: '' }; }) }); });
+    }
+    if (o.kind === 'Idea' && !filed.ideaId) {
+      try { filed.ideaId = t.createIdea({ kind: 'Other', title: o.title || tp.title, note: (o.summary || '') + (t.list(o.decisions).length ? '\n\nDecided: ' + t.list(o.decisions).join('; ') : ''), scope: [] }).id; } catch (e) { filed.ideaError = String(e.message || e); }
+    }
+    filed.kind = o.kind;
+    env.lock(function () { env.table('topics').update(id, { filed: filed }); });
+    return filed;
+  }
+  /** Admin: the AI picked the wrong kind. Files it again under the right one (nothing already made is removed). */
+  function refileTopic(id, kind) {
+    t.need(['admin']);
+    t.oneOf(kind, K.KINDS, 'what kind of thing it is');
+    var tp = topic(id);
+    if (tp.status !== 'Done') t.fail('It isn’t written up yet.');
+    env.lock(function () { env.table('topics').update(id, { outcome: Object.assign({}, tp.outcome, { kind: kind }) }); });
+    return file(id);
+  }
+
+  // ---------------------------------------------------------------- the product pipeline
+  function addItem(p) {
+    var id = env.nextId('PP', 4), now = t.nowIso();
+    var stage = K.STAGES.indexOf(p.stage) >= 0 ? p.stage : 'Idea';
+    env.table('pipeline').append({
+      id: id, created: now, createdBy: env.user.role || 'admin', title: t.text(p.title, 120), summary: t.text(p.summary, 2000), stage: stage, parked: false,
+      fromTopic: t.text(p.fromTopic, 20), ideaId: t.text(p.ideaId, 20), artworkId: '',
+      decisions: cleanList(p.decisions, 30, 300), open: t.list(p.open).slice(0, 20).map(function (o) { return { q: t.text(o.q, 300), a: t.text(o.a, 1000) }; }),
+      checks: t.list(p.checks).slice(0, 30).map(function (c) { return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(c.item, 300), status: K.CHECK_STATUS.indexOf(c.status) >= 0 ? c.status : 'To check', note: t.text(c.note, 300) }; }),
+      parts: t.list(p.parts).slice(0, 30).map(function (x) { return { part: t.text(x.part, 120), supplier: t.text(x.supplier, 120), cost: Math.max(0, Number(x.cost) || 0), qty: Math.max(1, Math.round(Number(x.qty) || 1)) }; }),
+      pricing: { price: Math.max(0, Number(p.price) || 0) }, sample: { status: 'Not ordered', notes: '' }, listing: { copy: '', posts: [] },
+      approvals: {}, risks: cleanList(p.risks, 10, 300), log: [{ at: now, text: 'Started at ' + stage }], updated: now, aiJob: '', aiStatus: ''
+    });
+    return id;
+  }
+  function createItem(p) {
+    t.need(['admin', 'artist']);
+    p = p || {};
+    if (!t.text(p.title, 120)) t.fail('Give it a name.');
+    return env.lock(function () { return { id: addItem(p) }; });
+  }
+  /** Edits. Either side can edit; the log records who. */
+  function updateItem(id, ch) {
+    var role = t.need(['admin', 'artist']);
+    ch = ch || {};
+    return env.lock(function () {
+      var r = item(id), out = { updated: t.nowIso() }, what = [];
+      if ('title' in ch) { out.title = t.text(ch.title, 120); if (!out.title) t.fail('Give it a name.'); }
+      if ('summary' in ch) out.summary = t.text(ch.summary, 2000);
+      if ('decisions' in ch) { out.decisions = cleanList(ch.decisions, 30, 300); what.push('decisions'); }
+      if ('open' in ch) { out.open = t.list(ch.open).slice(0, 20).map(function (o) { return { q: t.text(o && o.q, 300), a: t.text(o && o.a, 1000) }; }).filter(function (o) { return o.q; }); what.push('open questions'); }
+      if ('checks' in ch) {
+        out.checks = t.list(ch.checks).slice(0, 40).map(function (c) {
+          c = c || {};
+          return { id: /^C[A-Z0-9]{3,8}$/.test(String(c.id)) ? c.id : 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(c.item, 300),
+            status: K.CHECK_STATUS.indexOf(c.status) >= 0 ? c.status : 'To check', note: t.text(c.note, 300), ai: c.ai === true };
+        }).filter(function (c) { return c.item; });
+        what.push('checks');
+      }
+      if ('parts' in ch) {
+        out.parts = t.list(ch.parts).slice(0, 40).map(function (x) {
+          x = x || {};
+          var cost = Number(x.cost);
+          if (!isFinite(cost) || cost < 0) t.fail('The cost for ' + (x.part || 'a part') + ' needs to be a number.');
+          return { part: t.text(x.part, 120), supplier: t.text(x.supplier, 120), cost: Math.round(cost * 100) / 100, qty: Math.max(1, Math.round(Number(x.qty) || 1)) };
+        }).filter(function (x) { return x.part; });
+        what.push('parts and costs');
+      }
+      if ('price' in ch) { var pr = Number(ch.price); if (!isFinite(pr) || pr < 0) t.fail('The price needs to be a number.'); out.pricing = Object.assign({}, r.pricing, { price: Math.round(pr * 100) / 100 }); what.push('price'); }
+      if ('sample' in ch) { out.sample = { status: K.SAMPLE_STATUS.indexOf(ch.sample.status) >= 0 ? ch.sample.status : 'Not ordered', notes: t.text(ch.sample.notes, 2000) }; what.push('sample'); }
+      if ('listing' in ch) { out.listing = Object.assign({}, r.listing, { copy: t.text(ch.listing.copy, 3000), posts: cleanList(ch.listing.posts, 5, 1200) }); what.push('listing'); }
+      if ('artworkId' in ch) out.artworkId = t.text(ch.artworkId, 20);
+      if (what.length) out.log = logAdd(r, who(role) + ' changed ' + what.join(', '));
+      // a change after a sign-off on this stage means the sign-off no longer holds
+      if (what.length && r.approvals && r.approvals[r.stage]) { var ap = Object.assign({}, r.approvals); delete ap[r.stage]; out.approvals = ap; }
+      env.table('pipeline').update(id, out);
+      return { ok: true };
+    });
+  }
+
+  /** What's stopping this stage from moving on: unmet sign-offs and unfinished work. */
+  function blockers(r) {
+    var out = [], ap = (r.approvals || {})[r.stage] || {};
+    if (r.stage === 'Decisions' && t.list(r.open).some(function (o) { return !o.a; })) out.push('answers to the open questions');
+    if (r.stage === 'Checks & costing') {
+      if (t.list(r.checks).some(function (c) { return c.status === 'To check'; })) out.push('every check confirmed (OK or Problem)');
+      if (!t.list(r.parts).length) out.push('a parts list');
+      if (!((r.pricing || {}).price > 0)) out.push('a price');
+    }
+    if (r.stage === 'Sample' && (r.sample || {}).status !== 'Approved') out.push('the sample approved');
+    if (r.stage === 'Listing & launch' && !String((r.listing || {}).copy || '').trim()) out.push('the listing words');
+    t.list(K.GATES[r.stage]).forEach(function (role) { if (!ap[role]) out.push(who(role) + '’s OK'); });
+    return out;
+  }
+  function approve(id) {
+    var role = t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var r = item(id);
+      if (t.list(K.GATES[r.stage]).indexOf(role) < 0) t.fail('This stage doesn’t need your OK.');
+      var ap = Object.assign({}, r.approvals || {}), st = Object.assign({}, ap[r.stage] || {});
+      st[role] = t.nowIso(); ap[r.stage] = st;
+      env.table('pipeline').update(id, { approvals: ap, updated: t.nowIso(), log: logAdd(r, who(role) + ' approved ' + r.stage) });
+      return { ok: true };
+    });
+  }
+  function advance(id) {
+    var role = t.need(['admin', 'artist']), msg = null;
+    var res = env.lock(function () {
+      var r = item(id), i = K.STAGES.indexOf(r.stage);
+      if (i >= K.STAGES.length - 1) t.fail('It’s already live.');
+      var b = blockers(r);
+      if (b.length) t.fail('Before it moves on it needs ' + b.join(', ').replace(/, ([^,]*)$/, ' and $1') + '.');
+      var next = K.STAGES[i + 1];
+      env.table('pipeline').update(id, { stage: next, updated: t.nowIso(), log: logAdd(r, who(role) + ' moved it to ' + next) });
+      var need = t.list(K.GATES[next]);
+      if (need.length) msg = [need.length > 1 ? 'both' : need[0], r.title + ' is at ' + next, next === 'Sample' ? 'The sample needs your OK when it’s here.' : 'It needs your OK at this stage.'];
+      return { ok: true, stage: next };
+    });
+    if (msg && t.push) t.push(msg[0], msg[1], msg[2]);
+    return res;
+  }
+  function setParked(id, parked) {
+    var role = t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var r = item(id);
+      env.table('pipeline').update(id, { parked: parked === true, updated: t.nowIso(), log: logAdd(r, who(role) + (parked ? ' parked it' : ' brought it back')) });
+      return { ok: true };
+    });
+  }
+  /** AI drafts: 'checks' (parts, checks, risks, to verify) or 'copy' (listing and launch posts in her voice). */
+  function draftItem(id, job) {
+    t.need(['admin', 'artist']);
+    t.oneOf(job, ['checks', 'copy'], 'what to draft');
+    var res = env.lock(function () {
+      var r = item(id);
+      if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') t.fail('Already working on it.');
+      return { ok: true, route: queue(id, job) };
+    });
+    if (env.talkNow) env.talkNow(id);
+    return res;
+  }
+
+  /** The saved product ideas, entered once at their current stage (safe to run again: skips titles already there). */
+  function loadBacklog() {
+    t.need(['admin']);
+    var have = {}; t.rows('pipeline').forEach(function (r) { have[r.title.toLowerCase()] = true; });
+    var added = 0;
+    env.lock(function () {
+      TIDE_BACKLOG.forEach(function (p) { if (!have[p.title.toLowerCase()]) { addItem(p); added++; } });
+    });
+    return { added: added };
+  }
+
+  // ---------------------------------------------------------------- what the screens load
+  function snapshot(role) {
+    var s = env.settings.get(), fee = Number(setting('paymentFeePct')) || 0, goal = Number(setting('incomeGoalWeekly')) || 200;
+    var reg = !!s.gstRegisteredFrom && s.gstRegisteredFrom <= env.today();
+    var topics = t.rows('topics').filter(function (x) { return !x.deleted; }).map(function (x) {
+      return { id: x.id, title: x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status,
+        rounds: t.list(x.rounds), answered: asked(x), max: Number(x.maxQ) || K.MAX_Q, min: K.MIN_Q,
+        outcome: x.outcome || null, filed: x.filed || null, aiStatus: x.aiStatus || '', aiRoute: x.aiRoute || '', aiNote: x.aiNote || '', aiWhy: x.aiWhy || '',
+        created: x.created, updated: x.updated };
+    }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
+    var items = t.rows('pipeline').map(function (r) {
+      var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
+      var price = Number((r.pricing || {}).price) || 0;
+      var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
+      return {
+        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
+        decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
+        price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
+        sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: t.list(K.GATES[r.stage]), blockers: blockers(r),
+        needsMe: t.list(K.GATES[r.stage]).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked,
+        log: t.list(r.log).slice(-12).reverse(), aiStatus: r.aiStatus || '', aiJob: r.aiJob || '', aiNote: r.aiNote || '', aiBy: r.aiBy || '', updated: r.updated
+      };
+    }).sort(function (a, b) { return K.STAGES.indexOf(a.stage) - K.STAGES.indexOf(b.stage) || (a.updated < b.updated ? 1 : -1); });
+    return { topics: topics, pipeline: items, stages: K.STAGES, kinds: K.KINDS, checkStatus: K.CHECK_STATUS, sampleStatus: K.SAMPLE_STATUS, goal: goal };
+  }
+
+  return {
+    ai: ai, local: local, snapshot: snapshot,
+    api: { startTopic: startTopic, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
+      createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, draftItem: draftItem, loadBacklog: loadBacklog }
+  };
+}
+
+/** The product ideas saved before the pipeline existed (IDEAS-SAVED.md), at the stage each had reached. */
+var TIDE_BACKLOG = [
+  { title: '5-Day Ritual Tins', stage: 'Checks & costing',
+    summary: 'A business-card tin: 5 small hand-painted cards with a reflection on the back, a hand-shaped clay candle holder, a beeswax candle (Happy Flame), matches, a ritual card and a thank-you postcard. Four themes: Artist’s Intuition, Ocean, Forest, Sky & Wild Wings. $49 launch, $58–65 full price, $75+ custom. Mirrors her own morning: candle, stillness, a card, gratitude.',
+    decisions: ['First product to launch', 'Paid by Stripe payment links at first (no website needed)', 'Marketed as a gift for someone going through a tough time, including a new diagnosis', 'The 5-day ritual follows her real morning ritual', 'Supplies ordered (per her handoff)'],
+    checks: [{ item: 'Matches can’t be posted: Australia Post prohibits matches of all kinds (research/TIN-CHECKS.md). Posted tins go without matches; full tins with matches in person only. Say so on the listing.', status: 'Problem' },
+      { item: 'Burn-test the finished clay holder: a holder that catches fire and burns 5 seconds or more is banned (2011 ban). Keep a record; add a metal insert if it scorches.', status: 'To check' },
+      { item: 'Happy Flame: confirm a lead-free wick in writing (wicks over 0.06% lead are banned) and ask to reuse their safety text', status: 'To check' },
+      { item: 'Candle warnings on a card in the tin (recommended, not mandatory: never leave burning unattended, etc.)', status: 'To check' },
+      { item: 'Glass bottle packed to survive a 1.2 m drop (Australia Post)', status: 'To check' },
+      { item: 'Posting beeswax to WA and Tasmania: ask Australia Post business (13 11 18)', status: 'To check' },
+      { item: 'Sea Shelter line on the postcard: "20% of marine print sales support Sea Shelter at Irukandji" (confirmed figure)', status: 'OK' }, { item: 'Stripe account and payment links set up (fee 1.65% + 30c; one link per theme or a dropdown; cap quantity at 1 per checkout if stock is limited)', status: 'To check' }],
+    parts: [{ part: 'Tin', qty: 1 }, { part: 'Watercolour cards (hand-painted)', qty: 5 }, { part: 'Clay for the holder', qty: 1 }, { part: 'Beeswax candle (Happy Flame)', qty: 1 },
+      { part: 'Matches and glass bottle', qty: 1 }, { part: 'Ritual card and postcard (printed)', qty: 1 }, { part: 'Tissue, kraft and mailer', qty: 1 }, { part: 'Postage', qty: 1 }], price: 58 },
+  { title: 'Ocean Mandala comfort scarf', stage: 'Decisions',
+    summary: '100 × 100 cm scarf in cotton lawn or bamboo viscose, gentle on a bare scalp, printed from her Ocean Mandala painting. Sample first (Digital Fabrics, Sydney, or Contrado). Her story behind it.',
+    decisions: ['For people on the same journey, among others', 'Sample before selling'],
+    open: [{ q: 'Is the Ocean Mandala painting finished and scanned?', a: '' }, { q: 'Cotton lawn or bamboo viscose for the first sample?', a: '' }] },
+  { title: 'Pockets of Magic sticker packs', stage: 'Idea',
+    summary: 'Gratitude stickers from her painted pocket rocks and keepsakes, with little sayings in her words (curiosity, noticing). Sold as something you buy to make someone happy. Letter-size, cheap to post.' },
+  { title: 'Greeting cards (print on demand)', stage: 'Decisions',
+    summary: 'Cards with her art and short messages in her voice, printed to order online. Not stocked at Irukandji (envelopes went missing there).',
+    decisions: ['Online, print on demand only', 'Start from existing artwork rather than 18 new paintings'],
+    open: [{ q: 'Which print-on-demand card service?', a: '' }, { q: 'Which pieces and messages for the first set?', a: '' }] },
+  { title: 'Free ritual and gratitude guide', stage: 'Idea',
+    summary: 'A simple download for anyone starting out, especially after a first diagnosis: her morning ritual (candle, stillness, gratitude), as her own experience. Builds her email list; a QR card in centre sales points to it.' },
+  { title: 'Playing and gratitude card deck', stage: 'Idea',
+    summary: 'One 54-card deck that plays as normal cards and carries a gratitude prompt on each (suits as themes). Combines the Go Fish and "You Are Like Sunshine" deck ideas. Later.' },
+  { title: 'Themed art bundles', stage: 'Idea',
+    summary: 'Seasonal boxes: a print, a textile, ritual cards, a greeting card and a playful extra, numbered. Later, once single products sell.' },
+  { title: 'Phone icon pack', stage: 'Idea', summary: 'An original icon set from her art (maybe the pocket rocks), sold as a download next to the wallpapers.' }
+];
 
 </script>
 <script>
@@ -3544,7 +4138,7 @@ function tideNotes(env, t) {
  */
 (function () {
   'use strict';
-  var KEY = 'tidebook-demo-v17';
+  var KEY = 'tidebook-demo-v18';
   var OPT = window.TIDE_DEMO || {};
   var role = location.hash === '#admin' ? 'admin' : 'artist';
   window.addEventListener('hashchange', function () { location.reload(); });
@@ -3557,7 +4151,7 @@ function tideNotes(env, t) {
   var db = null;
   try { var saved = sessionStorage.getItem(KEY); if (saved) db = JSON.parse(saved); } catch (e) { db = null; }
   var fresh = !db;
-  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
+  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], topics: [], pipeline: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
   var studioAsked = false;
   function save() { try { sessionStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* too big for this tab's storage: carry on in memory */ } }
 
@@ -3676,6 +4270,82 @@ function tideNotes(env, t) {
       sources: [{ title: 'Sample source (demo)', url: 'https://example.com/' }]
     };
   }
+
+
+  // ---------------------------------------------------------------- pretend AI for Talk it through and the pipeline
+  // Sample questions, built around the topic's name. The real app writes fresh ones from her answers.
+  var TALK_BANK = [
+    { q: 'What first got you thinking about {t}?', o: ['Something I noticed in nature', 'Someone asked for it', 'It came to me while making', 'It’s been brewing a while'], m: false },
+    { q: 'Who do you picture loving {t} most?', o: ['A friend going through a tough time', 'Nature lovers', 'Visitors to the centre', 'Myself, honestly'], m: true },
+    { q: 'How should {t} make someone feel?', o: ['Wonder', 'Calm', 'Joy', 'Hope'], m: true },
+    { q: 'Which of your worlds does it belong to?', o: ['Mind Garden', 'Pockets of Magic', 'Ocean', 'Something new'], m: false },
+    { q: 'What materials do you see in it?', o: ['Watercolour and ink', 'My own pigments', 'Torn and sewn paper', 'Found objects'], m: true },
+    { q: 'How big or small is it?', o: ['Pocket-sized', 'Fits in a letter', 'A gift box', 'Wall-sized'], m: false },
+    { q: 'Would you make each one by hand, or have it printed?', o: ['By hand, each one unique', 'Printed from my art', 'A mix of both'], m: false },
+    { q: 'Where would people find it?', o: ['My online shop', 'At the centre', 'At markets or events', 'Through friends'], m: true },
+    { q: 'What feels like a fair price?', o: ['Under $20', '$20 to $50', '$50 to $100', 'Not sure yet'], m: false },
+    { q: 'How much of your week could it take?', o: ['A morning here and there', 'An hour a week', 'Only on good days', 'I’d batch it'], m: false },
+    { q: 'What could make it tricky?', o: ['My energy', 'Costs up front', 'Posting it', 'Finding a supplier'], m: true },
+    { q: 'Is there a story or a moment behind it you’d like to share?', o: ['Yes, a keepsake', 'Yes, a place', 'A person', 'Not really'], m: false },
+    { q: 'What words would you put on it, if any?', o: ['A little saying of mine', 'Just my name', 'No words', 'A gratitude prompt'], m: false },
+    { q: 'Could part of it support Sea Shelter?', o: ['Yes, if it’s ocean themed', 'Not this one', 'Maybe later'], m: false },
+    { q: 'What would a first small test look like?', o: ['Make one and photograph it', 'Ask my followers', 'Make 5 to 10', 'Order a sample'], m: false },
+    { q: 'How would you want to share it at first?', o: ['A process clip', 'A finished photo', 'A story from my day', 'Quietly, to friends first'], m: true },
+    { q: 'What would make you proud of it?', o: ['It makes someone smile', 'It sells steadily', 'It’s beautiful to me', 'It helps someone'], m: true },
+    { q: 'Anything you definitely don’t want it to be?', o: ['Mass-produced', 'Salesy', 'Too fiddly to make', 'Nothing comes to mind'], m: true },
+    { q: 'When would you like to start?', o: ['This month', 'After the tins', 'Next year', 'No rush'], m: false },
+    { q: 'Who could help with it?', o: ['Jye', 'Tara', 'My husband', 'I’ll do it myself'], m: false }
+  ];
+  function talkRound(ctx) {
+    var used = 0; ctx.rounds.forEach(function (r) { used += r.questions.length; });
+    var n = Math.min(ctx.perRound, Math.max(1, ctx.max - ctx.answered)), qs = [];
+    for (var i = 0; i < n && used + i < TALK_BANK.length; i++) {
+      var b = TALK_BANK[used + i];
+      qs.push({ question: b.q.replace('{t}', ctx.title.toLowerCase()), why: '', options: b.o, multi: b.m });
+    }
+    return { questions: qs, ready_to_wrap: ctx.answered + qs.length >= ctx.min };
+  }
+  function talkWrap(ctx) {
+    var t = ctx.title, low = t.toLowerCase(), said = [];
+    ctx.rounds.forEach(function (r) { r.questions.forEach(function (q) { if (q.answer && q.answer !== '(skipped)') said.push(q.question.replace(/\?$/, '') + ': ' + q.answer); }); });
+    var kind = /app|tide book|screen|button/.test(low) ? 'App feature' : /scarf|card|sticker|tin|print|deck|pack|book|journal|tote|box|bookmark|icon/.test(low) ? 'Product'
+      : /paint|series|artwork|collage|piece/.test(low) ? 'Artwork' : /story|post|share/.test(low) ? 'Story' : 'Idea';
+    return {
+      title: t, kind: kind,
+      summary: 'Sample write-up for the demo. In the real app this is written from her answers: what ' + t.toLowerCase() + ' is, who it’s for, and why it matters to her.',
+      decisions: said.slice(0, 8), open_questions: ['Sample: which supplier, and what one costs', 'Sample: when to start, around her energy'],
+      next_step: 'Sample: make or mock up one, photograph it, and share it as a process clip.'
+    };
+  }
+  function pipeChecks(ctx) {
+    return {
+      parts: [{ part: 'Main item', supplier: 'To find', qty: 1 }, { part: 'Packaging', supplier: 'Kraft supplier', qty: 1 }, { part: 'Postage', supplier: 'Australia Post', qty: 1 }],
+      checks: [{ item: 'Sample: posting rules for anything flammable or fragile', how: 'Australia Post business line' },
+        { item: 'Sample: wording stays her experience, no health claims', how: 'Read through before listing' },
+        { item: 'Sample: real quotes for each part', how: 'Ask two suppliers' }],
+      risks: ['Sample: making each one by hand on low-energy weeks', 'Sample: health-claim wording in the listing']
+    };
+  }
+  function pipeCopy(ctx) {
+    return {
+      listing: 'Sample listing for the demo, in her voice.\n\nI made ' + ctx.title.toLowerCase() + ' for the quiet moments, the ones you almost miss. Each one is made slowly, by hand, in my studio in Medowie.\n\nInside: (what’s in it).\nMade to order: please allow a little time.',
+      posts: ['Sample teaser: Something small is coming together on my table this week… ✨', 'Sample reveal: Here it is. ' + ctx.title + ', made for pausing and noticing.', 'Sample last call: A few left from this first little batch. Thank you for every kind word. 🤍']
+    };
+  }
+  function talkAnswer(ctx) { return ctx.job === 'round' ? talkRound(ctx) : ctx.job === 'wrap' ? talkWrap(ctx) : ctx.job === 'checks' ? pipeChecks(ctx) : pipeCopy(ctx); }
+
+  // Pretend PC helper and Claude for topics and the pipeline: answers a few seconds after a job is queued.
+  setInterval(function () {
+    var tl = createTideLogic(makeEnv('admin')).talk;
+    tl.local.next(2).forEach(function (j) {
+      setTimeout(function () { tl.local.done(j.id, talkAnswer(j.context), 'gemma3:12b'); if (window.TideBook) window.TideBook.refresh(); }, 2500);
+    });
+    tl.ai.pending().forEach(function (r) {
+      var ctx = tl.ai.context(r.id);
+      tl.ai.sent(r.id);
+      setTimeout(function () { tl.ai.save(r.id, talkAnswer(ctx), 'Claude'); if (window.TideBook) window.TideBook.refresh(); }, 3000);
+    });
+  }, 1500);
 
   function seed() {
     var L = createTideLogic(makeEnv('admin'));
@@ -3869,6 +4539,21 @@ function tideNotes(env, t) {
     L.api.expandNote(lw.id);
     L.notebook.expand.sent([lw.id]);
     L.notebook.expand.save(lw.id, sampleExpansion(L.notebook.expand.context(lw.id)), 'PC (gemma3:12b)');
+
+    // the product pipeline (her saved ideas at their stages), one topic talked through, one waiting for her
+    L.api.loadBacklog();
+    var AL = createTideLogic(makeEnv('artist'));
+    function runAi() { var tl = createTideLogic(makeEnv('admin')).talk; tl.local.next(5).forEach(function (j) { tl.local.done(j.id, talkAnswer(j.context), 'gemma3:12b'); }); tl.ai.pending().forEach(function (r) { var c = tl.ai.context(r.id); tl.ai.sent(r.id); tl.ai.save(r.id, talkAnswer(c), 'Claude'); }); }
+    var bm = AL.api.startTopic({ title: 'Moon water ink bookmarks', detail: 'Little bookmarks painted with my moon water inks, with a tassel. A small gift.' });
+    runAi();
+    for (var k = 0; k < 4; k++) {
+      var tp = db.topics.filter(function (x) { return x.id === bm.id; })[0], rd = tp.rounds[tp.rounds.length - 1];
+      if (!rd || rd.answers) break;
+      AL.api.answerRound(bm.id, rd.questions.map(function (q, i) { return { picked: [(i + k) % q.options.length], text: i === 0 && k === 0 ? 'The full moon over the bay last week' : '' }; }));
+      runAi();
+    }
+    AL.api.startTopic({ title: 'My first Mind Garden painting', detail: 'Manta rays flying like butterflies over flowers.' });
+    runAi();
     save();
   }
   if (fresh) seed();
@@ -5076,6 +5761,7 @@ var Kit = (function () {
     var needs = needsList(), n = 1;
     var rest = S.data.rest;
     if (rest) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note(cap(artist()) + ' is taking it easy' + (rest.until ? ' until ' + restDay(rest.until) : '') + '. Her buzzes and footage questions come to you; posts still wait for her approval.', 'spa')), n++));
+    n = talkCards(main, n);
 
 
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = S.data.questions.length;
@@ -5182,6 +5868,7 @@ var Kit = (function () {
       needs.forEach(function (e) { sec.appendChild(needsCard(e)); });
       main.appendChild(rise(sec, n++));
     }
+    n = talkCards(main, n);
 
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = rest ? 0 : S.data.questions.length;
     if (nPosts || nQs) {
@@ -5276,14 +5963,19 @@ var Kit = (function () {
   }
 
   function viewIdeas(main) {
-    var nb = S.ideasTab === 'notebook';
-    pageTitle(main, 'Ideas', nb ? 'Jot things down, link them up, and grow them into ideas.'
+    var tab = ['talk', 'products', 'notebook'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = tab === 'notebook', T = talkData();
+    var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
+    pageTitle(main, 'Ideas', tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
+      : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : ADMIN ? 'Ranked by ' + artist() + '’s priority, then by viability.' : 'Everything you’ve sent, and where it’s up to.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
-      label: 'Show', value: nb ? 'notebook' : 'ideas', onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
-      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'notebook', label: 'Notebook', count: S.data.notebook.length || undefined }]
+      label: 'Show', value: tab, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
+      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
+        { value: 'products', label: 'Products', count: oks || undefined }, { value: 'notebook', label: 'Notebook' }]
     })), 1));
     if (nb) return viewNotebook(main);
+    if (tab === 'talk') return viewTalk(main);
+    if (tab === 'products') return viewProducts(main);
     var ideas = S.data.ideas;
     if (ADMIN) {
       main.appendChild(rise(K.choices({
@@ -5327,6 +6019,368 @@ var Kit = (function () {
     }
     fab(main, 'New idea', 'add', function () { openIdeaForm(); });
   }
+  // ------------------------------------------------------------------ Talk it through
+  var TALK_ICON = { Product: 'sell', Idea: 'lightbulb', Artwork: 'palette', Story: 'chat', 'App feature': 'settings', Other: 'sticky_note_2' };
+  function talkData() { return S.data.talk || { topics: [], pipeline: [], stages: [], kinds: [], checkStatus: [], sampleStatus: [], goal: 200 }; }
+  function myTopic(tp) { return tp.mine || ADMIN; }
+  function topicChip(tp) {
+    if (tp.aiStatus === 'Failed') return chip('Stuck', 'high', 'warning');
+    if (tp.status === 'Your turn') return tp.mine ? chip('Your turn', 'approved', 'forum') : chip('Waiting for ' + tp.by, 'outline', 'forum');
+    if (tp.status === 'Done') return chip(tp.outcome ? tp.outcome.kind : 'Written up', 'outline', TALK_ICON[tp.outcome && tp.outcome.kind] || 'check_circle');
+    return chip(tp.status === 'Wrapping' ? 'Writing it up' : 'Thinking', 'pending', 'hourglass_top');
+  }
+  function topicRow(tp) {
+    return h('button', { class: 'li press', type: 'button', onclick: function () { openTopic(tp.id); } },
+      h('div', { class: 'th-blank' }, icon(tp.status === 'Done' ? (TALK_ICON[tp.outcome && tp.outcome.kind] || 'check_circle') : 'forum')),
+      h('div', { class: 'grow' }, h('div', { class: 'li-head', text: tp.status === 'Done' && tp.outcome ? tp.outcome.title : tp.title }),
+        h('div', { class: 'li-sup', text: [ADMIN ? tp.by : '', tp.answered + ' answered', ago(tp.updated)].filter(String).join(' · ') })),
+      h('div', { class: 'li-trail' }, topicChip(tp)));
+  }
+  /** Cards for Home: questions waiting for this person, and products waiting for their OK. */
+  function talkCards(main, n) {
+    var T = talkData(), waiting = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; });
+    var oks = T.pipeline.filter(function (p) { return p.needsMe; });
+    if (!waiting.length && !oks.length) return n;
+    var sec = section('Waiting for you');
+    waiting.forEach(function (tp) {
+      sec.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
+        h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' }, h('span', { class: 'ic' }, icon('forum')),
+          h('div', { class: 'grow' }, h('div', { class: 'title-m', text: tp.title }),
+            h('p', { class: 'body-m', style: 'margin-top:4px', text: 'A few more questions are ready, whenever you are.' }))),
+        h('div', { style: 'margin-top:12px' }, btn('tonal', 'Answer', { icon: 'arrow_forward', onclick: function () { openTopic(tp.id); } }))));
+    });
+    oks.forEach(function (p) {
+      sec.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
+        h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' }, h('span', { class: 'ic' }, icon('verified')),
+          h('div', { class: 'grow' }, h('div', { class: 'title-m', text: p.title }),
+            h('p', { class: 'body-m', style: 'margin-top:4px', text: p.stage === 'Sample' ? 'The sample needs your OK.' : p.stage === 'Listing & launch' ? 'The listing needs your OK before it goes live.' : 'This stage needs your OK.' }))),
+        h('div', { style: 'margin-top:12px' }, btn('tonal', 'Have a look', { icon: 'arrow_forward', onclick: function () { openItem(p.id); } }))));
+    });
+    main.appendChild(rise(sec, n++));
+    return n;
+  }
+
+  function viewTalk(main) {
+    var T = talkData();
+    main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:16px' },
+      h('div', { class: 'title-m', text: 'Talk something through' }),
+      h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Name anything: a product, a painting, a story, something about Tide Book. You’ll get a few questions at a time, 10 to 20 in all, then it’s written up and filed in the right place.' }),
+      btn('filled', 'Start a topic', { icon: 'forum', onclick: openTopicStart })), 2));
+    var going = T.topics.filter(function (tp) { return tp.status !== 'Done'; }), done = T.topics.filter(function (tp) { return tp.status === 'Done'; });
+    if (!T.topics.length) { main.appendChild(rise(emptyState('forum', 'Nothing yet', 'Start a topic whenever something’s on your mind.'), 3)); return; }
+    if (going.length) { var s1 = section('In progress'), l1 = h('div', { class: 'list' }); going.forEach(function (tp) { l1.appendChild(topicRow(tp)); }); s1.appendChild(l1); main.appendChild(rise(s1, 3)); }
+    if (done.length) { var s2 = section('Written up'), l2 = h('div', { class: 'list' }); done.forEach(function (tp) { l2.appendChild(topicRow(tp)); }); s2.appendChild(l2); main.appendChild(rise(s2, 4)); }
+  }
+
+  function openTopicStart() {
+    var f = { title: '', detail: '' };
+    K.sheet({
+      title: 'Talk something through',
+      build: function (ctl) {
+        var title = K.textField({ label: 'What’s on your mind?', maxlength: 120, onInput: function (v) { f.title = v; }, help: 'A few words, e.g. “Moon water bookmarks” or “My first Mind Garden painting”.' });
+        ctl.body.append(h('div', { class: 'field-gap' }, title,
+          K.textField({ label: 'Anything to start with? (optional)', multiline: true, maxlength: 2000, onInput: function (v) { f.detail = v; } })));
+        var go = btn('filled', 'Start', { icon: 'forum', lg: true, block: true });
+        go.addEventListener('click', function () {
+          if (!f.title.trim()) { title.input.focus(); return; }
+          K.setBusy(go, true);
+          api('startTopic', f).then(function (r) { return refresh().then(function () { return r; }); })
+            .then(function (r) { ctl.close(); render(); setTimeout(function () { openTopic(r.id); }, 280); })
+            .catch(function (e) { K.setBusy(go, false); fail(e); });
+        });
+        ctl.foot.appendChild(go);
+        setTimeout(function () { title.input.focus(); }, 80);
+      }
+    });
+  }
+
+  function answerText(q, a) {
+    if (!a) return '';
+    if (a.skip) return 'Skipped';
+    return (a.picked || []).map(function (p) { return q.options[p]; }).filter(Boolean).concat(a.text ? ['“' + a.text + '”'] : []).join('; ');
+  }
+
+  function openTopic(id) {
+    var tp = byId(talkData().topics, id);
+    if (!tp) return;
+    var poll = null, ctlRef = null;
+    function reopen() { if (ctlRef) ctlRef.close(); setTimeout(function () { openTopic(id); }, 260); }
+    K.sheet({
+      title: tp.status === 'Done' && tp.outcome ? tp.outcome.title : tp.title, tall: true,
+      onClose: function () { if (poll) clearInterval(poll); render(); },
+      build: function (ctl) {
+        ctlRef = ctl;
+        var pct = Math.min(100, Math.round(tp.answered / tp.max * 100));
+        ctl.body.appendChild(h('div', { style: 'margin-bottom:14px' },
+          h('div', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: tp.answered + ' answered' + (tp.status === 'Done' ? '' : ' · usually ' + tp.min + ' to ' + tp.max) + (ADMIN ? ' · started by ' + tp.by : '') }),
+          h('div', { class: 'talk-bar' }, h('i', { style: 'width:' + pct + '%' }))));
+
+        if (tp.aiStatus === 'Failed') {
+          ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('It got stuck' + (tp.aiNote ? ': ' + tp.aiNote : '.'), 'warning', 'warn')));
+          ctl.body.appendChild(btn('tonal', 'Try again', { icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('retryTopic', id).then(refresh).then(reopen).catch(fail); } }));
+        } else if (tp.status === 'Thinking' || tp.status === 'Wrapping') {
+          ctl.body.appendChild(note(tp.status === 'Wrapping' ? 'Writing it all up… You can close this; it’ll be filed when it’s done.' : 'Thinking of the next questions… You can close this; they’ll be waiting on Home.', 'hourglass_top'));
+          poll = setInterval(function () {
+            refresh().then(function () { var now = byId(talkData().topics, id); if (now && (now.status !== tp.status || now.aiStatus !== tp.aiStatus)) { clearInterval(poll); poll = null; reopen(); } });
+          }, 3000);
+        } else if (tp.status === 'Your turn') {
+          var round = tp.rounds[tp.rounds.length - 1];
+          if (!tp.mine && !ADMIN) ctl.body.appendChild(note('Waiting for ' + tp.by + ' to answer.', 'forum'));
+          else {
+            if (!tp.mine) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('These are ' + tp.by + '’s questions. You can answer for her if she asks you to.', 'info')));
+            var answers = round.questions.map(function () { return { picked: [], text: '' }; });
+            round.questions.forEach(function (q, qi) {
+              var card = h('div', { class: 'card pad talk-q', style: 'margin-bottom:12px' });
+              card.appendChild(h('div', { class: 'title-m', text: q.question }));
+              if (q.why) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:4px;color:var(--on-surface-variant)', text: q.why }));
+              var chips = h('div', { class: 'choices', style: 'margin:12px 0 10px' });
+              var btns = q.options.map(function (o, oi) {
+                var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': 'false' }, o);
+                b.addEventListener('click', function () {
+                  var on = answers[qi].picked.indexOf(oi) >= 0;
+                  if (q.multi) answers[qi].picked = on ? answers[qi].picked.filter(function (x) { return x !== oi; }) : answers[qi].picked.concat([oi]);
+                  else answers[qi].picked = on ? [] : [oi];
+                  btns.forEach(function (bb, bi) { bb.setAttribute('aria-pressed', String(answers[qi].picked.indexOf(bi) >= 0)); });
+                  K.haptic();
+                });
+                chips.appendChild(b);
+                return b;
+              });
+              if (q.multi) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Pick any that fit.' }));
+              card.append(chips, K.textField({ label: 'In my own words', multiline: true, compact: true, maxlength: 2000, onInput: function (v) { answers[qi].text = v; } }));
+              ctl.body.appendChild(card);
+            });
+            ctl.body.appendChild(h('p', { class: 'tf-help', style: 'margin:0 4px 8px', text: 'Leave any you’d rather skip.' }));
+            var send = btn('filled', 'Send answers', { icon: 'send', lg: true, block: true });
+            send.addEventListener('click', function () {
+              K.setBusy(send, true);
+              api('answerRound', id, answers).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (e) { K.setBusy(send, false); fail(e); });
+            });
+            ctl.foot.appendChild(send);
+            if (tp.answered >= 3) ctl.body.appendChild(h('div', { style: 'text-align:center;margin:6px 0 10px' }, btn('text', 'That’s enough for now. Write it up.', { onclick: function (e) {
+              K.setBusy(e.currentTarget, true);
+              api('answerRound', id, answers, { wrap: true }).then(refresh).then(reopen).catch(fail);
+            } })));
+          }
+        } else if (tp.status === 'Done' && tp.outcome) {
+          var o = tp.outcome, f = tp.filed || {};
+          ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, chip(o.kind, 'outline', TALK_ICON[o.kind] || 'category')));
+          if (o.summary) ctl.body.appendChild(h('p', { class: 'body-l', style: 'margin-bottom:14px', text: o.summary }));
+          function list(title, items) {
+            if (!items.length) return;
+            var s = sheetSection(title), ul = h('ul', { class: 'talk-list' });
+            items.forEach(function (x) { ul.appendChild(h('li', { text: x })); });
+            s.appendChild(ul); ctl.body.appendChild(s);
+          }
+          list('Decided', o.decisions || []);
+          list('Still open', o.open || []);
+          if (o.nextStep) { var ns = sheetSection('Next step'); ns.appendChild(h('p', { class: 'body-m', text: o.nextStep })); ctl.body.appendChild(ns); }
+          var fs = sheetSection('Filed'), fl = h('div', { class: 'field-gap' });
+          if (f.noteId && byId(S.data.notebook, f.noteId)) fl.appendChild(btn('outlined', 'Open the note', { icon: 'sticky_note_2', block: true, onclick: function () { ctl.close(); setTimeout(function () { openNote(f.noteId); }, 280); } }));
+          if (f.pipelineId && byId(talkData().pipeline, f.pipelineId)) fl.appendChild(btn('outlined', 'Open it in Products', { icon: 'sell', block: true, onclick: function () { ctl.close(); setTimeout(function () { openItem(f.pipelineId); }, 280); } }));
+          if (f.ideaId && byId(S.data.ideas, f.ideaId)) fl.appendChild(btn('outlined', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { ctl.close(); setTimeout(function () { openIdea(f.ideaId); }, 280); } }));
+          if (ADMIN) fl.appendChild(btn('text', 'File it as something else', { icon: 'category', onclick: function () {
+            K.pickFromList({ title: 'What is it?', options: talkData().kinds }).then(function (k) {
+              if (k === undefined) return;
+              api('refileTopic', id, k).then(refresh).then(function () { toast('Filed as ' + k.toLowerCase() + '.'); reopen(); }).catch(fail);
+            });
+          } }));
+          fs.appendChild(fl); ctl.body.appendChild(fs);
+          ctl.foot.appendChild(btn('tonal', 'Keep talking', { icon: 'forum', lg: true, block: true, onclick: function (e) {
+            K.setBusy(e.currentTarget, true); api('keepTalking', id).then(refresh).then(reopen).catch(fail);
+          } }));
+        }
+
+        // the conversation so far
+        var past = tp.rounds.filter(function (r) { return r.answers; });
+        if (past.length) {
+          var det = h('details', { class: 'talk-past' }, h('summary', { text: 'The conversation so far (' + tp.answered + ' answers)' }));
+          past.forEach(function (r) {
+            r.questions.forEach(function (q, i) {
+              det.appendChild(h('div', { class: 'talk-qa' }, h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: q.question }), h('div', { class: 'body-m', text: answerText(q, r.answers[i]) || '—' })));
+            });
+          });
+          ctl.body.appendChild(det);
+        }
+        if (tp.mine || ADMIN) ctl.body.appendChild(h('div', { style: 'text-align:center;margin-top:18px' }, btn('text', 'Remove this topic', { danger: true, icon: 'delete', onclick: function () {
+          K.confirm({ title: 'Remove this topic?', text: 'Anything already filed (a note, a product, an idea) stays.', confirmLabel: 'Remove', danger: true }).then(function (yes) {
+            if (!yes) return; api('deleteTopic', id).then(refresh).then(function () { ctl.close(); toast('Removed.'); }).catch(fail);
+          });
+        } })));
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------ Products: the pipeline from idea to live
+  function itemChip(p) {
+    if (p.parked) return chip('Parked', 'outline', 'pause_circle');
+    if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') return chip('Drafting', 'pending', 'auto_awesome');
+    if (p.needsMe) return chip('Needs your OK', 'approved', 'verified');
+    if (p.stage === 'Live') return chip('Live', 'approved', 'rocket_launch');
+    return chip(p.blockers.length ? p.blockers.length + ' to do' : 'Ready to move on', 'outline', p.blockers.length ? 'fact_check' : 'arrow_forward');
+  }
+  function viewProducts(main) {
+    var T = talkData(), showParked = S.pipeFilter === 'parked';
+    main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('From idea to live. ' + cap(artist()) + ' OKs the sample and the listing’s look and words; ' + adminName() + ' OKs decisions, costs, suppliers and rules; both OK going live. First goal: ' + money(T.goal) + ' a week.', 'sell')), 2));
+    main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({ row: true, label: 'Show', value: showParked ? 'parked' : 'active',
+      options: [{ value: 'active', label: 'Active' }, { value: 'parked', label: 'Parked' }], onChange: function (v) { S.pipeFilter = v; render(); } })), 2));
+    var items = T.pipeline.filter(function (p) { return showParked ? p.parked : !p.parked; }), i = 3;
+    if (!items.length) main.appendChild(rise(emptyState('sell', 'Nothing here', ADMIN ? 'Add a product, or load the saved ideas.' : 'Products appear here as they’re planned.'), 3));
+    T.stages.forEach(function (stage) {
+      var here = items.filter(function (p) { return p.stage === stage; });
+      if (!here.length) return;
+      var sec = section(stage), l = h('div', { class: 'list' });
+      here.forEach(function (p) {
+        l.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { openItem(p.id); } },
+          h('div', { class: 'th-blank' }, icon('sell')),
+          h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
+            h('div', { class: 'li-sup', style: 'white-space:normal;-webkit-line-clamp:2', text: p.summary || ' ' }),
+            p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null),
+          h('div', { class: 'li-trail' }, itemChip(p))));
+      });
+      sec.appendChild(l);
+      main.appendChild(rise(sec, i++));
+    });
+    if (ADMIN && !T.pipeline.length) main.appendChild(rise(h('div', { style: 'margin-top:12px' }, btn('outlined', 'Load the saved ideas', { icon: 'download', block: true, onclick: function (e) {
+      K.setBusy(e.currentTarget, true); api('loadBacklog').then(function (r) { return refresh().then(function () { toast(r.added + ' added.'); render(); }); }).catch(fail);
+    } })), i++));
+    fab(main, 'Add a product', 'add', function () {
+      K.ask({ title: 'Add a product', label: 'What is it?', maxlength: 120, confirmLabel: 'Add' }).then(function (t) {
+        if (!t) return;
+        api('createItem', { title: t }).then(function (r) { return refresh().then(function () { render(); openItem(r.id); }); }).catch(fail);
+      });
+    });
+  }
+
+  function openItem(id) {
+    var p = byId(talkData().pipeline, id);
+    if (!p) return;
+    var T = talkData(), s = S.data.settings, dirty = false, ctlRef = null;
+    var f = JSON.parse(JSON.stringify({ title: p.title, summary: p.summary, decisions: p.decisions, open: p.open, checks: p.checks, parts: p.parts,
+      price: p.price, sample: p.sample, listing: { copy: (p.listing || {}).copy || '', posts: ((p.listing || {}).posts || []).slice() } }));
+    while (f.listing.posts.length < 3) f.listing.posts.push('');
+    function touch() { dirty = true; paintCost(); }
+    function reopen() { if (ctlRef) ctlRef.close(); setTimeout(function () { openItem(id); }, 260); }
+    function payload() { return { title: f.title, summary: f.summary, decisions: f.decisions, open: f.open, checks: f.checks, parts: f.parts, price: f.price, sample: f.sample, listing: f.listing }; }
+    function saveFirst() { return dirty ? api('updateItem', id, payload()).then(function () { dirty = false; }) : Promise.resolve(); }
+    var costEl = h('div', { class: 'keep' });
+    function paintCost() {
+      var unit = f.parts.reduce(function (n, x) { return n + (Number(x.cost) || 0) * (Number(x.qty) || 1); }, 0);
+      var keep = f.price > 0 ? TidePricing.keep(f.price, unit, s.paymentFeePct, S.data.gstRegistered) : 0;
+      costEl.textContent = 'Costs ' + money(unit, { cents: true }) + ' to make' + (f.price > 0 ? ' · you keep ' + money(keep, { cents: true }) + ' a sale' + (keep > 0 ? ' · ' + Math.ceil(T.goal / keep) + ' a week reaches ' + money(T.goal) : '') : ' · no price yet');
+      costEl.classList.toggle('neg', f.price > 0 && keep < 0);
+    }
+    K.sheet({
+      title: p.title, tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
+      build: function (ctl) {
+        ctlRef = ctl;
+        var si = T.stages.indexOf(p.stage);
+        ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
+        if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Parked. Bring it back when you’re ready.', 'pause_circle')));
+        if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
+        if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (p.aiNote ? ': ' + p.aiNote : '.'), 'warning', 'warn')));
+
+        var s1 = sheetSection('What it is');
+        s1.appendChild(h('div', { class: 'field-gap' },
+          K.textField({ label: 'Name', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } }),
+          K.textField({ label: 'Summary', value: f.summary, multiline: true, maxlength: 2000, onInput: function (v) { f.summary = v; touch(); } })));
+        ctl.body.appendChild(s1);
+
+        var s2 = sheetSection('Decided');
+        s2.appendChild(K.textField({ label: 'One per line', value: f.decisions.join('\n'), multiline: true, maxlength: 6000, onInput: function (v) { f.decisions = v.split('\n').map(function (x) { return x.trim(); }).filter(String); touch(); } }));
+        ctl.body.appendChild(s2);
+
+        var s3 = sheetSection('Open questions'), oq = h('div', { class: 'field-gap' });
+        function drawOpen() {
+          oq.textContent = '';
+          f.open.forEach(function (o, i) { oq.appendChild(K.textField({ label: o.q, value: o.a, multiline: true, compact: true, maxlength: 1000, onInput: function (v) { o.a = v; touch(); } })); });
+          if (!f.open.length) oq.appendChild(h('p', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: 'None open.' }));
+        }
+        drawOpen();
+        s3.append(oq, h('div', { style: 'margin-top:10px' }, btn('text', 'Add a question', { icon: 'add', onclick: function () {
+          K.ask({ title: 'Open question', label: 'What still needs answering?', maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.open.push({ q: q, a: '' }); drawOpen(); touch(); } });
+        } })));
+        ctl.body.appendChild(s3);
+
+        var s4 = sheetSection('Checks'), ck = h('div');
+        function drawChecks() {
+          ck.textContent = '';
+          f.checks.forEach(function (c, i) {
+            ck.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
+              h('div', { class: 'body-m', text: c.item }), c.ai ? h('div', { class: 'body-s', style: 'color:var(--on-surface-variant);margin-top:2px', text: 'Drafted by AI: verify it' }) : null,
+              h('div', { style: 'margin:10px 0 8px' }, K.choices({ row: true, label: 'Status', value: c.status, options: T.checkStatus, onChange: function (v) { c.status = v; touch(); } })),
+              K.textField({ label: 'Note', value: c.note, compact: true, maxlength: 300, onInput: function (v) { c.note = v; touch(); } }),
+              h('div', { style: 'text-align:right' }, K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); }))));
+          });
+        }
+        drawChecks();
+        s4.append(ck, h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:6px' },
+          btn('text', 'Add a check', { icon: 'add', onclick: function () { K.ask({ title: 'Add a check', label: 'What needs confirming?', maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.checks.push({ item: q, status: 'To check', note: '' }); drawChecks(); touch(); } }); } }),
+          btn('tonal', 'Draft checks and parts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'checks'); }).then(refresh).then(function () { toast('Drafting. It’ll appear here shortly.'); reopen(); }).catch(fail); } })));
+        if (p.risks.length) { var rl = h('ul', { class: 'talk-list', style: 'margin-top:10px' }); p.risks.forEach(function (r) { rl.appendChild(h('li', { text: r })); }); s4.append(h('div', { class: 'label-s', style: 'margin:14px 4px 4px', text: 'Risks to watch' }), rl); }
+        ctl.body.appendChild(s4);
+
+        var s5 = sheetSection('Parts and costing'), pl = h('div');
+        function drawParts() {
+          pl.textContent = '';
+          f.parts.forEach(function (x, i) {
+            pl.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
+              h('div', { class: 'cols' }, K.textField({ label: 'Part', value: x.part, compact: true, maxlength: 120, onInput: function (v) { x.part = v; touch(); } }),
+                K.textField({ label: 'Supplier', value: x.supplier, compact: true, maxlength: 120, onInput: function (v) { x.supplier = v; touch(); } })),
+              h('div', { class: 'cols' }, K.textField({ label: 'Cost each', prefix: '$', inputmode: 'decimal', compact: true, value: x.cost || '', onInput: function (v) { x.cost = K.num(v); touch(); } }),
+                K.textField({ label: 'How many', inputmode: 'numeric', compact: true, value: x.qty || 1, onInput: function (v) { x.qty = Math.max(1, Math.round(K.num(v)) || 1); touch(); } })),
+              h('div', { style: 'text-align:right' }, K.iconBtn('delete', 'Remove part', function () { f.parts.splice(i, 1); drawParts(); touch(); }))));
+          });
+        }
+        drawParts();
+        s5.append(pl, btn('text', 'Add a part', { icon: 'add', onclick: function () { f.parts.push({ part: '', supplier: '', cost: 0, qty: 1 }); drawParts(); touch(); } }),
+          h('div', { style: 'margin-top:12px' }, K.textField({ label: 'Selling price', prefix: '$', inputmode: 'decimal', value: f.price || '', onInput: function (v) { f.price = K.num(v); touch(); } })), costEl);
+        ctl.body.appendChild(s5);
+
+        var s6 = sheetSection('Sample');
+        s6.append(K.choices({ row: true, label: 'Sample', value: f.sample.status || 'Not ordered', options: T.sampleStatus, onChange: function (v) { f.sample.status = v; touch(); } }),
+          h('div', { style: 'margin-top:10px' }, K.textField({ label: 'What we noticed', value: f.sample.notes || '', multiline: true, maxlength: 2000, onInput: function (v) { f.sample.notes = v; touch(); } })));
+        ctl.body.appendChild(s6);
+
+        var s7 = sheetSection('Listing and launch posts');
+        s7.appendChild(h('div', { class: 'field-gap' }, K.textField({ label: 'Listing (in ' + artist() + '’s voice)', value: f.listing.copy, multiline: true, maxlength: 3000, onInput: function (v) { f.listing.copy = v; touch(); } }),
+          f.listing.posts.map(function (txt, i) { return K.textField({ label: ['Teaser post', 'Reveal post', 'Last-call post'][i] || 'Post', value: txt, multiline: true, compact: true, maxlength: 1200, onInput: function (v) { f.listing.posts[i] = v; touch(); } }); })));
+        s7.appendChild(h('div', { style: 'margin-top:10px' }, btn('tonal', 'Draft the listing and posts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'copy'); }).then(refresh).then(function () { toast('Drafting in ' + artist() + '’s voice.'); reopen(); }).catch(fail); } })));
+        ctl.body.appendChild(s7);
+
+        // sign-offs and moving on
+        var s8 = sheetSection('Where it’s up to: ' + p.stage);
+        var ap = (p.approvals || {})[p.stage] || {};
+        p.gate.forEach(function (role) {
+          var nm = role === 'artist' ? cap(artist()) : adminName(), ok = ap[role];
+          s8.appendChild(h('div', { style: 'margin-bottom:8px' }, note(ok ? nm + ' approved this stage.' : 'Needs ' + nm + '’s OK.', ok ? 'check_circle' : 'hourglass_top', ok ? 'good' : '')));
+        });
+        if (p.blockers.length) s8.appendChild(h('p', { class: 'body-m', style: 'margin:6px 4px 10px', text: 'Before it moves on: ' + p.blockers.join(', ') + '.' }));
+        var row = h('div', { class: 'field-gap' });
+        if (p.needsMe) row.appendChild(btn('filled', 'I approve this stage', { icon: 'verified', block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('approveItem', id); }).then(refresh).then(function () { K.haptic('success'); toast('Approved.'); reopen(); }).catch(fail); } }));
+        if (p.stage !== 'Live') row.appendChild(btn(p.needsMe ? 'outlined' : 'filled', 'Move on to ' + T.stages[si + 1], { icon: 'arrow_forward', block: true, onclick: function (e) {
+          K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('advanceItem', id); }).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+        } }));
+        row.appendChild(btn('text', p.parked ? 'Bring it back' : 'Park it', { icon: p.parked ? 'restore' : 'pause_circle', onclick: function () { saveFirst().then(function () { return api('parkItem', id, !p.parked); }).then(refresh).then(reopen).catch(fail); } }));
+        s8.appendChild(row);
+        if (p.log.length) {
+          var lg = h('details', { class: 'talk-past', style: 'margin-top:12px' }, h('summary', { text: 'History' }));
+          p.log.forEach(function (l) { lg.appendChild(h('div', { class: 'body-s', style: 'padding:4px 0', text: K.dateLabel(l.at) + ': ' + l.text })); });
+          s8.appendChild(lg);
+        }
+        ctl.body.appendChild(s8);
+        paintCost();
+
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          K.setBusy(save, true);
+          api('updateItem', id, payload()).then(refresh).then(function () { dirty = false; K.haptic('success'); toast('Saved.'); reopen(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
+
   // ------------------------------------------------------------------ Notebook (making and expanding ideas)
   function notesFor(ideaId) { return S.data.notebook.filter(function (n) { return n.ideaId === ideaId; }); }
   function noteSnippet(n) { return String(n.body || '').replace(/\[\[([^\[\]|]+)(?:\|([^\[\]]*))?\]\]/g, function (m, a, b) { return b || a; }).replace(/\s+/g, ' ').trim().slice(0, 140); }
