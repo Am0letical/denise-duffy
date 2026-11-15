@@ -791,7 +791,7 @@ var TIDE = {
 var TIDE_SETTING_DEFAULTS = {
   gstRegisteredFrom: '',     // 'YYYY-MM-DD' from the day the business is registered for GST
   taxSetAsidePct: 30,        // placeholder: confirm with an accountant
-  paymentFeePct: 2,          // placeholder: the store's card fee
+  paymentFeePct: 1.65,       // Stripe's Australian card fee (1.65% + 30c), checked 15 Nov 2026
   defaultMarkupPct: 150,
   // originals first: prints wait while a new original has its head start, then sell as a limited run once it sells
   editionBufferDays: 30, editionSize: 50, quickEditionPct: 50,
@@ -808,7 +808,9 @@ var TIDE_SETTING_DEFAULTS = {
   lastBackupAt: '',         // set when the PC finishes a local backup (Backup.gs)
   // local models on the PC first, Claude when it escalates (LogicNotes.gs)
   localFirst: false, localFallbackMins: 60, localSeenAt: '', localModel: '',
-  incomeGoalWeekly: 200    // the first weekly income goal; the product pipeline shows sales needed to reach it
+  incomeGoalWeekly: 200,   // the first weekly income goal; the product pipeline shows sales needed to reach it
+  // getting set up in the app (LogicSetup.gs)
+  setupBasicsDone: false, starterLoaded: false, stripeDone: false, artistWelcomed: false
 };
 
 /**
@@ -1884,7 +1886,7 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role),
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(),
       hub: role === 'admin' ? hub.snapshot() : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
@@ -1968,6 +1970,10 @@ function createTideLogic(env) {
   var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf,
     createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push });
 
+  // ---------- getting set up in the app (LogicSetup.gs)
+  var setup = tideSetup(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
+    loadBacklog: talk.api.loadBacklog, addNote: notebook.addNote });
+
   var out = {
     // Everything the screens are allowed to call.
     api: {
@@ -1993,6 +1999,7 @@ function createTideLogic(env) {
   Object.keys(publish.api).forEach(function (k) { out.api[k] = publish.api[k]; });
   Object.keys(notebook.api).forEach(function (k) { out.api[k] = notebook.api[k]; });
   Object.keys(talk.api).forEach(function (k) { out.api[k] = talk.api[k]; });
+  Object.keys(setup.api).forEach(function (k) { out.api[k] = setup.api[k]; });
   return out;
 }
 
@@ -4100,7 +4107,7 @@ function tideTalk(env, t) {
 var TIDE_BACKLOG = [
   { title: '5-Day Ritual Tins', stage: 'Checks & costing',
     summary: 'A business-card tin: 5 small hand-painted cards with a reflection on the back, a hand-shaped clay candle holder, a beeswax candle (Happy Flame), matches, a ritual card and a thank-you postcard. Four themes: Artist’s Intuition, Ocean, Forest, Sky & Wild Wings. $49 launch, $58–65 full price, $75+ custom. Mirrors her own morning: candle, stillness, a card, gratitude.',
-    decisions: ['First product to launch', 'Paid by Stripe payment links at first (no website needed)', 'Marketed as a gift for someone going through a tough time, including a new diagnosis', 'The 5-day ritual follows her real morning ritual', 'Supplies ordered (per her handoff)'],
+    decisions: ['First product to launch', 'Paid by Stripe payment links at first (no website needed)', 'Marketed as a gift for someone going through a tough time', 'The 5-day ritual follows her real morning ritual', 'Supplies ordered (per her handoff)'],
     checks: [{ item: 'Matches can’t be posted: Australia Post prohibits matches of all kinds (research/TIN-CHECKS.md). Posted tins go without matches; full tins with matches in person only. Say so on the listing.', status: 'Problem' },
       { item: 'Burn-test the finished clay holder: a holder that catches fire and burns 5 seconds or more is banned (2011 ban). Keep a record; add a metal insert if it scorches.', status: 'To check' },
       { item: 'Happy Flame: confirm a lead-free wick in writing (wicks over 0.06% lead are banned) and ask to reuse their safety text', status: 'To check' },
@@ -4111,8 +4118,8 @@ var TIDE_BACKLOG = [
     parts: [{ part: 'Tin', qty: 1 }, { part: 'Watercolour cards (hand-painted)', qty: 5 }, { part: 'Clay for the holder', qty: 1 }, { part: 'Beeswax candle (Happy Flame)', qty: 1 },
       { part: 'Matches and glass bottle', qty: 1 }, { part: 'Ritual card and postcard (printed)', qty: 1 }, { part: 'Tissue, kraft and mailer', qty: 1 }, { part: 'Postage', qty: 1 }], price: 58 },
   { title: 'Ocean Mandala comfort scarf', stage: 'Decisions',
-    summary: '100 × 100 cm scarf in cotton lawn or bamboo viscose, gentle on a bare scalp, printed from her Ocean Mandala painting. Sample first (Digital Fabrics, Sydney, or Contrado). Her story behind it.',
-    decisions: ['For people on the same journey, among others', 'Sample before selling'],
+    summary: '100 × 100 cm scarf in cotton lawn or bamboo viscose, soft and breathable, printed from her Ocean Mandala painting. Sample first (Digital Fabrics, Sydney, or Contrado). Her story behind it.',
+    decisions: ['Sample before selling'],
     open: [{ q: 'Is the Ocean Mandala painting finished and scanned?', a: '' }, { q: 'Cotton lawn or bamboo viscose for the first sample?', a: '' }] },
   { title: 'Pockets of Magic sticker packs', stage: 'Idea',
     summary: 'Gratitude stickers from her painted pocket rocks and keepsakes, with little sayings in her words (curiosity, noticing). Sold as something you buy to make someone happy. Letter-size, cheap to post.' },
@@ -4121,13 +4128,121 @@ var TIDE_BACKLOG = [
     decisions: ['Online, print on demand only', 'Start from existing artwork rather than 18 new paintings'],
     open: [{ q: 'Which print-on-demand card service?', a: '' }, { q: 'Which pieces and messages for the first set?', a: '' }] },
   { title: 'Free ritual and gratitude guide', stage: 'Idea',
-    summary: 'A simple download for anyone starting out, especially after a first diagnosis: her morning ritual (candle, stillness, gratitude), as her own experience. Builds her email list; a QR card in centre sales points to it.' },
+    summary: 'A simple download: her morning ritual (candle, stillness, gratitude), shared as her own experience. Builds her email list; a QR card in centre sales points to it.' },
   { title: 'Playing and gratitude card deck', stage: 'Idea',
     summary: 'One 54-card deck that plays as normal cards and carries a gratitude prompt on each (suits as themes). Combines the Go Fish and "You Are Like Sunshine" deck ideas. Later.' },
   { title: 'Themed art bundles', stage: 'Idea',
     summary: 'Seasonal boxes: a print, a textile, ritual cards, a greeting card and a playful extra, numbered. Later, once single products sell.' },
   { title: 'Phone icon pack', stage: 'Idea', summary: 'An original icon set from her art (maybe the pocket rocks), sold as a download next to the wallpapers.' }
 ];
+
+/**
+ * Tide Book: getting set up inside the app, so nobody edits code. Shared by the app and the demo.
+ *
+ * Whoever runs setupTideBook becomes the first admin. From there the admin's "Get set up" checklist covers:
+ *   1. People: the artist's Google address and any other admins (the Sheet and files are shared with them).
+ *   2. Claude: paste the API key once (kept in Script Properties, never the Sheet), tested before it's saved.
+ *   3. The basics: GST, card fee, usual markup, the weekly goal.
+ *   4. Starter content: the saved product ideas into Products, and the brand notes into the Notebook.
+ *   Optional: phone buzzes, the PC helper, the local backup, Stripe.
+ * The artist gets a short welcome the first time she opens it.
+ * Google-only parts (Script Properties, sharing, the app's address) come through env.setup.
+ */
+
+function tideSetup(env, t) {
+  function s() { return env.settings.get(); }
+  function on(v) { return v === true || v === 'true' || v === 'TRUE'; }
+  function emails(list) {
+    return t.list(list).map(function (e) { return String(e || '').trim().toLowerCase(); }).filter(String).map(function (e) {
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) t.fail('“' + e + '” isn’t an email address.');
+      return e;
+    });
+  }
+
+  function status() {
+    var role = t.need(['admin', 'artist']), st = s();
+    if (role === 'artist') return { role: role, welcomed: on(st.artistWelcomed) };
+    var people = env.setup.people(), loaded = on(st.starterLoaded);
+    var steps = [
+      { key: 'people', title: 'Who uses it', done: people.artists.length > 0, required: true,
+        text: people.artists.length ? 'Shared with ' + people.artists.concat(people.admins).join(', ') + '.' : 'Add ' + env.brand.artistName + '’s Google address so she can open it.' },
+      { key: 'claude', title: 'Switch on the AI', done: !!env.features.research, required: true,
+        text: env.features.research ? 'Claude is on: questions, write-ups, research and drafts all work.' : 'Paste a Claude API key so Talk it through, research and drafts work.' },
+      { key: 'basics', title: 'The basics', done: on(st.setupBasicsDone), required: true, text: 'GST, card fee, usual markup and the weekly goal.' },
+      { key: 'starter', title: 'Starter content', done: loaded, required: true,
+        text: loaded ? 'Products and brand notes are in.' : 'Her product ideas into Products, and what we’ve decided about the brand into the Notebook.' },
+      { key: 'buzzes', title: 'Phone buzzes', done: !!st.notifyAdmin, required: false, text: 'Hear when questions are answered or something needs you.' },
+      { key: 'pc', title: 'The PC helper', done: !!st.localSeenAt, required: false, text: 'Everyday AI jobs on the PC’s own models first (free).' },
+      { key: 'backup', title: 'Local backup', done: !!st.lastBackupAt, required: false, text: 'Money and customer records copied to the PC daily.' },
+      { key: 'stripe', title: 'Taking payment', done: on(st.stripeDone), required: false, text: 'Stripe payment links for the first products.' }
+    ];
+    return { role: role, steps: steps, people: people, done: steps.filter(function (x) { return x.required && !x.done; }).length === 0 };
+  }
+
+  function savePeople(p) {
+    t.need(['admin']);
+    p = p || {};
+    var artists = emails(p.artists), admins = emails(p.admins);
+    if (!artists.length) t.fail('Add ' + env.brand.artistName + '’s Google address.');
+    if (artists.some(function (e) { return admins.indexOf(e) >= 0; })) t.fail('One address can’t be both the artist and an admin.');
+    return env.setup.setPeople(admins, artists);
+  }
+
+  function saveClaudeKey(key) {
+    t.need(['admin']);
+    key = String(key || '').trim();
+    if (!key) return env.setup.setClaudeKey('');
+    if (!/^sk-ant-[A-Za-z0-9_\-]{20,}$/.test(key)) t.fail('That doesn’t look like a Claude API key. It starts with sk-ant-.');
+    return env.setup.setClaudeKey(key);
+  }
+
+  function saveBasics(p) {
+    t.need(['admin']);
+    p = p || {};
+    var out = {};
+    if ('gstRegisteredFrom' in p) {
+      var d = String(p.gstRegisteredFrom || '');
+      if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d)) t.fail('Choose the date GST registration started.');
+      out.gstRegisteredFrom = d;
+    }
+    [['paymentFeePct', 'The card fee', 30], ['defaultMarkupPct', 'The usual markup', 2000], ['incomeGoalWeekly', 'The weekly goal', 100000]].forEach(function (k) {
+      if (!(k[0] in p)) return;
+      var n = Number(p[k[0]]);
+      if (!isFinite(n) || n < 0 || n > k[2]) t.fail(k[1] + ' needs to be between 0 and ' + k[2] + '.');
+      out[k[0]] = n;
+    });
+    out.setupBasicsDone = true;
+    env.settings.set(out);
+    return { ok: true };
+  }
+
+  /** The saved product ideas and the brand notes. Safe to run again: skips what's already there. */
+  function loadStarter() {
+    t.need(['admin']);
+    var added = t.loadBacklog().added, notes = 0;
+    var have = {}; t.rows('notebook').forEach(function (n) { if (!n.deleted) have[n.title.toLowerCase()] = true; });
+    var fill = function (x) { return x.replace(/\{artist\}/g, env.brand.artistName).replace(/\{admin\}/g, env.brand.adminName || 'admin'); };
+    (typeof TIDE_STARTER_NOTES !== 'undefined' ? TIDE_STARTER_NOTES : []).forEach(function (n) {
+      var title = fill(n.title);
+      if (have[title.toLowerCase()]) return;
+      t.addNote({ title: title, body: fill(n.body) });
+      notes++;
+    });
+    env.settings.set({ starterLoaded: true });
+    return { products: added, notes: notes };
+  }
+
+  function markStep(key) {
+    t.need(['admin']);
+    if (key === 'stripe') env.settings.set({ stripeDone: true });
+    return { ok: true };
+  }
+  function welcomed() { t.need(['artist']); env.settings.set({ artistWelcomed: true }); return { ok: true }; }
+  /** Admin only, and only when asked: the addresses and keys the PC tools and the Everygen task need. */
+  function connections() { t.need(['admin']); return env.setup.connections(); }
+
+  return { status: status, api: { setupStatus: status, savePeople: savePeople, saveClaudeKey: saveClaudeKey, saveBasics: saveBasics, loadStarter: loadStarter, markSetupStep: markStep, artistWelcomed: welcomed, setupConnections: connections } };
+}
 
 </script>
 <script>
@@ -4138,7 +4253,7 @@ var TIDE_BACKLOG = [
  */
 (function () {
   'use strict';
-  var KEY = 'tidebook-demo-v18';
+  var KEY = 'tidebook-demo-v19';
   var OPT = window.TIDE_DEMO || {};
   var role = location.hash === '#admin' ? 'admin' : 'artist';
   window.addEventListener('hashchange', function () { location.reload(); });
@@ -4184,6 +4299,13 @@ var TIDE_BACKLOG = [
         return prefix + '-' + ('0000000' + n).slice(-width);
       },
       lock: function (fn) { return fn(); },
+      // pretend versions of the Google-only setup parts (Script Properties, sharing, the app's address)
+      setup: {
+        people: function () { var p = db.people || { admins: [], artists: [] }; return { owner: 'you@example.com', admins: ['you@example.com'].concat(p.admins), artists: p.artists }; },
+        setPeople: function (admins, artists) { db.people = { admins: admins.filter(function (e) { return e !== 'you@example.com'; }), artists: artists }; save(); return { ok: true, shared: admins.concat(artists) }; },
+        setClaudeKey: function (key) { db.claudeOn = !!key; save(); return { ok: true, on: !!key }; },
+        connections: function () { return { appUrl: location.href.split('#')[0], localKey: 'demo-local-key', backupKey: 'demo-backup-key', editKey: 'demo-edit-key' }; }
+      },
       files: {
         folder: function (parts) { return '#demo-folder/' + parts.join('/'); },
         // The demo keeps only small thumbnails; full-size photos are not stored.
@@ -4294,7 +4416,7 @@ var TIDE_BACKLOG = [
     { q: 'What would make you proud of it?', o: ['It makes someone smile', 'It sells steadily', 'It’s beautiful to me', 'It helps someone'], m: true },
     { q: 'Anything you definitely don’t want it to be?', o: ['Mass-produced', 'Salesy', 'Too fiddly to make', 'Nothing comes to mind'], m: true },
     { q: 'When would you like to start?', o: ['This month', 'After the tins', 'Next year', 'No rush'], m: false },
-    { q: 'Who could help with it?', o: ['Jye', 'Tara', 'My husband', 'I’ll do it myself'], m: false }
+    { q: 'Who could help with it?', o: ['Jye', 'Family', 'A friend', 'I’ll do it myself'], m: false }
   ];
   function talkRound(ctx) {
     var used = 0; ctx.rounds.forEach(function (r) { used += r.questions.length; });
@@ -4347,9 +4469,17 @@ var TIDE_BACKLOG = [
     });
   }, 1500);
 
+  // The real starter notes are private (StarterNotes.gs, never in the demo). These are safe samples.
+  window.TIDE_STARTER_NOTES = [
+    { title: 'Brand decisions', body: 'Sample note for the demo. In the real app this holds what\'s been decided about the brand: the series, the voice, the words to use and avoid, and who can be named.\n\nSee [[Mind Garden]] and [[Pockets of Magic]].' },
+    { title: 'Mind Garden', body: 'Magical, make-believe paintings that mix everything {artist} loves: manta rays flying like butterflies over flowers, a whale swimming through the night sky.\n\nPart of [[Brand decisions]].' },
+    { title: 'Pockets of Magic', body: 'The little things picked up in nature, like a patterned rock or a heart-shaped stone, and the moments they hold. Some become pigments.\n\nPart of [[Brand decisions]].' },
+    { title: 'Ritual Tins: what we found', body: '- Matches can\'t be posted (Australia Post), so posted tins go without them.\n- Burn-test the clay holder.\n- Confirm a lead-free wick with the candle supplier.\n- Stripe: 1.65% + 30c per payment.' }
+  ];
+
   function seed() {
     var L = createTideLogic(makeEnv('admin'));
-    db.settings = { defaultMarkupPct: 150, paymentFeePct: 2, taxSetAsidePct: 30, priceRounding: 'dollar', gstRegisteredFrom: '', gstThreshold: 75000 };
+    db.settings = { defaultMarkupPct: 150, paymentFeePct: 1.65, taxSetAsidePct: 30, priceRounding: 'dollar', gstRegisteredFrom: '', gstThreshold: 75000 };
 
     // prints
     var prints = [
@@ -4541,7 +4671,7 @@ var TIDE_BACKLOG = [
     L.notebook.expand.save(lw.id, sampleExpansion(L.notebook.expand.context(lw.id)), 'PC (gemma3:12b)');
 
     // the product pipeline (her saved ideas at their stages), one topic talked through, one waiting for her
-    L.api.loadBacklog();
+    L.api.loadStarter();
     var AL = createTideLogic(makeEnv('artist'));
     function runAi() { var tl = createTideLogic(makeEnv('admin')).talk; tl.local.next(5).forEach(function (j) { tl.local.done(j.id, talkAnswer(j.context), 'gemma3:12b'); }); tl.ai.pending().forEach(function (r) { var c = tl.ai.context(r.id); tl.ai.sent(r.id); tl.ai.save(r.id, talkAnswer(c), 'Claude'); }); }
     var bm = AL.api.startTopic({ title: 'Moon water ink bookmarks', detail: 'Little bookmarks painted with my moon water inks, with a tassel. A small gift.' });
@@ -5759,6 +5889,7 @@ var Kit = (function () {
     if (!ADMIN) return viewHomeArtist(main, hello);
     pageTitle(main, hello, 'Here’s where everything is up to.');
     var needs = needsList(), n = 1;
+    n = setupCard(main, n);
     var rest = S.data.rest;
     if (rest) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note(cap(artist()) + ' is taking it easy' + (rest.until ? ' until ' + restDay(rest.until) : '') + '. Her buzzes and footage questions come to you; posts still wait for her approval.', 'spa')), n++));
     n = talkCards(main, n);
@@ -6019,6 +6150,130 @@ var Kit = (function () {
     }
     fab(main, 'New idea', 'add', function () { openIdeaForm(); });
   }
+  // ------------------------------------------------------------------ getting set up (LogicSetup.gs)
+  function setupCard(main, n) {
+    var st = S.data.setup;
+    if (!ADMIN || !st || st.done) return n;
+    var req = st.steps.filter(function (x) { return x.required; }), done = req.filter(function (x) { return x.done; }).length;
+    main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:14px' },
+      h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' }, h('span', { class: 'ic' }, icon('rocket_launch')),
+        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: 'Finish getting set up' }),
+          h('p', { class: 'body-m', style: 'margin-top:4px', text: done + ' of ' + req.length + ' done. A few minutes, all in the app.' }),
+          h('div', { class: 'talk-bar' }, h('i', { style: 'width:' + Math.round(done / req.length * 100) + '%' })))),
+      h('div', { style: 'margin-top:12px' }, btn('filled', 'Carry on', { icon: 'arrow_forward', onclick: openSetup }))), n++));
+    return n;
+  }
+
+  function openSetup() {
+    var st = S.data.setup, ctlRef = null;
+    if (!st || !st.steps) return;
+    function reopen(msg) { refresh().then(function () { if (ctlRef) ctlRef.close(); render(); if (msg) toast(msg); setTimeout(openSetup, 280); }).catch(fail); }
+    function stepCard(step, body) {
+      var card = h('div', { class: 'card pad setup-step' + (step.done ? ' done' : ''), style: 'margin-bottom:12px' },
+        h('div', { class: 'row', style: 'gap:10px;align-items:center' }, icon(step.done ? 'check_circle' : 'radio_button_unchecked', step.done),
+          h('div', { class: 'grow title-m', text: step.title }), step.required ? null : chip('Optional', 'outline')),
+        h('p', { class: 'body-m', style: 'margin:6px 0 10px;color:var(--on-surface-variant)', text: step.text }));
+      if (body) card.appendChild(body);
+      return card;
+    }
+    function by(key) { return st.steps.filter(function (x) { return x.key === key; })[0]; }
+    K.sheet({
+      title: 'Get set up', tall: true, onClose: function () { render(); },
+      build: function (ctl) {
+        ctlRef = ctl;
+
+        // 1. people
+        var others = st.people.admins.filter(function (e) { return e !== st.people.owner; });
+        var pf = { artist: st.people.artists.join(', '), admins: others.join(', ') };
+        var pBody = h('div', { class: 'field-gap' },
+          K.textField({ label: cap(artist()) + '’s Google address', type: 'email', value: pf.artist, onInput: function (v) { pf.artist = v; } }),
+          K.textField({ label: 'Other admins (optional)', value: pf.admins, help: 'You’re in already' + (st.people.owner ? ' (' + st.people.owner + ')' : '') + '. Separate several with commas.', onInput: function (v) { pf.admins = v; } }),
+          btn('tonal', 'Save and share', { icon: 'send', onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            var split = function (v) { return v.split(/[,\s]+/).filter(String); };
+            api('savePeople', { artists: split(pf.artist), admins: split(pf.admins) }).then(function () { reopen('Shared. They can open Tide Book with the app link.'); })
+              .catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+          } }));
+        ctl.body.appendChild(stepCard(by('people'), pBody));
+
+        // 2. Claude
+        var key = '';
+        var kField = K.textField({ label: by('claude').done ? 'Replace the key' : 'Claude API key', type: 'password', onInput: function (v) { key = v; },
+          help: 'From console.anthropic.com → API keys (it needs a payment method; most questions cost a few cents). Kept in the script’s private settings, never in the Sheet.' });
+        var kBody = h('div', { class: 'field-gap' }, kField, btn('tonal', 'Check and save', { icon: 'check', onclick: function (e) {
+          if (!key.trim()) { kField.input.focus(); return; }
+          K.setBusy(e.currentTarget, true);
+          api('saveClaudeKey', key).then(function () { reopen('Claude is on.'); }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+        } }));
+        ctl.body.appendChild(stepCard(by('claude'), kBody));
+
+        // 3. basics
+        var s = S.data.settings, bf = { gstOn: !!s.gstRegisteredFrom, gstRegisteredFrom: s.gstRegisteredFrom || S.data.today, paymentFeePct: s.paymentFeePct, defaultMarkupPct: s.defaultMarkupPct, incomeGoalWeekly: s.incomeGoalWeekly };
+        var gstDate = K.textField({ label: 'Registered from', type: 'date', value: bf.gstRegisteredFrom, onInput: function (v) { bf.gstRegisteredFrom = v; } });
+        gstDate.hidden = !bf.gstOn;
+        var bBody = h('div', { class: 'field-gap' },
+          h('div', { class: 'switch-row', style: 'padding:0' }, h('div', {}, h('div', { class: 'title-m', text: 'Registered for GST' }), h('div', { class: 'body-m', text: 'Leave off until the business registers.' })),
+            K.switchBtn({ checked: bf.gstOn, label: 'Registered for GST', onChange: function (v) { bf.gstOn = v; gstDate.hidden = !v; } })),
+          gstDate,
+          K.textField({ label: 'Card fee', suffix: '%', inputmode: 'decimal', value: bf.paymentFeePct, help: 'Stripe in Australia: 1.65% (plus 30c).', onInput: function (v) { bf.paymentFeePct = K.num(v); } }),
+          K.textField({ label: 'Usual markup on cost', suffix: '%', inputmode: 'decimal', value: bf.defaultMarkupPct, onInput: function (v) { bf.defaultMarkupPct = K.num(v); } }),
+          K.textField({ label: 'Weekly income goal', prefix: '$', inputmode: 'decimal', value: bf.incomeGoalWeekly, onInput: function (v) { bf.incomeGoalWeekly = K.num(v); } }),
+          btn('tonal', 'Save', { icon: 'check', onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            api('saveBasics', { gstRegisteredFrom: bf.gstOn ? bf.gstRegisteredFrom : '', paymentFeePct: bf.paymentFeePct, defaultMarkupPct: bf.defaultMarkupPct, incomeGoalWeekly: bf.incomeGoalWeekly })
+              .then(function () { reopen('Saved.'); }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+          } }));
+        ctl.body.appendChild(stepCard(by('basics'), bBody));
+
+        // 4. starter content
+        ctl.body.appendChild(stepCard(by('starter'), btn(by('starter').done ? 'text' : 'tonal', by('starter').done ? 'Load again (adds anything missing)' : 'Load it', { icon: 'download', onclick: function (e) {
+          K.setBusy(e.currentTarget, true);
+          api('loadStarter').then(function (r) { reopen(r.products + ' products and ' + r.notes + ' notes added.'); }).catch(fail);
+        } })));
+
+        // optional
+        ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin:18px 4px 8px', text: 'When you’re ready' }));
+        ctl.body.appendChild(stepCard(by('buzzes'), btn('text', 'Open notification settings', { icon: 'notifications', onclick: function () { ctl.close(); S.adminTab = 'settings'; setTimeout(function () { go('settings'); }, 260); } })));
+        var reveal = function (which) {
+          return btn('text', 'Show the details', { icon: 'visibility', onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            api('setupConnections').then(function (c) {
+              var box = h('div', { class: 'field-gap', style: 'margin-top:8px' },
+                h('div', { class: 'body-s', text: 'Address: ' + (c.appUrl || '(deploy the web app first)') }),
+                h('div', { class: 'body-s', style: 'word-break:break-all', text: 'Key: ' + (which === 'pc' ? c.localKey : c.backupKey) }),
+                h('p', { class: 'tf-help', style: 'margin:0', text: which === 'pc' ? 'Put both into pc/tidebook_local.ini on the PC (PC-HELPER.md). Keep the key private.' : 'Put both into backup/tidebook_backup.ini on the PC (BACKUP.md). Keep the key private.' }));
+              e.currentTarget.replaceWith(box);
+            }).catch(fail);
+          } });
+        };
+        ctl.body.appendChild(stepCard(by('pc'), reveal('pc')));
+        ctl.body.appendChild(stepCard(by('backup'), reveal('backup')));
+        ctl.body.appendChild(stepCard(by('stripe'), h('div', { class: 'field-gap' },
+          h('p', { class: 'body-m', text: 'Sign up at stripe.com/au in ' + artist() + '’s name, then make a payment link per product (STRIPE-CHECKLIST.md). Save each link in Admin › Accounts. Posted tins go without matches.' }),
+          by('stripe').done ? null : btn('text', 'Mark as done', { icon: 'check', onclick: function () { api('markSetupStep', 'stripe').then(function () { reopen(); }).catch(fail); } }))));
+      }
+    });
+  }
+
+  /** The artist's first time: what's here, in a few lines. */
+  function artistWelcome() {
+    if (ADMIN || !S.data.setup || S.data.setup.welcomed || window.TIDE_DEMO) return;
+    K.sheet({
+      title: 'Welcome to Tide Book',
+      build: function (ctl) {
+        [['palette', 'Your artworks', 'Add a piece with a photo. Prints and anything it’s made into sit with it.'],
+          ['forum', 'Talk it through', 'Got something on your mind? Name it and answer a few questions at a time. It’s written up and filed for you.'],
+          ['sell', 'Products', 'Each product, from idea to live. You OK the sample and the words.'],
+          ['spa', 'Taking it easy', 'On a low day, switch it on from Home and everything goes to ' + adminName() + '.']].forEach(function (r) {
+          ctl.body.appendChild(h('div', { class: 'row', style: 'gap:12px;align-items:flex-start;margin-bottom:14px' }, h('span', { class: 'ic' }, icon(r[0])),
+            h('div', { class: 'grow' }, h('div', { class: 'title-m', text: r[1] }), h('p', { class: 'body-m', style: 'margin-top:2px', text: r[2] }))));
+        });
+        ctl.body.appendChild(h('p', { class: 'tf-help', text: 'Tip: in your browser’s menu, Add to Home Screen, so it opens like an app.' }));
+        ctl.foot.appendChild(btn('filled', 'Let’s go', { icon: 'arrow_forward', lg: true, block: true, onclick: function () { api('artistWelcomed').catch(function () {}); S.data.setup.welcomed = true; ctl.close(); } }));
+      }
+    });
+  }
+
   // ------------------------------------------------------------------ Talk it through
   var TALK_ICON = { Product: 'sell', Idea: 'lightbulb', Artwork: 'palette', Story: 'chat', 'App feature': 'settings', Other: 'sticky_note_2' };
   function talkData() { return S.data.talk || { topics: [], pipeline: [], stages: [], kinds: [], checkStatus: [], sampleStatus: [], goal: 200 }; }
@@ -8494,6 +8749,7 @@ var Kit = (function () {
   function viewSettings(main) {
     var s = S.data.settings, f = { defaultMarkupPct: s.defaultMarkupPct, priceRounding: s.priceRounding, paymentFeePct: s.paymentFeePct,
       taxSetAsidePct: s.taxSetAsidePct, gstOn: !!s.gstRegisteredFrom, gstRegisteredFrom: s.gstRegisteredFrom || S.data.today };
+    if (S.data.setup && S.data.setup.steps) main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, btn(S.data.setup.done ? 'outlined' : 'filled', S.data.setup.done ? 'Setup and connections' : 'Finish getting set up', { icon: 'rocket_launch', block: true, onclick: openSetup })), 1));
 
     var p = section('Pricing');
     p.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
@@ -8602,7 +8858,7 @@ var Kit = (function () {
   setInterval(quietRefresh, 120000);
   window.TideBook = { refresh: quietRefresh };
 
-  refresh().then(render).catch(function (e) {
+  refresh().then(render).then(function () { setTimeout(artistWelcome, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
