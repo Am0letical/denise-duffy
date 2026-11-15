@@ -282,33 +282,36 @@ footer .legal { max-width: 1320px; margin: 18px auto 0; display: flex; justify-c
 body:has(.mock) .hero { height: calc(100svh - 30px); }
 @media (max-width: 640px) { body:has(.mock) .hero { height: calc(100svh - 48px); min-height: 560px; } }
 
-/* ================= Living gallery: a free-form walk on warm paper ================= */
+/* ================= Living gallery: a walk into the work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; }
 .lg.on { opacity: 1; pointer-events: auto; }
 .lg-wash { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(55vw 45vh at 8% 6%, rgba(143, 211, 223, .22), transparent 70%),
               radial-gradient(45vw 40vh at 96% 30%, rgba(233, 138, 166, .14), transparent 70%),
               radial-gradient(60vw 45vh at 40% 104%, rgba(143, 211, 223, .16), transparent 70%); }
-.lg-top { position: absolute; z-index: 5; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; pointer-events: none; }
+.lg-top { position: absolute; z-index: 5; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 44px 22px 18px; pointer-events: none; }
 .lg-top > * { pointer-events: auto; }
 .lg-name { text-decoration: none; color: inherit; font: 500 19px/1.1 var(--display, Georgia, serif); }
 .lg-name small { display: block; font: 500 10px/1.8 var(--font, sans-serif); letter-spacing: 3px; text-transform: uppercase; opacity: .6; }
 .lg-close { border: 0; border-radius: 999px; height: 40px; padding: 0 18px; background: rgba(251, 247, 240, .85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: inset 0 0 0 1px rgba(26, 29, 34, .14); font: 500 11px/1 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; color: inherit; }
 
+/* the scroll only measures how far you've walked; the stage stays put and the world moves past you */
 .lg-scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .lg-scroll::-webkit-scrollbar { display: none; }
-.lg-inner { position: relative; max-width: 1280px; margin: 0 auto; padding: 22vh 22px 16vh; display: flex; flex-direction: column; gap: clamp(40px, 8vh, 110px); }
+.lg-track { position: relative; }
+.lg-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; perspective: 1000px; perspective-origin: 50% 46%; }
+.lg-world { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; will-change: transform; }
+.lg-item { position: absolute; left: 0; top: 0; margin: 0; visibility: hidden; will-change: transform, opacity; backface-visibility: hidden; }
+.lg-mote { position: absolute; left: 0; top: 0; border-radius: 50%; pointer-events: none; visibility: hidden; will-change: transform, opacity; }
 
-/* pieces float at different sizes and places; edges feather into the paper */
-.lg-piece { margin: 0; will-change: transform; opacity: 0; translate: 0 40px; transition: opacity 1.2s cubic-bezier(.2, .7, .1, 1), translate 1.4s cubic-bezier(.2, .7, .1, 1); }
-.lg-piece.in, .lg-words.in, .lg-end.in { opacity: 1; translate: 0 0; }
+/* pieces: edges feather into the paper, a soft shadow lifts them off it */
 .lg-img { position: relative; overflow: hidden; cursor: zoom-in; aspect-ratio: var(--ar, 4 / 5);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent, #000 6%, #000 94%, transparent);
-  -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent, #000 6%, #000 94%, transparent); mask-composite: intersect; }
-.lg-piece.tall .lg-img { --ar: 126 / 214; }
-.lg-img canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s cubic-bezier(.2, .7, .1, 1); }
-.lg-img:hover canvas { transform: scale(1.035); }
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent), linear-gradient(180deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent), linear-gradient(180deg, transparent, #000 5%, #000 95%, transparent); mask-composite: intersect; }
+.lg-piece::before { content: ''; position: absolute; z-index: -1; left: 8%; right: 8%; top: 12%; height: 76%; background: rgba(60, 45, 30, .16); filter: blur(28px); transform: translate(10px, 18px); pointer-events: none; }
+.lg-img canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s cubic-bezier(.16, 1, .3, 1); }
+.lg-img:hover canvas { transform: scale(1.03); }
 .lg-piece figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 12px; padding: 0 4%; }
 .lg-piece figcaption b { font: 500 italic 18px/1.3 var(--display, Georgia, serif); }
 .lg-piece figcaption span { font: 400 13px/1.4 var(--font, sans-serif); color: #5d6168; width: 100%; order: 2; }
@@ -318,29 +321,38 @@ body:has(.mock) .hero { height: calc(100svh - 30px); }
 .lg-ph { position: absolute; inset: 0; display: grid; place-items: center; background: repeating-linear-gradient(135deg, rgba(26, 29, 34, .04) 0 10px, transparent 10px 20px), rgba(143, 211, 223, .12); }
 .lg-ph span { font: 500 italic 20px/1 var(--display, Georgia, serif); opacity: .55; }
 
-/* her words between the pieces */
-.lg-words { max-width: 760px; opacity: 0; translate: 0 30px; transition: opacity 1.2s ease, translate 1.4s cubic-bezier(.2, .7, .1, 1); }
-.lg-words p { font: 500 clamp(30px, 4.6vw, 64px)/1.08 var(--display, Georgia, serif); letter-spacing: -.02em; }
+/* her words, floating in the middle of the path */
+.lg-words { text-align: center; pointer-events: none; }
+.lg-words p { font: 500 clamp(34px, 5.4vw, 78px)/1.06 var(--display, Georgia, serif); letter-spacing: -.02em; }
 .lg-words.it p { font-style: italic; color: var(--ocean, #1B4F86); }
-.lg-words.small p { font-size: clamp(22px, 2.6vw, 34px); }
+.lg-words.small p { font-size: clamp(26px, 3.4vw, 46px); }
 .lg-words span { display: block; font: 500 10px/1 var(--font, sans-serif); letter-spacing: 3px; text-transform: uppercase; color: #5d6168; margin-bottom: 14px; }
-.lg-end { text-align: center; opacity: 0; translate: 0 30px; transition: opacity 1.2s ease, translate 1.4s ease; }
-.lg-end p { font: 500 italic clamp(26px, 3.4vw, 44px)/1.2 var(--display, Georgia, serif); margin-bottom: 22px; }
+.lg-end { text-align: center; }
+.lg-end p { font: 500 italic clamp(28px, 3.8vw, 52px)/1.2 var(--display, Georgia, serif); margin-bottom: 22px; }
 .lg-end div { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
 
-@media (max-width: 700px) {
-  .lg-inner { padding-top: 16vh; gap: 70px; }
-  .lg-piece { width: 78% !important; }
-  .lg-piece:nth-of-type(even) { margin-left: 22% !important; }
-  .lg-piece:nth-of-type(odd) { margin-left: 0 !important; }
-  .lg-piece.tall { width: 60% !important; }
-  .lg-words { margin-left: 0 !important; }
-}
+.lg-words p, .lg-end p { text-shadow: 0 0 18px #FBF7F0, 0 0 36px #FBF7F0; }
+@media (max-width: 700px) { .lg-words p { font-size: 50px; } .lg-words.small p { font-size: 40px; } .lg-end p { font-size: 40px; } .lg-bar { right: 12px; } }
+
+/* where you are, and a first nudge */
+.lg-hint { position: absolute; z-index: 4; left: 50%; bottom: 34px; transform: translateX(-50%); font: 500 10px/1 var(--font, sans-serif); letter-spacing: 3px; text-transform: uppercase; color: #5d6168; pointer-events: none; transition: opacity .8s ease; animation: lgHint 2.4s ease-in-out infinite; }
+.lg-hint::after { content: ''; display: block; width: 1px; height: 26px; margin: 12px auto 0; background: currentColor; opacity: .6; }
+.lg-hint.gone { opacity: 0; animation: none; }
+@keyframes lgHint { 50% { transform: translate(-50%, 6px); } }
+.lg-bar { position: absolute; z-index: 4; right: 22px; top: 50%; height: 120px; margin-top: -60px; width: 1px; background: rgba(26, 29, 34, .14); }
+.lg-bar i { position: absolute; inset: 0; background: var(--ocean, #1B4F86); transform-origin: top; transform: scaleY(0); }
+
+/* reduced motion: a plain scroll, no flying */
+.lg.flat .lg-stage { position: static; height: auto; perspective: none; overflow: visible; }
+.lg.flat .lg-world { position: relative; left: 0; top: 0; width: auto; height: auto; max-width: 1280px; margin: 0 auto; padding: 22vh 22px 16vh; display: flex; flex-direction: column; gap: 90px; transform: none; }
+.lg.flat .lg-item { position: relative; visibility: visible; transform: none; }
+.lg.flat .lg-words { text-align: left; } .lg.flat .lg-end { text-align: center; }
+.lg.flat .lg-mote, .lg.flat .lg-hint, .lg.flat .lg-bar { display: none; }
 
 /* intro: her name rises, then the paper opens */
 .lg-intro { position: absolute; inset: 0; z-index: 9; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FBF7F0; transition: opacity .9s ease .1s, visibility 0s 1s; }
 .lg-intro.done { opacity: 0; visibility: hidden; }
-.lg-intro h2 { font: 500 clamp(44px, 9vw, 110px)/1 var(--display, Georgia, serif); display: flex; overflow: hidden; padding: 0 .05em .14em; color: var(--ocean-ink, #06284A); }
+.lg-intro h2 { font: 500 clamp(44px, 9vw, 110px)/1 var(--display, Georgia, serif); display: flex; overflow: hidden; padding: 0 .05em .24em; color: var(--ocean-ink, #06284A); }
 .lg-intro h2 span { display: inline-block; transform: translateY(110%); animation: lgUp 1s cubic-bezier(.2, .7, .1, 1) forwards; }
 .lg-intro p { font: 500 11px/1 var(--font, sans-serif); letter-spacing: 6px; text-transform: uppercase; opacity: 0; animation: lgFade 1s ease .8s forwards; margin-top: 16px; }
 @keyframes lgUp { to { transform: none; } }
@@ -363,7 +375,6 @@ body:has(.mock) .hero { height: calc(100svh - 30px); }
 .rv-note { width: 100%; text-align: center; font-size: 12px; opacity: .65; }
 .rv-help { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font: 500 11px/1 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; padding: 10px 16px; border-radius: 999px; background: rgba(251, 247, 240, .85); box-shadow: inset 0 0 0 1px rgba(26, 29, 34, .12); pointer-events: none; transition: opacity .6s ease; z-index: 2; }
 .rv-fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-@media (prefers-reduced-motion: reduce) { .lg-piece, .lg-words, .lg-end { transition: none; opacity: 1; translate: none; } }
 
 /* ================= Her visual language, layered over the site =================
    Ink line (a flannel flower drawn in one line), watercolour edges and blooms, paper grain, carved-paper
@@ -931,9 +942,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 })();
 </script>
 <script>
-/* Living gallery: a free-form walk through the work, in the spirit of ruthgriffioen.art. Warm paper, soft
-   weighted scrolling, pieces floating at different sizes and drifting at their own pace, feathered edges, her
-   words set between them. "Feel the texture" opens the raking-light viewer below. No libraries. */
+/* Living gallery: a walk INTO the work. Warm paper haze, pieces hanging at different depths; scrolling carries
+   you forward past them on a gently winding path, her words floating between. "Feel the texture" opens the
+   raking-light viewer below. Reduced-motion visitors get a plain scroll. No libraries. */
 (function () {
   'use strict';
   var ART = window.ART || {};
@@ -956,7 +967,11 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     { kind: 'piece', id: 'light', title: 'Light on the water', medium: 'Port Stephens', src: 'footage-ocean', crop: [0, 90, 361, 460], photo: true, size: 0.3, x: 0.56, speed: 0.18, lift: 80 },
     { kind: 'end' }
   ];
-  var el, scroller, inner, items = [], open = false, raf = 0, target = 0, cur = 0, wheeling = false;
+  var el, scroller, track, stage, world, hint, bar, items = [], motes = [], open = false, raf = 0, target = 0, cur = 0, wheeling = false;
+  // 3D walk: every item hangs at its own depth; scrolling carries you forward through them.
+  // dz = how far an item is in front of (+) or behind (-) the picture plane. Natural size at dz 0.
+  var GAP = 1150, FIRST = 900, STOP = 380, maxP = 0, W = 0, H = 0, FLAT = REDUCED;
+  var cam = { x: 0, y: 0, ox: 50, oy: 46, tox: 50, toy: 46 }, moved = false;
 
   function h(tag, attrs, html) { var e = document.createElement(tag); if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); }); if (html != null) e.innerHTML = html; return e; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -975,25 +990,25 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   window.__galleryPieceCanvas = pieceCanvas;
 
   function build() {
-    el = h('div', { class: 'lg', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Living gallery' });
+    el = h('div', { class: 'lg' + (FLAT ? ' flat' : ''), role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Living gallery' });
     el.innerHTML = '<div class="lg-wash"></div>' +
       '<div class="lg-top"><a class="lg-name" href="#/">Denise Duffy<small>Living gallery</small></a><button class="lg-close" type="button" aria-label="Leave the gallery">Close</button></div>' +
-      '<div class="lg-scroll"><div class="lg-inner"></div></div>' +
+      '<div class="lg-scroll"><div class="lg-track"><div class="lg-stage"><div class="lg-world"></div></div></div></div>' +
+      '<div class="lg-hint">Scroll to walk in</div><div class="lg-bar"><i></i></div>' +
       '<div class="lg-intro"><h2></h2><p>Living gallery</p></div>';
     document.body.appendChild(el);
-    scroller = el.querySelector('.lg-scroll'); inner = el.querySelector('.lg-inner');
+    scroller = el.querySelector('.lg-scroll'); track = el.querySelector('.lg-track'); stage = el.querySelector('.lg-stage');
+    world = el.querySelector('.lg-world'); hint = el.querySelector('.lg-hint'); bar = el.querySelector('.lg-bar i');
     el.querySelector('.lg-close').addEventListener('click', function () { location.hash = '#/'; });
+    var side = 1;
     WALK.forEach(function (w, i) {
       var node;
       if (w.kind === 'words') {
-        node = h('div', { class: 'lg-words' + (w.small ? ' small' : '') + (w.italic ? ' it' : '') }, (w.sub ? '<span>' + esc(w.sub) + '</span>' : '') + '<p>' + esc(w.text) + '</p>');
-        if (w.x != null) node.style.marginLeft = (w.x * 100) + '%';
+        node = h('div', { class: 'lg-item lg-words' + (w.small ? ' small' : '') + (w.italic ? ' it' : '') }, (w.sub ? '<span>' + esc(w.sub) + '</span>' : '') + '<p>' + esc(w.text) + '</p>');
       } else if (w.kind === 'end') {
-        node = h('div', { class: 'lg-end' }, '<p>Every piece begins with noticing.</p><div><a class="lg-link" href="#/c/coast">Shop the work</a><a class="lg-link" href="#/c/originals">Commission a piece</a><a class="lg-link" href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a></div>');
+        node = h('div', { class: 'lg-item lg-end' }, '<p>Every piece begins with noticing.</p><div><a class="lg-link" href="#/c/coast">Shop the work</a><a class="lg-link" href="#/c/originals">Commission a piece</a><a class="lg-link" href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a></div>');
       } else {
-        node = h('figure', { class: 'lg-piece' + (w.tall ? ' tall' : '') + (w.kind === 'wait' ? ' wait' : '') });
-        node.style.width = (w.size * 100) + '%'; node.style.marginLeft = (w.x * 100) + '%';
-        if (w.lift) node.style.marginTop = w.lift + 'px';
+        node = h('figure', { class: 'lg-item lg-piece' + (w.tall ? ' tall' : '') + (w.kind === 'wait' ? ' wait' : '') });
         var frame = h('div', { class: 'lg-img' });
         frame.style.setProperty('--ar', w.crop ? w.crop[2] + ' / ' + w.crop[3] : w.kind === 'wait' ? '4 / 5' : '1');
         if (w.kind === 'wait') frame.innerHTML = '<div class="lg-ph"><span>' + esc(w.title) + '</span></div>';
@@ -1003,53 +1018,112 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         if (w.kind === 'piece' && !w.photo) cap += '<button class="lg-link" type="button" data-feel="' + i + '">Feel the texture</button>';
         if (w.shop) cap += '<a class="lg-link" href="#/a/' + w.shop + '">Shop</a>';
         node.insertAdjacentHTML('beforeend', cap + '</figcaption>');
-        if (w.kind === 'piece' && !w.photo) frame.addEventListener('click', function () { openViewer(w); });
+        // a far piece flies you to it; a near one opens the texture viewer
+        frame.addEventListener('click', function () {
+          if (!FLAT && node._dz < -700) { flyTo(node); return; }
+          if (w.kind === 'piece' && !w.photo) openViewer(w);
+        });
+        node._side = w.x + w.size / 2 < 0.5 ? -1 : 1;
+        if (Math.abs(w.x + w.size / 2 - 0.5) < 0.08) { node._side = side; side = -side; }
       }
-      node.dataset.speed = w.speed || 0;
-      inner.appendChild(node);
-      items.push(node);
+      node._w = w; node._i = i; node._D = FIRST + i * GAP;
+      world.appendChild(node); items.push(node);
     });
-    inner.addEventListener('click', function (e) { var b = e.target.closest('[data-feel]'); if (b) openViewer(WALK[+b.dataset.feel]); });
-    // soft, weighted scrolling with a wheel or trackpad; phones keep their own natural momentum
+    // soft washes of pigment hanging at every depth, so the space reads as deep
+    var COLS = ['143,211,223', '233,138,166', '27,79,134', '242,196,90'];
+    for (var m = 0; m < 22; m++) {
+      var mo = h('i', { class: 'lg-mote' }), r = Math.sin(m * 91.7) * 0.5 + 0.5, q = Math.sin(m * 37.3) * 0.5 + 0.5;
+      mo._D = 300 + (m / 22) * (WALK.length * GAP) + r * 400; mo._x = (q - 0.5) * 2.4; mo._y = (r - 0.5) * 1.6; mo._s = 160 + q * 360;
+      mo.style.background = 'radial-gradient(closest-side, rgba(' + COLS[m % 4] + ',' + (m % 4 === 2 ? 0.12 : 0.28) + '), transparent)';
+      world.appendChild(mo); motes.push(mo);
+    }
+    world.addEventListener('click', function (e) { var b = e.target.closest('[data-feel]'); if (b) openViewer(WALK[+b.dataset.feel]); });
+    // weighted wheel/trackpad scrolling; phones keep their own natural momentum
     if (!TOUCH && !REDUCED) {
       scroller.addEventListener('wheel', function (e) {
+        if (document.querySelector('.rv.on')) return;
         e.preventDefault();
         if (!wheeling) { target = cur = scroller.scrollTop; wheeling = true; }
-        target = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, target + e.deltaY));
-        kick();
+        var d = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaMode === 2 ? e.deltaY * H : e.deltaY;
+        target = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, target + d * 1.15));
       }, { passive: false });
     }
-    scroller.addEventListener('scroll', function () { if (!wheeling) kick(); }, { passive: true });
     document.addEventListener('keydown', function (e) {
       if (!open || document.querySelector('.rv.on')) return;
       if (e.key === 'Escape') location.hash = '#/';
-      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); target = Math.min(scroller.scrollHeight, (wheeling ? target : scroller.scrollTop) + innerHeight * 0.6); wheeling = true; cur = scroller.scrollTop; kick(); }
-      if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); target = Math.max(0, (wheeling ? target : scroller.scrollTop) - innerHeight * 0.6); wheeling = true; cur = scroller.scrollTop; kick(); }
+      var step = FLAT ? H * 0.6 : GAP;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go((wheeling ? target : scroller.scrollTop) + step); }
+      if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go((wheeling ? target : scroller.scrollTop) - step); }
     });
-    // pieces rise in as they arrive
-    if ('IntersectionObserver' in window && !REDUCED) {
-      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { root: scroller, rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
-      items.forEach(function (n) { io.observe(n); });
-    } else items.forEach(function (n) { n.classList.add('in'); });
+    if (!TOUCH && !REDUCED) el.addEventListener('pointermove', function (e) { cam.tox = 50 - (e.clientX / W - 0.5) * 14; cam.toy = 46 - (e.clientY / H - 0.5) * 10; });
+    if (FLAT) scroller.addEventListener('scroll', kick, { passive: true });
+    scroller.addEventListener('scroll', function () { if (scroller.scrollTop > 20 && !moved) { moved = true; hint.classList.add('gone'); } kick(); }, { passive: true });
+    window.addEventListener('resize', layout);
+  }
+
+  function go(y) { cur = scroller.scrollTop; target = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, y)); wheeling = true; kick(); }
+  function flyTo(n) { go(n._D - (n._w.kind === 'end' ? STOP : 520)); }
+
+  // place everything in the world for this screen size
+  function layout() {
+    if (!el) return;
+    W = scroller.clientWidth || innerWidth; H = scroller.clientHeight || innerHeight;
+    var narrow = W < 700, unit = Math.min(W, 1400);
+    items.forEach(function (n) {
+      var w = n._w;
+      if (FLAT) { if (w.size) { n.style.width = (narrow ? 78 : w.size * 100) + '%'; n.style.marginLeft = (narrow ? (n._i % 2) * 22 : w.x * 100) + '%'; } return; }
+      if (w.kind === 'words' || w.kind === 'end') { n._X = 0; n._Y = w.kind === 'end' ? 0 : -H * 0.04; n.style.width = Math.min(W * 0.84, w.kind === 'end' ? 900 : 760) + 'px'; n._rot = 0; return; }
+      var size = narrow ? Math.min(0.74, w.size * 2) : w.size * 1.05;
+      if (w.tall) size *= narrow ? 0.78 : 0.9;
+      var px = size * unit;
+      n.style.width = px + 'px';
+      n._X = n._side * (narrow ? 0.1 * W : px / 2 + 0.15 * W);
+      n._Y = narrow ? (n._i % 2 ? 1 : -1) * H * 0.05 : (w.lift || 0) * 1.2 + (n._i % 3 - 1) * H * 0.07;
+      n._rot = -n._side * (narrow ? 5 : 9);
+    });
+    motes.forEach(function (m) { m.style.width = m.style.height = m._s + 'px'; });
+    maxP = items[items.length - 1]._D - STOP;
+    track.style.height = FLAT ? '' : (maxP + H) + 'px';
+    kick();
   }
 
   function kick() { if (!raf && open) raf = requestAnimationFrame(tick); }
-  function tick() {
+  function smooth(a, b, x) { x = Math.max(0, Math.min(1, (x - a) / (b - a))); return x * x * (3 - 2 * x); }
+  function tick(now) {
     raf = 0;
+    if (!open) return;
     if (wheeling) {
-      cur += (target - cur) * 0.085;
+      cur += (target - cur) * 0.075;
       if (Math.abs(target - cur) < 0.5) { cur = target; wheeling = false; }
       scroller.scrollTop = cur;
     }
-    // each piece drifts at its own pace, so the wall feels loose and alive
-    var vh = scroller.clientHeight;
-    if (!REDUCED) items.forEach(function (n) {
-      var sp = Number(n.dataset.speed) || 0; if (!sp) return;
-      var r = n.getBoundingClientRect(); if (r.bottom < -300 || r.top > vh + 300) return;
-      var mid = r.top + r.height / 2 - vh / 2;
-      n.style.transform = 'translate3d(0,' + (-mid * sp).toFixed(1) + 'px,0)';
+    if (FLAT) { if (wheeling) raf = requestAnimationFrame(tick); return; }
+    var y = scroller.scrollTop, p = Math.min(maxP, y), t = (now || 0) * 0.001;
+    if (y > 20 && !moved) { moved = true; hint.classList.add('gone'); }
+    bar.style.transform = 'scaleY(' + (maxP ? p / maxP : 0).toFixed(4) + ')';
+    // the path wanders gently, like a winding track; the pointer leans the view
+    cam.x = Math.sin(p / 2300) * W * 0.05; cam.y = Math.sin(p / 3100 + 1) * H * 0.025;
+    cam.ox += (cam.tox - cam.ox) * 0.05; cam.oy += (cam.toy - cam.oy) * 0.05;
+    stage.style.perspectiveOrigin = cam.ox.toFixed(2) + '% ' + cam.oy.toFixed(2) + '%';
+    world.style.transform = 'translate3d(' + (-cam.x).toFixed(1) + 'px,' + (-cam.y).toFixed(1) + 'px,0)';
+    items.forEach(function (n) {
+      var dz = p - n._D; n._dz = dz;
+      var near = n._w.kind === 'end' ? 1 : n._w.kind === 'words' ? 1 - smooth(-650, 120, dz) : 1 - smooth(260, 760, dz);
+      var o = near * smooth(-3600, -1500, dz);
+      if (o < 0.002) { if (n._vis !== false) { n.style.visibility = 'hidden'; n._vis = false; } return; }
+      if (n._vis !== true) { n.style.visibility = 'visible'; n._vis = true; }
+      var bob = Math.sin(t * 0.6 + n._i * 1.7) * 7, sway = Math.sin(t * 0.4 + n._i) * 0.8;
+      n.style.opacity = o.toFixed(3);
+      n.style.transform = 'translate(-50%,-50%) translate3d(' + n._X.toFixed(1) + 'px,' + (n._Y + bob).toFixed(1) + 'px,' + dz.toFixed(1) + 'px) rotateY(' + (n._rot + sway).toFixed(2) + 'deg)';
+      n.style.pointerEvents = o > 0.35 ? 'auto' : 'none';
     });
-    if (wheeling) raf = requestAnimationFrame(tick);
+    motes.forEach(function (m, i) {
+      var dz = p - m._D, o = (1 - smooth(-200, 700, dz)) * smooth(-3800, -1800, dz);
+      if (o < 0.002) { m.style.visibility = 'hidden'; return; }
+      m.style.visibility = 'visible'; m.style.opacity = o.toFixed(3);
+      m.style.transform = 'translate(-50%,-50%) translate3d(' + (m._x * W + Math.sin(t * 0.15 + i) * 30).toFixed(1) + 'px,' + (m._y * H + Math.cos(t * 0.12 + i) * 24).toFixed(1) + 'px,' + dz.toFixed(1) + 'px)';
+    });
+    if (!document.querySelector('.rv.on')) raf = requestAnimationFrame(tick);
   }
 
   function show() {
@@ -1060,9 +1134,10 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       title.innerHTML = 'Denise Duffy'.split('').map(function (c, i) { return '<span style="animation-delay:' + (REDUCED ? 0 : 0.1 + i * 0.04) + 's">' + (c === ' ' ? '&nbsp;' : esc(c)) + '</span>'; }).join('');
       setTimeout(function () { intro.classList.add('done'); }, REDUCED ? 150 : 1700);
     }
-    kick();
+    layout(); kick();
   }
   function hide() { if (!el) return; open = false; el.classList.remove('on'); document.documentElement.style.overflow = ''; closeViewer(); }
+  window.__galleryState = function () { return { p: scroller && Math.min(maxP, scroller.scrollTop), maxP: maxP, vis: items.filter(function (n) { return n._vis; }).map(function (n) { return n._i + ':' + Math.round(n._dz); }) }; };
 
   // ================= texture viewer (WebGL): the painting as a surface, lit by a raking light =================
   var rv, gl, prog, buf = {}, mesh = null, view = { yaw: -0.35, pitch: 0.35, dist: 2.6, depth: 0.35, auto: true, lx: 0.6, ly: 0.5 }, rvRaf = 0;
@@ -1205,7 +1280,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     pieceCanvas(p, 1024).then(function (cv) { mesh = makeMesh(cv); if (!rvRaf) rvRaf = requestAnimationFrame(draw); });
     window.TideGalleryTest = { viewerReady: function () { return !!mesh; }, mesh: function () { return mesh && { cols: mesh.cols, rows: mesh.rows, tris: mesh.idx.length / 3 }; } };
   }
-  function closeViewer() { if (rv) rv.classList.remove('on'); if (rvRaf) cancelAnimationFrame(rvRaf); rvRaf = 0; }
+  function closeViewer() { if (rv) rv.classList.remove('on'); if (rvRaf) cancelAnimationFrame(rvRaf); rvRaf = 0; kick(); }
 
   window.LivingGallery = { show: show, hide: hide, isOpen: function () { return open; } };
   // arriving straight at #/gallery: the shop's router ran before this script loaded
