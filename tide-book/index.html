@@ -6417,9 +6417,11 @@ var Kit = (function () {
     fab(main, 'Save inspiration', 'add', function () { openInspo(null); });
   }
 
-  function openInspo(id) {
+  function openInspo(id, preset) {
     var it = id ? byId(inspoList(), id) : null;
-    var f = { url: it ? it.url : '', note: it ? it.note : '', tags: it ? it.tags.slice() : [], files: [] }, dirty = false;
+    preset = preset || {};
+    var f = { url: it ? it.url : (preset.url || ''), note: it ? it.note : (preset.note || ''), tags: it ? it.tags.slice() : [],
+      files: (preset.files || []).slice(0, 4).map(function (file) { return { file: file, url: URL.createObjectURL(file) }; }) }, dirty = !!(preset.url || preset.files);
     K.sheet({
       title: it ? (it.source ? 'From ' + it.source : 'Inspiration') : 'Save inspiration', tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
       build: function (ctl) {
@@ -9053,7 +9055,26 @@ var Kit = (function () {
   setInterval(quietRefresh, 120000);
   window.TideBook = { refresh: quietRefresh };
 
-  refresh().then(render).then(function () { setTimeout(artistWelcome, 600); }).catch(function (e) {
+  /** Android's Share menu (Tide Book on the PC): the shared post arrives here, ready to save as inspiration. */
+  function takeShare() {
+    var m = /[?&]share=([a-z0-9]+)/i.exec(location.search);
+    if (!m) return false;
+    history.replaceState(null, '', location.pathname);
+    fetch('shared/' + m[1]).then(function (r) { return r.json(); }).then(function (sh) {
+      if (sh.error) { toast('That share had expired. Try sharing it again.'); return; }
+      return Promise.all((sh.files || []).map(function (f, i) {
+        return fetch('shared/' + m[1] + '/' + i).then(function (r) { return r.blob(); }).then(function (b) { return new File([b], f.name || ('screenshot-' + (i + 1) + '.jpg'), { type: f.type || b.type }); });
+      })).then(function (files) {
+        var text = [sh.title, sh.text, sh.url].filter(Boolean).join(' ');
+        var link = (/(https?:\/\/[^\s<>"]+)/i.exec(text) || [])[1] || '';
+        S.ideasTab = 'inspo'; go('ideas');
+        openInspo(null, { url: link, note: link ? '' : text, files: files });
+      });
+    }).catch(function () { toast('Couldn’t pick up the share. Is the PC on?'); });
+    return true;
+  }
+
+  refresh().then(render).then(function () { if (!takeShare()) setTimeout(artistWelcome, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
