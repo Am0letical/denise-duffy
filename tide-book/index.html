@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,fact_check,favorite,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -776,6 +776,8 @@ var TIDE = {
   SIZES: ['A4', 'A3', 'A2', 'A1', '30 x 30 cm', '50 x 50 cm'],
   // What an artwork can be made into, beyond prints (which keep their own sizes). items: starting choices;
   // options: the usual sizes or packs; fulfil: how it usually gets to the buyer.
+  // where an artwork sits on the website
+  SERIES: ['Mind Garden', 'Pockets of Magic', 'Ocean', 'Studio'],
   PRODUCT_TYPES: {
     Apparel: { items: ['Lounge pants', 'Lounge top', 'T-shirt', 'Hoodie', 'Scarf', 'Tote bag'], options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'], fulfil: 'Print on demand' },
     Cards: { items: ['Greeting card', 'Card pack'], options: ['Single', 'Pack of 5'], fulfil: 'From stock' },
@@ -815,7 +817,8 @@ var TIDE_SETTING_DEFAULTS = {
   localFirst: false, localFallbackMins: 60, localSeenAt: '', localModel: '',
   incomeGoalWeekly: 200,   // the first weekly income goal; the product pipeline shows sales needed to reach it
   // getting set up in the app (LogicSetup.gs)
-  setupBasicsDone: false, starterLoaded: false, stripeDone: false, artistWelcomed: false
+  setupBasicsDone: false, starterLoaded: false, stripeDone: false, artistWelcomed: false,
+  sitePublishedAt: ''       // when the website was last published from Tide Book
 };
 
 /**
@@ -850,7 +853,7 @@ var TIDE_SCHEMAS = {
       ['approvalRequest', 'Approval request', 'text'], ['approvalState', 'Approval state', 'text'],
       ['artistComment', 'Artist comment', 'text'], ['approvalAnswered', 'Approval answered', 'date'],
       ['adminNotes', 'Admin notes', 'text'], ['sourceIdea', 'From idea', 'text'],
-      ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date']
+      ['series', 'Series', 'text'], ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date']
     ]
   },
   feed: {
@@ -996,6 +999,18 @@ var TIDE_SCHEMAS = {
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text']
     ]
   },
+  // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
+  reports: {
+    sheet: 'Reports',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'From', 'text'], ['kind', 'Kind', 'text'], ['text', 'What they said', 'text'],
+      ['screen', 'Screen', 'text'], ['device', 'Device', 'text'], ['clientLog', 'App log', 'json'], ['serverLog', 'Server log', 'text'],
+      ['photoIds', 'Photo IDs', 'list'], ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['status', 'Status', 'text'],
+      ['triage', 'Triage', 'json'], ['reply', 'Reply', 'text'], ['adminNotes', 'Admin notes', 'text'], ['closed', 'Closed', 'date'], ['updated', 'Updated', 'date'],
+      ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'], ['aiQueued', 'AI asked', 'date'],
+      ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
+    ]
+  },
   // screenshots and links to posts that inspire her (LogicInspo.gs)
   inspiration: {
     sheet: 'Inspiration',
@@ -1085,6 +1100,7 @@ function createTideLogic(env) {
     if (kind === 'idea') return 'ideas';
     if (kind === 'print') return 'prints';
     if (kind === 'inspiration') return 'inspiration';
+    if (kind === 'report') return 'reports';
     fail('Unknown item type.');
   }
 
@@ -1263,7 +1279,7 @@ function createTideLogic(env) {
       var it = find(name, id);
       var photos = list(it.photoIds).slice(), thumbs = list(it.thumbIds).slice();
       if (photos.length >= T.MAX_PHOTOS) fail('That already has the most photos it can hold.');
-      var folderRef = it.folderUrl || env.files.folder(name === 'inspiration' ? ['Inspiration'] : [name === 'prints' ? 'Prints' : 'Ideas', it.id + ' ' + cleanName(it.title)]);
+      var folderRef = it.folderUrl || env.files.folder(name === 'inspiration' ? ['Inspiration'] : name === 'reports' ? ['Reports'] : [name === 'prints' ? 'Prints' : 'Ideas', it.id + ' ' + cleanName(it.title)]);
       var n = photos.length + 1;
       photos.push(env.files.save(folderRef, it.id + ' photo ' + n, full));
       thumbs.push(env.files.save(folderRef, it.id + ' thumb ' + n, thumb));
@@ -1345,7 +1361,7 @@ function createTideLogic(env) {
         status: 'Draft', variants: normaliseVariants(p.variants, id, settings()), products: normaliseProducts(p.products, id, settings()),
         folderUrl: env.files.folder(['Prints', id + ' ' + cleanName(title)]), photoIds: [], thumbIds: [],
         approvalRequest: '', approvalState: '', artistComment: '', adminNotes: '',
-        sourceIdea: text(p.sourceIdea, 20), edition: readEdition(p.edition, {}, null), updated: now
+        sourceIdea: text(p.sourceIdea, 20), series: T.SERIES.indexOf(p.series) >= 0 ? p.series : 'Studio', edition: readEdition(p.edition, {}, null), updated: now
       });
       return { id: id };
     });
@@ -1361,6 +1377,7 @@ function createTideLogic(env) {
       if ('variants' in ch) out.variants = normaliseVariants(ch.variants, id, settings());
       if ('products' in ch) out.products = normaliseProducts(ch.products, id, settings());
       if ('edition' in ch) out.edition = readEdition(ch.edition, pr.edition || {}, pr);
+      if ('series' in ch) out.series = oneOf(ch.series, T.SERIES, 'a series');
       if (role === 'admin' && 'adminNotes' in ch) out.adminNotes = text(ch.adminNotes, 5000);
       if (pr.status === 'Live') {
         var missing = liveGaps(Object.assign({}, pr, out));
@@ -1508,6 +1525,50 @@ function createTideLogic(env) {
       });
     });
     env.publishFeed(feed);
+  }
+
+  // ---------- the website
+  /**
+   * What the public website shows, from live artworks only. Never costs, notes, approvals or anything private:
+   * title, story, series, photos (file ids, copied out by the publisher), prices, products and edition state.
+   */
+  /** Admin: rebuilds the public website from Tide Book and publishes it (on the PC: env.site). */
+  function publishWebsite() {
+    need(['admin']);
+    if (!env.site) fail('Publishing the website works on the PC version of Tide Book.');
+    var r = env.site.publish();
+    env.settings.set({ sitePublishedAt: nowIso() });
+    return r;
+  }
+
+  function siteData() {
+    var s = settings(), today = env.today(), sales = salesByArtwork(), FULFIL = {
+      'From stock': 'From stock · posted in 2 to 3 days', 'Print on demand': 'Printed to order · 5 to 7 days',
+      'Digital download': 'Instant download', 'One-off': 'Signed · ships insured in 3 to 5 days' };
+    function slugOf(t, id) { return (String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'art') + '-' + String(id).replace(/\D/g, ''); }
+    var art = rows('prints').filter(function (pr) { return pr.status === 'Live' && list(pr.photoIds).length; }).map(function (pr) {
+      var st = editionState(pr, s, today, sales), ed = null;
+      if (st.mode === 'headstart' || st.mode === 'waiting') {
+        var days = st.opensOn ? Math.max(0, Math.round((Date.parse(st.opensOn) - Date.parse(today)) / 86400000)) : null;
+        ed = { mode: 'headstart', daysLeft: days, days: st.bufferDays, size: st.size, quickSize: st.quickSize, waiting: st.mode === 'waiting' };
+      } else if (st.mode === 'open') ed = { mode: 'open', size: st.size };
+      else if (st.mode === 'limited' || st.mode === 'soldout') ed = { mode: st.mode, left: st.left, limit: st.limit, size: st.size, quick: !!st.quick };
+      var products = [];
+      var sizes = list(pr.variants).filter(function (v) { return v.price > 0; });
+      if (sizes.length) products.push({ id: 'print', type: 'Print', name: 'Art print', options: sizes.map(function (v) {
+        return { id: String(v.size).toLowerCase().replace(/[^a-z0-9]+/g, ''), label: v.size + ' print', note: FULFIL['From stock'], price: v.price };
+      }) });
+      list(pr.products).filter(function (pd) { return pd.status === 'Live'; }).forEach(function (pd) {
+        var opts = list(pd.variants).filter(function (v) { return v.price > 0; });
+        if (!opts.length) return;
+        products.push({ id: pd.type === 'Original' ? 'original' : String(pd.id).toLowerCase(), type: pd.type, name: pd.type === 'Original' ? 'The original' : pd.name,
+          options: opts.map(function (v) { return { id: String(v.option).toLowerCase().replace(/[^a-z0-9]+/g, '') || 'one', label: v.option, note: FULFIL[pd.fulfilment] || '', price: v.price }; }) });
+      });
+      return { id: slugOf(pr.title, pr.id), title: pr.title, story: pr.description || '', series: pr.series || 'Studio',
+        photos: list(pr.photoIds).slice(0, 3), ed: ed, products: products, wentLive: pr.wentLive || '' };
+    }).filter(function (a) { return a.products.length; })
+      .sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
+    return { at: nowIso(), artworks: art };
   }
 
   // ---------- money
@@ -1869,7 +1930,7 @@ function createTideLogic(env) {
   function clientPrint(pr, role, s, registered) {
     var photoIds = list(pr.photoIds);
     var out = {
-      id: pr.id, created: pr.created, updated: pr.updated, title: pr.title, description: pr.description || '',
+      id: pr.id, created: pr.created, updated: pr.updated, title: pr.title, description: pr.description || '', series: pr.series || 'Studio',
       status: pr.status, thumbIds: list(pr.thumbIds),
       variants: list(pr.variants).map(function (v) {
         return { sku: v.sku, size: v.size, cost: v.cost, markupPct: v.markupPct, price: v.price,
@@ -1902,12 +1963,13 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(), inspoTags: inspo.tags,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(), inspoTags: inspo.tags, reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: role === 'admin' ? hub.snapshot() : null,
+      website: env.site ? { preview: env.site.previewUrl(), lastPublished: String(settings().sitePublishedAt || '') } : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
         kinds: T.KINDS, timelines: T.TIMELINES, priorities: T.PRIORITIES, stages: T.STAGES, sizes: T.SIZES,
-        productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT,
+        productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: T.SERIES,
         saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES
       },
       settings: s, gstRegistered: registered,
@@ -1986,6 +2048,9 @@ function createTideLogic(env) {
   var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf,
     createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push });
 
+  // ---------- suggestions and problems (LogicReports.gs)
+  var reports = tideReports(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, oneOf: oneOf, queueJob: talk.queueJob, push: publish.push });
+
   // ---------- inspiration (LogicInspo.gs)
   var inspo = tideInspo(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, startTopic: talk.api.startTopic });
 
@@ -2002,7 +2067,7 @@ function createTideLogic(env) {
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, publishWebsite: publishWebsite
     },
     research: research,
     studio: content.studio,
@@ -2010,6 +2075,7 @@ function createTideLogic(env) {
     notebook: notebook,
     talk: talk,
     recordOnlineSales: recordOnlineSales,
+    siteData: siteData,
     publishFeed: publishFeed,
     fyOf: fyOf
   };
@@ -2020,6 +2086,7 @@ function createTideLogic(env) {
   Object.keys(talk.api).forEach(function (k) { out.api[k] = talk.api[k]; });
   Object.keys(setup.api).forEach(function (k) { out.api[k] = setup.api[k]; });
   Object.keys(inspo.api).forEach(function (k) { out.api[k] = inspo.api[k]; });
+  Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   return out;
 }
 
@@ -3658,7 +3725,8 @@ function tideTalk(env, t) {
   function localFirst() { var v = setting('localFirst'); return v === true || v === 'true' || v === 'TRUE'; }
   function topic(id) { var x = t.rows('topics').filter(function (r) { return r.id === id; })[0]; if (!x) t.fail('That topic has been removed.'); return x; }
   function item(id) { var x = t.rows('pipeline').filter(function (r) { return r.id === id; })[0]; if (!x) t.fail('That product has been removed.'); return x; }
-  function tableOf(id) { return /^TP/.test(id) ? 'topics' : /^PP/.test(id) ? 'pipeline' : ''; }
+  function tableOf(id) { return /^TP/.test(id) ? 'topics' : /^PP/.test(id) ? 'pipeline' : /^RP/.test(id) ? 'reports' : ''; }
+  var AI_TABLES = ['topics', 'pipeline', 'reports'];
   function rowOf(id) { var tb = tableOf(id); return tb ? t.rows(tb).filter(function (r) { return r.id === id; })[0] : null; }
   function who(role) { return role === 'artist' ? env.brand.artistName : role === 'admin' ? (env.brand.adminName || 'admin') : ''; }
   function asked(tp) { return t.list(tp.rounds).reduce(function (n, r) { return n + (r.answers ? t.list(r.answers).filter(function (a) { return !a.skip; }).length : 0); }, 0); }
@@ -3686,6 +3754,10 @@ function tideTalk(env, t) {
   function context(id) {
     var r = rowOf(id);
     if (!r) t.fail('Not found.');
+    if (tableOf(id) === 'reports') {
+      return { kind: 'report', job: 'triage', type: r.kind || '', text: r.text || '', screen: r.screen || '', by: who(r.createdBy),
+        clientLog: t.list(r.clientLog).slice(-25), serverLog: String(r.serverLog || '').slice(-3000), device: r.device || '', screenshots: t.list(r.photoIds).length };
+    }
     if (tableOf(id) === 'topics') {
       return {
         kind: 'topic', job: r.aiJob, title: r.title, detail: r.detail || '', by: who(r.createdBy),
@@ -3746,6 +3818,15 @@ function tideTalk(env, t) {
         env.table('pipeline').update(id, { checks: checks, parts: parts, risks: risks, aiStatus: '', aiNote: '', aiBy: by2, updated: now,
           log: logAdd(r, by2 + ' drafted ' + checks.length + ' checks and ' + parts.length + ' parts (to verify)') });
         pushOut = ['admin', r.title + ': checks drafted', 'Everything is marked "to check" until you confirm it.'];
+      } else if (tb === 'reports' && r.aiJob === 'triage') {
+        var tri = {
+          summary: clean(res.summary, 600), type: ['Bug', 'Idea', 'Question', 'Confusing'].indexOf(res.type) >= 0 ? res.type : 'Bug',
+          severity: ['Blocking', 'Annoying', 'Minor', 'Nice to have'].indexOf(res.severity) >= 0 ? res.severity : 'Minor',
+          area: clean(res.area, 120), likelyCause: clean(res.likely_cause, 600), steps: cleanList(res.steps, 8, 300),
+          fixBrief: clean(res.fix_brief, 4000), replyDraft: clean(res.reply_draft, 600), by: by2, at: now
+        };
+        env.table('reports').update(id, { triage: tri, status: r.status === 'New' ? 'Triaged' : r.status, aiStatus: '', aiNote: '', updated: now });
+        pushOut = ['admin', (tri.severity === 'Blocking' ? 'Blocking: ' : '') + tri.summary.slice(0, 80), 'From ' + who(r.createdBy) + '. ' + (tri.steps[0] || '')];
       } else if (tb === 'pipeline' && r.aiJob === 'copy') {
         var listing = { copy: clean(res.listing, 3000), posts: cleanList(res.posts, 5, 1200), by: by2 };
         env.table('pipeline').update(id, { listing: listing, aiStatus: '', aiNote: '', aiBy: by2, updated: now, log: logAdd(r, by2 + ' drafted the listing and launch posts') });
@@ -3761,7 +3842,7 @@ function tideTalk(env, t) {
 
   var ai = {
     pending: function () {
-      return ['topics', 'pipeline'].reduce(function (all, tb) {
+      return AI_TABLES.reduce(function (all, tb) {
         return all.concat(t.rows(tb).filter(function (r) { return r.aiStatus === 'Queued' && r.aiRoute === 'claude'; }));
       }, []);
     },
@@ -3779,7 +3860,7 @@ function tideTalk(env, t) {
       var mins = Number(setting('localFallbackMins')) || 0, moved = 0;
       if (!mins || !env.features.research) return 0;
       env.lock(function () {
-        ['topics', 'pipeline'].forEach(function (tb) {
+        AI_TABLES.forEach(function (tb) {
           t.rows(tb).forEach(function (r) {
             if (r.aiStatus === 'Queued' && r.aiRoute === 'local' && Date.parse(r.aiQueued) < env.now().getTime() - mins * 60000) { escalate(r, 'The PC didn’t pick it up within ' + mins + ' minutes'); moved++; }
           });
@@ -3794,7 +3875,7 @@ function tideTalk(env, t) {
     next: function (max) {
       var now = env.now().getTime(), out = [];
       env.lock(function () {
-        ['topics', 'pipeline'].forEach(function (tb) {
+        AI_TABLES.forEach(function (tb) {
           t.rows(tb).forEach(function (r) {
             if (r.aiStatus === 'Working' && r.aiRoute === 'local' && Date.parse(r.aiClaimed) < now - K.LOCAL_CLAIM_MINS * 60000) env.table(tb).update(r.id, { aiStatus: 'Queued' });
           });
@@ -4116,8 +4197,11 @@ function tideTalk(env, t) {
     return { topics: topics, pipeline: items, stages: K.STAGES, kinds: K.KINDS, checkStatus: K.CHECK_STATUS, sampleStatus: K.SAMPLE_STATUS, goal: goal };
   }
 
+  /** Queues an AI job on any row (used by Reports). Returns the route, or '' if no AI is available. */
+  function queueJob(id, job) { try { return env.lock(function () { return queue(id, job); }); } catch (e) { return ''; } }
+
   return {
-    ai: ai, local: local, snapshot: snapshot,
+    ai: ai, local: local, snapshot: snapshot, queueJob: queueJob,
     api: { startTopic: startTopic, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
       createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, draftItem: draftItem, loadBacklog: loadBacklog }
   };
@@ -4344,6 +4428,97 @@ function tideInspo(env, t) {
   return { snapshot: snapshot, tags: I.TAGS, api: { addInspiration: addInspiration, updateInspiration: updateInspiration, deleteInspiration: deleteInspiration, talkAboutInspiration: talkAbout } };
 }
 
+/**
+ * Tide Book: Suggestions and problems. Either person taps the speech bubble at the top right, says what happened
+ * or what would help, and can add a screenshot. The app attaches what it knows: the screen, recent actions and
+ * errors, the device, and (on the PC) the server's recent log. The AI triages it (what it is, how much it
+ * matters, likely cause, next steps, a fix brief for a coding assistant, a draft reply), and it shows on the
+ * admin's Home as an action item. When the admin replies or marks it done, the person who sent it gets a buzz.
+ */
+
+var TIDE_REPORTS = {
+  KINDS: ['Something’s not working', 'An idea', 'A question'],
+  STATUS: ['New', 'Triaged', 'In progress', 'Waiting', 'Done', 'Won’t do'],
+  OPEN: ['New', 'Triaged', 'In progress', 'Waiting'],
+  SEVERITY_ORDER: { 'Blocking': 0, 'Annoying': 1, 'Minor': 2, 'Nice to have': 3 }
+};
+
+function tideReports(env, t) {
+  var R = TIDE_REPORTS;
+  function get(id) { var x = t.rows('reports').filter(function (r) { return r.id === id; })[0]; if (!x) t.fail('That report has been removed.'); return x; }
+  function who(role) { return role === 'artist' ? env.brand.artistName : (env.brand.adminName || 'admin'); }
+
+  function sendReport(p) {
+    var role = t.need(['admin', 'artist']);
+    p = p || {};
+    var text = t.text(p.text, 4000);
+    if (!text && !p.hasPhotos) t.fail('Say a little about what happened, or add a screenshot.');
+    var id = env.lock(function () {
+      var rid = env.nextId('RP', 4), now = t.nowIso();
+      env.table('reports').append({
+        id: rid, created: now, createdBy: role, kind: R.KINDS.indexOf(p.kind) >= 0 ? p.kind : R.KINDS[0], text: text,
+        screen: t.text(p.screen, 120), device: t.text(p.device, 300),
+        clientLog: t.list(p.clientLog).slice(-40).map(function (l) { return t.text(l, 400); }),
+        serverLog: env.serverLog ? t.text(env.serverLog(), 6000) : '',
+        photoIds: [], thumbIds: [], folderUrl: '', status: 'New', triage: null, reply: '', adminNotes: '', closed: '', updated: now, aiJob: '', aiStatus: ''
+      });
+      return rid;
+    });
+    var route = t.queueJob(id, 'triage');
+    if (role === 'artist' && t.push) t.push('admin', 'New from ' + who(role) + ': ' + (text.slice(0, 60) || 'a screenshot'), route ? 'It’s being looked over now.' : 'Have a look when you can.');
+    if (route && env.talkNow) env.talkNow(id);
+    return { id: id };
+  }
+
+  /** Admin: status, notes and a reply. A reply, or marking it done, buzzes the person who sent it. */
+  function updateReport(id, ch) {
+    t.need(['admin']);
+    ch = ch || {};
+    var note = null;
+    var res = env.lock(function () {
+      var r = get(id), out = { updated: t.nowIso() };
+      if ('status' in ch) { out.status = t.oneOf(ch.status, R.STATUS, 'a status'); if (R.OPEN.indexOf(out.status) < 0 && !r.closed) out.closed = out.updated; if (R.OPEN.indexOf(out.status) >= 0) out.closed = ''; }
+      if ('adminNotes' in ch) out.adminNotes = t.text(ch.adminNotes, 4000);
+      if ('reply' in ch) out.reply = t.text(ch.reply, 1500);
+      env.table('reports').update(id, out);
+      var newReply = 'reply' in ch && out.reply && out.reply !== r.reply, nowDone = out.status && out.status !== r.status && (out.status === 'Done' || out.status === 'Won’t do');
+      if (r.createdBy !== 'admin' && (newReply || nowDone)) note = [r.createdBy, nowDone ? 'Sorted: ' + (r.text || 'your report').slice(0, 50) : (env.brand.adminName || 'admin') + ' replied', out.reply || r.reply || 'Marked as ' + out.status.toLowerCase() + '.'];
+      return { ok: true };
+    });
+    if (note && t.push) t.push(note[0], note[1], note[2]);
+    return res;
+  }
+  function retriage(id) {
+    t.need(['admin']);
+    get(id);
+    var route = t.queueJob(id, 'triage');
+    if (!route) t.fail('The AI isn’t switched on yet (Get set up → Switch on the AI).');
+    if (env.talkNow) env.talkNow(id);
+    return { ok: true };
+  }
+
+  function snapshot(role) {
+    return t.rows('reports').filter(function (r) { return role === 'admin' || r.createdBy === role; }).map(function (r) {
+      var out = { id: r.id, created: r.created, by: who(r.createdBy), mine: r.createdBy === role, kind: r.kind, text: r.text, screen: r.screen,
+        thumbIds: t.list(r.thumbIds), photoUrls: t.list(r.photoIds).map(function (x) { return env.files.viewUrl(x); }),
+        status: r.status, reply: r.reply || '', open: R.OPEN.indexOf(r.status) >= 0, updated: r.updated,
+        severity: r.triage ? r.triage.severity : '', summary: r.triage ? r.triage.summary : '', aiStatus: r.aiStatus || '' };
+      if (role === 'admin') {
+        out.triage = r.triage || null; out.adminNotes = r.adminNotes || ''; out.device = r.device || '';
+        out.clientLog = t.list(r.clientLog); out.serverLog = r.serverLog || '';
+      }
+      return out;
+    }).sort(function (a, b) {
+      if (a.open !== b.open) return a.open ? -1 : 1;
+      var sa = R.SEVERITY_ORDER[a.severity], sb = R.SEVERITY_ORDER[b.severity];
+      if ((sa == null ? 9 : sa) !== (sb == null ? 9 : sb)) return (sa == null ? 9 : sa) - (sb == null ? 9 : sb);
+      return a.created < b.created ? 1 : -1;
+    });
+  }
+
+  return { snapshot: snapshot, kinds: R.KINDS, statuses: R.STATUS, api: { sendReport: sendReport, updateReport: updateReport, retriageReport: retriage } };
+}
+
 </script>
 <script>
 /**
@@ -4353,7 +4528,7 @@ function tideInspo(env, t) {
  */
 (function () {
   'use strict';
-  var KEY = 'tidebook-demo-v20';
+  var KEY = 'tidebook-demo-v21';
   var OPT = window.TIDE_DEMO || {};
   var role = location.hash === '#admin' ? 'admin' : 'artist';
   window.addEventListener('hashchange', function () { location.reload(); });
@@ -4366,7 +4541,7 @@ function tideInspo(env, t) {
   var db = null;
   try { var saved = sessionStorage.getItem(KEY); if (saved) db = JSON.parse(saved); } catch (e) { db = null; }
   var fresh = !db;
-  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], topics: [], pipeline: [], inspiration: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
+  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], topics: [], pipeline: [], inspiration: [], reports: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
   var studioAsked = false;
   function save() { try { sessionStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* too big for this tab's storage: carry on in memory */ } }
 
@@ -4554,7 +4729,14 @@ function tideInspo(env, t) {
       posts: ['Sample teaser: Something small is coming together on my table this week… ✨', 'Sample reveal: Here it is. ' + ctx.title + ', made for pausing and noticing.', 'Sample last call: A few left from this first little batch. Thank you for every kind word. 🤍']
     };
   }
-  function talkAnswer(ctx) { return ctx.job === 'round' ? talkRound(ctx) : ctx.job === 'wrap' ? talkWrap(ctx) : ctx.job === 'checks' ? pipeChecks(ctx) : pipeCopy(ctx); }
+  function triageAnswer(ctx) {
+    var bug = /not working/i.test(ctx.type);
+    return { summary: (bug ? 'Sample: ' : 'Sample idea: ') + (ctx.text || 'a screenshot').slice(0, 70), type: bug ? 'Bug' : /idea/i.test(ctx.type) ? 'Idea' : 'Question',
+      severity: bug ? 'Annoying' : 'Nice to have', area: (ctx.screen || 'home').split(' / ')[0], likely_cause: 'Sample for the demo: in the real app this reads the attached logs.',
+      steps: ['Sample: try it again on the same screen', 'Sample: check the log lines below'], fix_brief: 'Sample fix brief: what happened, where, the log lines, and how to check the fix.',
+      reply_draft: 'Thanks for letting me know. I’ll have a look and get back to you.' };
+  }
+  function talkAnswer(ctx) { return ctx.job === 'triage' ? triageAnswer(ctx) : ctx.job === 'round' ? talkRound(ctx) : ctx.job === 'wrap' ? talkWrap(ctx) : ctx.job === 'checks' ? pipeChecks(ctx) : pipeCopy(ctx); }
 
   // Pretend PC helper and Claude for topics and the pipeline: answers a few seconds after a job is queued.
   setInterval(function () {
@@ -4954,7 +5136,8 @@ function tideInspo(env, t) {
     role: role,
     reset: function () { try { sessionStorage.removeItem(KEY); sessionStorage.removeItem(KEY + '-welcomed'); } catch (e) {} location.reload(); },
     view: function (v) { location.hash = v === 'admin' ? 'admin' : 'artist'; },
-    welcomeKey: KEY + '-welcomed'
+    welcomeKey: KEY + '-welcomed',
+    logic: function () { return createTideLogic(makeEnv('admin')); }
   };
 })();
 
@@ -5001,6 +5184,7 @@ function tideInspo(env, t) {
         <div class="bar-title" id="bar-title" aria-hidden="true"></div>
       </div>
       <span class="bar-chip">Denise Duffy &middot; Visual Artist</span>
+      <button class="icon-btn press" id="report-btn" type="button" aria-label="Suggestions and problems" title="Suggestions and problems"><span class="ms" aria-hidden="true">feedback</span></button>
       <button class="icon-btn press" id="settings-btn" type="button" aria-label="Admin" title="Admin" hidden><span class="ms" aria-hidden="true">settings</span></button>
     </div>
   </header>
@@ -5824,9 +6008,10 @@ var Kit = (function () {
   function api(method) {
     var args = Array.prototype.slice.call(arguments, 1);
     return new Promise(function (resolve, reject) {
+      if (method !== 'getThumbs' && method !== 'getData' && window.__tbLog) window.__tbLog('call ' + method);
       google.script.run
         .withSuccessHandler(resolve)
-        .withFailureHandler(function (err) { reject(new Error(String(err && err.message || err).replace(/^(Error|Exception):\s*/, ''))); })
+        .withFailureHandler(function (err) { var msg = String(err && err.message || err).replace(/^(Error|Exception):\s*/, ''); if (window.__tbLog) window.__tbLog('FAILED ' + method + ': ' + msg); reject(new Error(msg)); })
         .rpc(method, args);
     });
   }
@@ -6006,6 +6191,7 @@ var Kit = (function () {
     pageTitle(main, hello, 'Here’s where everything is up to.');
     var needs = needsList(), n = 1;
     n = setupCard(main, n);
+    n = reportCards(main, n);
     var rest = S.data.rest;
     if (rest) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note(cap(artist()) + ' is taking it easy' + (rest.until ? ' until ' + restDay(rest.until) : '') + '. Her buzzes and footage questions come to you; posts still wait for her approval.', 'spa')), n++));
     n = talkCards(main, n);
@@ -6388,6 +6574,139 @@ var Kit = (function () {
         });
         ctl.body.appendChild(h('p', { class: 'tf-help', text: 'Tip: in your browser’s menu, Add to Home Screen, so it opens like an app.' }));
         ctl.foot.appendChild(btn('filled', 'Let’s go', { icon: 'arrow_forward', lg: true, block: true, onclick: function () { api('artistWelcomed').catch(function () {}); S.data.setup.welcomed = true; ctl.close(); } }));
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------ Suggestions and problems (LogicReports.gs)
+  // A short memory of what the app just did, attached to a report so problems can be traced.
+  var APP_LOG = [];
+  window.__tbLog = function (l) { appLog(l); };
+  function appLog(line) { APP_LOG.push(new Date().toTimeString().slice(0, 8) + ' ' + String(line).slice(0, 300)); if (APP_LOG.length > 40) APP_LOG.shift(); }
+  window.addEventListener('error', function (e) { appLog('ERROR ' + (e.message || 'script error') + (e.lineno ? ' @' + e.lineno : '')); });
+  window.addEventListener('unhandledrejection', function (e) { appLog('ERROR ' + ((e.reason && e.reason.message) || e.reason || 'promise failed')); });
+  function screenName() {
+    var v = S.view || 'home', extra = v === 'ideas' ? (S.ideasTab || 'ideas') : v === 'settings' ? (S.adminTab || '') : '';
+    var sheet = document.querySelector('.sheet h2, .sheet .sheet-title');
+    return v + (extra ? ' / ' + extra : '') + (sheet ? ' / sheet: ' + sheet.textContent.trim().slice(0, 40) : '');
+  }
+  var reportBtn = document.getElementById('report-btn');
+  if (reportBtn) reportBtn.addEventListener('click', function () { K.haptic(); openReport(); });
+
+  var SEV_CHIP = { 'Blocking': 'high', 'Annoying': 'pending', 'Minor': 'outline', 'Nice to have': 'outline' };
+  function reportChip(r) {
+    if (!r.open) return chip(r.status, 'approved', 'check_circle');
+    if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') return chip('Looking into it', 'pending', 'hourglass_top');
+    return ADMIN && r.severity ? chip(r.severity, SEV_CHIP[r.severity] || 'outline') : chip(r.status, 'outline');
+  }
+
+  function openReport() {
+    var screen = screenName(), f = { kind: (S.data.reportKinds || [])[0], text: '', files: [] };
+    var mine = (S.data.reports || []).filter(function (r) { return r.mine; }).slice(0, 5);
+    K.sheet({
+      title: 'Suggestions and problems', tall: true,
+      build: function (ctl) {
+        ctl.body.appendChild(K.choices({ label: 'What is it?', value: f.kind, options: S.data.reportKinds || [], onChange: function (v) { f.kind = v; } }));
+        var tf = K.textField({ label: 'What happened, or what would help?', multiline: true, maxlength: 4000, onInput: function (v) { f.text = v; } });
+        ctl.body.appendChild(h('div', { style: 'margin-top:14px' }, tf));
+        var s = sheetSection('A screenshot (optional)');
+        s.appendChild(K.photoStrip({ files: f.files, max: 2, onChange: function () {} }));
+        ctl.body.appendChild(s);
+        ctl.body.appendChild(h('p', { class: 'tf-help', style: 'margin:4px 4px 0', text: 'A few details about what the app was doing are sent with it, to help sort it out.' }));
+        if (mine.length) {
+          var past = sheetSection('What you’ve sent'), l = h('div', { class: 'list' });
+          mine.forEach(function (r) {
+            l.appendChild(h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.text || r.kind }),
+              h('div', { class: 'li-sup', style: 'white-space:normal', text: r.reply ? adminName() + ': “' + r.reply + '”' : ago(r.created) })), h('div', { class: 'li-trail' }, reportChip(r))));
+          });
+          past.appendChild(l); ctl.body.appendChild(past);
+        }
+        var send = btn('filled', 'Send', { icon: 'send', lg: true, block: true });
+        send.addEventListener('click', function () {
+          if (!f.text.trim() && !f.files.length) { tf.input.focus(); return; }
+          K.setBusy(send, true);
+          var dev = navigator.userAgent.replace(/\s*\(KHTML.*$/, '') + ' · ' + innerWidth + '×' + innerHeight;
+          api('sendReport', { kind: f.kind, text: f.text, screen: screen, device: dev, clientLog: APP_LOG.slice(), hasPhotos: f.files.length > 0 })
+            .then(function (r) { return uploadAll('report', r.id, f.files); }).then(refresh)
+            .then(function () { K.haptic('success'); render(); toast(ADMIN ? 'Saved to your action items.' : 'Sent to ' + adminName() + '. Thank you.'); ctl.close(); })
+            .catch(function (e) { K.setBusy(send, false); fail(e); });
+        });
+        ctl.foot.appendChild(send);
+      }
+    });
+  }
+
+  /** Admin Home: open reports, most serious first. */
+  function reportCards(main, n) {
+    if (!ADMIN) return n;
+    var open = (S.data.reports || []).filter(function (r) { return r.open; });
+    if (!open.length) return n;
+    var sec = section('Action items', btn('text', 'See all', { sm: true, onclick: function () { S.adminTab = 'reports'; go('settings'); } })), l = h('div', { class: 'list' });
+    open.slice(0, 5).forEach(function (r) { l.appendChild(reportRow(r)); });
+    sec.appendChild(l);
+    main.appendChild(rise(sec, n++));
+    return n;
+  }
+  function reportRow(r) {
+    return h('button', { class: 'li press', type: 'button', onclick: function () { openReportAdmin(r.id); } },
+      r.thumbIds.length ? thumbImg(r.thumbIds[0]) : h('div', { class: 'th-blank' }, icon(/idea/i.test(r.kind) ? 'lightbulb' : /question/i.test(r.kind) ? 'help' : 'feedback')),
+      h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.summary || r.text || r.kind }),
+        h('div', { class: 'li-sup', text: [r.by, r.status, ago(r.created)].join(' · ') })),
+      h('div', { class: 'li-trail' }, reportChip(r)));
+  }
+  function tabReports(main) {
+    var all = S.data.reports || [];
+    if (!all.length) { main.appendChild(rise(emptyState('feedback', 'Nothing reported', 'Suggestions and problems from either of you land here.'), 2)); return; }
+    var open = all.filter(function (r) { return r.open; }), closed = all.filter(function (r) { return !r.open; });
+    if (open.length) { var s1 = section('Open'), l1 = h('div', { class: 'list' }); open.forEach(function (r) { l1.appendChild(reportRow(r)); }); s1.appendChild(l1); main.appendChild(rise(s1, 2)); }
+    if (closed.length) { var s2 = section('Closed'), l2 = h('div', { class: 'list' }); closed.slice(0, 30).forEach(function (r) { l2.appendChild(reportRow(r)); }); s2.appendChild(l2); main.appendChild(rise(s2, 3)); }
+  }
+
+  function openReportAdmin(id) {
+    var r = byId(S.data.reports || [], id);
+    if (!r) return;
+    var tr = r.triage || {}, f = { status: r.status, reply: r.reply || tr.replyDraft || '', adminNotes: r.adminNotes || '' }, dirty = false, ctlRef = null;
+    function reopen() { refresh().then(function () { if (ctlRef) ctlRef.close(); render(); setTimeout(function () { openReportAdmin(id); }, 260); }).catch(fail); }
+    K.sheet({
+      title: tr.summary || r.kind, tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
+      build: function (ctl) {
+        ctlRef = ctl;
+        ctl.body.appendChild(h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-bottom:12px' }, reportChip(r), tr.type ? chip(tr.type, 'outline') : null, tr.area ? chip(tr.area, 'outline') : null));
+        var s1 = sheetSection('From ' + r.by + ' · ' + K.dateLabel(r.created));
+        s1.appendChild(h('p', { class: 'body-l', text: r.text ? '“' + r.text + '”' : '(no words, just a screenshot)' }));
+        s1.appendChild(h('div', { class: 'body-s', style: 'margin-top:6px;color:var(--on-surface-variant)', text: 'On: ' + (r.screen || 'unknown') }));
+        if (r.thumbIds.length) s1.appendChild(K.photoStrip({ thumbIds: r.thumbIds, photoUrls: r.photoUrls, files: [], max: r.thumbIds.length, onDraw: function () { setTimeout(loadThumbs, 0); } }));
+        ctl.body.appendChild(s1);
+        if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') ctl.body.appendChild(note('Being looked over…', 'hourglass_top'));
+        if (r.triage) {
+          var s2 = sheetSection('What it looks like');
+          if (tr.likelyCause) s2.appendChild(h('p', { class: 'body-m', text: tr.likelyCause }));
+          if ((tr.steps || []).length) { var ul = h('ol', { class: 'talk-list', style: 'margin-top:10px' }); tr.steps.forEach(function (x) { ul.appendChild(h('li', { text: x })); }); s2.appendChild(ul); }
+          if (tr.fixBrief) s2.appendChild(h('div', { style: 'margin-top:12px' }, btn('tonal', 'Copy the fix brief for Claude', { icon: 'content_copy', onclick: function () {
+            var text = tr.fixBrief + '\n\n---\nReport ' + r.id + ' from ' + r.by + ' on ' + r.screen + '\nDevice: ' + (r.device || '') + '\n\nApp log:\n' + (r.clientLog || []).join('\n') + '\n\nServer log:\n' + (r.serverLog || '');
+            (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { toast('Copied. Paste it into Claude Code.'); })
+              .catch(function () { K.ask({ title: 'Copy this', label: 'Fix brief', value: text, maxlength: 20000 }); });
+          } })));
+          ctl.body.appendChild(s2);
+        } else if (!(r.aiStatus === 'Queued' || r.aiStatus === 'Working')) {
+          ctl.body.appendChild(h('div', { style: 'margin:8px 0' }, btn('tonal', 'Look it over with AI', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); api('retriageReport', id).then(reopen).catch(fail); } })));
+        }
+        var s3 = sheetSection('Where it’s up to');
+        s3.appendChild(K.choices({ row: true, label: 'Status', value: f.status, options: S.data.reportStatuses || [], onChange: function (v) { f.status = v; dirty = true; } }));
+        s3.appendChild(h('div', { class: 'field-gap', style: 'margin-top:12px' },
+          r.mine ? null : K.textField({ label: 'Reply to ' + r.by, multiline: true, maxlength: 1500, value: f.reply, help: 'They get a buzz when you reply or mark it done.', onInput: function (v) { f.reply = v; dirty = true; } }),
+          K.textField({ label: 'Notes (only you)', multiline: true, maxlength: 4000, value: f.adminNotes, onInput: function (v) { f.adminNotes = v; dirty = true; } })));
+        ctl.body.appendChild(s3);
+        var logs = h('details', { class: 'talk-past', style: 'margin-top:12px' }, h('summary', { text: 'Logs and device' }),
+          h('pre', { style: 'white-space:pre-wrap;font:400 11.5px/16px ui-monospace,monospace;max-height:40vh;overflow:auto', text: 'Device: ' + (r.device || '') + '\n\nApp:\n' + (r.clientLog || []).join('\n') + '\n\nServer:\n' + (r.serverLog || '(none)') }));
+        ctl.body.appendChild(logs);
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          K.setBusy(save, true);
+          var ch = { status: f.status, adminNotes: f.adminNotes }; if (!r.mine) ch.reply = f.reply;
+          api('updateReport', id, ch).then(function () { dirty = false; K.haptic('success'); toast('Saved.'); reopen(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
       }
     });
   }
@@ -7366,6 +7685,24 @@ var Kit = (function () {
     var grid = h('div', { class: 'grid' });
     shown.forEach(function (p, i) { grid.appendChild(rise(printCard(p), 2 + i)); });
     main.appendChild(grid);
+    if (ADMIN && S.data.website) {
+      var w = S.data.website;
+      main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-top:18px' },
+        h('div', { class: 'title-m', text: 'The website' }),
+        h('p', { class: 'body-m', style: 'margin:6px 0 12px;color:var(--on-surface-variant)', text: 'Live artworks, their photos, prices, products and edition states. The preview updates straight away; the public site changes when you publish.' + (w.lastPublished ? ' Last published ' + K.dateLabel(w.lastPublished) + '.' : ' Not published from Tide Book yet.') }),
+        h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' },
+          h('a', { class: 'btn outlined press', href: w.preview, target: '_blank', rel: 'noopener' }, icon('visibility'), h('span', { text: 'Preview' })),
+          btn('filled', 'Publish to website', { icon: 'rocket_launch', onclick: function (e) {
+            var b = e.currentTarget;
+            K.confirm({ title: 'Publish the website?', text: 'The public site will show exactly what the preview shows: every live artwork with its photos and prices.', confirmLabel: 'Publish' }).then(function (yes) {
+              if (!yes) return;
+              K.setBusy(b, true);
+              api('publishWebsite').then(function (r) { return refresh().then(function () { return r; }); })
+                .then(function (r) { render(); toast(r.message || 'Published. The live site updates in about a minute.'); })
+                .catch(function (err) { K.setBusy(b, false); fail(err); });
+            });
+          } }))), 3));
+    }
     fab(main, 'Add an artwork', 'add', function () { openPrint(null); });
   }
 
@@ -7551,7 +7888,7 @@ var Kit = (function () {
     var s = S.data.settings;
     var f = { title: p ? p.title : '', description: p ? p.description : '', adminNotes: p ? (p.adminNotes || '') : '', files: [],
       variants: p ? p.variants.map(function (v) { return { size: v.size, cost: v.cost, markupPct: v.markupPct, price: v.price }; }) : [],
-      products: p ? JSON.parse(JSON.stringify(p.products || [])) : [], editionSize: p && p.edition ? p.edition.size : 0, editionChanged: false };
+      products: p ? JSON.parse(JSON.stringify(p.products || [])) : [], series: p ? (p.series || 'Studio') : 'Studio', editionSize: p && p.edition ? p.edition.size : 0, editionChanged: false };
     var dirty = false, status = p ? p.status : 'Draft';
     K.sheet({
       title: p ? p.title : 'New artwork', tall: true, guard: function () { return dirty; },
@@ -7587,7 +7924,9 @@ var Kit = (function () {
         var title = K.textField({ label: 'Title', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } });
         s2.appendChild(h('div', { class: 'field-gap' }, title,
           K.textField({ label: 'The story behind it', value: f.description, multiline: true, maxlength: 3000, onInput: function (v) { f.description = v; touch(); },
-            help: 'Shown to buyers. What inspired it, and how it was made.' })));
+            help: 'Shown to buyers. What inspired it, and how it was made.' }),
+          K.pickField({ label: 'Where it sits on the website', value: f.series, options: (S.data.options.series || []).map(function (x) { return { value: x, label: x }; }),
+            onChange: function (v) { f.series = v; touch(); } })));
 
         var s3 = sheetSection('As prints');
         var cards = h('div');
@@ -7671,7 +8010,7 @@ var Kit = (function () {
         var goBtn = status === 'Live' ? btn('outlined', 'Park', { icon: 'pause_circle', lg: true })
           : btn('filled', status === 'Parked' ? 'Put back live' : 'Launch', { icon: 'rocket_launch', lg: true });
         function persist(active) {
-          var payload = { title: f.title, description: f.description, variants: f.variants, products: f.products };
+          var payload = { title: f.title, description: f.description, variants: f.variants, products: f.products, series: f.series };
           if (ADMIN) payload.adminNotes = f.adminNotes;
           if (f.editionChanged && f.editionSize > 0 && !(p && p.edition && p.edition.locked)) payload.edition = { size: f.editionSize };
           var step = p ? api('updatePrint', p.id, payload).then(function () { return p.id; })
@@ -8729,9 +9068,9 @@ var Kit = (function () {
     pageTitle(main, 'Admin', 'Contacts, email lists, accounts and settings.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.adminTab, onChange: function (v) { S.adminTab = v; S.animate = true; render(); },
-      options: [{ value: 'contacts', label: 'Contacts' }, { value: 'lists', label: 'Email lists' }, { value: 'accounts', label: 'Accounts' }, { value: 'settings', label: 'Settings' }]
+      options: [{ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined }, { value: 'contacts', label: 'Contacts' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Accounts' }, { value: 'settings', label: 'Settings' }]
     })), 1));
-    ({ contacts: tabContacts, lists: tabLists, accounts: tabAccounts, settings: viewSettings }[S.adminTab] || tabContacts)(main);
+    ({ reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, settings: viewSettings }[S.adminTab] || tabContacts)(main);
   }
 
   function tabContacts(main) {
