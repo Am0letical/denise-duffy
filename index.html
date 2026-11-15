@@ -282,6 +282,21 @@ footer .legal { max-width: 1320px; margin: 18px auto 0; display: flex; justify-c
 body:has(.mock) .hero { height: calc(100svh - 30px); }
 @media (max-width: 640px) { body:has(.mock) .hero { height: calc(100svh - 48px); min-height: 560px; } }
 
+/* originals first: the head start, the open run, and the limited run counting down */
+.edn { margin-top: 16px; padding: 16px 18px; background: var(--paper, #FCF9F4); box-shadow: inset 0 0 0 1px rgba(6, 40, 74, .12); border-radius: 14px; }
+.edn b { display: block; font: 500 italic 19px/1.25 var(--display); color: var(--ocean-ink, #06284A); margin-bottom: 4px; }
+.edn p { font-size: 14px; line-height: 1.5; color: var(--muted); }
+.edn a { color: var(--ocean); }
+.edn.lim { background: linear-gradient(135deg, rgba(143, 211, 223, .18), rgba(233, 138, 166, .12)); }
+.edn.lim b { color: var(--pink-deep); }
+.edn .meter { height: 4px; border-radius: 4px; background: rgba(6, 40, 74, .1); margin: 8px 0 10px; overflow: hidden; }
+.edn .meter i { display: block; height: 100%; background: linear-gradient(90deg, var(--pink-deep), var(--ocean)); border-radius: 4px; }
+.edn.hold { background: rgba(242, 196, 90, .14); }
+.edn .signup { margin-top: 12px; }
+.edn .tiny { font-size: 12px; margin-top: 6px; }
+.edn.sold b { color: var(--muted); }
+.btn[disabled] { opacity: .5; pointer-events: none; }
+
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
 .lg.on { opacity: 1; pointer-events: auto; }
@@ -576,21 +591,24 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       { id: 'a2', label: 'A2 giclée', note: 'Printed to order · 5 to 7 days', price: Math.round(140 * f), was: sale ? 140 : 0, frame: 180 }] };
   }
   var ARTWORKS = [
-    { id: 'shark', title: 'Shark in the shallows', col: 'ocean', img: 'shark', card: 'sharkTall', alt: 'oceanTall', contain: true, sea: true, isNew: true,
+    { id: 'shark', title: 'Shark in the shallows', col: 'ocean', img: 'shark', card: 'sharkTall', alt: 'oceanTall', contain: true, sea: true,
+      ed: { mode: 'limited', left: 11, limit: 15, size: 30, quick: true },
       story: 'A shark gliding over pink coral, from the ocean collection made with the Irukandji Shark & Ray Centre. (Sample text.)',
       products: [PRINT(false), { id: 'tote', type: 'Apparel', name: 'Tote bag', options: [{ id: 'one', label: 'One size', note: 'Printed to order · 5 to 7 days', price: 45 }] },
-        { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }] },
+        { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }, { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 950 }] }] },
     { id: 'wildflowers', title: 'Coastal wildflowers', col: 'coast', img: 'wildflowers', card: 'flowersTall', alt: 'flowersMacro', sale: true,
+      ed: { mode: 'open', size: 50 },
       story: 'Flannel flowers, banksia and feathers in watercolour and ink, in the pinks and blues of the coast. (Sample text.)',
       products: [PRINT(true), { id: 'pants', type: 'Apparel', name: 'Lounge pants', options: ['S', 'M', 'L', 'XL'].map(function (z) { return { id: z, label: 'Size ' + z, note: 'Printed to order · 7 to 10 days', price: 89 }; }) },
         { id: 'cards', type: 'Cards', name: 'Card pack', options: [{ id: 'p5', label: 'Pack of 5', note: 'From stock · 2 to 3 days', price: 25 }] },
-        { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }] },
-    { id: 'roots', title: 'Blue roots', col: 'coast', img: 'roots', card: 'rootsTall', alt: 'rootsMacro', sale: true,
+        { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }, { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 1800 }] }] },
+    { id: 'roots', title: 'Blue roots', col: 'coast', img: 'roots', card: 'rootsTall', alt: 'rootsMacro', isNew: true,
+      ed: { mode: 'headstart', daysLeft: 21, days: 30, size: 40, quickSize: 20 },
       story: 'Tree roots in deep indigo washes, with texture you can almost touch. (Sample text.)',
-      products: [PRINT(true), { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 1200 }] }] }
+      products: [PRINT(false), { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 1200 }] }] }
   ];
   var SETS = [
-    { id: 'trio', title: 'Ocean trio', note: 'Three A4 prints, chosen to hang together.', img: 'sharkSq', price: 115, was: 135, items: ['shark', 'wildflowers', 'roots'] },
+    { id: 'trio', title: 'Sea and shore pair', note: 'Two A4 prints, chosen to hang together.', img: 'sharkSq', price: 79, was: 90, items: ['shark', 'wildflowers'] },
     { id: 'gift', title: 'Gift card', note: 'Any amount, sent by email with a note. They choose.', img: 'flowersDetail', price: 50, was: 0, gift: true }
   ];
   var COLS = {
@@ -609,6 +627,24 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   function art(id) { return ARTWORKS.filter(function (a) { return a.id === id; })[0]; }
   function prod(a, pid) { return a.products.filter(function (p) { return p.id === pid; })[0] || a.products[0]; }
   function from(p) { return Math.min.apply(null, p.options.map(function (o) { return o.price; })); }
+  // originals first: what each piece's edition means for a buyer right now
+  function opensOn(ed) { var d = new Date(); d.setDate(d.getDate() + ed.daysLeft); return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }); }
+  function printable(a) { return !a.ed || a.ed.mode !== 'headstart'; }
+  function heldPrint(a, p) { return a.ed && a.ed.mode === 'headstart' && p.type !== 'Original'; }
+  function soldOriginal(a, p) { return p.type === 'Original' && a.ed && (a.ed.mode === 'limited' || a.ed.mode === 'soldout'); }
+  function edition(a, p) {
+    var e = a.ed; if (!e) return '';
+    if (p.type === 'Original') {
+      if (soldOriginal(a, p)) return '<div class="edn sold"><b>Sold to a collector</b><p>' + (e.left ? 'A limited run of ' + e.limit + ' prints follows it, and ' + e.left + ' are left. <a href="#/a/' + a.id + '">See the prints</a>.' : 'Its print run has sold out too.') + '</p></div>';
+      if (e.mode === 'headstart') return '<div class="edn hold"><b>Its head start: ' + e.daysLeft + ' days left</b><p>Right now this original is the only way to own the piece. Buy it before ' + opensOn(e) + ' and only ' + e.quickSize + ' prints will ever follow it, instead of ' + e.size + '.</p></div>';
+      return '<div class="edn"><b>Once it’s gone, prints are limited</b><p>The day the original sells, the prints become a limited run of ' + e.size + '.</p></div>';
+    }
+    if (p.type !== 'Print') return '';
+    if (e.mode === 'headstart') return '<div class="edn hold"><b>Prints open ' + opensOn(e) + '</b><p>A new piece gets a head start: for its first ' + e.days + ' days, the <a href="#/a/' + a.id + '/original">original</a> is the only way to own it.</p>' + signup() + '<p class="tiny">We’ll email you the day prints open.</p></div>';
+    if (e.mode === 'open') return '<div class="edn"><b>Open for now</b><p>When the original sells, only ' + e.size + ' more prints will ever be made. <a href="#/a/' + a.id + '/original">The original</a> is still available.</p></div>';
+    if (e.mode === 'limited') return '<div class="edn lim"><b>Limited edition · ' + e.left + ' of ' + e.limit + ' left</b><div class="meter"><i style="width:' + Math.round(e.left / e.limit * 100) + '%"></i></div><p>The original has sold' + (e.quick ? ' (in its first days, so this run is smaller)' : '') + '. When these are gone, there are no more.</p></div>';
+    return '<div class="edn sold"><b>Edition sold out</b><p>All ' + e.limit + ' prints have found homes.</p></div>';
+  }
   function words(text, cls) { return text.split(' ').map(function (w) { return '<span class="w ' + (cls || '') + '">' + w + '</span>'; }).join(' '); }
 
   // ---------- pieces of page ----------
@@ -616,7 +652,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     p = p || a.products[0];
     var o = p.options[0], isPrint = p === a.products[0];
     var badges = (a.isNew ? '<span>New in</span>' : '') + (a.sale && isPrint ? '<span class="off">−20%</span>' : '') + (a.sea && isPrint ? '<span class="sea">Sea Shelter</span>' : '') +
-      (p.type === 'Download' ? '<span>Instant</span>' : p.type === 'Original' ? '<span>One of a kind</span>' : '');
+      (p.type === 'Download' ? '<span>Instant</span>' : soldOriginal(a, p) ? '<span>Sold</span>' : p.type === 'Original' ? '<span>One of a kind</span>' : '') +
+      (isPrint && a.ed ? (a.ed.mode === 'limited' ? '<span class="off">' + a.ed.left + ' left</span>' : a.ed.mode === 'headstart' ? '<span>Original only</span>' : '') : '');
     return '<a class="pc reveal" href="#/a/' + a.id + (isPrint ? '' : '/' + p.id) + '"><div class="ph"><img alt="' + esc(a.title) + '" src="' + IMG[a.card] + '"><img class="alt" alt="" src="' + IMG[a.alt] + '"><div class="badge">' + badges + '</div></div>' +
       '<div class="meta"><div><h3>' + esc(isPrint ? a.title : p.name) + '</h3><div class="sub">' + (isPrint ? (a.products.length > 1 ? 'Also as ' + a.products.slice(1).map(function (x) { return x.name.toLowerCase(); }).join(', ') : 'Art print') : esc(a.title)) + '</div></div>' +
       '<div class="pr">' + (o.was ? '<s>' + money(o.was) + '</s>' : '') + (isPrint || p.options.length > 1 ? 'from ' : '') + money(from(p)) + '</div></div></a>';
@@ -696,15 +733,17 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         : '<p class="story" style="margin:12px 0">' + esc(o.note) + '</p>';
       var addons = (p.type === 'Print' ? '<label class="addon" id="frameRow" style="display:none"><input type="checkbox" data-act="frame"><div><div>Frame it</div><div class="d">Oak frame, ready to hang. Adds about a week.</div></div><span class="p" id="frameP"></span></label>' : '') +
         (p.type !== 'Download' ? '<label class="addon"><input type="checkbox" data-act="gift"><div><div>Gift wrap and a handwritten card</div><div class="d">Price hidden on the packing slip.</div></div><span class="p">+$8</span></label>' : '');
-      var bundle = p.type === 'Print' ? '<div class="bundle"><h3>Complete the set, save 15%</h3><div class="th">' + ARTWORKS.map(function (x) { return '<img alt="" src="' + IMG[x.card] + '">'; }).join('') + '</div><p style="font-size:14px">Any 3 A4 prints, taken off in the cart. Or the <a href="#/s/trio">Ocean trio</a> for ' + money(SETS[0].price) + '.</p></div>' : '';
+      var bundle = p.type === 'Print' ? '<div class="bundle"><h3>Complete the set, save 15%</h3><div class="th">' + ARTWORKS.filter(printable).map(function (x) { return '<img alt="" src="' + IMG[x.card] + '">'; }).join('') + '</div><p style="font-size:14px">Any 3 A4 prints, taken off in the cart. Or the <a href="#/s/trio">Sea and shore pair</a> for ' + money(SETS[0].price) + '.</p></div>' : '';
       var also = ARTWORKS.filter(function (x) { return x !== a; }).map(function (x) { return card(x); }).join('');
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · <a href="#/c/' + a.col + '">' + COLS[a.col].title + '</a></div><div class="pp">' +
         '<div class="big wipe' + (a.contain ? ' contain' : '') + '"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '"></div><div class="side">' +
         '<div class="lbl" style="color:' + (a.sale && p.type === 'Print' ? 'var(--pink-deep)' : 'var(--teal)') + '">' + (a.sale && p.type === 'Print' ? '20% off this week' : a.sea ? 'Supports Sea Shelter' : 'Denise Duffy') + '</div>' +
         '<h1>' + esc(a.title) + '</h1>' + tabs +
         '<div class="price" id="price"></div><div class="pay4">or 4 payments of <b id="p4"></b> with pay-later <span class="prop">(provider to confirm)</span></div>' + opts + addons +
-        '<button class="btn block" style="margin-top:16px" type="button" data-act="add" id="mainAdd">' + (p.type === 'Original' ? 'Buy the original' : 'Add to cart') + '</button>' +
-        '<div class="or">or check out in one tap</div><div class="express"><button class="xb shop" type="button" data-act="express" data-via="Link">Link</button><button class="xb apple" type="button" data-act="express" data-via="Apple Pay">Apple Pay</button><button class="xb google" type="button" data-act="express" data-via="Google Pay">G Pay</button></div>' +
+        edition(a, p) +
+        '<button class="btn block" style="margin-top:16px" type="button" data-act="add" id="mainAdd"' + (heldPrint(a, p) || soldOriginal(a, p) ? ' disabled' : '') + '>' +
+          (heldPrint(a, p) ? 'Prints open ' + opensOn(a.ed) : soldOriginal(a, p) ? 'Sold' : p.type === 'Original' ? 'Buy the original' : 'Add to cart') + '</button>' +
+        (heldPrint(a, p) || soldOriginal(a, p) ? '' : '<div class="or">or check out in one tap</div>') + '<div class="express"' + (heldPrint(a, p) || soldOriginal(a, p) ? ' hidden' : '') + '><button class="xb shop" type="button" data-act="express" data-via="Link">Link</button><button class="xb apple" type="button" data-act="express" data-via="Apple Pay">Apple Pay</button><button class="xb google" type="button" data-act="express" data-via="Google Pay">G Pay</button></div>' +
         bundle + (a.sea ? '<div class="note">🌊 Part of this sale supports Sea Shelter’s marine rescue and rehabilitation.</div>' : '') +
         '<p class="story">' + esc(a.story) + '</p>' +
         '<div class="acc"><details><summary>Delivery</summary><p>Free over $100, otherwise $12 in Australia. Prints posted flat or in a tube; framed pieces by courier. Downloads by email straight away. (Sample terms.)</p></details>' +
@@ -717,7 +756,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       state = { set: s };
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · <a href="#/c/sets">Sets &amp; gifts</a></div><div class="pp"><div class="big wipe"><img alt="" src="' + IMG[s.img] + '"></div><div class="side">' +
         '<div class="lbl" style="color:var(--pink-deep)">' + (s.gift ? 'Gift card' : 'Bundle') + '</div><h1>' + esc(s.title) + '</h1><div class="price">' + money(s.price) + (s.was ? '<s>' + money(s.was) + '</s>' : '') + '</div><p class="story">' + esc(s.note) + '</p>' +
-        (s.items ? '<div class="bundle"><h3>In the set</h3><div class="th">' + s.items.map(function (i) { return '<img alt="" src="' + IMG[art(i).card] + '">'; }).join('') + '</div><p style="font-size:14px">' + s.items.map(function (i) { return art(i).title; }).join(', ') + ' · A4 each</p></div>' : '') +
+        (s.items ? '<div class="bundle"><h3>In the pair</h3><div class="th">' + s.items.map(function (i) { return '<img alt="" src="' + IMG[art(i).card] + '">'; }).join('') + '</div><p style="font-size:14px">' + s.items.map(function (i) { return art(i).title; }).join(', ') + ' · A4 each</p></div>' : '') +
         '<button class="btn block" style="margin-top:16px" type="button" data-act="addset">Add to cart</button></div></div></div>';
     },
     about: function () {
@@ -809,7 +848,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       ws.forEach(function (w, i) { w.classList.toggle('on', REDUCED || i / ws.length < prog * 1.15); });
     }
     var main = document.getElementById('mainAdd'), sk = $('#sticky');
-    if (main && state.a) { $('#stickyT').innerHTML = esc(state.a.title) + '<span>' + esc(state.p.name) + ' · ' + money(price()) + '</span>'; sk.classList.toggle('on', main.getBoundingClientRect().bottom < 0); }
+    if (main && state.a) { $('#stickyT').innerHTML = esc(state.a.title) + '<span>' + esc(state.p.name) + ' · ' + money(price()) + '</span>'; sk.classList.toggle('on', !main.disabled && main.getBoundingClientRect().bottom < 0); }
     else sk.classList.remove('on');
     $('.pill').style.transform = scrollY > 40 && scrollY > (onScroll.last || 0) && scrollY > 400 ? 'translateY(-70px)' : 'none';
     onScroll.last = scrollY;
@@ -906,8 +945,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     else if (t.dataset.rm) { cart.splice(Number(t.dataset.rm), 1); drawCart(); }
     else if (act === 'add' && state.a) {
       var a = state.a, p = state.p, o = state.o;
+      if (heldPrint(a, p) || soldOriginal(a, p)) return;
       addLine({ title: a.title, img: a.card, pid: p.id, opt: o.id, digital: p.type === 'Download', price: price(), detail: (p.type === 'Print' ? o.label : p.name + (p.options.length > 1 ? ', ' + o.label : '')) + (state.frame ? ', framed' : '') + (state.gift ? ', gift wrapped' : '') });
-    } else if (act === 'addset') addLine({ title: state.set.title, img: state.set.img, pid: state.set.id, digital: !!state.set.gift, price: state.set.price, detail: state.set.gift ? 'Gift card' : 'Set of three A4 prints' });
+    } else if (act === 'addset') addLine({ title: state.set.title, img: state.set.img, pid: state.set.id, digital: !!state.set.gift, price: state.set.price, detail: state.set.gift ? 'Gift card' : 'Pair of A4 prints' });
     else if (act === 'upsell') addLine({ title: 'Coastal wildflowers', img: 'flowersDetail', pid: 'cards', opt: 'p5', price: 25, detail: 'Card pack, Pack of 5' });
     else if (act === 'code') { code = ($('#codeIn').value || '').trim().toUpperCase(); drawCart(); toast(code === 'IRUKANDJI' ? 'Free delivery applied.' : code ? 'That code isn’t set up in this prototype. Try IRUKANDJI.' : 'Code cleared.'); }
     else if (act === 'express') toast('On the live site, ' + t.dataset.via + ' fills in the address and card: one tap and it’s paid.');

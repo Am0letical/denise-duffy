@@ -709,6 +709,10 @@ a.li { text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
 }
+.ed-line { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12.5px; }
+.ed-line .ms, .ed-line .material-symbols-rounded { font-size: 16px; }
+.ed-line.limited { color: var(--primary); } .ed-line.headstart, .ed-line.waiting { color: var(--on-surface-variant); }
+.ed-line.soldout { color: var(--error, #b3261e); }
 </style>
 
   <script>
@@ -776,6 +780,8 @@ var TIDE_SETTING_DEFAULTS = {
   taxSetAsidePct: 30,        // placeholder: confirm with an accountant
   paymentFeePct: 2,          // placeholder: the store's card fee
   defaultMarkupPct: 150,
+  // originals first: prints wait while a new original has its head start, then sell as a limited run once it sells
+  editionBufferDays: 30, editionSize: 50, quickEditionPct: 50,
   priceRounding: 'dollar',   // 'dollar', 'five' or 'none'
   gstThreshold: 75000,
   // the brand brief the studio writes to (edited in the app)
@@ -823,7 +829,7 @@ var TIDE_SCHEMAS = {
       ['approvalRequest', 'Approval request', 'text'], ['approvalState', 'Approval state', 'text'],
       ['artistComment', 'Artist comment', 'text'], ['approvalAnswered', 'Approval answered', 'date'],
       ['adminNotes', 'Admin notes', 'text'], ['sourceIdea', 'From idea', 'text'],
-      ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date']
+      ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date']
     ]
   },
   feed: {
@@ -831,8 +837,8 @@ var TIDE_SCHEMAS = {
     columns: [
       ['sku', 'SKU', 'text'], ['printId', 'Artwork ID', 'text'], ['title', 'Artwork', 'text'], ['product', 'Product', 'text'],
       ['size', 'Size or option', 'text'], ['price', 'Price', 'number'], ['cost', 'Cost', 'number'], ['fulfilment', 'Fulfilment', 'text'],
-      ['status', 'Status', 'text'], ['description', 'Description', 'text'],
-      ['photoFolder', 'Photo folder', 'text'], ['updated', 'Updated', 'date']
+      ['status', 'Status', 'text'], ['edition', 'Edition', 'text'], ['left', 'Left', 'number'], ['opensOn', 'Prints open', 'text'],
+      ['description', 'Description', 'text'], ['photoFolder', 'Photo folder', 'text'], ['updated', 'Updated', 'date']
     ]
   },
   ledger: {
@@ -1278,7 +1284,7 @@ function createTideLogic(env) {
         status: 'Draft', variants: normaliseVariants(p.variants, id, settings()), products: normaliseProducts(p.products, id, settings()),
         folderUrl: env.files.folder(['Prints', id + ' ' + cleanName(title)]), photoIds: [], thumbIds: [],
         approvalRequest: '', approvalState: '', artistComment: '', adminNotes: '',
-        sourceIdea: text(p.sourceIdea, 20), updated: now
+        sourceIdea: text(p.sourceIdea, 20), edition: readEdition(p.edition, {}, null), updated: now
       });
       return { id: id };
     });
@@ -1293,12 +1299,14 @@ function createTideLogic(env) {
       if ('description' in ch) out.description = text(ch.description, 3000);
       if ('variants' in ch) out.variants = normaliseVariants(ch.variants, id, settings());
       if ('products' in ch) out.products = normaliseProducts(ch.products, id, settings());
+      if ('edition' in ch) out.edition = readEdition(ch.edition, pr.edition || {}, pr);
       if (role === 'admin' && 'adminNotes' in ch) out.adminNotes = text(ch.adminNotes, 5000);
       if (pr.status === 'Live') {
         var missing = liveGaps(Object.assign({}, pr, out));
         if (missing.length) fail('This artwork is live, so it still needs ' + missing.join(' and ') + '. Park it first to remove those.');
       }
       env.table('prints').update(id, out);
+      stampListing(id);
       publishFeed();
       return { ok: true };
     });
@@ -1326,9 +1334,85 @@ function createTideLogic(env) {
         if (!pr.wentLive) out.wentLive = now;
       }
       env.table('prints').update(id, out);
+      stampListing(id);
       publishFeed();
       return { ok: true, status: status };
     });
+  }
+
+  // ---------- originals first, then a limited run of prints
+  // An artwork with "the original" among its products follows these rules:
+  //   1. When the original first goes on sale, prints (and anything else made from it) are held for a head start
+  //      (editionBufferDays, 30 by default), so the original is the only way to own it.
+  //   2. If nobody has bought the original by then, prints open, with no limit, until it sells.
+  //   3. The day the original sells, prints become a limited edition: the artwork's edition size counts down from
+  //      that day. If it sold during the head start, the buyer was quick and the run is smaller (quickEditionPct).
+  // Sales come from the money records: a sale filed as Originals or Prints against the artwork.
+  function readEdition(input, old, pr) {
+    var e = Object.assign({}, old || {}), n = Number((input || {}).size);
+    if (input && 'size' in input) {
+      if (!isFinite(n) || n < 1 || n > 2000 || Math.round(n) !== n) fail('The number of prints needs to be a whole number from 1 to 2000.');
+      if (pr) {
+        var st = editionState(Object.assign({}, pr, { edition: e }), settings(), env.today(), salesByArtwork());
+        if (st.sold && n < st.printsSold) fail(st.printsSold + ' prints have already sold since the original did, so the edition can’t be smaller than that.');
+        if (st.sold && st.locked) fail('The edition was set when the original sold, and buyers were told that number. It can’t change now.');
+      }
+      e.size = n;
+    }
+    return e;
+  }
+  function originalOf(pr) { return list(pr.products).filter(function (pd) { return pd.type === 'Original'; })[0] || null; }
+  /** The day the original first went on sale starts the head start; noted once, never moved. */
+  function stampListing(id) {
+    var pr = find('prints', id), og = originalOf(pr), e = Object.assign({}, pr.edition || {});
+    if (!og || e.listed || pr.status !== 'Live' || og.status !== 'Live') return;
+    var s = settings();
+    e.listed = env.today(); e.bufferDays = s.editionBufferDays;
+    if (!e.size) e.size = s.editionSize;
+    env.table('prints').update(id, { edition: e });
+  }
+  /** Each artwork's original sale (the first one) and its print sales, from the money records. */
+  function salesByArtwork() {
+    var by = {};
+    rows('ledger').forEach(function (t) {
+      if (t.kind !== 'Sale' || t.status === 'Void' || !t.printId) return;
+      var a = by[t.printId] || (by[t.printId] = { original: '', prints: [] });
+      if (t.category === 'Originals') { if (!a.original || t.date < a.original) a.original = t.date; }
+      else if (t.category === 'Prints') a.prints.push({ date: t.date, qty: Number(t.qty) > 0 ? Number(t.qty) : 1 });
+    });
+    return by;
+  }
+  /** Where an artwork stands: 'none' (no original), 'waiting', 'headstart', 'open', 'limited' or 'soldout'. */
+  function editionState(pr, s, today, sales) {
+    var og = originalOf(pr);
+    if (!og) return { mode: 'none' };
+    var e = pr.edition || {}, a = sales[pr.id] || { original: '', prints: [] };
+    var size = Number(e.size) || s.editionSize, days = Number(e.bufferDays) || s.editionBufferDays;
+    var out = { mode: '', size: size, listed: e.listed || '', bufferDays: days, opensOn: e.listed ? shiftDay(e.listed, days) : '',
+      sold: a.original, quickSize: Math.max(1, Math.ceil(size * s.quickEditionPct / 100)) };
+    if (a.original) {
+      out.quick = !!(e.listed && a.original < out.opensOn);
+      out.limit = out.quick ? out.quickSize : size;
+      out.locked = true;
+      out.printsSold = a.prints.filter(function (p) { return p.date >= a.original; }).reduce(function (n, p) { return n + p.qty; }, 0);
+      out.left = Math.max(0, out.limit - out.printsSold);
+      out.mode = out.left > 0 ? 'limited' : 'soldout';
+      return out;
+    }
+    if (!e.listed) out.mode = 'waiting';
+    else if (today < out.opensOn) out.mode = 'headstart';
+    else out.mode = 'open';
+    return out;
+  }
+  function niceDay(d) { var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; return +d.slice(8, 10) + ' ' + m[+d.slice(5, 7) - 1]; }
+  /** Plain words for the screens and the shop. */
+  function editionLine(st) {
+    if (st.mode === 'waiting') return 'Prints wait until the original is on sale';
+    if (st.mode === 'headstart') return 'Original only until ' + niceDay(st.opensOn) + ', then prints open';
+    if (st.mode === 'open') return 'Prints open until the original sells, then ' + st.size + ' more';
+    if (st.mode === 'limited') return 'Limited edition: ' + st.left + ' of ' + st.limit + ' prints left';
+    if (st.mode === 'soldout') return 'Edition sold out (' + st.limit + ' prints)';
+    return '';
   }
 
   /**
@@ -1336,21 +1420,27 @@ function createTideLogic(env) {
    * A product is only Live in the feed when both it and its artwork are live.
    */
   function publishFeed() {
-    var feed = [];
+    var feed = [], s = settings(), today = env.today(), sales = salesByArtwork();
     rows('prints').forEach(function (pr) {
       if (pr.status === 'Draft') return;
+      var st = editionState(pr, s, today, sales), held = st.mode === 'waiting' || st.mode === 'headstart', line = editionLine(st);
       list(pr.variants).forEach(function (v) {
         feed.push({
           sku: v.sku, printId: pr.id, title: pr.title, product: 'Print', size: v.size, price: v.price, cost: v.cost,
-          fulfilment: 'From stock', status: pr.status, description: pr.description, photoFolder: pr.folderUrl, updated: pr.updated
+          fulfilment: 'From stock', status: pr.status !== 'Live' ? pr.status : held ? 'Held' : st.mode === 'soldout' ? 'Sold out' : 'Live',
+          edition: line, left: st.mode === 'limited' || st.mode === 'soldout' ? st.left : '', opensOn: st.mode === 'headstart' ? st.opensOn : '',
+          description: pr.description, photoFolder: pr.folderUrl, updated: pr.updated
         });
       });
       list(pr.products).forEach(function (pd) {
         if (pd.status === 'Draft') return;
+        var og = pd.type === 'Original';
         list(pd.variants).forEach(function (v) {
           feed.push({
             sku: v.sku, printId: pr.id, title: pr.title, product: pd.type === 'Other' ? pd.name : pd.type + ': ' + pd.name, size: v.option, price: v.price, cost: v.cost,
-            fulfilment: pd.fulfilment, status: pr.status === 'Live' && pd.status === 'Live' ? 'Live' : 'Parked',
+            fulfilment: pd.fulfilment, status: !(pr.status === 'Live' && pd.status === 'Live') ? 'Parked' : og && st.sold ? 'Sold' : !og && held ? 'Held' : 'Live',
+            edition: og ? (st.sold ? 'Sold' : st.mode === 'headstart' ? 'Prints open ' + niceDay(st.opensOn) + '; until then the original is the only way to own it' : '') : held ? line : '',
+            left: '', opensOn: !og && st.mode === 'headstart' ? st.opensOn : '',
             description: pr.description, photoFolder: pr.folderUrl, updated: pr.updated
           });
         });
@@ -1382,6 +1472,7 @@ function createTideLogic(env) {
       notes: text(p.notes, 1000), qty: Number(p.qty) > 0 ? Math.round(Number(p.qty)) : '',
       printId: text(p.printId, 20)
     };
+    if (out.printId && !rows('prints').some(function (r) { return r.id === out.printId; })) fail('That artwork couldn’t be found.');
     if (kind === 'Sale') {
       out.channel = oneOf(p.channel, T.SALE_CHANNELS, 'where it was sold');
       out.category = oneOf(p.category || 'Prints', T.INCOME_CATEGORIES, 'what was sold');
@@ -1403,6 +1494,7 @@ function createTideLogic(env) {
       row.receiptId = ''; row.receiptThumbId = '';
       row.enteredBy = env.user.email; row.created = nowIso();
       env.table('ledger').append(row);
+      if (row.printId) publishFeed();
       return { id: row.id };
     });
   }
@@ -1415,6 +1507,7 @@ function createTideLogic(env) {
       var row = readTxn(Object.assign({ gstInPrice: tx.gst > 0 }, p || {}), tx);
       row.editedBy = env.user.email; row.edited = nowIso();
       env.table('ledger').update(id, row);
+      if (row.printId || tx.printId) publishFeed();
       return { ok: true };
     });
   }
@@ -1428,6 +1521,7 @@ function createTideLogic(env) {
       var tx = find('ledger', id);
       if (tx.status === 'Void') fail('That record is already cancelled.');
       env.table('ledger').update(id, { status: 'Void', voidReason: why, editedBy: env.user.email, edited: nowIso() });
+      if (tx.printId) publishFeed();
       return { ok: true };
     });
   }
@@ -1679,6 +1773,9 @@ function createTideLogic(env) {
     pct('taxSetAsidePct', 'Tax set-aside', 100);
     pct('paymentFeePct', 'Card fee', 30);
     pct('defaultMarkupPct', 'Usual markup', 2000);
+    pct('editionBufferDays', 'The original’s head start', 365);
+    pct('editionSize', 'Prints after an original sells', 2000);
+    pct('quickEditionPct', 'Run for a quick buyer', 100);
     if ('priceRounding' in ch) out.priceRounding = oneOf(ch.priceRounding, ['dollar', 'five', 'none'], 'how to round prices');
     env.settings.set(out);
     return { ok: true };
@@ -1706,6 +1803,7 @@ function createTideLogic(env) {
     return out;
   }
 
+  var salesCache = null;
   function clientPrint(pr, role, s, registered) {
     var photoIds = list(pr.photoIds);
     var out = {
@@ -1723,8 +1821,9 @@ function createTideLogic(env) {
       photoUrls: photoIds.map(function (x) { return env.files.viewUrl(x); }), folderUrl: pr.folderUrl || '',
       approvalRequest: pr.approvalRequest || '', approvalState: pr.approvalState || '',
       artistComment: pr.artistComment || '', wentLive: pr.wentLive || '', sourceIdea: pr.sourceIdea || '',
-      gaps: liveGaps(pr)
+      gaps: liveGaps(pr), edition: Object.assign(editionState(pr, s, env.today(), salesCache || (salesCache = salesByArtwork())), { line: '' })
     };
+    out.edition.line = editionLine(out.edition);
     if (role === 'admin') { out.adminNotes = pr.adminNotes || ''; out.createdBy = pr.createdBy; }
     return out;
   }
@@ -1733,6 +1832,7 @@ function createTideLogic(env) {
     var role = need(['admin', 'artist']);
     var s = settings(), today = env.today(), registered = gstRegisteredOn(today, s);
     var ideas = rows('ideas').map(function (it) { return clientIdea(it, role); }).reverse();
+    salesCache = null;
     var prints = rows('prints').map(function (p) { return clientPrint(p, role, s, registered); }).reverse();
     var studioData = content.snapshot(role), publishData = publish.snapshot(role);
     return {
@@ -3444,7 +3544,7 @@ function tideNotes(env, t) {
  */
 (function () {
   'use strict';
-  var KEY = 'tidebook-demo-v16';
+  var KEY = 'tidebook-demo-v17';
   var OPT = window.TIDE_DEMO || {};
   var role = location.hash === '#admin' ? 'admin' : 'artist';
   window.addEventListener('hashchange', function () { location.reload(); });
@@ -3608,6 +3708,16 @@ function tideNotes(env, t) {
       { type: 'Homewares', name: 'Cushion cover', status: 'Draft', fulfilment: 'Print on demand', variants: v_(['One size'], 22, 0) }] });
     L.api.updatePrint(art_('Blue roots').id, { products: [
       { type: 'Original', name: 'The original', status: 'Live', fulfilment: 'One-off', variants: v_(['One of a kind'], 0, 1200) }] });
+    // originals first, then a limited run: one piece in its head start, one open, one sold early with prints counting down
+    function ago(n) { var d = new Date(); d.setDate(d.getDate() - n); return dayStr(d); }
+    function original_(t, price) { var a = art_(t); L.api.updatePrint(a.id, { products: a.products.concat([{ type: 'Original', name: 'The original', status: 'Live', fulfilment: 'One-off', variants: v_(['One of a kind'], 0, price) }]) }); return art_(t); }
+    var roots = art_('Blue roots'); roots.edition = { listed: ago(9), bufferDays: 30, size: 40 };
+    var wild = original_('Coastal wildflowers', 1800); wild.edition = { listed: ago(47), bufferDays: 30, size: 50 };
+    var shark = original_('Shark in the shallows', 950); shark.edition = { listed: ago(70), bufferDays: 30, size: 30 };
+    L.api.addTransaction({ kind: 'Sale', date: ago(58), amount: 950, channel: 'Centre', category: 'Originals', printId: shark.id, description: 'The original: Shark in the shallows' });
+    [[40, 2, 158], [21, 1, 45], [6, 1, 79]].forEach(function (x) {
+      L.api.addTransaction({ kind: 'Sale', date: ago(x[0]), amount: x[2], channel: x[0] > 30 ? 'Centre' : 'Online store', category: 'Prints', printId: shark.id, qty: x[1], description: 'Shark in the shallows prints' });
+    });
     var first = db.prints.filter(function (x) { return x.title === 'Coastal wildflowers'; })[0];
     first.approvalRequest = 'Is this print proof the right colour?'; first.approvalState = 'Pending';
 
@@ -5781,8 +5891,35 @@ var Kit = (function () {
     return h('article', { class: 'pcard' },
       h('button', { class: 'tap press soft flat', type: 'button', 'aria-label': 'Open ' + p.title, onclick: function () { openPrint(p.id); } },
         p.thumbIds.length ? thumbImg(p.thumbIds[0], 'img') : h('div', { class: 'img blank' }, icon('image')),
-        h('div', { class: 'body' }, h('div', { class: 't', text: p.title }), h('div', { class: 's', text: priceRange(p) }))),
+        h('div', { class: 'body' }, h('div', { class: 't', text: p.title }), h('div', { class: 's', text: priceRange(p) }),
+          p.edition && p.edition.line ? h('div', { class: 's ed-line ' + p.edition.mode }, icon(EDITION_ICON[p.edition.mode] || 'info'), h('span', { text: p.edition.line })) : null)),
       foot);
+  }
+
+  var EDITION_ICON = { waiting: 'lock', headstart: 'hourglass_top', open: 'sell', limited: 'verified', soldout: 'block' };
+  /** Originals first: what the rules mean for this artwork right now, and its edition size. */
+  function editionSection(p, f, touch) {
+    var s = S.data.settings, st = p && p.edition && p.edition.mode !== 'none' ? p.edition : null, sec = sheetSection('The original, then a limited run');
+    var quick = function (n) { return Math.max(1, Math.ceil(n * s.quickEditionPct / 100)); };
+    var explain = h('p', { class: 'tf-help', style: 'margin:8px 4px 0' });
+    function paint() {
+      var n = f.editionSize || s.editionSize;
+      explain.textContent = 'For its first ' + s.editionBufferDays + ' days on sale, the original is the only way to own this piece. If nobody buys it by then, prints open until it sells. Once it sells, ' + n + ' prints are left, ' +
+        'or ' + quick(n) + ' if it sold in those first ' + s.editionBufferDays + ' days. Prints sold anywhere count, so file them against this artwork.';
+    }
+    if (st) sec.appendChild(h('div', { style: 'margin-bottom:12px' }, note(st.line + (st.mode === 'limited' && st.quick ? '. The original sold in its head start, so the run is smaller.' : st.mode === 'open' || st.mode === 'headstart' ? '.' : '.'), EDITION_ICON[st.mode] || 'info',
+      st.mode === 'soldout' ? 'warn' : st.mode === 'limited' ? 'good' : '')));
+    var locked = st && st.locked;
+    var size = K.textField({ label: 'Prints for sale after the original sells', inputmode: 'numeric', value: f.editionSize || s.editionSize, disabled: locked,
+      help: locked ? 'This run is ' + st.limit + (st.quick ? ' (cut from ' + st.size + ' because the original sold in its head start)' : '') + '. It was set when the original sold and buyers were told that number, so it stays.' : 'Choose it for this piece: fewer for a big or special one.',
+      onInput: function (v) { f.editionSize = Math.round(K.num(v)); f.editionChanged = true; paint(); touch(); } });
+    if (locked) size.input.disabled = true;
+    sec.append(size, explain);
+    if (p && st && !st.sold) sec.appendChild(h('div', { style: 'margin-top:12px' }, btn('outlined', 'The original has sold', { icon: 'sell', block: true, onclick: function () {
+      openTxn('Sale', null, { category: 'Originals', printId: p.id, description: 'The original: ' + p.title });
+    } })));
+    paint();
+    return sec;
   }
 
   /** One size of a print: cost, markup and price stay in step as any of them changes. */
@@ -5911,7 +6048,7 @@ var Kit = (function () {
     var s = S.data.settings;
     var f = { title: p ? p.title : '', description: p ? p.description : '', adminNotes: p ? (p.adminNotes || '') : '', files: [],
       variants: p ? p.variants.map(function (v) { return { size: v.size, cost: v.cost, markupPct: v.markupPct, price: v.price }; }) : [],
-      products: p ? JSON.parse(JSON.stringify(p.products || [])) : [] };
+      products: p ? JSON.parse(JSON.stringify(p.products || [])) : [], editionSize: p && p.edition ? p.edition.size : 0, editionChanged: false };
     var dirty = false, status = p ? p.status : 'Draft';
     K.sheet({
       title: p ? p.title : 'New artwork', tall: true, guard: function () { return dirty; },
@@ -5984,8 +6121,10 @@ var Kit = (function () {
         // what else it's made into
         var s3b = sheetSection('Made into');
         var plist = h('div', { class: 'list' });
+        var edWrap = h('div');
+        function drawEdition() { edWrap.textContent = ''; if (f.products.some(function (pd) { return pd.type === 'Original'; })) edWrap.appendChild(editionSection(p, f, touch)); }
         function drawProducts() {
-          plist.textContent = '';
+          plist.textContent = ''; drawEdition();
           f.products.forEach(function (pd, i) { plist.appendChild(productRow(pd, function () { openProduct(pd, f.products, i, function () { drawProducts(); touch(); }); })); });
           if (!f.products.length) plist.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 8px;color:var(--on-surface-variant)', text: 'Apparel, cards, homewares, a download, the original itself, or anything else. Each has its own options, prices and switch.' }));
         }
@@ -5993,7 +6132,7 @@ var Kit = (function () {
           pickProductType().then(function (pd) { if (!pd) return; f.products.push(pd); openProduct(pd, f.products, f.products.length - 1, function () { drawProducts(); touch(); }, true); });
         } })));
         drawProducts();
-        ctl.body.append(s1, s2, s3, s3b, s4);
+        ctl.body.append(s1, s2, s3, s3b, edWrap, s4);
 
         if (ADMIN) {
           var s5 = sheetSection('Admin');
@@ -6031,6 +6170,7 @@ var Kit = (function () {
         function persist(active) {
           var payload = { title: f.title, description: f.description, variants: f.variants, products: f.products };
           if (ADMIN) payload.adminNotes = f.adminNotes;
+          if (f.editionChanged && f.editionSize > 0 && !(p && p.edition && p.edition.locked)) payload.edition = { size: f.editionSize };
           var step = p ? api('updatePrint', p.id, payload).then(function () { return p.id; })
             : api('createPrint', payload).then(function (res) { return ADMIN && f.adminNotes ? api('updatePrint', res.id, { adminNotes: f.adminNotes }).then(function () { return res.id; }) : res.id; });
           return step.then(function (pid) {
@@ -6192,10 +6332,10 @@ var Kit = (function () {
     }).catch(function (err) { K.setBusy(b, false); fail(err); });
   }
 
-  function openTxn(kind, t) {
+  function openTxn(kind, t, preset) {
     var sale = kind === 'Sale', o = S.data.options, dirty = false;
-    var f = t ? { amount: t.amount, date: t.date, channel: t.channel, category: t.category, description: t.description, gstInPrice: t.gst > 0 }
-      : { amount: 0, date: S.data.today, channel: sale ? 'Centre' : '', category: sale ? 'Prints' : '', description: '', gstInPrice: true };
+    var f = t ? { amount: t.amount, date: t.date, channel: t.channel, category: t.category, description: t.description, gstInPrice: t.gst > 0, printId: t.printId || '', qty: t.qty || 1 }
+      : Object.assign({ amount: 0, date: S.data.today, channel: sale ? 'Centre' : '', category: sale ? 'Prints' : '', description: '', gstInPrice: true, printId: '', qty: 1 }, preset || {});
     var files = [];
     var voided = t && t.status === 'Void';
     K.sheet({
@@ -6212,7 +6352,28 @@ var Kit = (function () {
           var s1 = sheetSection('Where was it sold?'); s1.style.marginTop = '12px';
           s1.appendChild(K.choices({ label: 'Channel', value: f.channel, options: o.saleChannels, onChange: function (v) { f.channel = v; touch(); } }));
           var s2 = sheetSection('What was sold?');
-          s2.appendChild(K.choices({ label: 'Category', value: f.category, options: o.incomeCategories, onChange: function (v) { f.category = v; touch(); } }));
+          s2.appendChild(K.choices({ label: 'Category', value: f.category, options: o.incomeCategories, onChange: function (v) { f.category = v; touch(); drawArt(); } }));
+          // prints and originals of a limited piece are counted, so they're filed against the artwork
+          var artWrap = h('div', { style: 'margin-top:12px' });
+          function drawArt() {
+            artWrap.textContent = '';
+            if (f.category !== 'Prints' && f.category !== 'Originals') return;
+            var limited = S.data.prints.filter(function (p) { return p.edition && p.edition.mode !== 'none'; });
+            if (!limited.length && !f.printId) return;
+            var opts = [{ value: '', label: f.category === 'Prints' ? 'Several, or none of these' : 'Not one of these' }].concat(limited.map(function (p) { return { value: p.id, label: p.title + (p.edition.line ? ' · ' + p.edition.line : '') }; }));
+            var stack = h('div', { class: 'field-gap' }, K.pickField({ label: f.category === 'Prints' ? 'Prints of which artwork?' : 'Which original?', value: f.printId, options: opts, empty: opts[0].label,
+              onChange: function (v) { f.printId = v; touch(); drawArt(); } }));
+            var art = f.printId ? byId(S.data.prints, f.printId) : null, ed = art && art.edition;
+            if (art && f.category === 'Prints') {
+              stack.appendChild(K.textField({ label: 'How many prints?', inputmode: 'numeric', value: f.qty, onInput: function (v) { f.qty = Math.max(1, Math.round(K.num(v))); touch(); } }));
+              if (ed && (ed.mode === 'waiting' || ed.mode === 'headstart')) stack.appendChild(note('Prints of this piece aren’t on sale yet: ' + ed.line.toLowerCase() + '.', 'hourglass_top', 'warn'));
+              if (ed && (ed.mode === 'limited' || ed.mode === 'soldout')) stack.appendChild(note(ed.mode === 'soldout' ? 'This edition has sold out.' : ed.left + ' left in the edition.', ed.mode === 'soldout' ? 'block' : 'verified', ed.mode === 'soldout' ? 'warn' : ''));
+            }
+            if (art && f.category === 'Originals') stack.appendChild(note(ed && ed.sold ? 'Its original is already recorded as sold.' : 'Saving this starts its limited run of prints.', 'verified'));
+            if (!t) stack.appendChild(h('p', { class: 'tf-help', style: 'margin:0 4px', text: 'Limited pieces need their own entry, so the count stays right.' }));
+            artWrap.appendChild(stack);
+          }
+          s2.appendChild(artWrap); drawArt();
           var s3 = sheetSection('Details');
           s3.appendChild(h('div', { class: 'field-gap' }, date, desc));
           ctl.body.append(s1, s2, s3);
@@ -6247,7 +6408,9 @@ var Kit = (function () {
           if (!f.date) { toast('Choose the date.'); return; }
           if (!sale && !f.category) { toast('Choose what it was for.'); return; }
           K.setBusy(save, true);
-          var payload = { kind: kind, amount: f.amount, date: f.date, channel: f.channel, category: f.category, description: f.description, gstInPrice: f.gstInPrice };
+          var linked = sale && (f.category === 'Prints' || f.category === 'Originals') ? f.printId : '';
+          var payload = { kind: kind, amount: f.amount, date: f.date, channel: f.channel, category: f.category, description: f.description, gstInPrice: f.gstInPrice,
+            printId: linked, qty: linked && f.category === 'Prints' ? f.qty : '' };
           (t ? api('updateTransaction', t.id, payload).then(function () { return t.id; }) : api('addTransaction', payload).then(function (r) { return r.id; }))
             .then(function (tid) { return uploadAll('receipt', tid, files); }).then(refresh)
             .then(function () { dirty = false; K.haptic('success'); render(); toast(t ? 'Saved.' : (sale ? 'Sale recorded: ' : 'Expense recorded: ') + (t ? '' : money(f.amount))); ctl.close(); })
@@ -7289,6 +7452,17 @@ var Kit = (function () {
         help: 'What the payment provider keeps from each sale. A placeholder until the store is chosen.' })));
     main.appendChild(rise(p, 1));
 
+    var ed = section('Originals and limited prints');
+    f.editionBufferDays = s.editionBufferDays; f.editionSize = s.editionSize; f.quickEditionPct = s.quickEditionPct;
+    ed.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
+      K.textField({ label: 'Head start for a new original', suffix: 'days', inputmode: 'numeric', value: f.editionBufferDays, onInput: function (v) { f.editionBufferDays = Math.round(K.num(v)); },
+        help: 'No prints of a new original sell for this long. Each piece keeps the number it started with.' }),
+      K.textField({ label: 'Usual prints after an original sells', inputmode: 'numeric', value: f.editionSize, onInput: function (v) { f.editionSize = Math.round(K.num(v)); },
+        help: 'Filled in for each new piece. Change it per artwork.' }),
+      K.textField({ label: 'Run if it sells in the head start', suffix: '%', inputmode: 'numeric', value: f.quickEditionPct, onInput: function (v) { f.quickEditionPct = K.num(v); },
+        help: 'A quick buyer gets more exclusivity: 50% halves the run.' })));
+    main.appendChild(rise(ed, 1));
+
     var t = section('Tax');
     var dateField = K.textField({ label: 'Registered from', type: 'date', value: f.gstRegisteredFrom, onInput: function (v) { f.gstRegisteredFrom = v; } });
     dateField.hidden = !f.gstOn;
@@ -7305,7 +7479,8 @@ var Kit = (function () {
     save.addEventListener('click', function () {
       K.setBusy(save, true);
       api('saveSettings', { defaultMarkupPct: f.defaultMarkupPct, priceRounding: f.priceRounding, paymentFeePct: f.paymentFeePct,
-        taxSetAsidePct: f.taxSetAsidePct, gstRegisteredFrom: f.gstOn ? f.gstRegisteredFrom : '' })
+        taxSetAsidePct: f.taxSetAsidePct, gstRegisteredFrom: f.gstOn ? f.gstRegisteredFrom : '',
+        editionBufferDays: f.editionBufferDays, editionSize: f.editionSize, quickEditionPct: f.quickEditionPct })
         .then(refresh).then(function () { K.haptic('success'); render(); toast('Settings saved.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
     });
     main.appendChild(rise(h('div', { style: 'margin-top:16px' }, save), 3));
