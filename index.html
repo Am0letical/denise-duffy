@@ -297,6 +297,8 @@ body:has(.mock) .hero { height: calc(100svh - 30px); }
 .edn.sold b { color: var(--muted); }
 .btn[disabled] { opacity: .5; pointer-events: none; }
 
+.express[hidden] { display: none !important; }
+
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
 .lg.on { opacity: 1; pointer-events: auto; }
@@ -611,6 +613,20 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     { id: 'trio', title: 'Sea and shore pair', note: 'Two A4 prints, chosen to hang together.', img: 'sharkSq', price: 79, was: 90, items: ['shark', 'wildflowers'] },
     { id: 'gift', title: 'Gift card', note: 'Any amount, sent by email with a note. They choose.', img: 'flowersDetail', price: 50, was: 0, gift: true }
   ];
+
+  // ---------- a run published from Tide Book: its live artworks replace the sample catalogue ----------
+  var REAL = window.TIDE_SITE || null;
+  if (REAL) {
+    var SERIES_COL = { 'Mind Garden': 'mindgarden', 'Pockets of Magic': 'pockets', 'Ocean': 'ocean', 'Studio': 'studio' };
+    ARTWORKS = REAL.artworks.map(function (a, i) {
+      var keys = a.photos.map(function (ph, j) { var k = 'tb' + i + '_' + j; IMG[k] = REAL.images[ph] || ''; return k; });
+      return { id: a.id, title: a.title, col: SERIES_COL[a.series] || 'studio', img: keys[0], card: keys[0], alt: keys[1] || keys[0],
+        sea: a.series === 'Ocean', isNew: i < 2, ed: a.ed, story: a.story, products: a.products };
+    });
+    SETS = SETS.filter(function (x) { return !x.items || x.items.every(function (id) { return art(id); }); });
+    var bar = document.querySelector('.mock');
+    if (bar) bar.textContent = REAL.preview ? 'Preview from Tide Book · not published yet' : 'Published from Tide Book · test run · nothing is for sale yet';
+  }
   var COLS = {
     ocean: { title: 'Ocean', sub: 'Sharks, rays and the sea, made with the Irukandji Shark & Ray Centre. 20% of every marine print supports Sea Shelter.', img: 'sharkTall' },
     mindgarden: { title: 'Mind Garden', sub: 'Manta rays flying like butterflies over flowers. A whale swimming through the night sky. Everything I love, mixed into one magical, make-believe world, and a reminder to tend the garden of your mind.', img: 'flowersTall', soon: 'The first Mind Garden pieces are being made now.' },
@@ -630,7 +646,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   function prod(a, pid) { return a.products.filter(function (p) { return p.id === pid; })[0] || a.products[0]; }
   function from(p) { return Math.min.apply(null, p.options.map(function (o) { return o.price; })); }
   // originals first: what each piece's edition means for a buyer right now
-  function opensOn(ed) { var d = new Date(); d.setDate(d.getDate() + ed.daysLeft); return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }); }
+  function opensOn(ed) { if (ed.daysLeft == null) return 'soon'; var d = new Date(); d.setDate(d.getDate() + ed.daysLeft); return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }); }
   function printable(a) { return !a.ed || a.ed.mode !== 'headstart'; }
   function heldPrint(a, p) { return a.ed && a.ed.mode === 'headstart' && p.type !== 'Original'; }
   function soldOriginal(a, p) { return p.type === 'Original' && a.ed && (a.ed.mode === 'limited' || a.ed.mode === 'soldout'); }
@@ -692,7 +708,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         '<div class="tiles">' + tile('mindgarden', 1) + tile('pockets', 2) + tile('ocean', 3) + '</div></section>' +
 
         '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">New &amp; <span class="it" style="color:var(--pink-deep)">loved</span></h2><a href="#/c/studio" class="reveal">See everything</a></div>' +
-        '<div class="cards">' + card(ARTWORKS[0]) + card(ARTWORKS[1]) + card(ARTWORKS[2]) + card(ARTWORKS[1], ARTWORKS[1].products[1]) + '</div></section>' +
+        '<div class="cards">' + ARTWORKS.slice(0, 3).map(function (a) { return card(a); }).join('') + (ARTWORKS[1] && ARTWORKS[1].products[1] ? card(ARTWORKS[1], ARTWORKS[1].products[1]) : '') + '</div></section>' +
 
         '<section class="band-night"><div class="glow"></div><div class="grid"></div>' +
         '<div class="ticker"><div>' + titles.concat(titles).map(function (t) { return '<span>' + t + ' ✦</span>'; }).join('') + '</div></div>' +
@@ -717,13 +733,13 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     collection: function (k) {
       var c = COLS[k]; if (!c) return views.home();
       var cards = '';
-      if (k === 'ocean' || k === 'studio') cards = ARTWORKS.filter(function (a) { return a.col === k; }).map(function (a) { return card(a); }).join('');
+      if (k === 'ocean' || k === 'studio' || ARTWORKS.some(function (a) { return a.col === k; })) cards = ARTWORKS.filter(function (a) { return a.col === k; }).map(function (a) { return card(a); }).join('');
       else if (c.soon) cards = '';
       else if (k === 'sets') cards = SETS.map(setCard).join('');
       else ARTWORKS.forEach(function (a) { a.products.forEach(function (p) {
         if ((k === 'wear' && /Apparel|Cards|Homewares/.test(p.type)) || (k === 'digital' && p.type === 'Download') || (k === 'originals' && p.type === 'Original')) cards += card(a, p);
       }); });
-      var extra = c.soon ? '<div class="edn hold" style="max-width:640px"><b>' + esc(c.soon) + '</b><p>Join my letters from the studio and you’ll see them first.</p>' + signup() + '</div>' : k === 'originals' ? commission() : k === 'wear' ? '<p class="prop" style="margin-top:20px">Here the photos would be the print partner’s mock-ups of each item with her art on it.</p>' : '';
+      var extra = c.soon && !cards ? '<div class="edn hold" style="max-width:640px"><b>' + esc(c.soon) + '</b><p>Join my letters from the studio and you’ll see them first.</p>' + signup() + '</div>' : k === 'originals' ? commission() : k === 'wear' ? '<p class="prop" style="margin-top:20px">Here the photos would be the print partner’s mock-ups of each item with her art on it.</p>' : '';
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · Shop</div><h1 class="ptitle reveal">' + c.title.replace('&', '<span class="it" style="color:var(--ocean)">&amp;</span>') + '</h1>' +
         '<p class="plede reveal">' + c.sub + '</p><div class="cards">' + cards + '</div>' + extra + '</div>';
     },
