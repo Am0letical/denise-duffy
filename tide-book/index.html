@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -752,6 +752,11 @@ img, video { max-width: 100%; }
 .dir-item { display: block; width: 100%; text-align: left; border: 0; border-radius: 14px; padding: 12px 14px; background: var(--surface-lowest, #fff); color: var(--on-surface); cursor: pointer; }
 .dir-item b { display: block; font: 500 15px/20px var(--font); margin-bottom: 4px; }
 .dir-item span { display: block; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
+/* suggestions under a text box, and answers to tap in note thoughts */
+.suggest { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.suggest .choice { font-size: 13px; min-height: 32px; }
+.ex-q { padding: 10px 0; border-top: 1px solid var(--outline-variant, rgba(0,0,0,.08)); }
+.ex-q:first-of-type { border-top: 0; }
 </style>
 
   <script>
@@ -3527,6 +3532,23 @@ function tideNotes(env, t) {
     env.table('notebook').update(n.id, { expandStatus: 'Queued', expandRoute: 'claude', expandQueued: t.nowIso(), expandTries: 0, expandWhy: t.text(why, 200) });
   }
 
+  /** An answer to one of the questions about a note: added to the note in their words, and marked answered. */
+  function answerNoteQuestion(id, index, answer) {
+    var role = t.need(['admin', 'artist']);
+    answer = t.text(answer, 1000);
+    if (!answer) t.fail('Pick an answer or write one.');
+    return env.lock(function () {
+      var fresh = get(id), ex2 = fresh.expansion || {}, qs = t.list(ex2.questions), q = qs[Number(index)];
+      if (!q) t.fail('That question is no longer there.');
+      var text = typeof q === 'string' ? q : q.question;
+      keepVersion(fresh);
+      var body = fresh.body.replace(/\s+$/, '') + '\n\n' + text + '\n→ ' + answer;
+      ex2.questions = qs.map(function (x, i) { x = typeof x === 'string' ? { question: x, options: [] } : x; return i === Number(index) ? Object.assign({}, x, { answer: answer }) : x; });
+      env.table('notebook').update(id, { body: body, links: resolve(body, id).links, expansion: ex2, revision: (Number(fresh.revision) || 1) + 1, updated: t.nowIso(), updatedBy: role });
+      return { ok: true };
+    });
+  }
+
   /** "Keep as a note": one of Claude's suggested notes becomes a real note, linked from the original. */
   function keepSuggestion(id, index) {
     t.need(['admin', 'artist']);
@@ -3613,7 +3635,10 @@ function tideNotes(env, t) {
           summary: t.text(r.summary, 600),
           goals: t.list(r.goals).slice(0, 6).map(function (x) { return t.text(x, 200); }).filter(String),
           guesses: t.list(r.unverified || r.guesses).slice(0, 6).map(function (x) { return t.text(x, 240); }).filter(String),
-          questions: t.list(r.questions).slice(0, 2).map(function (x) { return t.text(x, 240); }).filter(String),
+          questions: t.list(r.questions).slice(0, 4).map(function (x) {
+            x = typeof x === 'string' ? { question: x, options: [] } : (x || {});
+            return { question: t.text(x.question, 240), options: t.list(x.options).slice(0, 4).map(function (o) { return t.text(o, 100); }).filter(String), answer: '' };
+          }).filter(function (q) { return q.question; }),
           nextStep: t.text(r.next_step || r.nextStep, 400),
           notes: t.list(r.new_notes || r.notes).slice(0, 4).map(function (x) { return { title: t.text(x && x.title, 80), body: t.text(x && x.body, 1200), kept: '' }; }).filter(function (x) { return x.title && x.body; })
         };
@@ -3716,7 +3741,7 @@ function tideNotes(env, t) {
     ai: ai,
     local: local,
     addNote: saveNoteCore,
-    api: { saveNote: saveNote, deleteNote: deleteNote, noteHistory: noteHistory, restoreVersion: restoreVersion, expandNote: expandNote, askClaude: askClaude, saveAi: saveAi, keepSuggestion: keepSuggestion, noteToIdea: noteToIdea },
+    api: { saveNote: saveNote, deleteNote: deleteNote, noteHistory: noteHistory, restoreVersion: restoreVersion, expandNote: expandNote, askClaude: askClaude, saveAi: saveAi, keepSuggestion: keepSuggestion, answerNoteQuestion: answerNoteQuestion, noteToIdea: noteToIdea },
     expand: expand,
     snapshot: snapshot
   };
@@ -3816,6 +3841,12 @@ function tideTalk(env, t) {
   }
 
   function clean(x, n) { return t.text(x, n); }
+  function openText(a) { return t.list(a).slice(0, 10).map(function (x) { return clean(typeof x === 'string' ? x : (x && x.question), 300); }).filter(String); }
+  function openOpts(a) { return t.list(a).slice(0, 10).filter(function (x) { return typeof x === 'string' ? clean(x, 300) : x && clean(x.question, 300); }).map(function (x) { return typeof x === 'string' ? [] : cleanList(x.options, 4, 120); }); }
+  var OPEN_FALLBACK = ['Not sure yet', 'Let’s find out'];
+  function cleanOpen(list) {
+    return t.list(list).slice(0, 20).map(function (o) { return { q: t.text(o && o.q, 300), a: t.text(o && o.a, 1000), options: t.list(o && o.options).slice(0, 4).map(function (x) { return t.text(x, 120); }).filter(String) }; }).filter(function (o) { return o.q; });
+  }
   function cleanList(a, max, n) { return t.list(a).slice(0, max).map(function (x) { return t.text(x, n); }).filter(String); }
 
   /** Saves an AI answer to whichever job it was. */
@@ -3840,7 +3871,7 @@ function tideTalk(env, t) {
         var kind = K.KINDS.indexOf(res.kind) >= 0 ? res.kind : 'Other';
         var out = {
           title: clean(res.title, 120) || r.title, summary: clean(res.summary, 1500), kind: kind,
-          decisions: cleanList(res.decisions, 20, 300), open: cleanList(res.open_questions || res.open, 10, 300),
+          decisions: cleanList(res.decisions, 20, 300), open: openText(res.open_questions || res.open), openOptions: openOpts(res.open_questions || res.open),
           nextStep: clean(res.next_step || res.nextStep, 400), by: by2, at: now
         };
         env.table('topics').update(id, { outcome: out, status: 'Done', aiStatus: '', aiNote: '', updated: now });
@@ -3965,6 +3996,73 @@ function tideTalk(env, t) {
     return res;
   }
 
+  /** Questions someone has written, with suggested answers, put straight in front of the other person (or themselves). */
+  function askQuestions(p) {
+    var role = t.need(['admin', 'artist']);
+    p = p || {};
+    var title = t.text(p.title, 120), forRole = p.forRole === 'admin' ? 'admin' : 'artist';
+    if (!title) t.fail('Give the questions a name.');
+    var qs = t.list(p.questions).slice(0, K.MAX_Q).map(function (q) {
+      q = q || {};
+      return { question: clean(q.question, 300), why: clean(q.why, 200), options: cleanList(q.options, 4, 120), multi: q.multi === true };
+    }).filter(function (q) { return q.question; });
+    if (!qs.length) t.fail('Add at least one question.');
+    var res = env.lock(function () {
+      var id = env.nextId('TP', 4), now = t.nowIso();
+      env.table('topics').append({ id: id, created: now, createdBy: forRole, title: title, detail: t.text(p.detail, 2000), status: 'Your turn',
+        rounds: [{ questions: qs, readyToWrap: true, by: who(role), at: now }], outcome: null, filed: null, maxQ: qs.length,
+        updated: now, aiJob: '', aiStatus: '' });
+      return { id: id };
+    });
+    if (t.push) t.push(forRole, 'Questions about ' + title, qs.length + ' questions are ready when you are.');
+    return res;
+  }
+  /** A note full of questions: the AI (the PC's model first) asks them as rounds, each with answers to tap. */
+  function noteToQuestions(noteId) {
+    var role = t.need(['admin', 'artist']);
+    var n = t.rows('notebook').filter(function (x) { return x.id === noteId && !x.deleted; })[0];
+    if (!n) t.fail('That note has been removed.');
+    var lines = String(n.body || '').split('\n').map(function (l) { return l.replace(/^\s*[-*•\d.)]+\s*/, '').trim(); }).filter(String);
+    if (!lines.length) t.fail('There are no questions in this note yet.');
+    var res = env.lock(function () {
+      var id = env.nextId('TP', 4), now = t.nowIso();
+      env.table('topics').append({ id: id, created: now, createdBy: 'artist', title: t.text(n.title, 120),
+        detail: t.text('These questions come from a note. Ask exactly these, in this order, one each, each with 2 to 4 suggested answers she can tap. Add nothing else.\n- ' + lines.join('\n- '), 2000),
+        status: 'Thinking', rounds: [], outcome: null, filed: null, maxQ: Math.max(1, Math.min(K.MAX_Q, lines.length)), updated: now, aiJob: '', aiStatus: '' });
+      queue(id, 'round');
+      return { id: id, forArtist: role !== 'artist' };
+    });
+    if (env.talkNow) env.talkNow(res.id);
+    return res;
+  }
+
+  /** What a write-up left open, asked as one more round with answers to tap; then it's written up again. */
+  function answerOpenQuestions(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var tp = topic(id), o = tp.outcome || {}, open = t.list(o.open);
+      if (!open.length) t.fail('Nothing is left open on this one.');
+      if (openRound(tp)) t.fail('There are already questions waiting.');
+      var qs = open.map(function (q, i) {
+        var opts = t.list((o.openOptions || [])[i]);
+        return { question: clean(q, 300), why: '', options: opts.length >= 2 ? opts : OPEN_FALLBACK, multi: false };
+      });
+      var rounds = t.list(tp.rounds).concat([{ questions: qs, readyToWrap: true, by: 'Still open', at: t.nowIso() }]);
+      env.table('topics').update(id, { rounds: rounds, status: 'Your turn', maxQ: asked(tp) + qs.length, updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
+  /** A note on a product, like "ask for changes": kept in its history and sent to the other person. */
+  function itemNote(id, text) {
+    var role = t.need(['admin', 'artist']);
+    text = t.text(text, 300);
+    if (!text) t.fail('Say what you’d like changed.');
+    env.lock(function () { var r = item(id); env.table('pipeline').update(id, { updated: t.nowIso(), log: logAdd(r, who(role) + ' asked: ' + text) }); });
+    var r2 = item(id);
+    if (t.push) t.push(role === 'artist' ? 'admin' : 'artist', r2.title + ': ' + who(role) + ' asked for changes', text);
+    return { ok: true };
+  }
+
   /** answers: one per question in the open round: {picked: [option indexes], text, skip}. wrap: that's enough for now. */
   function answerRound(id, answers, opts) {
     t.need(['admin', 'artist']);
@@ -4057,7 +4155,7 @@ function tideTalk(env, t) {
       try { filed.noteId = t.saveNote({ title: taken ? t.text(title + ' (' + id + ')', 120) : title, body: noteBody(tp) }).id; } catch (e) { filed.noteError = String(e.message || e); }
     }
     if (o.kind === 'Product' && !filed.pipelineId) {
-      filed.pipelineId = env.lock(function () { return addItem({ title: o.title || tp.title, summary: o.summary, stage: 'Decisions', fromTopic: id, decisions: o.decisions, open: t.list(o.open).map(function (q) { return { q: q, a: '' }; }) }); });
+      filed.pipelineId = env.lock(function () { return addItem({ title: o.title || tp.title, summary: o.summary, stage: 'Decisions', fromTopic: id, decisions: o.decisions, open: t.list(o.open).map(function (q, i) { return { q: q, a: '', options: t.list((o.openOptions || [])[i]) }; }) }); });
     }
     if (o.kind === 'Idea' && !filed.ideaId) {
       try { filed.ideaId = t.createIdea({ kind: 'Other', title: o.title || tp.title, note: (o.summary || '') + (t.list(o.decisions).length ? '\n\nDecided: ' + t.list(o.decisions).join('; ') : ''), scope: [] }).id; } catch (e) { filed.ideaError = String(e.message || e); }
@@ -4083,7 +4181,7 @@ function tideTalk(env, t) {
     env.table('pipeline').append({
       id: id, created: now, createdBy: env.user.role || 'admin', title: t.text(p.title, 120), summary: t.text(p.summary, 2000), stage: stage, parked: false,
       fromTopic: t.text(p.fromTopic, 20), ideaId: t.text(p.ideaId, 20), artworkId: '',
-      decisions: cleanList(p.decisions, 30, 300), open: t.list(p.open).slice(0, 20).map(function (o) { return { q: t.text(o.q, 300), a: t.text(o.a, 1000) }; }),
+      decisions: cleanList(p.decisions, 30, 300), open: cleanOpen(p.open),
       checks: t.list(p.checks).slice(0, 30).map(function (c) { return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(c.item, 300), status: K.CHECK_STATUS.indexOf(c.status) >= 0 ? c.status : 'To check', note: t.text(c.note, 300) }; }),
       parts: t.list(p.parts).slice(0, 30).map(function (x) { return { part: t.text(x.part, 120), supplier: t.text(x.supplier, 120), cost: Math.max(0, Number(x.cost) || 0), qty: Math.max(1, Math.round(Number(x.qty) || 1)) }; }),
       pricing: { price: Math.max(0, Number(p.price) || 0) }, sample: { status: 'Not ordered', notes: '' }, listing: { copy: '', posts: [] },
@@ -4106,7 +4204,7 @@ function tideTalk(env, t) {
       if ('title' in ch) { out.title = t.text(ch.title, 120); if (!out.title) t.fail('Give it a name.'); }
       if ('summary' in ch) out.summary = t.text(ch.summary, 2000);
       if ('decisions' in ch) { out.decisions = cleanList(ch.decisions, 30, 300); what.push('decisions'); }
-      if ('open' in ch) { out.open = t.list(ch.open).slice(0, 20).map(function (o) { return { q: t.text(o && o.q, 300), a: t.text(o && o.a, 1000) }; }).filter(function (o) { return o.q; }); what.push('open questions'); }
+      if ('open' in ch) { out.open = cleanOpen(ch.open); what.push('open questions'); }
       if ('checks' in ch) {
         out.checks = t.list(ch.checks).slice(0, 40).map(function (c) {
           c = c || {};
@@ -4240,7 +4338,7 @@ function tideTalk(env, t) {
 
   return {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob,
-    api: { startTopic: startTopic, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
+    api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
       createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, draftItem: draftItem, loadBacklog: loadBacklog }
   };
 }
@@ -4314,8 +4412,8 @@ function tideSetup(env, t) {
       { key: 'starter', title: 'Starter content', done: loaded, required: true,
         text: loaded ? 'Products and brand notes are in.' : 'Her product ideas into Products, and what we’ve decided about the brand into the Notebook.' },
       { key: 'buzzes', title: 'Phone buzzes', done: !!st.notifyAdmin, required: false, text: 'Hear when questions are answered or something needs you.' },
-      { key: 'pc', title: 'The PC helper', done: !!st.localSeenAt, required: false, text: 'Everyday AI jobs on the PC’s own models first (free).' },
-      { key: 'backup', title: 'Local backup', done: !!st.lastBackupAt, required: false, text: 'Money and customer records copied to the PC daily.' },
+      { key: 'pc', title: 'The PC helper', done: !!st.localSeenAt, required: false, text: env.site ? (st.localSeenAt ? 'Running on this PC: it starts with Tide Book, and everyday AI jobs go to its free model first.' : 'It starts with Tide Book on this PC. If this stays unticked, check Ollama is running.') : 'Everyday AI jobs on the PC’s own models first (free).' },
+      { key: 'backup', title: 'Local backup', done: !!st.lastBackupAt, required: false, text: env.site ? 'Your records live on this PC. Each day Tide Book also keeps a dated copy (the last 30 days), so a mistake can be undone. For a disaster copy, save the Tide Book Data folder to another drive or cloud now and then.' : 'Money and customer records copied to the PC daily.' },
       { key: 'stripe', title: 'Taking payment', done: on(st.stripeDone), required: false, text: 'Stripe payment links for the first products.' }
     ];
     return { role: role, steps: steps, people: people, done: steps.filter(function (x) { return x.required && !x.done; }).length === 0 };
@@ -5518,7 +5616,8 @@ var Kit = (function () {
       input, h('label', { for: id, text: o.label }),
       o.prefix ? h('span', { class: 'prefix', text: o.prefix }) : null,
       o.suffix ? h('span', { class: 'suffix', text: o.suffix }) : null);
-    var out = o.help ? h('div', {}, wrap, h('div', { class: 'tf-help', text: o.help })) : wrap;
+    var tips = o.suggest && o.suggest.length ? suggest({ input: input }, o.suggest, { replace: o.suggestReplace }) : null;
+    var out = o.help || tips ? h('div', {}, wrap, o.help ? h('div', { class: 'tf-help', text: o.help }) : null, tips) : wrap;
     out.input = input;
     return out;
   }
@@ -5590,6 +5689,23 @@ var Kit = (function () {
   }
 
   /** A switch. onChange(next, sw) may call sw.set(false) to spring it back. */
+  /** Tappable suggestions under a text box. Tapping fills it (replace) or adds to it. Returns the row. */
+  function suggest(field, options, o) {
+    o = o || {};
+    var input = field && field.input, row = h('div', { class: 'suggest', role: 'group', 'aria-label': o.label || 'Suggestions' });
+    (options || []).filter(Boolean).forEach(function (txt) {
+      row.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+        if (!input) return;
+        var cur = input.value.replace(/\s+$/, '');
+        input.value = o.replace || !cur ? txt : cur + (input.tagName === 'TEXTAREA' ? '\n' : ', ') + txt;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        haptic();
+        if (o.onPick) o.onPick(txt);
+      } }, txt));
+    });
+    return row;
+  }
+
   function switchBtn(o) {
     var on = !!o.checked;
     var sw = h('button', { type: 'button', role: 'switch', class: 'switch press flat' + (o.live ? ' live' : ''), 'aria-checked': String(on), 'aria-label': o.label, disabled: o.disabled });
@@ -6113,7 +6229,7 @@ var Kit = (function () {
     h: h, svg: svg, icon: icon, slug: slug, nextId: nextId, spring: spring, haptic: haptic, reduceMotion: reduceMotion,
     money: money, moneyShort: moneyShort, dayLabel: dayLabel, dateLabel: dateLabel, monthLabel: monthLabel, num: num,
     btn: btn, setBusy: setBusy, setLabel: setLabel, iconBtn: iconBtn, chip: chip,
-    textField: textField, amountField: amountField, segmented: segmented, choices: choices, switchBtn: switchBtn,
+    textField: textField, amountField: amountField, segmented: segmented, choices: choices, switchBtn: switchBtn, suggest: suggest,
     slider: slider, pickField: pickField, ring: ring, meter: meter, countUp: countUp, toast: toast,
     sheet: sheet, confirm: confirm, ask: ask, pickFromList: pickFromList,
     prepareImage: prepareImage, videoFrames: videoFrames, driveUpload: driveUpload, photoStrip: photoStrip, monthChart: monthChart, monthTable: monthTable, rankedBars: rankedBars,
@@ -6310,7 +6426,7 @@ var Kit = (function () {
   // ------------------------------------------------------------------ approvals
   function needsCard(entry, onDone) {
     var it = entry.item;
-    var field = K.textField({ label: 'Anything to change? (optional)', multiline: true, maxlength: 2000 });
+    var field = K.textField({ suggest: ['Looks lovely as it is', 'Can we try another colour?', 'A little smaller, please', 'Let’s chat about it first'], label: 'Anything to change? (optional)', multiline: true, maxlength: 2000 });
     var approve = btn('filled', 'Approve', { icon: 'check' }), change = btn('outlined', 'Ask for changes', { icon: 'edit' });
     function answer(decision) {
       K.setBusy(decision === 'approve' ? approve : change, true);
@@ -6705,7 +6821,7 @@ var Kit = (function () {
             K.setBusy(e.currentTarget, true);
             var split = function (v) { return v.split(/[,\s]+/).filter(String); };
             api('savePeople', { artists: split(pf.artist), admins: split(pf.admins), swap: pf.swap }).then(function () { reopen('Shared. They can open Tide Book with the app link.'); })
-              .catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+              .catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
           } }));
         ctl.body.appendChild(stepCard(by('people'), pBody));
 
@@ -6716,7 +6832,7 @@ var Kit = (function () {
         var kBody = h('div', { class: 'field-gap' }, kField, btn('tonal', 'Check and save', { icon: 'check', onclick: function (e) {
           if (!key.trim()) { kField.input.focus(); return; }
           K.setBusy(e.currentTarget, true);
-          api('saveClaudeKey', key).then(function () { reopen('Claude is on.'); }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+          api('saveClaudeKey', key).then(function () { reopen('Claude is on.'); }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
         } }));
         ctl.body.appendChild(stepCard(by('claude'), kBody));
 
@@ -6734,7 +6850,7 @@ var Kit = (function () {
           btn('tonal', 'Save', { icon: 'check', onclick: function (e) {
             K.setBusy(e.currentTarget, true);
             api('saveBasics', { gstRegisteredFrom: bf.gstOn ? bf.gstRegisteredFrom : '', paymentFeePct: bf.paymentFeePct, defaultMarkupPct: bf.defaultMarkupPct, incomeGoalWeekly: bf.incomeGoalWeekly })
-              .then(function () { reopen('Saved.'); }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+              .then(function () { reopen('Saved.'); }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
           } }));
         ctl.body.appendChild(stepCard(by('basics'), bBody));
 
@@ -6755,12 +6871,13 @@ var Kit = (function () {
                 h('div', { class: 'body-s', text: 'Address: ' + (c.appUrl || '(deploy the web app first)') }),
                 h('div', { class: 'body-s', style: 'word-break:break-all', text: 'Key: ' + (which === 'pc' ? c.localKey : c.backupKey) }),
                 h('p', { class: 'tf-help', style: 'margin:0', text: which === 'pc' ? 'Put both into pc/tidebook_local.ini on the PC (PC-HELPER.md). Keep the key private.' : 'Put both into backup/tidebook_backup.ini on the PC (BACKUP.md). Keep the key private.' }));
-              e.currentTarget.replaceWith(box);
+              var b = e.target.closest('button'); if (b) b.replaceWith(box);
             }).catch(fail);
           } });
         };
-        ctl.body.appendChild(stepCard(by('pc'), reveal('pc')));
-        ctl.body.appendChild(stepCard(by('backup'), reveal('backup')));
+        var onPc = !!S.data.website;   // the PC version: the helper and the backup run by themselves
+        ctl.body.appendChild(stepCard(by('pc'), onPc ? null : reveal('pc')));
+        ctl.body.appendChild(stepCard(by('backup'), onPc ? null : reveal('backup')));
         ctl.body.appendChild(stepCard(by('stripe'), h('div', { class: 'field-gap' },
           h('p', { class: 'body-m', text: 'Sign up at stripe.com/au in ' + artist() + '’s name, then make a payment link per product (STRIPE-CHECKLIST.md). Save each link in Admin › Accounts. Posted tins go without matches.' }),
           by('stripe').done ? null : btn('text', 'Mark as done', { icon: 'check', onclick: function () { api('markSetupStep', 'stripe').then(function () { reopen(); }).catch(fail); } }))));
@@ -6816,7 +6933,7 @@ var Kit = (function () {
       title: 'Suggestions and problems', tall: true,
       build: function (ctl) {
         ctl.body.appendChild(K.choices({ label: 'What is it?', value: f.kind, options: S.data.reportKinds || [], onChange: function (v) { f.kind = v; } }));
-        var tf = K.textField({ label: 'What happened, or what would help?', multiline: true, maxlength: 4000, onInput: function (v) { f.text = v; } });
+        var tf = K.textField({ suggest: ['It froze or wouldn’t load', 'A button didn’t do anything', 'I couldn’t find something', 'An idea to make it easier'], label: 'What happened, or what would help?', multiline: true, maxlength: 4000, onInput: function (v) { f.text = v; } });
         ctl.body.appendChild(h('div', { style: 'margin-top:14px' }, tf));
         var s = sheetSection('A screenshot (optional)');
         s.appendChild(K.photoStrip({ files: f.files, max: 2, onChange: function () {} }));
@@ -6903,7 +7020,7 @@ var Kit = (function () {
         var s3 = sheetSection('Where it’s up to');
         s3.appendChild(K.choices({ row: true, label: 'Status', value: f.status, options: S.data.reportStatuses || [], onChange: function (v) { f.status = v; dirty = true; } }));
         s3.appendChild(h('div', { class: 'field-gap', style: 'margin-top:12px' },
-          r.mine ? null : K.textField({ label: 'Reply to ' + r.by, multiline: true, maxlength: 1500, value: f.reply, help: 'They get a buzz when you reply or mark it done.', onInput: function (v) { f.reply = v; dirty = true; } }),
+          r.mine ? null : K.textField({ suggest: ['Fixed now. Please try again.', 'Thanks, it’s on the list.', 'Could you send a screenshot?', 'Sorted: it was a one-off.'], suggestReplace: true, label: 'Reply to ' + r.by, multiline: true, maxlength: 1500, value: f.reply, help: 'They get a buzz when you reply or mark it done.', onInput: function (v) { f.reply = v; dirty = true; } }),
           K.textField({ label: 'Notes (only you)', multiline: true, maxlength: 4000, value: f.adminNotes, onInput: function (v) { f.adminNotes = v; dirty = true; } })));
         ctl.body.appendChild(s3);
         var logs = h('details', { class: 'talk-past', style: 'margin-top:12px' }, h('summary', { text: 'Logs and device' }),
@@ -6959,7 +7076,7 @@ var Kit = (function () {
         s2.appendChild(K.textField({ label: 'Paste the link', value: f.url, maxlength: 1000, onInput: function (v) { f.url = v; dirty = true; }, help: 'In Instagram: ⋯ → Copy link. Then paste it here.' }));
         if (it && it.url) s2.appendChild(h('a', { class: 'btn text press', href: it.url, target: '_blank', rel: 'noopener', style: 'margin-top:6px' }, icon('open_in_new'), h('span', { text: 'Open the post' })));
         var s3 = sheetSection('What caught your eye?');
-        s3.appendChild(K.textField({ label: 'A few words (optional)', value: f.note, multiline: true, maxlength: 2000, onInput: function (v) { f.note = v; dirty = true; } }));
+        s3.appendChild(K.textField({ suggest: ['The colours', 'The texture', 'The composition', 'The packaging', 'How it feels'], label: 'A few words (optional)', value: f.note, multiline: true, maxlength: 2000, onInput: function (v) { f.note = v; dirty = true; } }));
         var s4 = sheetSection('Tags'), chips = h('div', { class: 'choices' });
         (S.data.inspoTags || []).forEach(function (tg) {
           var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(f.tags.indexOf(tg) >= 0) }, tg);
@@ -7058,9 +7175,9 @@ var Kit = (function () {
     K.sheet({
       title: 'Talk something through',
       build: function (ctl) {
-        var title = K.textField({ label: 'What’s on your mind?', maxlength: 120, onInput: function (v) { f.title = v; }, help: 'A few words, e.g. “Moon water bookmarks” or “My first Mind Garden painting”.' });
+        var title = K.textField({ suggest: ['A new painting', 'A product idea', 'A post I’d like to make', 'Something about Tide Book'], suggestReplace: true, label: 'What’s on your mind?', maxlength: 120, onInput: function (v) { f.title = v; }, help: 'A few words, e.g. “Moon water bookmarks” or “My first Mind Garden painting”.' });
         ctl.body.append(h('div', { class: 'field-gap' }, title,
-          K.textField({ label: 'Anything to start with? (optional)', multiline: true, maxlength: 2000, onInput: function (v) { f.detail = v; } })));
+          K.textField({ suggest: ['Just a thought so far', 'I’ve been thinking about it a while', 'It’s for a gift or a market'], label: 'Anything to start with? (optional)', multiline: true, maxlength: 2000, onInput: function (v) { f.detail = v; } })));
         var go = btn('filled', 'Start', { icon: 'forum', lg: true, block: true });
         go.addEventListener('click', function () {
           if (!f.title.trim()) { title.input.focus(); return; }
@@ -7093,7 +7210,7 @@ var Kit = (function () {
         ctlRef = ctl;
         var pct = Math.min(100, Math.round(tp.answered / tp.max * 100));
         ctl.body.appendChild(h('div', { style: 'margin-bottom:14px' },
-          h('div', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: tp.answered + ' answered' + (tp.status === 'Done' ? '' : ' · usually ' + tp.min + ' to ' + tp.max) + (ADMIN ? ' · started by ' + tp.by : '') }),
+          h('div', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: tp.answered + ' answered' + (tp.status === 'Done' ? '' : tp.max <= tp.min ? ' of ' + tp.max : ' · usually ' + tp.min + ' to ' + tp.max) + (ADMIN ? ' · started by ' + tp.by : '') }),
           h('div', { class: 'talk-bar' }, h('i', { style: 'width:' + pct + '%' }))));
 
         if (tp.aiStatus === 'Failed') {
@@ -7155,6 +7272,19 @@ var Kit = (function () {
           }
           list('Decided', o.decisions || []);
           list('Still open', o.open || []);
+          if ((o.open || []).length && myTopic(tp)) ctl.body.appendChild(h('div', { style: 'margin:-4px 0 14px' }, btn('tonal', 'Answer what’s still open', { icon: 'forum', block: true, onclick: function (e) {
+            var b = e.currentTarget; K.setBusy(b, true);
+            api('answerOpenQuestions', id).then(refresh).then(reopen).catch(function (err) { K.setBusy(b, false); fail(err); });
+          } })));
+          var nx = sheetSection('What next?'), nxr = h('div', { class: 'chip-wrap' });
+          nxr.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+            api('addDirection', { title: o.title || tp.title, body: o.summary || tp.title }).then(refresh).then(function () { toast('Added to Our direction.'); }).catch(fail);
+          } }, icon('explore'), 'Add to Our direction'));
+          nxr.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+            api('keepTalking', id).then(refresh).then(reopen).catch(fail);
+          } }, icon('forum'), 'Keep talking'));
+          nxr.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { ctl.close(); setTimeout(function () { S.ideasTab = 'products'; go('ideas'); }, 260); } }, icon('sell'), 'See Products'));
+          nx.appendChild(nxr); ctl.body.appendChild(nx);
           if (o.nextStep) { var ns = sheetSection('Next step'); ns.appendChild(h('p', { class: 'body-m', text: o.nextStep })); ctl.body.appendChild(ns); }
           var fs = sheetSection('Filed'), fl = h('div', { class: 'field-gap' });
           if (f.noteId && byId(S.data.notebook, f.noteId)) fl.appendChild(btn('outlined', 'Open the note', { icon: 'sticky_note_2', block: true, onclick: function () { ctl.close(); setTimeout(function () { openNote(f.noteId); }, 280); } }));
@@ -7274,7 +7404,7 @@ var Kit = (function () {
         var s3 = sheetSection('Open questions'), oq = h('div', { class: 'field-gap' });
         function drawOpen() {
           oq.textContent = '';
-          f.open.forEach(function (o, i) { oq.appendChild(K.textField({ label: o.q, value: o.a, multiline: true, compact: true, maxlength: 1000, onInput: function (v) { o.a = v; touch(); } })); });
+          f.open.forEach(function (o, i) { oq.appendChild(K.textField({ suggest: (o.options || []).length >= 2 ? o.options : ['Not sure yet', 'Let’s find out'], suggestReplace: true, label: o.q, value: o.a, multiline: true, compact: true, maxlength: 1000, onInput: function (v) { o.a = v; touch(); } })); });
           if (!f.open.length) oq.appendChild(h('p', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: 'None open.' }));
         }
         drawOpen();
@@ -7291,7 +7421,7 @@ var Kit = (function () {
               h('div', { class: 'body-m', text: c.item }), c.ai ? h('div', { class: 'body-s', style: 'color:var(--on-surface-variant);margin-top:2px', text: 'Drafted by AI: verify it' }) : null,
               h('div', { class: 'row check-row' }, h('div', { class: 'grow' }, K.choices({ row: true, label: 'Status', value: c.status, options: T.checkStatus, onChange: function (v) { c.status = v; touch(); } })),
                 K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); })),
-              K.textField({ label: 'Note', value: c.note, compact: true, maxlength: 300, onInput: function (v) { c.note = v; touch(); } })));
+              K.textField({ suggest: ['Confirmed', 'Waiting to hear back', 'Needs a quote', 'Not needed'], suggestReplace: true, label: 'Note', value: c.note, compact: true, maxlength: 300, onInput: function (v) { c.note = v; touch(); } })));
           });
         }
         drawChecks();
@@ -7320,7 +7450,7 @@ var Kit = (function () {
 
         var s6 = sheetSection('Sample');
         s6.append(K.choices({ row: true, label: 'Sample', value: f.sample.status || 'Not ordered', options: T.sampleStatus, onChange: function (v) { f.sample.status = v; touch(); } }),
-          h('div', { style: 'margin-top:10px' }, K.textField({ label: 'What we noticed', value: f.sample.notes || '', multiline: true, maxlength: 2000, onInput: function (v) { f.sample.notes = v; touch(); } })));
+          h('div', { style: 'margin-top:10px' }, K.textField({ suggest: ['Colours look true', 'Colours look dull', 'Lovely quality', 'Needs a change'], label: 'What we noticed', value: f.sample.notes || '', multiline: true, maxlength: 2000, onInput: function (v) { f.sample.notes = v; touch(); } })));
         ctl.body.appendChild(s6);
 
         var s7 = sheetSection('Listing and launch posts');
@@ -7340,7 +7470,20 @@ var Kit = (function () {
         var row = h('div', { class: 'field-gap' });
         if (p.needsMe) row.appendChild(btn('filled', 'I approve this stage', { icon: 'verified', block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('approveItem', id); }).then(refresh).then(function () { K.haptic('success'); toast('Approved.'); reopen(); }).catch(fail); } }));
         if (p.stage !== 'Live') row.appendChild(btn(p.needsMe ? 'outlined' : 'filled', 'Move on to ' + T.stages[si + 1], { icon: 'arrow_forward', block: true, onclick: function (e) {
-          K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('advanceItem', id); }).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+          K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('advanceItem', id); }).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
+        } }));
+        row.appendChild(btn('outlined', 'Ask for changes', { icon: 'edit', block: true, onclick: function () {
+          var msg = '';
+          K.sheet({ title: 'Ask for changes', build: function (c2) {
+            c2.body.appendChild(K.textField({ label: 'What would you like changed?', multiline: true, maxlength: 300, onInput: function (v) { msg = v; },
+              suggest: ['The price needs another look', 'Let’s see a sample first', 'Try a different supplier', 'Change the colours'] }));
+            var send = btn('filled', 'Send to ' + (ADMIN ? artist() : adminName()), { icon: 'send', lg: true, block: true, onclick: function () {
+              if (!msg.trim()) { toast('Pick a suggestion or write one.'); return; }
+              K.setBusy(send, true);
+              api('itemNote', id, msg).then(refresh).then(function () { c2.close(); toast('Sent, and kept in its history.'); reopen(); }).catch(function (err) { K.setBusy(send, false); fail(err); });
+            } });
+            c2.foot.appendChild(send);
+          } });
         } }));
         row.appendChild(btn('text', p.parked ? 'Bring it back' : 'Park it', { icon: p.parked ? 'restore' : 'pause_circle', onclick: function () { saveFirst().then(function () { return api('parkItem', id, !p.parked); }).then(refresh).then(reopen).catch(fail); } }));
         s8.appendChild(row);
@@ -7481,6 +7624,16 @@ var Kit = (function () {
           h('div', { class: 'row', style: 'justify-content:space-between;flex-wrap:wrap;gap:4px' }, linkBtn,
             h('span', { class: 'label-s', text: 'Tip: tap the microphone on your keyboard to speak' })),
           K.pickField({ label: 'Belongs to', value: f.ideaId || 'none', options: ideaOpts, onChange: function (v) { f.ideaId = v === 'none' ? '' : v; dirty = true; } })));
+        // a note of questions: asked the Talk it through way, with answers to tap
+        if (n && /\?/.test(n.body || '')) s1.appendChild(h('div', { style: 'margin-top:10px' }, btn('tonal', ADMIN ? 'Ask ' + artist() + ' these as questions' : 'Answer these as questions', { icon: 'forum', block: true, onclick: function (e) {
+          if (dirty) { toast('Save first.'); return; }
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('noteToQuestions', n.id).then(function (r) { return refresh().then(function () { return r; }); }).then(function (r) {
+            ctl.close(); render();
+            if (r.forArtist) toast('Sent to ' + artist() + '. She’ll get them in Talk, with answers to tap.');
+            else setTimeout(function () { openTopic(r.id); }, 260);
+          }).catch(function (err) { K.setBusy(b, false); fail(err); });
+        } })));
         ctl.body.appendChild(s1);
 
         if (n) {
@@ -7576,6 +7729,28 @@ var Kit = (function () {
     });
   }
 
+  /** The questions about a note: each with answers to tap (or your own words); an answer is added to the note. */
+  function noteQuestions(n, ex, ctl) {
+    var qs = (ex.questions || []).map(function (q) { return typeof q === 'string' ? { question: q, options: [] } : q; });
+    if (!qs.length) return null;
+    var box = h('div', { class: 'ex-block' }, h('div', { class: 'label-s' }, icon('forum'), 'Questions for you'));
+    qs.forEach(function (q, i) {
+      var c = h('div', { class: 'ex-q' }, h('div', { class: 'body-m', style: 'font-weight:500;margin-bottom:6px', text: q.question }));
+      if (q.answer) { c.appendChild(h('div', { class: 'body-m', text: '→ ' + q.answer })); box.appendChild(c); return; }
+      function send(text) {
+        api('answerNoteQuestion', n.id, i, text).then(refresh).then(function () { K.haptic('success'); toast('Added to the note.'); ctl.close(); setTimeout(function () { openNote(n.id); }, 260); }).catch(fail);
+      }
+      var opts = q.options && q.options.length >= 2 ? q.options : ['Yes', 'Not yet', 'Not sure'];
+      var own = '';
+      c.appendChild(h('div', { class: 'chip-wrap' }, opts.map(function (o) { return h('button', { type: 'button', class: 'choice press soft', onclick: function () { send(o); } }, o); })));
+      c.appendChild(h('div', { class: 'row', style: 'gap:8px;align-items:flex-end;margin-top:6px' },
+        h('div', { class: 'grow' }, K.textField({ label: 'Or in your own words', compact: true, maxlength: 1000, onInput: function (v) { own = v; } })),
+        btn('text', 'Add', { sm: true, onclick: function () { if (own.trim()) send(own); else toast('Write a few words first.'); } })));
+      box.appendChild(c);
+    });
+    return box;
+  }
+
   function expansionCard(n, ex, ctl) {
     function block(label, items, iconName) {
       if (!items || !items.length) return null;
@@ -7586,7 +7761,7 @@ var Kit = (function () {
       ex.summary ? h('p', { class: 'body-m ex-summary', text: ex.summary }) : null,
       block('What you’re after', ex.goals, 'flag'),
       block('Worth checking first', ex.guesses, 'help'),
-      block('Questions for you', ex.questions, 'forum'),
+      noteQuestions(n, ex, ctl),
       ex.nextStep ? h('div', { class: 'ex-next' }, h('div', { class: 'label-s' }, icon('directions_walk'), 'One next step'), h('p', { class: 'body-m', text: ex.nextStep })) : null);
     if (ex.notes && ex.notes.length) {
       var ns = h('div', { class: 'ex-block' }, h('div', { class: 'label-s' }, icon('sticky_note_2'), 'Notes it suggests'));
@@ -7602,6 +7777,16 @@ var Kit = (function () {
       });
       card.appendChild(ns);
     }
+    var nx = h('div', { class: 'ex-block' }, h('div', { class: 'label-s' }, icon('alt_route'), 'What next?'), h('div', { class: 'chip-wrap' },
+      h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { makeIdea(n, e.target.closest('button'), ctl); } }, icon('lightbulb'), 'Make it an idea'),
+      h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+        api('startTopic', { title: n.title, detail: String(n.body || '').slice(0, 1800) }).then(function (r) { return refresh().then(function () { return r; }); })
+          .then(function (r) { ctl.close(); render(); setTimeout(function () { openTopic(r.id); }, 280); }).catch(fail);
+      } }, icon('forum'), 'Talk it through'),
+      h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+        api('addDirection', { title: n.title, body: String(n.body || '').slice(0, 4000) }).then(refresh).then(function () { toast('Added to Our direction.'); }).catch(fail);
+      } }, icon('explore'), 'Add to Our direction')));
+    card.appendChild(nx);
     if (n.expandedAt) card.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: 'From ' + (ex.by || 'Claude') + ' · ' + ago(n.expandedAt) + ' · kept separate from your note' }));
     return card;
   }
@@ -7615,7 +7800,7 @@ var Kit = (function () {
           api('noteToIdea', n.id, k).then(refresh).then(function (r) {
             c2.close(); ctl.close(); K.haptic('success');
             toast(S.data.features.research ? 'It’s an idea now, and being researched.' : 'It’s an idea now.');
-          }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+          }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
         } })));
       });
     } });
@@ -7721,7 +7906,7 @@ var Kit = (function () {
     function rerun(label) {
       return btn('text', label, { icon: 'refresh', sm: true, onclick: function (e) {
         K.setBusy(e.currentTarget, true);
-        api('requeueResearch', x.id).then(refresh).then(function () { render(); toast('Queued for research.'); ctl.close(); }).catch(function (err) { K.setBusy(e.currentTarget, false); fail(err); });
+        api('requeueResearch', x.id).then(refresh).then(function () { render(); toast('Queued for research.'); ctl.close(); }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
       } });
     }
     if (researching(x)) { sec.appendChild(note('Being researched now. This usually takes a few minutes, and can take up to an hour.', 'travel_explore')); if (!x.research) return sec; }
@@ -7832,7 +8017,7 @@ var Kit = (function () {
           ctl.body.appendChild(s5);
 
           var s6 = sheetSection('Ask ' + artist());
-          var req = K.textField({ label: 'What needs checking?', multiline: true, maxlength: 500, value: x.approvalState === 'Pending' ? x.approvalRequest : '' });
+          var req = K.textField({ suggest: ['Happy with the price?', 'Happy with the colours?', 'OK to put this on sale?', 'Which version do you like best?'], label: 'What needs checking?', multiline: true, maxlength: 500, value: x.approvalState === 'Pending' ? x.approvalRequest : '' });
           var askBtn = btn('tonal', x.approvalState === 'Pending' ? 'Update the request' : 'Send to ' + artist(), { icon: 'send', block: true });
           askBtn.addEventListener('click', function () {
             if (!req.input.value.trim()) { req.input.focus(); return; }
@@ -8205,7 +8390,7 @@ var Kit = (function () {
           var adminStack = h('div', { class: 'field-gap' },
             K.textField({ label: 'Admin notes', value: f.adminNotes, multiline: true, maxlength: 5000, onInput: function (v) { f.adminNotes = v; dirty = true; }, help: 'Only admins see these.' }));
           if (p) {
-            var req = K.textField({ label: 'What needs checking?', multiline: true, maxlength: 500, value: p.approvalState === 'Pending' ? p.approvalRequest : '' });
+            var req = K.textField({ suggest: ['Happy with the price?', 'Happy with the colours?', 'OK to put this on sale?', 'Which version do you like best?'], label: 'What needs checking?', multiline: true, maxlength: 500, value: p.approvalState === 'Pending' ? p.approvalRequest : '' });
             var askBtn = btn('tonal', 'Send question to ' + artist(), { icon: 'send', block: true });
             askBtn.addEventListener('click', function () {
               if (!req.input.value.trim()) { req.input.focus(); return; }
@@ -8556,7 +8741,7 @@ var Kit = (function () {
         list.appendChild(row);
       });
       ctl.body.appendChild(list);
-      ctl.body.appendChild(h('div', { style: 'margin-top:18px' }, K.textField({ label: 'What should change? (optional)', multiline: true, maxlength: 500, onInput: function (v) { note = v; } })));
+      ctl.body.appendChild(h('div', { style: 'margin-top:18px' }, K.textField({ suggest: ['Shorter, please', 'A different photo', 'Less salesy', 'Add the story behind it'], label: 'What should change? (optional)', multiline: true, maxlength: 500, onInput: function (v) { note = v; } })));
       var reedit = false;
       if (c.videoUrl) ctl.body.appendChild(h('div', { class: 'switch-row', style: 'margin-top:8px' },
         h('div', {}, h('div', { class: 'title-m', text: 'Re-edit the video too' }), h('div', { class: 'body-m', text: 'Otherwise only the words are redrafted.' })),
@@ -8944,7 +9129,7 @@ var Kit = (function () {
           f.group ? h('dt', { text: 'Group' }) : null, f.group ? h('dd', { text: f.group }) : null,
           used.length ? h('dt', { text: 'Used in' }) : null, used.length ? h('dd', { text: used.map(function (c) { return c.title || c.format; }).join(', ') }) : null));
         ctl.body.appendChild(h('div', { class: 'field-gap', style: 'margin-top:18px' },
-          K.textField({ label: 'Note about this one (optional)', value: ctx, multiline: true, maxlength: 2000, onInput: function (v) { ctx = v; dirty = true; },
+          K.textField({ suggest: ['Painted this week', 'Still in progress', 'At the Irukandji centre', 'Just for fun'], label: 'Note about this one (optional)', value: ctx, multiline: true, maxlength: 2000, onInput: function (v) { ctx = v; dirty = true; },
             help: 'Used the next time posts are planned from it.' }),
           h('div', { class: 'switch-row' }, h('div', {}, h('div', { class: 'title-m', text: 'Don’t use this one' }), h('div', { class: 'body-m', text: 'Keeps it out of future posts.' })),
             K.switchBtn({ checked: off, label: 'Don’t use this one', onChange: function (v) { off = v; dirty = true; } })),
@@ -8991,7 +9176,7 @@ var Kit = (function () {
           h('span', { class: 'body-m', text: 'As many as you like. No titles needed.' })));
         ctl.body.append(input, grid);
         var s = sheetSection('Anything to say about these?');
-        s.appendChild(K.textField({ label: 'Context (optional)', multiline: true, maxlength: 2000, onInput: function (v) { context = v; dirty = true; },
+        s.appendChild(K.textField({ suggest: ['Painted this week', 'Still in progress', 'At the Irukandji centre', 'Just for fun'], label: 'Context (optional)', multiline: true, maxlength: 2000, onInput: function (v) { context = v; dirty = true; },
           help: 'Where it was, which piece it is, what was happening. Or leave it blank: you may get a quick question instead.' }));
         ctl.body.appendChild(s);
         var live = S.data.campaigns.filter(function (c) { return c.status === 'Active'; });
