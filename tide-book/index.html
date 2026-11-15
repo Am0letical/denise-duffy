@@ -726,6 +726,11 @@ a.li { text-decoration: none; }
 .stage-steps span.done { background: var(--success-container); color: var(--on-success-container); }
 .stage-steps span.on { background: var(--primary); color: var(--on-primary); }
 .card .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+.inspo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.inspo-card { display: flex; flex-direction: column; text-align: left; border: 0; padding: 0; border-radius: 18px; overflow: hidden; background: var(--surface-low, var(--surface)); color: inherit; box-shadow: inset 0 0 0 1px var(--outline-variant); }
+.inspo-img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: var(--surface-highest); }
+.inspo-img.blank { display: grid; place-content: center; gap: 4px; justify-items: center; color: var(--on-surface-variant); font-size: 13px; }
+.inspo-cap { padding: 10px 12px 12px; display: grid; gap: 4px; }
 </style>
 
   <script>
@@ -991,6 +996,16 @@ var TIDE_SCHEMAS = {
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text']
     ]
   },
+  // screenshots and links to posts that inspire her (LogicInspo.gs)
+  inspiration: {
+    sheet: 'Inspiration',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Saved by', 'text'], ['url', 'Link', 'text'],
+      ['source', 'From', 'text'], ['note', 'What caught her eye', 'text'], ['tags', 'Tags', 'list'], ['photoIds', 'Photo IDs', 'list'],
+      ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['topicId', 'Talked through', 'text'], ['ideaId', 'Idea', 'text'],
+      ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
   notebookHistory: {
     sheet: 'Notebook History',
     columns: [
@@ -1069,6 +1084,7 @@ function createTideLogic(env) {
   function tableFor(kind) {
     if (kind === 'idea') return 'ideas';
     if (kind === 'print') return 'prints';
+    if (kind === 'inspiration') return 'inspiration';
     fail('Unknown item type.');
   }
 
@@ -1247,7 +1263,7 @@ function createTideLogic(env) {
       var it = find(name, id);
       var photos = list(it.photoIds).slice(), thumbs = list(it.thumbIds).slice();
       if (photos.length >= T.MAX_PHOTOS) fail('That already has the most photos it can hold.');
-      var folderRef = it.folderUrl || env.files.folder([name === 'prints' ? 'Prints' : 'Ideas', it.id + ' ' + cleanName(it.title)]);
+      var folderRef = it.folderUrl || env.files.folder(name === 'inspiration' ? ['Inspiration'] : [name === 'prints' ? 'Prints' : 'Ideas', it.id + ' ' + cleanName(it.title)]);
       var n = photos.length + 1;
       photos.push(env.files.save(folderRef, it.id + ' photo ' + n, full));
       thumbs.push(env.files.save(folderRef, it.id + ' thumb ' + n, thumb));
@@ -1886,7 +1902,7 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(),
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(), inspoTags: inspo.tags,
       hub: role === 'admin' ? hub.snapshot() : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
@@ -1970,6 +1986,9 @@ function createTideLogic(env) {
   var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf,
     createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push });
 
+  // ---------- inspiration (LogicInspo.gs)
+  var inspo = tideInspo(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, startTopic: talk.api.startTopic });
+
   // ---------- getting set up in the app (LogicSetup.gs)
   var setup = tideSetup(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
     loadBacklog: talk.api.loadBacklog, addNote: notebook.addNote });
@@ -2000,6 +2019,7 @@ function createTideLogic(env) {
   Object.keys(notebook.api).forEach(function (k) { out.api[k] = notebook.api[k]; });
   Object.keys(talk.api).forEach(function (k) { out.api[k] = talk.api[k]; });
   Object.keys(setup.api).forEach(function (k) { out.api[k] = setup.api[k]; });
+  Object.keys(inspo.api).forEach(function (k) { out.api[k] = inspo.api[k]; });
   return out;
 }
 
@@ -4244,6 +4264,86 @@ function tideSetup(env, t) {
   return { status: status, api: { setupStatus: status, savePeople: savePeople, saveClaudeKey: saveClaudeKey, saveBasics: saveBasics, loadStarter: loadStarter, markSetupStep: markStep, artistWelcomed: welcomed, setupConnections: connections } };
 }
 
+/**
+ * Tide Book: Inspiration. A place for screenshots and links to posts that inspire her, with a note on what
+ * caught her eye and a few tags. Any piece can start a "Talk it through" topic or become an idea.
+ * These are for reference only: other people's work is kept privately and never reposted.
+ */
+
+var TIDE_INSPO = {
+  TAGS: ['Mind Garden', 'Pockets of Magic', 'Ocean', 'Colour', 'Texture', 'Composition', 'Product idea', 'Content idea', 'Packaging'],
+  MAX_PHOTOS: 4
+};
+
+function tideInspo(env, t) {
+  var I = TIDE_INSPO;
+  function get(id) { var x = t.rows('inspiration').filter(function (r) { return r.id === id && !r.deleted; })[0]; if (!x) t.fail('That has been removed.'); return x; }
+  function cleanUrl(u) {
+    u = t.text(u, 1000);
+    if (!u) return '';
+    var m = /(https?:\/\/[^\s<>"]+)/i.exec(u);       // a pasted caption with a link in it: keep the link
+    if (!m) t.fail('That link doesn’t look right. Copy the post’s link and paste it in.');
+    return m[1].replace(/[),.]+$/, '');
+  }
+  function sourceOf(url) {
+    var h = (/^https?:\/\/([^\/?#]+)/i.exec(url) || [])[1] || '';
+    h = h.replace(/^www\.|^m\./, '').toLowerCase();
+    var known = { 'instagram.com': 'Instagram', 'facebook.com': 'Facebook', 'fb.watch': 'Facebook', 'pinterest.com': 'Pinterest', 'pin.it': 'Pinterest',
+      'tiktok.com': 'TikTok', 'vm.tiktok.com': 'TikTok', 'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'etsy.com': 'Etsy', 'threads.net': 'Threads' };
+    return known[h] || known[h.split('.').slice(-2).join('.')] || (h ? h : '');
+  }
+  function tags(list) { return t.list(list).filter(function (x) { return I.TAGS.indexOf(x) >= 0; }); }
+
+  function addInspiration(p) {
+    var role = t.need(['admin', 'artist']);
+    p = p || {};
+    var url = cleanUrl(p.url), note = t.text(p.note, 2000);
+    if (!url && !p.hasPhotos && !note) t.fail('Paste a link, add a screenshot, or jot what inspired you.');
+    return env.lock(function () {
+      var id = env.nextId('IN', 4), now = t.nowIso();
+      env.table('inspiration').append({ id: id, created: now, createdBy: role, url: url, source: sourceOf(url), note: note, tags: tags(p.tags),
+        photoIds: [], thumbIds: [], folderUrl: '', topicId: '', ideaId: '', deleted: false, updated: now });
+      return { id: id };
+    });
+  }
+  function updateInspiration(id, ch) {
+    t.need(['admin', 'artist']);
+    ch = ch || {};
+    return env.lock(function () {
+      var r = get(id), out = { updated: t.nowIso() };
+      if ('url' in ch) { out.url = cleanUrl(ch.url); out.source = sourceOf(out.url); }
+      if ('note' in ch) out.note = t.text(ch.note, 2000);
+      if ('tags' in ch) out.tags = tags(ch.tags);
+      env.table('inspiration').update(id, out);
+      return { ok: true };
+    });
+  }
+  function deleteInspiration(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () { get(id); env.table('inspiration').update(id, { deleted: true, updated: t.nowIso() }); return { ok: true }; });
+  }
+  /** Starts a Talk it through topic about this piece of inspiration. */
+  function talkAbout(id) {
+    t.need(['admin', 'artist']);
+    var r = get(id);
+    if (r.topicId && t.rows('topics').some(function (x) { return x.id === r.topicId && !x.deleted; })) return { topicId: r.topicId, existing: true };
+    var title = 'Inspired by ' + (r.source ? (/^[AEIOU]/i.test(r.source) ? 'an ' : 'a ') + r.source + ' post' : 'something I saw') + (r.tags.length ? ' (' + r.tags[0] + ')' : '');
+    var detail = [r.note ? 'What caught my eye: ' + r.note : '', r.url ? 'Link: ' + r.url : '', r.tags.length ? 'Tags: ' + r.tags.join(', ') : ''].filter(String).join('\n');
+    var made = t.startTopic({ title: title, detail: detail });
+    env.lock(function () { env.table('inspiration').update(id, { topicId: made.id, updated: t.nowIso() }); });
+    return { topicId: made.id };
+  }
+
+  function snapshot() {
+    return t.rows('inspiration').filter(function (r) { return !r.deleted; }).map(function (r) {
+      return { id: r.id, url: r.url || '', source: r.source || '', note: r.note || '', tags: t.list(r.tags), thumbIds: t.list(r.thumbIds),
+        photoUrls: t.list(r.photoIds).map(function (x) { return env.files.viewUrl(x); }), topicId: r.topicId || '', by: r.createdBy === 'artist' ? env.brand.artistName : (env.brand.adminName || 'admin'), created: r.created };
+    }).sort(function (a, b) { return a.created < b.created ? 1 : -1; });
+  }
+
+  return { snapshot: snapshot, tags: I.TAGS, api: { addInspiration: addInspiration, updateInspiration: updateInspiration, deleteInspiration: deleteInspiration, talkAboutInspiration: talkAbout } };
+}
+
 </script>
 <script>
 /**
@@ -4253,7 +4353,7 @@ function tideSetup(env, t) {
  */
 (function () {
   'use strict';
-  var KEY = 'tidebook-demo-v19';
+  var KEY = 'tidebook-demo-v20';
   var OPT = window.TIDE_DEMO || {};
   var role = location.hash === '#admin' ? 'admin' : 'artist';
   window.addEventListener('hashchange', function () { location.reload(); });
@@ -4266,7 +4366,7 @@ function tideSetup(env, t) {
   var db = null;
   try { var saved = sessionStorage.getItem(KEY); if (saved) db = JSON.parse(saved); } catch (e) { db = null; }
   var fresh = !db;
-  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], topics: [], pipeline: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
+  if (fresh) db = { ideas: [], prints: [], ledger: [], calendar: [], feed: [], footage: [], content: [], rounds: [], questions: [], campaigns: [], notes: [], notebook: [], notebookHistory: [], topics: [], pipeline: [], inspiration: [], meta: null, buzzes: [], contacts: [], accounts: [], settings: {}, files: {}, counters: {}, fileN: 0 };
   var studioAsked = false;
   function save() { try { sessionStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* too big for this tab's storage: carry on in memory */ } }
 
@@ -4672,6 +4772,10 @@ function tideSetup(env, t) {
 
     // the product pipeline (her saved ideas at their stages), one topic talked through, one waiting for her
     L.api.loadStarter();
+    // a couple of saved inspirations (samples)
+    var i1 = L.api.addInspiration({ url: 'https://www.instagram.com/p/sample-post/', note: 'Sample: the way the light sits on the water', tags: ['Ocean', 'Colour'] });
+    db.inspiration.filter(function (x) { return x.id === i1.id; })[0].thumbIds = [art('footage-ocean', '#06345E', '#3fb6c8', 'Light', [0, 90, 361, 460])];
+    L.api.addInspiration({ url: 'https://pin.it/sample', note: 'Sample: mushrooms and moss, so small and magic', tags: ['Mind Garden', 'Texture'] });
     var AL = createTideLogic(makeEnv('artist'));
     function runAi() { var tl = createTideLogic(makeEnv('admin')).talk; tl.local.next(5).forEach(function (j) { tl.local.done(j.id, talkAnswer(j.context), 'gemma3:12b'); }); tl.ai.pending().forEach(function (r) { var c = tl.ai.context(r.id); tl.ai.sent(r.id); tl.ai.save(r.id, talkAnswer(c), 'Claude'); }); }
     var bm = AL.api.startTopic({ title: 'Moon water ink bookmarks', detail: 'Little bookmarks painted with my moon water inks, with a tassel. A small gift.' });
@@ -5518,6 +5622,18 @@ var Kit = (function () {
    * Apps Script). ticket = {token, folderId} from the server. Resolves with the new file's id.
    */
   function driveUpload(ticket, file, name, onProgress) {
+    // Tide Book on the PC: the video goes straight to the PC
+    if (ticket.local) {
+      return new Promise(function (resolve, reject) {
+        var x = new XMLHttpRequest();
+        x.open('PUT', ticket.url + '&name=' + encodeURIComponent(name));
+        x.setRequestHeader('Content-Type', file.type || 'video/mp4');
+        x.upload.onprogress = function (e) { if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
+        x.onload = function () { try { var r = JSON.parse(x.responseText); if (r.id) resolve(r.id); else reject(new Error(r.error || 'The upload failed.')); } catch (e) { reject(new Error('The upload failed (' + x.status + ').')); } };
+        x.onerror = function () { reject(new Error('The video upload was interrupted. Is the PC on?')); };
+        x.send(file);
+      });
+    }
     return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + ticket.token, 'Content-Type': 'application/json; charset=UTF-8', 'X-Upload-Content-Type': file.type || 'video/mp4' },
@@ -6000,6 +6116,7 @@ var Kit = (function () {
       main.appendChild(rise(sec, n++));
     }
     n = talkCards(main, n);
+    main.appendChild(rise(h('div', { style: 'margin:4px 0 14px' }, btn('outlined', 'Save something that inspired you', { icon: 'favorite', block: true, onclick: function () { openInspo(null); } })), n++));
 
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = rest ? 0 : S.data.questions.length;
     if (nPosts || nQs) {
@@ -6094,19 +6211,20 @@ var Kit = (function () {
   }
 
   function viewIdeas(main) {
-    var tab = ['talk', 'products', 'notebook'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = tab === 'notebook', T = talkData();
+    var tab = ['talk', 'products', 'notebook', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = tab === 'notebook', T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
-    pageTitle(main, 'Ideas', tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
+    pageTitle(main, 'Ideas', tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : ADMIN ? 'Ranked by ' + artist() + '’s priority, then by viability.' : 'Everything you’ve sent, and where it’s up to.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: tab, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
       options: [{ value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
-        { value: 'products', label: 'Products', count: oks || undefined }, { value: 'notebook', label: 'Notebook' }]
+        { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }, { value: 'notebook', label: 'Notes' }]
     })), 1));
     if (nb) return viewNotebook(main);
     if (tab === 'talk') return viewTalk(main);
     if (tab === 'products') return viewProducts(main);
+    if (tab === 'inspo') return viewInspo(main);
     var ideas = S.data.ideas;
     if (ADMIN) {
       main.appendChild(rise(K.choices({
@@ -6270,6 +6388,80 @@ var Kit = (function () {
         });
         ctl.body.appendChild(h('p', { class: 'tf-help', text: 'Tip: in your browser’s menu, Add to Home Screen, so it opens like an app.' }));
         ctl.foot.appendChild(btn('filled', 'Let’s go', { icon: 'arrow_forward', lg: true, block: true, onclick: function () { api('artistWelcomed').catch(function () {}); S.data.setup.welcomed = true; ctl.close(); } }));
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------ Inspiration (LogicInspo.gs)
+  function inspoList() { return S.data.inspiration || []; }
+  function viewInspo(main) {
+    var all = inspoList(), tag = S.inspoTag || '';
+    main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:14px' },
+      h('div', { class: 'title-m', text: 'Saw something that inspired you?' }),
+      h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Save a screenshot or paste the link to the post, and a word on what caught your eye. Kept private, just for you.' }),
+      btn('filled', 'Save inspiration', { icon: 'add', onclick: function () { openInspo(null); } })), 2));
+    if (all.length) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({ row: true, label: 'Show', value: tag, allowNone: true,
+      options: [{ value: '', label: 'All' }].concat((S.data.inspoTags || []).filter(function (x) { return all.some(function (i) { return i.tags.indexOf(x) >= 0; }); })),
+      onChange: function (v) { S.inspoTag = v; render(); } })), 2));
+    var shown = all.filter(function (i) { return !tag || i.tags.indexOf(tag) >= 0; });
+    if (!shown.length) { main.appendChild(rise(emptyState('favorite', all.length ? 'Nothing with that tag' : 'Nothing saved yet', 'Screenshots and links you save show up here.'), 3)); return; }
+    var grid = h('div', { class: 'inspo-grid' });
+    shown.forEach(function (i, n) {
+      var card = h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
+        i.thumbIds.length ? thumbImg(i.thumbIds[0], 'inspo-img') : h('div', { class: 'inspo-img blank' }, icon('link'), h('span', { text: i.source || 'Link' })),
+        h('div', { class: 'inspo-cap' }, i.note ? h('div', { class: 'body-s', text: i.note.length > 70 ? i.note.slice(0, 68) + '…' : i.note }) : null,
+          h('div', { class: 'label-s', text: [i.source, i.tags[0]].filter(Boolean).join(' · ') || ago(i.created) })));
+      grid.appendChild(rise(card, 3 + Math.min(n, 8)));
+    });
+    main.appendChild(grid);
+    fab(main, 'Save inspiration', 'add', function () { openInspo(null); });
+  }
+
+  function openInspo(id) {
+    var it = id ? byId(inspoList(), id) : null;
+    var f = { url: it ? it.url : '', note: it ? it.note : '', tags: it ? it.tags.slice() : [], files: [] }, dirty = false;
+    K.sheet({
+      title: it ? (it.source ? 'From ' + it.source : 'Inspiration') : 'Save inspiration', tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
+      build: function (ctl) {
+        var s1 = sheetSection('Screenshots'); s1.style.marginTop = '4px';
+        s1.appendChild(K.photoStrip({ thumbIds: it ? it.thumbIds : [], photoUrls: it ? it.photoUrls : [], files: f.files, max: 4, onChange: function () { dirty = true; }, onDraw: function () { setTimeout(loadThumbs, 0); } }));
+        var s2 = sheetSection('Link to the post');
+        s2.appendChild(K.textField({ label: 'Paste the link', value: f.url, maxlength: 1000, onInput: function (v) { f.url = v; dirty = true; }, help: 'In Instagram: ⋯ → Copy link. Then paste it here.' }));
+        if (it && it.url) s2.appendChild(h('a', { class: 'btn text press', href: it.url, target: '_blank', rel: 'noopener', style: 'margin-top:6px' }, icon('open_in_new'), h('span', { text: 'Open the post' })));
+        var s3 = sheetSection('What caught your eye?');
+        s3.appendChild(K.textField({ label: 'A few words (optional)', value: f.note, multiline: true, maxlength: 2000, onInput: function (v) { f.note = v; dirty = true; } }));
+        var s4 = sheetSection('Tags'), chips = h('div', { class: 'choices' });
+        (S.data.inspoTags || []).forEach(function (tg) {
+          var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(f.tags.indexOf(tg) >= 0) }, tg);
+          b.addEventListener('click', function () { var i = f.tags.indexOf(tg); if (i >= 0) f.tags.splice(i, 1); else f.tags.push(tg); b.setAttribute('aria-pressed', String(i < 0)); dirty = true; K.haptic(); });
+          chips.appendChild(b);
+        });
+        s4.appendChild(chips);
+        ctl.body.append(s1, s2, s3, s4);
+        if (it) {
+          ctl.body.appendChild(h('div', { class: 'field-gap', style: 'margin-top:18px' },
+            btn('tonal', it.topicId ? 'Open the talk about it' : 'Talk it through', { icon: 'forum', block: true, onclick: function (e) {
+              K.setBusy(e.currentTarget, true);
+              api('talkAboutInspiration', it.id).then(function (r) { return refresh().then(function () { return r; }); })
+                .then(function (r) { dirty = false; ctl.close(); S.ideasTab = 'talk'; setTimeout(function () { go('ideas'); openTopic(r.topicId); }, 280); }).catch(fail);
+            } }),
+            btn('text', 'Remove', { icon: 'delete', danger: true, onclick: function () {
+              K.confirm({ title: 'Remove this?', confirmLabel: 'Remove', danger: true }).then(function (yes) {
+                if (!yes) return; api('deleteInspiration', it.id).then(refresh).then(function () { dirty = false; ctl.close(); toast('Removed.'); }).catch(fail);
+              });
+            } })));
+        }
+        var save = btn('filled', it ? 'Save changes' : 'Save', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          if (!f.url.trim() && !f.files.length && !(it && it.thumbIds.length) && !f.note.trim()) { toast('Add a screenshot or paste a link.'); return; }
+          K.setBusy(save, true);
+          var step = it ? api('updateInspiration', it.id, { url: f.url, note: f.note, tags: f.tags }).then(function () { return it.id; })
+            : api('addInspiration', { url: f.url, note: f.note, tags: f.tags, hasPhotos: f.files.length > 0 }).then(function (r) { return r.id; });
+          step.then(function (iid) { return uploadAll('inspiration', iid, f.files, function (i, n) { K.setLabel(save, 'Screenshot ' + i + ' of ' + n); }); })
+            .then(refresh).then(function () { dirty = false; K.haptic('success'); toast(it ? 'Saved.' : 'Saved to your inspiration.'); ctl.close(); })
+            .catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
       }
     });
   }
@@ -7630,7 +7822,10 @@ var Kit = (function () {
     api('exportRecords', S.money.fy).then(function (res) {
       K.setBusy(b, false);
       K.sheet({ title: 'Records for your accountant', build: function (ctl) {
-        if (res.url) {
+        if (res.savedTo) {
+          ctl.body.appendChild(h('p', { class: 'body-m', text: 'Saved on the PC as spreadsheet files (one per tab), ready to email to your accountant:' }));
+          ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-top:8px;word-break:break-all;font-weight:500', text: res.savedTo }));
+        } else if (res.url) {
           ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-bottom:16px', text: 'A separate Google Sheet with this year’s summary and every record. Share it with your accountant from Google Sheets.' }));
           ctl.body.appendChild(h('a', { class: 'btn filled lg block press', href: res.url, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Open the export' })));
         } else {
