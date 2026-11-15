@@ -325,6 +325,73 @@ html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 .bloomy { overflow-x: clip; }
 .bloomy::before { inset: -10% 0 !important; }
 
+/* ===== the IKEA rule: a + tag on everything for sale, wherever it appears ===== */
+.pcw, .tilew, .hot { position: relative; }
+.qa { position: absolute; z-index: 4; top: 10px; right: 10px; display: inline-flex; align-items: center; height: 36px; padding: 0; border: 0; border-radius: 999px;
+  background: rgba(251, 247, 240, .95); color: var(--night); box-shadow: 0 6px 20px rgba(6, 20, 36, .22); cursor: pointer; font: 500 13px/1 var(--font);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: box-shadow .3s, transform .4s var(--spring); }
+.qa::after { content: ''; position: absolute; inset: -6px; }
+.qa::before { content: ''; position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; pointer-events: none; animation: qaPulse 2.6s ease-out infinite; }
+.qa i { width: 36px; height: 36px; flex: none; display: grid; place-items: center; font: 300 24px/1 var(--font); font-style: normal; transition: transform .45s var(--spring); }
+.qa span { display: inline-flex; align-items: baseline; gap: 8px; max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width .55s var(--ease), padding .55s var(--ease); }
+.qa span b { font-weight: 400; color: var(--muted); }
+.qa:hover, .qa:focus-visible { box-shadow: 0 10px 28px rgba(6, 20, 36, .3); transform: translateY(-1px); }
+.qa:hover i, .qa:focus-visible i { transform: rotate(90deg); }
+.qa:hover span, .qa:focus-visible span { max-width: 300px; padding-right: 16px; }
+.qa:focus-visible { outline: 2px solid var(--ocean); outline-offset: 3px; }
+@keyframes qaPulse { 0% { box-shadow: 0 0 0 0 rgba(251, 247, 240, .75); } 70%, 100% { box-shadow: 0 0 0 14px rgba(251, 247, 240, 0); } }
+.pcw > .qa { top: 10px; right: 10px; }
+.tilew > .qa { top: 14px; right: 14px; z-index: 5; }
+.hero > .qa.hot-hero { top: 44%; left: 30%; right: auto; z-index: 4; }
+.hot > .qa.hot-frame { top: 34%; left: 58%; right: auto; }
+.split .ph > .qa.hot-shark { top: 38%; left: 46%; right: auto; }
+@media (hover: none) { .qa span { display: none; } }
+@media (prefers-reduced-motion: reduce) { .qa::before { animation: none; } }
+
+/* thumbnails that add a piece */
+.qth { position: relative; border: 0; padding: 0; background: none; cursor: pointer; line-height: 0; }
+.qth i { position: absolute; right: -5px; bottom: -5px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--night); color: var(--paper); font: 400 16px/1 var(--font); font-style: normal; box-shadow: 0 0 0 2px var(--paper); }
+.qth:hover img, .qth:focus-visible img { outline: 2px solid var(--night); outline-offset: 2px; }
+
+/* the quick-buy panel: a sheet from the bottom on phones, a card in the middle on bigger screens */
+.qs-scrim { position: fixed; inset: 0; z-index: 61; background: rgba(6, 20, 36, .42); opacity: 0; pointer-events: none; transition: opacity .35s; }
+.qs { position: fixed; z-index: 62; left: 0; right: 0; bottom: 0; margin: 0 auto; width: min(460px, 100%); max-height: 88vh; overflow: auto; overscroll-behavior: contain;
+  background: var(--paper); color: var(--night); padding: 22px 20px calc(20px + env(safe-area-inset-bottom)); border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 40px rgba(6, 20, 36, .18); transform: translateY(105%); transition: transform .55s var(--ease); }
+.qs-open .qs-scrim { opacity: 1; pointer-events: auto; }
+.qs-open .qs { transform: none; }
+@media (min-width: 700px) {
+  .qs { top: 50%; bottom: auto; border-radius: 20px; opacity: 0; pointer-events: none; transform: translateY(-46%) scale(.97); transition: transform .5s var(--ease), opacity .3s; }
+  .qs-open .qs { opacity: 1; pointer-events: auto; transform: translateY(-50%); }
+}
+.qs .x { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border: 0; background: transparent; font-size: 26px; color: var(--night); cursor: pointer; }
+.qs-hd { display: flex; gap: 14px; align-items: center; padding-right: 36px; }
+.qs-hd img { width: 72px; height: 88px; object-fit: cover; flex: none; border-radius: 6px; }
+.qs-hd .lbl { color: var(--teal); margin-bottom: 6px; }
+.qs-hd h3 { font: 500 24px/1.15 var(--display); }
+.qs-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.qs-chip { min-height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; box-shadow: inset 0 0 0 1px var(--line); color: var(--night); font: 500 13.5px/1 var(--font); cursor: pointer; }
+.qs-chip[aria-pressed="true"] { background: var(--night); color: var(--paper); box-shadow: none; }
+.qs-opts { display: grid; gap: 8px; margin-top: 14px; }
+.qs-opt { display: flex; justify-content: space-between; align-items: center; min-height: 46px; padding: 0 14px; border: 0; border-radius: 10px; background: transparent; box-shadow: inset 0 0 0 1px var(--line); color: var(--night); font: 400 15px/1.2 var(--font); cursor: pointer; text-align: left; }
+.qs-opt b { font-weight: 500; }
+.qs-opt[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--night); }
+.qs-note { margin-top: 14px; font-size: 14px; color: var(--muted); }
+.qs-ed { margin-top: 6px; font-size: 14px; color: var(--pink-deep); }
+.qs-buy { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; }
+.qs-price { font: 500 26px/1 var(--display); }
+.qs-price s { font: 400 15px/1 var(--font); color: var(--muted); margin-left: 8px; }
+.qs-buy .btn { flex: 1; max-width: 240px; }
+.qs-buy .btn[disabled] { opacity: .45; cursor: default; }
+.qs-more { display: inline-block; margin-top: 16px; font-size: 14px; color: var(--night); }
+.qs-more i { font-style: normal; display: inline-block; transition: transform .4s var(--spring); }
+.qs-more:hover i { transform: translateX(4px); }
+
+/* a tag arrives with its picture, not before it */
+.pcw > .qa, .tilew > .qa, .hot > .qa { opacity: 0; transform: scale(.6); transition: opacity .5s ease .5s, transform .6s var(--spring) .5s, box-shadow .3s; }
+.pc.on + .qa, .tile.on + .qa, .frame.on + .qa { opacity: 1; transform: none; }
+.pc.on + .qa:hover, .tile.on + .qa:hover, .frame.on + .qa:hover { transform: translateY(-1px); }
+
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
 .lg.on { opacity: 1; pointer-events: auto; }
@@ -400,6 +467,12 @@ html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 .rv-note { width: 100%; text-align: center; font-size: 12px; opacity: .65; }
 .rv-help { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font: 500 11px/1 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; padding: 10px 16px; border-radius: 999px; background: rgba(251, 247, 240, .85); box-shadow: inset 0 0 0 1px rgba(26, 29, 34, .12); pointer-events: none; transition: opacity .6s ease; z-index: 2; }
 .rv-fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+
+/* the IKEA rule on the wall: a + on every piece for sale, always visible (phones can't hover) */
+.lg-tile .lg-qa { top: 10px; right: 10px; z-index: 3; }
+.lg-wall.dragging .lg-qa { pointer-events: none; }
+.rv-buy { pointer-events: auto; min-height: 40px; padding: 0 18px; border: 0; border-radius: 999px; background: #1a1d22; color: #FBF7F0; font: 500 13px/1 var(--font, sans-serif); letter-spacing: .5px; cursor: pointer; }
+.rv-buy[hidden] { display: none; }
 
 /* ================= Her visual language, layered over the site =================
    Ink line (a flannel flower drawn in one line), watercolour edges and blooms, paper grain, carved-paper
@@ -585,6 +658,7 @@ body.intro-hold .hero .accent, body.intro-hold .hero .cta, body.intro-hold .hero
 <div id="cartLayer"><div class="scrim" id="scrim"></div>
   <aside class="drawer" role="dialog" aria-modal="true" aria-label="Cart"><div class="hd"><h2>Your cart</h2><button class="x" type="button" id="closeCart" aria-label="Close cart">×</button></div><div class="items" id="items"></div><div class="ft" id="cartFt"></div></aside></div>
 <div class="floater" id="floater"><img alt=""></div>
+<div id="qsLayer"><div class="qs-scrim" data-qs-close></div><div class="qs" id="qs" role="dialog" aria-modal="true" aria-labelledby="qsT"><button class="x" type="button" data-qs-close aria-label="Close">×</button><div id="qsBody"></div></div></div>
 <div class="cur" id="cur"></div>
 <div class="veil" id="veil"></div>
 <div class="toast" id="toast" role="status"></div>
@@ -664,6 +738,13 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     digital: { title: 'Downloads', sub: 'Phone wallpapers and printable art. Instant, nothing to post.', img: 'flowersDetail' }
   };
   var FREE_SHIP = 100, SHIP = 12, BUNDLE_N = 3, BUNDLE_OFF = 0.15;
+
+  // ---------- the IKEA rule: anything for sale that you can see, you can buy from where you are ----------
+  var SOURCE = {};
+  ARTWORKS.forEach(function (a) { [a.img, a.card, a.alt].forEach(function (k) { if (k) SOURCE[k] = a.id; }); });
+  // crops and photos of a piece count as the piece (only while that piece is listed)
+  var CROPS = { sharkSq: 'shark', sharkTall: 'shark', oceanTall: 'shark', flowersMacro: 'wildflowers', flowersClose: 'wildflowers', flowersDetail: 'wildflowers', flowersTall: 'wildflowers', rootsTall: 'roots', rootsMacro: 'roots' };
+  Object.keys(CROPS).forEach(function (k) { if (!SOURCE[k] && ARTWORKS.some(function (a) { return a.id === CROPS[k]; })) SOURCE[k] = CROPS[k]; });
   var cart = [], code = '', state = {}, $ = function (s) { return document.querySelector(s); };
   function money(n) { return '$' + (Math.round(n * 100) / 100).toLocaleString('en-AU', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -689,6 +770,21 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (e.mode === 'limited') return '<div class="edn lim"><b>Limited edition · ' + e.left + ' of ' + e.limit + ' left</b><div class="meter"><i style="width:' + Math.round(e.left / e.limit * 100) + '%"></i></div><p>The original has sold' + (e.quick ? ' (in its first days, so this run is smaller)' : '') + '. When these are gone, there are no more.</p></div>';
     return '<div class="edn sold"><b>Edition sold out</b><p>All ' + e.limit + ' prints have found homes.</p></div>';
   }
+  function canBuy(a, p) { return !heldPrint(a, p) && !soldOriginal(a, p); }
+  function buyable(a) { return !!a && a.products.some(function (p) { return canBuy(a, p); }); }
+  function lowest(a) { return Math.min.apply(null, a.products.filter(function (p) { return canBuy(a, p); }).map(from)); }
+  // the + tag; pass an image key (or an artwork), and optionally a product to open on
+  function tag(k, a, p, cls) {
+    a = a || art(SOURCE[k]); if (!buyable(a) || (p && !canBuy(a, p))) return '';
+    var price = p ? from(p) : lowest(a), label = p && p !== a.products[0] ? p.name : a.title;
+    return '<button class="qa' + (cls ? ' ' + cls : '') + '" type="button" data-qa="' + a.id + '"' + (p ? ' data-qa-p="' + p.id + '"' : '') + ' aria-label="Buy ' + esc(label) + ' from here, from ' + money(price) + '">' +
+      '<i aria-hidden="true">+</i><span aria-hidden="true">' + esc(label) + '<b>' + (p && p.options.length < 2 ? '' : 'from ') + money(price) + '</b></span></button>';
+  }
+  // a small thumbnail of a piece that adds it
+  function thumb(a, here) {
+    if (a === here || !buyable(a)) return '<img alt="" src="' + IMG[a.card] + '">';
+    return '<button class="qth" type="button" data-qa="' + a.id + '" aria-label="Buy ' + esc(a.title) + ' from here"><img alt="" src="' + IMG[a.card] + '"><i aria-hidden="true">+</i></button>';
+  }
   function words(text, cls) { return text.split(' ').map(function (w) { return '<span class="w ' + (cls || '') + '">' + w + '</span>'; }).join(' '); }
 
   // ---------- pieces of page ----------
@@ -698,9 +794,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     var badges = (a.isNew ? '<span>New in</span>' : '') + (a.sale && isPrint ? '<span class="off">−20%</span>' : '') + (a.sea && isPrint ? '<span class="sea">Sea Shelter</span>' : '') +
       (p.type === 'Download' ? '<span>Instant</span>' : soldOriginal(a, p) ? '<span>Sold</span>' : p.type === 'Original' ? '<span>One of a kind</span>' : '') +
       (isPrint && a.ed ? (a.ed.mode === 'limited' ? '<span class="off">' + a.ed.left + ' left</span>' : a.ed.mode === 'headstart' ? '<span>Original only</span>' : '') : '');
-    return '<a class="pc reveal" href="#/a/' + a.id + (isPrint ? '' : '/' + p.id) + '"><div class="ph"><img alt="' + esc(a.title) + '" src="' + IMG[a.card] + '"><img class="alt" alt="" src="' + IMG[a.alt] + '"><div class="badge">' + badges + '</div></div>' +
+    return '<div class="pcw"><a class="pc reveal" href="#/a/' + a.id + (isPrint ? '' : '/' + p.id) + '"><div class="ph"><img alt="' + esc(a.title) + '" src="' + IMG[a.card] + '"><img class="alt" alt="" src="' + IMG[a.alt] + '"><div class="badge">' + badges + '</div></div>' +
       '<div class="meta"><div><h3>' + esc(isPrint ? a.title : p.name) + '</h3><div class="sub">' + (isPrint ? (a.products.length > 1 ? 'Also as ' + a.products.slice(1).map(function (x) { return x.name.toLowerCase(); }).join(', ') : 'Art print') : esc(a.title)) + '</div></div>' +
-      '<div class="pr">' + (o.was ? '<s>' + money(o.was) + '</s>' : '') + (isPrint || p.options.length > 1 ? 'from ' : '') + money(from(p)) + '</div></div></a>';
+      '<div class="pr">' + (o.was ? '<s>' + money(o.was) + '</s>' : '') + (isPrint || p.options.length > 1 ? 'from ' : '') + money(from(p)) + '</div></div></a>' + tag(null, a, canBuy(a, p) ? p : null) + '</div>';
   }
   function setCard(s) {
     return '<a class="pc reveal" href="#/s/' + s.id + '"><div class="ph"><img alt="' + esc(s.title) + '" src="' + IMG[s.img] + '"><div class="badge">' + (s.gift ? '<span>By email</span>' : '<span class="off">Save ' + money(s.was - s.price) + '</span>') + '</div></div>' +
@@ -708,8 +804,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   }
   function tile(k, n) {
     var c = COLS[k];
-    return '<a class="tile wipe" href="#/c/' + k + '"><div class="im par" data-speed="0.06" style="background-image:url(' + IMG[c.img] + ')"></div><span class="n lbl">0' + n + '</span>' +
-      '<div class="tx"><span class="lbl">' + (k === 'ocean' ? 'With Irukandji' : k === 'mindgarden' ? 'Coming soon' : k === 'pockets' ? 'My keepsakes' : k === 'studio' ? 'A little thank-you' : 'Printed to order') + '</span><b>' + c.title + '</b><span class="ex lbl">Explore <i></i></span></div></a>';
+    return '<div class="tilew"><a class="tile wipe" href="#/c/' + k + '"><div class="im par" data-speed="0.06" style="background-image:url(' + IMG[c.img] + ')"></div><span class="n lbl">0' + n + '</span>' +
+      '<div class="tx"><span class="lbl">' + (k === 'ocean' ? 'With Irukandji' : k === 'mindgarden' ? 'Coming soon' : k === 'pockets' ? 'My keepsakes' : k === 'studio' ? 'A little thank-you' : 'Printed to order') + '</span><b>' + c.title + '</b><span class="ex lbl">Explore <i></i></span></div></a>' + tag(c.img) + '</div>';
   }
   function signup() {
     return '<form class="signup" onsubmit="return false"><input type="email" placeholder="Your email" aria-label="Your email"><button type="button" data-act="join">Join →</button></form>';
@@ -722,7 +818,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var word = name.map(function (w, wi) { return '<span class="ln">' + w.split('').map(function (c, i) { return '<span class="ch" style="transition-delay:' + (0.25 + (wi * 6 + i) * 0.05) + 's">' + c + '</span>'; }).join('') + '</span>'; }).join('');
       var titles = ['Wonder', 'Mind Garden', 'Joy', 'Pockets of Magic', 'Hope', 'Moon water ink', 'Calm', 'A whale in the night sky', 'Heart-shaped rocks'];
       return '<section class="hero"><div class="bg par" data-speed="0.18" style="background-image:url(' + IMG.flowersMacro + ')"></div>' +
-        '<div class="accent">pockets<br>of magic</div>' +
+        '<div class="accent">pockets<br>of magic</div>' + tag('flowersMacro', null, null, 'hot-hero') +
         '<div class="base"><div class="cta"><a class="chipbtn" href="#/c/ocean">Shop the art +</a></div><div class="rule lbl"><span>Mind Garden</span><span>Pockets of Magic</span><span>Mixed media</span><span>Medowie</span></div><div class="word">' + word + '</div></div></section>' +
 
         '<section class="sec wrap"><div class="lbl reveal" style="color:var(--muted);margin-bottom:22px">✦ The studio</div>' +
@@ -748,14 +844,14 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         '<div class="ticker"><div>' + titles.concat(titles).map(function (t) { return '<span>' + t + ' ✦</span>'; }).join('') + '</div></div>' +
         '<div class="inner"><div><div class="lbl" style="opacity:.7">The living gallery</div><h2 class="reveal">Wander the wall. <span class="it" style="color:var(--aqua)">Feel</span> the texture.</h2>' +
         '<p class="reveal">An endless wall of my work to drift through in any direction, at your own pace. Open any painting and sweep the light across it to see the surface of the real thing.</p>' +
-        '<a class="chipbtn light" href="#/gallery">Enter the gallery +</a></div><div class="frame wipe"><img class="par" data-speed="-0.05" alt="" src="' + IMG.roots + '"></div></div></section>' +
+        '<a class="chipbtn light" href="#/gallery">Enter the gallery +</a></div><div class="hot"><div class="frame wipe"><img class="par" data-speed="-0.05" alt="" src="' + IMG.roots + '"></div>' + tag('roots', null, null, 'hot-frame') + '</div></div></section>' +
 
         '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">Ways to <span class="it" style="color:var(--ocean)">bring it home</span></h2></div><div class="mlist" id="mlist">' +
         [['Art prints', 'From $36', 'flowersTall', '#/c/studio'], ['Lounge wear', 'From $89', 'flowersMacro', '#/c/wear'], ['Cards & gifts', 'From $25', 'flowersDetail', '#/c/sets'],
           ['Originals', 'On request', 'rootsTall', '#/c/originals'], ['Commissions', 'Made for you', 'studioTall', '#/c/originals'], ['Downloads', 'From $6', 'sharkTall', '#/c/digital']]
           .map(function (m) { return '<a class="mrow reveal" href="' + m[3] + '" data-img="' + m[2] + '"><b>' + m[0] + '</b><span class="c">' + m[1] + '</span></a>'; }).join('') + '</div></section>' +
 
-        '<section class="sec wrap"><div class="split"><div class="ph wipe"><img class="par" data-speed="-0.06" alt="The shark painting at the Irukandji Shark &amp; Ray Centre" src="' + IMG.oceanTall + '"></div><div>' +
+        '<section class="sec wrap"><div class="split"><div class="ph wipe"><img class="par" data-speed="-0.06" alt="The shark painting at the Irukandji Shark &amp; Ray Centre" src="' + IMG.oceanTall + '">' + tag('oceanTall', null, null, 'hot-shark') + '</div><div>' +
         '<div class="lbl" style="color:var(--teal)">Made with the Irukandji Shark &amp; Ray Centre</div><h2 class="reveal">Every ocean print <span class="it" style="color:var(--teal)">gives back</span></h2>' +
         '<p class="reveal">The ocean collection is made with the Irukandji Shark &amp; Ray Centre in Anna Bay. 20% of every marine print goes to Sea Shelter, a Hunter-region group that rescues, rehabilitates and releases marine life.</p>' +
         '<p style="margin-top:24px" class="reveal"><a class="chipbtn" href="#/c/ocean">Shop the ocean collection +</a></p></div></div></section>' +
@@ -798,7 +894,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         : '<p class="story" style="margin:12px 0">' + esc(o.note) + '</p>';
       var addons = (p.type === 'Print' ? '<label class="addon" id="frameRow" style="display:none"><input type="checkbox" data-act="frame"><div><div>Frame it</div><div class="d">Oak frame, ready to hang. Adds about a week.</div></div><span class="p" id="frameP"></span></label>' : '') +
         (p.type !== 'Download' ? '<label class="addon"><input type="checkbox" data-act="gift"><div><div>Gift wrap and a handwritten card</div><div class="d">Price hidden on the packing slip.</div></div><span class="p">+$8</span></label>' : '');
-      var bundle = p.type === 'Print' ? '<div class="bundle"><h3>Complete the set, save 15%</h3><div class="th">' + ARTWORKS.filter(printable).map(function (x) { return '<img alt="" src="' + IMG[x.card] + '">'; }).join('') + '</div><p style="font-size:14px">Any 3 A4 prints, taken off in the cart. Or the <a href="#/s/trio">Sea and shore pair</a> for ' + money(SETS[0].price) + '.</p></div>' : '';
+      var bundle = p.type === 'Print' ? '<div class="bundle"><h3>Complete the set, save 15%</h3><div class="th">' + ARTWORKS.filter(printable).map(function (x) { return thumb(x, a); }).join('') + '</div><p style="font-size:14px">Any 3 A4 prints, taken off in the cart. Or the <a href="#/s/trio">Sea and shore pair</a> for ' + money(SETS[0].price) + '.</p></div>' : '';
       var also = ARTWORKS.filter(function (x) { return x !== a; }).map(function (x) { return card(x); }).join('');
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · <a href="#/c/' + a.col + '">' + COLS[a.col].title + '</a></div><div class="pp">' +
         '<div class="big wipe' + (a.contain ? ' contain' : '') + '"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '"></div><div class="side">' +
@@ -821,7 +917,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       state = { set: s };
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · <a href="#/c/sets">Sets &amp; gifts</a></div><div class="pp"><div class="big wipe"><img alt="" src="' + IMG[s.img] + '"></div><div class="side">' +
         '<div class="lbl" style="color:var(--pink-deep)">' + (s.gift ? 'Gift card' : 'Bundle') + '</div><h1>' + esc(s.title) + '</h1><div class="price">' + money(s.price) + (s.was ? '<s>' + money(s.was) + '</s>' : '') + '</div><p class="story">' + esc(s.note) + '</p>' +
-        (s.items ? '<div class="bundle"><h3>In the pair</h3><div class="th">' + s.items.map(function (i) { return '<img alt="" src="' + IMG[art(i).card] + '">'; }).join('') + '</div><p style="font-size:14px">' + s.items.map(function (i) { return art(i).title; }).join(', ') + ' · A4 each</p></div>' : '') +
+        (s.items ? '<div class="bundle"><h3>In the pair</h3><div class="th">' + s.items.map(function (i) { return thumb(art(i)); }).join('') + '</div><p style="font-size:14px">' + s.items.map(function (i) { return art(i).title; }).join(', ') + ' · A4 each</p></div>' : '') +
         '<button class="btn block" style="margin-top:16px" type="button" data-act="addset">Add to cart</button></div></div></div>';
     },
     about: function () {
@@ -852,7 +948,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   var first = true;
   function route() {
     var h = location.hash.replace(/^#\/?/, ''), parts = h.split('/');
-    closeMenu();
+    closeMenu(); closeQuick(true);
     if (parts[0] !== 'gallery') state = {};
     if (window.LivingGallery) { if (parts[0] === 'gallery') window.LivingGallery.show(); else window.LivingGallery.hide(); }
     if (parts[0] === 'gallery') { if (!$('#main').innerHTML) paint(views.home()); return; }
@@ -927,7 +1023,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   var ss = { t: 0, c: 0, on: false, raf: 0 };
   if (!REDUCED && !(window.matchMedia && matchMedia('(hover: none)').matches)) {
     window.addEventListener('wheel', function (e) {
-      if (e.ctrlKey || (e.target.closest && e.target.closest('.drawer, .menu, .lg, .rv')) || document.body.classList.contains('cart-open') || document.querySelector('.menu.on, .lg.on')) return;
+      if (e.ctrlKey || (e.target.closest && e.target.closest('.drawer, .menu, .lg, .rv, .qs')) || document.body.classList.contains('cart-open') || document.body.classList.contains('qs-open') || document.querySelector('.menu.on, .lg.on')) return;
       e.preventDefault();
       if (!ss.on) { ss.t = ss.c = window.scrollY; ss.on = true; }
       var d = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
@@ -979,6 +1075,49 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     onScroll();
   }
 
+  // ---------- quick buy: the panel a + tag opens ----------
+  var qs = {}, qsFrom = null;
+  function edLine(a, p) {
+    var e = a.ed; if (!e) return '';
+    if (p.type === 'Original') return e.mode === 'headstart' ? 'Its head start: buy before ' + opensOn(e) + ' and only ' + e.quickSize + ' prints will ever follow it.' : soldOriginal(a, p) ? '' : 'When it sells, prints become a limited run of ' + e.size + '.';
+    if (p.type !== 'Print') return '';
+    return e.mode === 'limited' ? 'Limited edition · ' + e.left + ' of ' + e.limit + ' left.' : e.mode === 'open' ? 'Open for now. Once the original sells, only ' + e.size + ' more prints.' : '';
+  }
+  function drawQuick() {
+    var a = qs.a, p = qs.p, o = qs.o, ok = canBuy(a, p), ed = edLine(a, p);
+    $('#qsBody').innerHTML =
+      '<div class="qs-hd"><img alt="" src="' + IMG[a.card] + '"><div><div class="lbl">' + esc((COLS[a.col] || {}).title || 'Denise Duffy') + '</div><h3 id="qsT">' + esc(a.title) + '</h3></div></div>' +
+      (a.products.length > 1 ? '<div class="qs-chips" role="group" aria-label="What would you like?">' + a.products.map(function (x) { return '<button type="button" class="qs-chip" data-qp="' + x.id + '" aria-pressed="' + (x === p) + '">' + esc(x.name) + '</button>'; }).join('') + '</div>' : '') +
+      (ok && p.options.length > 1 ? '<div class="qs-opts" role="group" aria-label="Size">' + p.options.map(function (x) { return '<button type="button" class="qs-opt" data-qo="' + x.id + '" aria-pressed="' + (x === o) + '"><span>' + esc(x.label) + '</span><b>' + money(x.price) + '</b></button>'; }).join('') + '</div>' : '') +
+      '<p class="qs-note">' + esc(heldPrint(a, p) ? 'Prints open ' + opensOn(a.ed) + '. Until then, the original is the only way to own it.' : soldOriginal(a, p) ? 'The original has found its home.' : o.note) + '</p>' +
+      (ed ? '<p class="qs-ed">' + esc(ed) + '</p>' : '') +
+      '<div class="qs-buy"><div class="qs-price">' + (ok ? money(o.price) + (o.was ? '<s>' + money(o.was) + '</s>' : '') : '') + '</div>' +
+      '<button class="btn" type="button" data-act="qadd"' + (ok ? '' : ' disabled') + '>' + (heldPrint(a, p) ? 'Not yet' : soldOriginal(a, p) ? 'Sold' : p.type === 'Original' ? 'Buy the original' : 'Add to cart') + '</button></div>' +
+      '<a class="qs-more" href="#/a/' + a.id + (p === a.products[0] ? '' : '/' + p.id) + '">See the whole piece <i aria-hidden="true">→</i></a>';
+  }
+  function openQuick(id, pid, opener) {
+    var a = art(id); if (!buyable(a)) { location.hash = '#/a/' + id; return; }
+    var p = (pid && a.products.filter(function (x) { return x.id === pid; })[0]) || a.products.filter(function (x) { return canBuy(a, x); })[0];
+    qs = { a: a, p: p, o: p.options[0] }; qsFrom = opener || null;
+    drawQuick();
+    document.body.classList.add('qs-open');
+    setTimeout(function () { var b = $('#qs [data-act="qadd"]'); if (b) b.focus({ preventScroll: true }); }, 60);
+  }
+  function closeQuick(quiet) {
+    if (!document.body.classList.contains('qs-open')) return;
+    document.body.classList.remove('qs-open');
+    if (!quiet && qsFrom && qsFrom.focus) qsFrom.focus({ preventScroll: true });
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-qa],[data-qp],[data-qo],[data-qs-close]'); if (!t) return;
+    if (t.dataset.qa) { e.preventDefault(); e.stopPropagation(); openQuick(t.dataset.qa, t.dataset.qaP, t); }
+    else if (t.dataset.qp) { qs.p = qs.a.products.filter(function (x) { return x.id === t.dataset.qp; })[0]; qs.o = qs.p.options[0]; drawQuick(); }
+    else if (t.dataset.qo) { qs.o = qs.p.options.filter(function (x) { return x.id === t.dataset.qo; })[0]; drawQuick(); }
+    else closeQuick();
+  }, true);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.body.classList.contains('qs-open')) { e.stopImmediatePropagation(); closeQuick(); } }, true);
+  window.TideShop = { can: function (id) { return buyable(art(id)); }, open: openQuick };
+
   // ---------- cart ----------
   function totals() {
     var sub = cart.reduce(function (a, c) { return a + c.price; }, 0);
@@ -1014,6 +1153,13 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       if (heldPrint(a, p) || soldOriginal(a, p)) return;
       addLine({ title: a.title, img: a.card, pid: p.id, opt: o.id, digital: p.type === 'Download', price: price(), detail: (p.type === 'Print' ? o.label : p.name + (p.options.length > 1 ? ', ' + o.label : '')) + (state.frame ? ', framed' : '') + (state.gift ? ', gift wrapped' : '') });
     } else if (act === 'addset') addLine({ title: state.set.title, img: state.set.img, pid: state.set.id, digital: !!state.set.gift, price: state.set.price, detail: state.set.gift ? 'Gift card' : 'Pair of A4 prints' });
+    else if (act === 'qadd' && qs.a && canBuy(qs.a, qs.p)) {
+      var qa = qs.a, qp = qs.p, qo = qs.o;
+      cart.push({ title: qa.title, img: qa.card, pid: qp.id, opt: qo.id, digital: qp.type === 'Download', price: qo.price, detail: qp.type === 'Print' ? qo.label : qp.name + (qp.options.length > 1 ? ', ' + qo.label : '') });
+      drawCart(); closeQuick(true);
+      // the 3D viewer sits above the cart, so there a note does instead
+      if (document.querySelector('.rv.on')) toast('Added to your cart: ' + qa.title + '.'); else openCart(true);
+    }
     else if (act === 'upsell') addLine({ title: 'Coastal wildflowers', img: 'flowersDetail', pid: 'cards', opt: 'p5', price: 25, detail: 'Card pack, Pack of 5' });
     else if (act === 'code') { code = ($('#codeIn').value || '').trim().toUpperCase(); drawCart(); toast(code === 'IRUKANDJI' ? 'Free delivery applied.' : code ? 'That code isn’t set up in this prototype. Try IRUKANDJI.' : 'Code cleared.'); }
     else if (act === 'express') toast('On the live site, ' + t.dataset.via + ' fills in the address and card: one tap and it’s paid.');
@@ -1135,7 +1281,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     wall.addEventListener('click', function (e) {
       var t = e.target.closest('.lg-tile'); if (!t) return;
       var w = WALK[+t.dataset.i];
-      if (e.target.closest('[data-shop]')) return;
+      if (e.target.closest('[data-shop],[data-qa]')) return;
       if (!w.photo) openViewer(w); else if (w.shop) location.hash = '#/a/' + w.shop;
     });
     var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 200); });
@@ -1171,7 +1317,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var row = h('div', { class: 'lg-row' });
       for (var c = 0; c < 2; c++) seq.forEach(function (s) {
         var w = s.t.w, i = WALK.indexOf(w), a = h('figure', { class: 'lg-tile' + (w.photo ? ' photo' : ''), 'data-i': i, style: 'width:' + s.w + 'px;height:' + tileH + 'px;margin-right:' + gap + 'px' });
+        var buy = w.shop && window.TideShop && window.TideShop.can(w.shop);
         a.innerHTML = '<img alt="' + esc(w.title + (c ? '' : ', ' + w.medium)) + '" src="' + s.t.src + '" draggable="false">' +
+          (buy ? '<button class="qa lg-qa" type="button" data-qa="' + w.shop + '"' + (c ? ' tabindex="-1"' : '') + ' aria-label="Buy ' + esc(w.title) + ' from here"><i aria-hidden="true">+</i></button>' : '') +
           '<figcaption><b>' + esc(w.title) + '</b><span>' + esc(w.photo ? w.medium : 'Feel the texture') + '</span>' +
           (w.shop ? '<a data-shop href="#/a/' + w.shop + '">Shop</a>' : '') + '</figcaption>';
         if (c) a.setAttribute('aria-hidden', 'true');
@@ -1227,7 +1375,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     rv.innerHTML = '<canvas></canvas><div class="rv-top"><div><b></b><span></span></div><button class="lg-close" type="button" aria-label="Close" style="margin-left:auto">×</button></div>' +
       '<div class="rv-help">Drag to turn · move to light it</div>' +
       '<div class="rv-bot"><label>Depth <input type="range" min="0" max="100" value="35" aria-label="Depth"></label>' +
-      '<label><input type="checkbox" checked> Moving light</label>' +
+      '<label><input type="checkbox" checked> Moving light</label><button class="rv-buy" type="button" hidden>Add to cart +</button>' +
       '<div class="rv-note">Depth preview made from a photo. A 3D scan of the real piece will show its true texture and edges.</div></div>' +
       '<div class="rv-fallback">This device can’t show the 3D view.</div>';
     document.body.appendChild(rv);
@@ -1354,6 +1502,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (!rv) buildViewer();
     rv.querySelector('.rv-top b').textContent = p.title;
     rv.querySelector('.rv-top span').textContent = p.medium + ' · in 3D';
+    var buy = rv.querySelector('.rv-buy'), canBuy = !!(p.shop && window.TideShop && window.TideShop.can(p.shop));
+    buy.hidden = !canBuy; if (canBuy) buy.setAttribute('data-qa', p.shop); else buy.removeAttribute('data-qa');
     rv.classList.add('on');
     rv.querySelector('.rv-help').style.opacity = '1';
     view.yaw = -0.3; view.pitch = 0.28; view.dist = 3.4;
