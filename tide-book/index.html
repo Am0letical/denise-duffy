@@ -1595,7 +1595,13 @@ function createTideLogic(env) {
       var ch = { website: { status: 'Requested', at: nowIso(), by: role }, updated: nowIso() };
       if (it.researchStatus === 'Queued') ch.researchStatus = 'Skipped';      // not a product: no market research
       env.table('ideas').update(id, ch);
-      if (role === 'artist') publish.push('admin', 'Website change to approve', it.title);
+      // if she says it, it's confirmed: her requests are approved as she makes them (Claude checks for clashes with the admin's decisions)
+      if (role === 'artist') {
+        var fresh = ideaRow(id), prompt = websitePrompt(fresh), file = env.site && env.site.saveRequest ? env.site.saveRequest(id, prompt) : '';
+        env.table('ideas').update(id, { website: Object.assign({}, fresh.website, { status: 'Approved', approvedAt: nowIso(), prompt: prompt, file: file, auto: true }) });
+        publish.push('admin', 'Website change from ' + env.brand.artistName + ' is ready', 'Tell Claude: “Do website request ' + id + '”. ' + it.title);
+        return { ok: true, approved: true };
+      }
       return { ok: true };
     });
   }
@@ -1615,7 +1621,7 @@ function createTideLogic(env) {
       '',
       'Please make this change to ' + env.brand.artistName + '’s website' + (env.site && env.site.siteFolder ? ' (' + env.site.siteFolder() + ': site.html, site.css, brand.js; build with build_site.py)' : '') + ':',
       '1. If anything is unclear, ask me short questions with options first.',
-      '2. Keep to the brand and Our direction in Tide Book, and the privacy rule (nothing about health, family names or worries without her OK).',
+      '2. What ' + env.brand.artistName + ' says is confirmed. Only check it against ' + (env.brand.adminName || 'the admin') + '’s decisions (Our direction, the brand, earlier changes); if it clashes, ask him first with short options. Family members’ names still need their own yes.',
       '3. Check it at phone and desktop width, privacy-check the build, publish it to the live site, and tell me what changed.',
       '4. Then mark it done in Tide Book (Ideas › ' + it.title + ' › Website change › Done).'
     ].filter(function (l) { return l !== null; }).join('\n');
@@ -2234,7 +2240,8 @@ function createTideLogic(env) {
  *     Plan     decide which posts to make; each has a purpose and checks it must pass           (plan)
  *              The rules below check every plan before anything is drafted                      (plan check)
  *     Draft    each post is written on its own, from only what it needs                         (execute, fresh context)
- *     Review   both people check each post against its checks: approve, ask for changes, or discard  (verify)
+ *     Review   the artist checks each post against its checks: approve, ask for changes, or discard  (verify)
+ *              The admin is asked too only when a post clashes with a rule already in place
  *              Changes go back with the failed checks and a note and are redrafted automatically  (diagnose and fix)
  *   Quick      one post from a drop, skipping questions                                         (quick mode)
  *
@@ -2245,7 +2252,8 @@ var TIDE_CONTENT = {
   PLATFORMS: ['Instagram', 'Facebook', 'Instagram and Facebook'],
   FORMATS: ['Photo post', 'Carousel', 'Reel', 'Story', 'Ad'],
   PILLARS: ['Process', 'Ocean', 'In homes', 'Story'],
-  POST_APPROVERS: ['artist', 'admin'],   // everyone listed approves a post before it is ready
+  POST_APPROVERS: ['artist'],            // she owns the business: her OK makes a post ready
+  CLASH_APPROVERS: ['artist', 'admin'],  // ...and the admin's too when it clashes with a rule already in place
   MAX_FRAMES: 3,
   MAX_QUESTIONS: 3,
   QUESTION_HOURS: 24,                    // unanswered questions stop holding a round up after this
@@ -2260,6 +2268,16 @@ function tideContent(env, t) {
   var r2 = function (n) { return Math.round(n); };
 
   function rowsWhere(name, fn) { return t.rows(name).filter(fn); }
+  /** Why a post needs the admin as well, or '' when her OK is enough. */
+  function clashOf(c) {
+    if (c.type !== 'Post') return '';
+    if (c.clash) return String(c.clash);
+    var words = env.privateWords, text = [c.title, c.caption, c.hashtags, c.onScreen].join(' ');
+    if (words && words.test(text)) return 'It mentions family or a private worry, which needs its own yes.';
+    return '';
+  }
+  function approversFor(c) { return clashOf(c) ? C.CLASH_APPROVERS : C.POST_APPROVERS; }
+  t.postNeeds = approversFor;
   function round(id) { return rowsWhere('rounds', function (r) { return r.id === id; })[0]; }
   function hoursSince(iso) { return iso ? (env.now().getTime() - Date.parse(iso)) / 3600000 : 1e9; }
   function cleanList(v, max, len) {
@@ -2409,7 +2427,7 @@ function tideContent(env, t) {
         out[mine] = 'Approved';
         var after = { artist: c.artistDecision, admin: c.adminDecision };
         after[role] = 'Approved';
-        var ready = c.type === 'Shot' || C.POST_APPROVERS.every(function (r) { return after[r] === 'Approved'; });
+        var ready = c.type === 'Shot' || approversFor(c).every(function (r) { return after[r] === 'Approved'; });
         if (ready) {
           out.status = 'Approved'; out.decided = now; out.goSchedule = c.type === 'Post';
           if (c.type === 'Post') {
@@ -2557,7 +2575,7 @@ function tideContent(env, t) {
         videoUrl: c.videoId ? env.files.viewUrl(c.videoId) : '', videoThumb: c.videoThumb || '', editStatus: c.editStatus || '', editNote: c.editNote || '',
         scheduledAt: c.scheduledAt || '', targets: c.targets || {}, stats: c.stats || null, preflight: c.preflight || null,
         postedAt: c.postedAt || '', postError: c.postError || '',
-        artistDecision: c.artistDecision || '', adminDecision: c.adminDecision || '',
+        artistDecision: c.artistDecision || '', adminDecision: c.adminDecision || '', needs: approversFor(c), clash: clashOf(c),
         rejectedBy: c.rejectedBy || '', rejectReason: c.rejectReason || '', decided: c.decided || ''
       };
     }).reverse();
@@ -2789,11 +2807,15 @@ function tideContent(env, t) {
           videoId: reedit ? '' : (c.videoId || ''), editStatus: next === 'Editing' ? 'Queued' : (c.editStatus || ''), reedit: false,
           caption: caption, hashtags: t.text(r.hashtags, 400), onScreen: t.text(r.on_screen_text, 600),
           plan: c.format === 'Reel' || c.format === 'Story' ? cleanList(r.edit_plan, 12, 300) : [],
-          cta: t.text(r.call_to_action, 200), why: t.text(r.why, 600) || c.purpose,
+          cta: t.text(r.call_to_action, 200), why: t.text(r.why, 600) || c.purpose, clash: t.text(r.clash, 300),
           revisions: c.status === 'Redrafting' ? (Number(c.revisions) || 0) + 1 : (Number(c.revisions) || 0),
           status: next, tries: 0, updated: now
         });
-        if (next === 'Suggested') t.publish.push('both', 'A post is ready to review', c.title);
+        if (next === 'Suggested') {
+          t.publish.push('artist', 'A post is ready to review', c.title);
+          var why = clashOf(Object.assign({}, c, { caption: caption, clash: t.text(r.clash, 300) }));
+          if (why) t.publish.push('admin', 'A post needs your OK too', c.title + ': ' + why);
+        }
         // A round is finished once nothing in it is still being drafted.
         if (c.round) {
           var left = rowsWhere('content', function (x) { return x.round === c.round && (x.status === 'Planned' || x.status === 'Drafting'); }).length;
@@ -3358,8 +3380,8 @@ function tidePublish(env, t) {
     var q = t.rows('questions').filter(function (x) { return x.status === 'Open'; }).length;
     if (q) items.push({ key: 'q', text: q + ' quick question' + (q === 1 ? '' : 's') + ' about footage', why: 'Posts are planned once they’re answered.', where: 'Content › Review' });
     var mine = role === 'admin' ? 'adminDecision' : 'artistDecision';
-    var waiting = t.rows('content').filter(function (c) { return c.status === 'Suggested' && c.type === 'Post' && c[mine] !== 'Approved'; }).length;
-    if (waiting) items.push({ key: 'review', text: waiting + ' post' + (waiting === 1 ? '' : 's') + ' to review', why: 'Nothing goes out until you’ve both approved.', where: 'Content › Review' });
+    var waiting = t.rows('content').filter(function (c) { return c.status === 'Suggested' && c.type === 'Post' && c[mine] !== 'Approved' && (t.postNeeds ? t.postNeeds(c) : ['artist']).indexOf(role) >= 0; }).length;
+    if (waiting) items.push({ key: 'review', text: waiting + ' post' + (waiting === 1 ? '' : 's') + ' to review', why: role === 'admin' ? 'These clash with a rule, so they need your OK as well.' : 'Nothing goes out until you’ve approved it.', where: 'Content › Review' });
     var hand = t.rows('content').filter(function (c) { return c.status === 'Approved' && c.type === 'Post'; }).length;
     if (hand) items.push({ key: 'hand', text: hand + ' approved post' + (hand === 1 ? '' : 's') + ' to put out', why: on('postingEnabled') ? 'Stories and ads are posted by hand.' : 'These go out by hand for now. Mark each one posted once it’s up.', where: 'Content › Ready' });
     return items;
@@ -3851,8 +3873,8 @@ function tideNotes(env, t) {
  * The admin can re-file a topic if the AI picked the wrong kind.
  *
  * The product pipeline: Idea > Questions > Decisions > Checks & costing > Sample > Listing & launch > Live.
- * Sign-offs are split by strength: the artist approves the sample and the listing's look and words; the
- * admin approves decisions, costs, suppliers and rules; both approve going live. The AI can draft the checks
+ * The artist owns the business, so her OK moves every stage on. The admin's OK is needed as well only when
+ * something clashes with a rule: a check found a problem, or the price doesn't cover the costs. The AI can draft the checks
  * and parts list (flagged "to verify") and the listing and launch posts in her voice.
  *
  * AI work runs the same way as the Notebook (LogicNotes.gs): the PC's local model first when that's on,
@@ -3864,7 +3886,7 @@ var TIDE_TALK = {
   KINDS: ['Product', 'Idea', 'Artwork', 'Story', 'App feature', 'Other'],
   STAGES: ['Idea', 'Questions', 'Decisions', 'Checks & costing', 'Sample', 'Listing & launch', 'Live'],
   // who signs off a stage before it can move on
-  GATES: { 'Idea': [], 'Questions': [], 'Decisions': ['admin'], 'Checks & costing': ['admin'], 'Sample': ['artist'], 'Listing & launch': ['artist', 'admin'] },
+  GATES: { 'Idea': [], 'Questions': [], 'Decisions': ['artist'], 'Checks & costing': ['artist'], 'Sample': ['artist'], 'Listing & launch': ['artist'] },
   CHECK_STATUS: ['To check', 'OK', 'Problem'],
   SAMPLE_STATUS: ['Not ordered', 'Ordered', 'Here', 'Approved', 'Needs changes'],
   MAX_TRIES: 3, LOCAL_TRIES: 2, LOCAL_CLAIM_MINS: 15
@@ -4348,6 +4370,19 @@ function tideTalk(env, t) {
     });
   }
 
+  /** Why this needs the admin's OK as well, or '' when hers is enough. */
+  function clashOf(r) {
+    if (t.list(r.checks).some(function (c) { return c.status === 'Problem'; })) return 'A check found a problem.';
+    var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
+    var price = Number((r.pricing || {}).price) || 0;
+    if (price > 0 && unit > 0 && price <= unit) return 'The price doesn’t cover what it costs to make.';
+    return '';
+  }
+  function gateFor(r, stage) {
+    var g = t.list(K.GATES[stage || r.stage]).slice();
+    if (g.length && clashOf(r) && g.indexOf('admin') < 0) g.push('admin');
+    return g;
+  }
   /** What's stopping this stage from moving on: unmet sign-offs and unfinished work. */
   function blockers(r) {
     var out = [], ap = (r.approvals || {})[r.stage] || {};
@@ -4359,14 +4394,14 @@ function tideTalk(env, t) {
     }
     if (r.stage === 'Sample' && (r.sample || {}).status !== 'Approved') out.push('the sample approved');
     if (r.stage === 'Listing & launch' && !String((r.listing || {}).copy || '').trim()) out.push('the listing words');
-    t.list(K.GATES[r.stage]).forEach(function (role) { if (!ap[role]) out.push(who(role) + '’s OK'); });
+    gateFor(r).forEach(function (role) { if (!ap[role]) out.push(who(role) + '’s OK'); });
     return out;
   }
   function approve(id) {
     var role = t.need(['admin', 'artist']);
     return env.lock(function () {
       var r = item(id);
-      if (t.list(K.GATES[r.stage]).indexOf(role) < 0) t.fail('This stage doesn’t need your OK.');
+      if (gateFor(r).indexOf(role) < 0) t.fail('This stage doesn’t need your OK.');
       var ap = Object.assign({}, r.approvals || {}), st = Object.assign({}, ap[r.stage] || {});
       st[role] = t.nowIso(); ap[r.stage] = st;
       env.table('pipeline').update(id, { approvals: ap, updated: t.nowIso(), log: logAdd(r, who(role) + ' approved ' + r.stage) });
@@ -4382,7 +4417,7 @@ function tideTalk(env, t) {
       if (b.length) t.fail('Before it moves on it needs ' + b.join(', ').replace(/, ([^,]*)$/, ' and $1') + '.');
       var next = K.STAGES[i + 1];
       env.table('pipeline').update(id, { stage: next, updated: t.nowIso(), log: logAdd(r, who(role) + ' moved it to ' + next) });
-      var need = t.list(K.GATES[next]);
+      var need = gateFor(r, next);
       if (need.length) msg = [need.length > 1 ? 'both' : need[0], r.title + ' is at ' + next, next === 'Sample' ? 'The sample needs your OK when it’s here.' : 'It needs your OK at this stage.'];
       return { ok: true, stage: next };
     });
@@ -4439,8 +4474,8 @@ function tideTalk(env, t) {
         id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
-        sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: t.list(K.GATES[r.stage]), blockers: blockers(r),
-        needsMe: t.list(K.GATES[r.stage]).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked,
+        sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: gateFor(r), clash: clashOf(r), blockers: blockers(r),
+        needsMe: gateFor(r).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked,
         research: r.research || null, researchStatus: r.researchStatus || '', researchAt: r.researchAt || '', researchNote: r.researchNote || '',
         log: t.list(r.log).slice(-12).reverse(), aiStatus: r.aiStatus || '', aiJob: r.aiJob || '', aiNote: r.aiNote || '', aiBy: r.aiBy || '', updated: r.updated
       };
@@ -7746,6 +7781,7 @@ var Kit = (function () {
         // sign-offs and moving on
         var s8 = sheetSection('Where it’s up to: ' + p.stage);
         var ap = (p.approvals || {})[p.stage] || {};
+        if (p.clash) s8.appendChild(h('div', { style: 'margin-bottom:8px' }, note('Needs ' + adminName() + '’s OK too: ' + p.clash, 'gavel', 'warn')));
         p.gate.forEach(function (role) {
           var nm = role === 'artist' ? cap(artist()) : adminName(), ok = ap[role];
           s8.appendChild(h('div', { style: 'margin-bottom:8px' }, note(ok ? nm + ' approved this stage.' : 'Needs ' + nm + '’s OK.', ok ? 'check_circle' : 'hourglass_top', ok ? 'good' : '')));
@@ -8330,7 +8366,7 @@ var Kit = (function () {
         var ws = sheetSection('Website change'), W = x.website;
         if (!W) ws.appendChild(btn('outlined', 'It’s a website change', { icon: 'language', block: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
-          api('websiteRequest', x.id).then(refresh).then(function () { render(); toast(ADMIN ? 'Marked as a website change. Approve it when you’re ready.' : 'Sent to ' + adminName() + ' to approve.'); ctl.close(); setTimeout(function () { openIdea(x.id); }, 260); })
+          api('websiteRequest', x.id).then(refresh).then(function () { render(); toast(ADMIN ? 'Marked as a website change. Approve it when you’re ready.' : 'Sent. ' + adminName() + ' will have it done on your website.'); ctl.close(); setTimeout(function () { openIdea(x.id); }, 260); })
             .catch(function (err) { K.setBusy(b, false); fail(err); });
         } }));
         else if (W.status === 'Requested') {
@@ -9016,7 +9052,7 @@ var Kit = (function () {
   function otherName() { return ADMIN ? artist() : adminName(); }
   /** Drafts and questions this person still has to deal with. */
   function draftsToReview() {
-    return S.data.content.filter(function (c) { return c.status === 'Suggested' && myDecision(c) !== 'Approved'; });
+    return S.data.content.filter(function (c) { return c.status === 'Suggested' && myDecision(c) !== 'Approved' && (c.type !== 'Post' || (c.needs || ['artist']).indexOf(ADMIN ? 'admin' : 'artist') >= 0); });
   }
   function studioCount() { return draftsToReview().filter(function (c) { return c.type === 'Post'; }).length + S.data.questions.length; }
   function duration(sec) { sec = Math.round(sec || 0); return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
@@ -9131,12 +9167,13 @@ var Kit = (function () {
         body.appendChild(h('div', { class: 'plan' }, h('b', { text: 'Fixed since last time' }),
           h('p', { text: (last.failed.length ? last.failed.join('; ') : '') + (last.failed.length && last.note ? '. ' : '') + (last.note || '') })));
       }
+      if (c.clash) body.appendChild(h('div', { style: 'margin-top:10px' }, note((ADMIN ? 'Needs your OK too: ' : 'Needs ' + adminName() + '’s OK too: ') + c.clash, 'gavel', 'warn')));
       if (otherDecision(c) === 'Approved') body.appendChild(h('div', { style: 'margin-top:10px' }, chip(cap(otherName()) + ' approved', 'approved', 'check')));
       body.appendChild(h('div', { style: 'margin-top:14px' }, reviewButtons(c)));
       card.addEventListener('click', function (e) { if (!e.target.closest('button, a')) openPost(c.id); });
       card.style.cursor = 'pointer';
     } else if (mode === 'waiting') {
-      body.appendChild(h('div', { style: 'margin-top:10px' }, chip('You approved · waiting for ' + otherName(), 'pending', 'hourglass_top')));
+      body.appendChild(h('div', { style: 'margin-top:10px' }, chip(myDecision(c) === 'Approved' ? 'You approved · waiting for ' + otherName() : 'With ' + otherName() + ' to approve', 'pending', 'hourglass_top')));
     } else {
       if (c.onScreen) body.appendChild(h('div', { class: 'plan' }, h('b', { text: 'On-screen text' }), h('p', { text: c.onScreen })));
       if (c.plan.length) body.appendChild(h('div', { class: 'plan' }, h('b', { text: 'Edit plan' }), h('ol', {}, c.plan.map(function (s) { return h('li', { text: s }); }))));
@@ -9186,7 +9223,7 @@ var Kit = (function () {
   }
 
   function viewContent(main) {
-    pageTitle(main, ADMIN ? 'Content' : 'Posts', ADMIN ? 'Drop in photos and video. Posts are planned, drafted and checked for you to approve.' : 'Drop in photos and video, no titles needed. Posts are made from them for you and ' + adminName() + ' to approve.');
+    pageTitle(main, ADMIN ? 'Content' : 'Posts', ADMIN ? 'Drop in photos and video. Posts are drafted for ' + artist() + ' to approve; you’re only asked when one clashes with a rule.' : 'Drop in photos and video, no titles needed. Posts are made from them for you to approve.');
     var all = S.data.content, posts = all.filter(function (c) { return c.type === 'Post'; });
     var mine = draftsToReview().filter(function (c) { return c.type === 'Post'; });
     var ready = posts.filter(function (c) { return c.status === 'Approved'; });
@@ -9218,7 +9255,7 @@ var Kit = (function () {
       h('span', { class: 'pulse', 'aria-hidden': 'true' }), h('span', { class: 'grow', text: cap(studioStatus()) + '.' }), icon('chevron_right')), 1));
     if (ADMIN || !S.data.rest) S.data.questions.forEach(function (q, i) { main.appendChild(rise(questionCard(q), 2 + i)); });
     d.mine.forEach(function (c, i) { main.appendChild(rise(postCard(c, 'review'), 3 + i)); });
-    var waiting = d.posts.filter(function (c) { return c.status === 'Suggested' && myDecision(c) === 'Approved'; });
+    var waiting = d.posts.filter(function (c) { return c.status === 'Suggested' && d.mine.indexOf(c) < 0; });
     if (!d.mine.length && !waiting.length && !S.data.questions.length) main.appendChild(rise(emptyState('auto_awesome', 'Nothing to review', 'Add some footage. Questions and drafted posts will appear here.'), 2));
     if (waiting.length) {
       var w = section('Waiting for ' + otherName());
