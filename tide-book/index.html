@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -789,6 +789,36 @@ img, video { max-width: 100%; }
   background: transparent; color: var(--inverse-primary, #a8c8ff); font: 600 15px/20px var(--font); }
 @media (min-width: 840px) { .undo-card { left: auto; width: 420px; bottom: 28px; } }
 
+/* the mic on writing boxes */
+.tf.has-mic input, .tf.has-mic textarea { padding-right: 56px; }
+.tf-mic { position: absolute; right: 6px; bottom: 6px; width: 44px; height: 44px; border: 0; border-radius: var(--r-full);
+  display: inline-flex; align-items: center; justify-content: center; background: var(--primary-container); color: var(--on-primary-container); }
+.tf.has-mic input ~ .tf-mic { top: 50%; bottom: auto; transform: translateY(-50%); width: 40px; height: 40px; }
+.tf-mic.on { background: var(--error, #ba1a1a); color: #fff; animation: micpulse 1.2s ease-in-out infinite; }
+@keyframes micpulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(186, 26, 26, 0.45); } 50% { box-shadow: 0 0 0 10px rgba(186, 26, 26, 0); } }
+/* editing a post's photos and clips */
+.media-edit { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 8px; }
+.media-edit .me { position: relative; flex: none; width: 104px; }
+.media-edit .me img, .media-edit .me .pm-blank { width: 104px; height: 104px; object-fit: cover; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: var(--surface-high); }
+.media-edit .me-n { position: absolute; top: 6px; left: 6px; min-width: 22px; height: 22px; border-radius: 11px; background: rgba(0,0,0,.6); color: #fff; font: 600 12px/22px var(--font); text-align: center; }
+.media-edit .me-row { display: flex; justify-content: space-between; margin-top: 4px; }
+.media-edit .me-row button { width: 32px; height: 32px; border: 0; border-radius: 16px; background: var(--surface-high); display: inline-flex; align-items: center; justify-content: center; color: var(--on-surface); }
+.media-edit .me-row button:disabled { opacity: .35; }
+.media-edit .me-add { flex: none; width: 104px; height: 104px; border-radius: 14px; border: 1.5px dashed var(--outline-variant); background: transparent; color: var(--primary);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font: 500 13px/16px var(--font); }
+.pick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pick-grid button { position: relative; padding: 0; border: 0; border-radius: 12px; overflow: hidden; aspect-ratio: 1; background: var(--surface-high); }
+.pick-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pick-grid button.in { outline: 3px solid var(--primary); outline-offset: -3px; }
+.pick-grid .pk-tick { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 12px; background: var(--primary); color: var(--on-primary); display: none; align-items: center; justify-content: center; }
+.pick-grid button.in .pk-tick { display: inline-flex; }
+/* finish one: the push from idea to something real */
+.finish-card { border-radius: var(--r-l); padding: 16px; background: var(--tertiary-container); color: var(--on-tertiary-container); margin-bottom: 16px; }
+.finish-card .fc-k { font: 600 12px/16px var(--font); letter-spacing: .5px; text-transform: uppercase; opacity: .85; display: flex; align-items: center; gap: 6px; }
+.finish-card h3 { margin: 6px 0 4px; font: 500 20px/26px var(--font); }
+.finish-card .fc-bar { height: 6px; border-radius: 3px; background: rgba(0,0,0,.12); margin: 10px 0 6px; overflow: hidden; }
+.finish-card .fc-bar span { display: block; height: 100%; background: currentColor; border-radius: 3px; }
+.finish-card .fc-next { margin: 8px 0 12px; font: 400 15px/21px var(--font); }
 </style>
 
   <script>
@@ -2302,7 +2332,7 @@ var TIDE_CONTENT = {
   MAX_QUESTIONS: 3,
   QUESTION_HOURS: 24,                    // unanswered questions stop holding a round up after this
   MAX_PLAN: 6,                           // posts planned from one round
-  MAX_REVISIONS: 2,                      // automatic redrafts before a post needs a person
+  MAX_REVISIONS: 6,                      // redrafts before it's quicker to finish by hand
   // Checks every post is held to, on top of its own.
   BASE_CHECKS: ['The footage is right for it', 'It sounds like the artist', 'The facts are right']
 };
@@ -2506,12 +2536,10 @@ function tideContent(env, t) {
       if (c.status !== 'Suggested' || c.type !== 'Post') t.fail('This one can’t be changed now.');
       var feedback = t.list(c.feedback).concat([{ by: role, failed: checks, note: why, at: now }]);
       var out = { feedback: feedback, artistDecision: '', adminDecision: '', reedit: reedit === true, updated: now };
-      if ((Number(c.revisions) || 0) >= C.MAX_REVISIONS || !env.features.studio) {
-        out.status = 'Rejected'; out.rejectedBy = role; out.decided = now;
-        out.rejectReason = 'Still not right after ' + (Number(c.revisions) || 0) + ' redraft' + (c.revisions == 1 ? '' : 's') + ': ' + (why || checks.join(', '));
-      } else {
-        out.status = 'Revising';
-      }
+      // never thrown away for being redrafted a lot: past the limit she finishes it by hand
+      if ((Number(c.revisions) || 0) >= C.MAX_REVISIONS) t.fail('This one has been redrafted a few times now. Tap “Fix it myself” to finish it by hand.');
+      if (!env.features.studio) t.fail(role === 'admin' ? 'Drafting isn’t switched on.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
+      out.status = 'Revising';
       env.table('content').update(id, out);
       learn('On "' + c.title + '": ' + (checks.length ? 'failed ' + checks.join('; ') : '') + (checks.length && why ? '. ' : '') + why, c.id);
       if (out.status === 'Revising') env.requestStudio();
@@ -2560,12 +2588,22 @@ function tideContent(env, t) {
     ch = ch || {};
     return env.lock(function () {
       var c = t.find('content', id), out = { updated: t.nowIso() };
-      if (c.status !== 'Suggested') t.fail('This one has already been decided.');
+      if (['Suggested', 'Approved', 'Held', 'Failed'].indexOf(c.status) < 0) t.fail(c.status === 'Posted' ? 'This one has already gone out.' : 'This one can’t be changed right now.');
+      if ('format' in ch) out.format = t.oneOf(ch.format, C.FORMATS, 'what kind of post it is');
+      if ('platform' in ch) out.platform = t.oneOf(ch.platform, C.PLATFORMS, 'where it goes');
+      if ('cta' in ch) out.cta = t.text(ch.cta, 200);
+      if ('plan' in ch) out.plan = cleanList(ch.plan, 12, 300);
+      if ('footageIds' in ch) {
+        var known = {}; t.rows('footage').forEach(function (f) { known[f.id] = true; });
+        var ids = t.list(ch.footageIds).filter(function (x, i, a) { return known[x] && a.indexOf(x) === i; }).slice(0, 10);
+        if (!ids.length) t.fail('Keep at least one photo or clip.');
+        out.footageIds = ids;
+      }
       if ('title' in ch) out.title = t.text(ch.title, 160);
       if ('caption' in ch) out.caption = t.text(ch.caption, 3000);
       if ('hashtags' in ch) out.hashtags = t.text(ch.hashtags, 400);
       if ('onScreen' in ch) out.onScreen = t.text(ch.onScreen, 600);
-      out[role === 'admin' ? 'artistDecision' : 'adminDecision'] = '';
+      if (c.status === 'Suggested') out[role === 'admin' ? 'artistDecision' : 'adminDecision'] = '';
       env.table('content').update(id, out);
       return { ok: true };
     });
@@ -6032,11 +6070,40 @@ var Kit = (function () {
       input, h('label', { for: id, text: o.label }),
       o.prefix ? h('span', { class: 'prefix', text: o.prefix }) : null,
       o.suffix ? h('span', { class: 'suffix', text: o.suffix }) : null);
+    if (o.multiline || o.mic) { wrap.classList.add('has-mic'); wrap.appendChild(micButton(input)); }
     var tips = o.suggest && o.suggest.length ? suggest({ input: input }, o.suggest, { replace: o.suggestReplace }) : null;
     var out = o.help || tips ? h('div', {}, wrap, o.help ? h('div', { class: 'tf-help', text: o.help }) : null, tips) : wrap;
     out.input = input;
     return out;
   }
+  /** Speak instead of typing: tap the mic, talk, tap again to stop. Words land at the end of the box. */
+  function micButton(input) {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition, rec = null;
+    var b = h('button', { type: 'button', class: 'tf-mic press', 'aria-label': 'Speak instead of typing', title: 'Speak instead of typing' }, icon('mic'));
+    function stop() { if (rec) { try { rec.stop(); } catch (e) {} } }
+    b.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (rec) { stop(); return; }
+      if (!SR) { input.focus(); toast('Tap the microphone on your keyboard to speak.'); return; }
+      var base = input.value, said = '';
+      rec = new SR();
+      rec.lang = 'en-AU'; rec.interimResults = true; rec.continuous = true;
+      rec.onresult = function (ev) {
+        var fin = '', live = '';
+        for (var i = 0; i < ev.results.length; i++) { if (ev.results[i].isFinal) fin += ev.results[i][0].transcript; else live += ev.results[i][0].transcript; }
+        said = (fin + live).trim();
+        if (said) said = said.charAt(0).toUpperCase() + said.slice(1);
+        input.value = base + (base && !/\s$/.test(base) ? ' ' : '') + said;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      };
+      rec.onerror = function (ev) { if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') { input.focus(); toast('Tap the microphone on your keyboard to speak.'); } };
+      rec.onend = function () { rec = null; b.classList.remove('on'); b.setAttribute('aria-label', 'Speak instead of typing'); };
+      try { rec.start(); b.classList.add('on'); b.setAttribute('aria-label', 'Stop listening'); haptic(); }
+      catch (err) { rec = null; input.focus(); toast('Tap the microphone on your keyboard to speak.'); }
+    });
+    return b;
+  }
+
   /** The large dollar entry at the top of a sale or expense. */
   function amountField(o) {
     var input = h('input', { type: 'text', inputmode: 'decimal', placeholder: '0', 'aria-label': o.label || 'Amount in dollars', autocomplete: 'off',
@@ -6898,7 +6965,7 @@ var Kit = (function () {
 
     var actions = h('div', { class: 'tiles four' });
     actions.appendChild(h('button', { class: 'action wide press', type: 'button', onclick: function () { openAddFootage(); } },
-      h('span', { class: 'ic' }, icon('perm_media')), h('span', {}, h('b', { text: 'Add footage' }), h('span', { class: 'body-m', style: 'display:block', text: 'Photos and video, no titles needed' }))));
+      h('span', { class: 'ic' }, icon('perm_media')), h('span', {}, h('b', { text: 'Add content' }), h('span', { class: 'body-m', style: 'display:block', text: 'Photos and video, no titles needed' }))));
     [['New idea', 'lightbulb', '', function () { openIdeaForm(); }],
       ['Add an artwork', 'brush', 't', function () { openPrint(null); }],
       ['Record a sale', 'point_of_sale', 'g', function () { openTxn('Sale'); }],
@@ -6989,6 +7056,8 @@ var Kit = (function () {
     n = talkCards(main, n);
     var tdA = rest ? null : todoCard();
     if (tdA) main.appendChild(rise(tdA, n++));
+    var fcA = rest ? null : finishCard();
+    if (fcA) main.appendChild(rise(fcA, n++));
     if (S.data.website && S.data.website.live) {
       main.appendChild(rise(h('a', { class: 'card pad press soft drafts', href: S.data.website.live, target: '_blank', rel: 'noopener' },
         h('span', { class: 'ic' }, icon('language')),
@@ -7152,6 +7221,7 @@ var Kit = (function () {
     if (tab === 'products') return viewProducts(main);
     if (tab === 'inspo') return viewInspo(main);
     main.appendChild(rise(directionCard(), 1));
+    var fc = finishCard(); if (fc) main.appendChild(rise(fc, 1));
     var ideas = S.data.ideas;
     if (!ADMIN) needsList().filter(function (e) { return e.kind === 'idea'; }).forEach(function (e) { main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, needsCard(e)), 1)); });
     if (true) {   // both see the full list: her ideas, ranked, with their research
@@ -8389,15 +8459,66 @@ var Kit = (function () {
       options: S.data.options.kinds.map(function (k) { return { value: k, label: k === 'Other' ? 'Something else' : k, icon: KIND_ICON[k] }; }) });
   }
 
+  /** Ideas on the go, closest to done first: the one worth finishing next. */
+  var OPEN_STAGES = ['New', 'Reviewing', 'In progress', 'Awaiting artist', 'Ready'];
+  function openIdeas() { return S.data.ideas.filter(function (x) { return OPEN_STAGES.indexOf(x.stage) >= 0; }); }
+  function closestToDone() {
+    var stageRank = { 'Ready': 0, 'In progress': 1, 'Awaiting artist': 2, 'Reviewing': 3, 'New': 4 };
+    var ranked = rankedIdeas(openIdeas()), order = {};
+    ranked.forEach(function (x, i) { order[x.id] = i; });
+    return openIdeas().map(function (x) {
+      var parts = x.scope || [], done = parts.filter(function (p) { return p.done; }).length;
+      return { x: x, parts: parts.length, done: done, share: parts.length ? done / parts.length : 0 };
+    }).sort(function (a, b) {
+      return (stageRank[a.x.stage] - stageRank[b.x.stage]) || (b.share - a.share) || (order[a.x.id] - order[b.x.id]);
+    })[0] || null;
+  }
+  function finishCard() {
+    var top = closestToDone(); if (!top) return null;
+    var x = top.x, open = openIdeas().length, next = (x.scope || []).filter(function (p) { return !p.done; })[0];
+    var card = h('div', { class: 'finish-card' },
+      h('div', { class: 'fc-k' }, icon('flag'), open > 1 ? 'Finish one · ' + open + ' on the go' : 'Finish this one'),
+      h('h3', { text: x.title }));
+    if (top.parts) card.appendChild(h('div', {}, h('div', { class: 'fc-bar' }, h('span', { style: 'width:' + Math.round(top.share * 100) + '%' })),
+      h('div', { class: 'body-s', text: top.done + ' of ' + top.parts + ' parts done' })));
+    card.appendChild(h('p', { class: 'fc-next', text: next ? 'Next: ' + next.text : top.parts ? 'Every part is done. Time to put it out there.' : 'Add what’s included, then tick the parts off as you go.' }));
+    var row = h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' });
+    if (next) row.appendChild(btn('filled', 'Done that', { icon: 'check', sm: true, onclick: function (e) {
+      var b = e.currentTarget; K.setBusy(b, true);
+      var scope = x.scope.map(function (p) { return { id: p.id, text: p.text, done: p.done || p.id === next.id }; });
+      api('updateIdea', x.id, { scope: scope }).then(refresh).then(function () { K.haptic('success'); render(); toast('Nice. One step closer.'); })
+        .catch(function (err) { K.setBusy(b, false); fail(err); });
+    } }));
+    else row.appendChild(btn('filled', 'It’s finished', { icon: 'flag', sm: true, onclick: function (e) {
+      var b = e.currentTarget; K.setBusy(b, true);
+      api('updateIdea', x.id, { stage: 'Live' }).then(refresh).then(function () { K.haptic('success'); render(); undoCard('Finished: ' + x.title + '.', function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); })
+        .catch(function (err) { K.setBusy(b, false); fail(err); });
+    } }));
+    row.appendChild(btn('tonal', 'Open it', { sm: true, onclick: function () { openIdea(x.id); } }));
+    if (open > 1) row.appendChild(btn('text', 'Park it', { sm: true, onclick: function (e) {
+      var b = e.currentTarget; K.setBusy(b, true);
+      api('updateIdea', x.id, { stage: 'Parked' }).then(refresh).then(function () { render(); undoCard('Parked: ' + x.title + '.', function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); })
+        .catch(function (err) { K.setBusy(b, false); fail(err); });
+    } }));
+    card.appendChild(row);
+    return card;
+  }
+
   function openIdeaForm() {
     var f = { kind: '', title: '', note: '', timeline: 'No rush', priority: 'Medium', scope: [], files: [] }, dirty = false;
     K.sheet({
       title: 'New idea', tall: true, guard: function () { return dirty; },
       build: function (ctl) {
+        var busy = openIdeas().length;
+        if (busy >= 5) {
+          var top = closestToDone();
+          ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note(busy + ' ideas are on the go. Finishing one first gets your work out sooner.', 'flag')));
+          if (top) ctl.body.appendChild(h('div', { style: 'margin:-4px 0 14px' }, btn('tonal', 'Finish “' + top.x.title + '” instead', { icon: 'flag', sm: true, onclick: function () { dirty = false; ctl.close(); setTimeout(function () { openIdea(top.x.id); }, 320); } })));
+        }
         function touch() { dirty = true; }
         var title = K.textField({ label: 'Name of the idea', maxlength: 120, onInput: function (v) { f.title = v; touch(); } });
         var noteF = K.textField({ label: 'What is it?', multiline: true, maxlength: 5000, onInput: function (v) { f.note = v; touch(); },
-          help: 'A few sentences is plenty. Tap the microphone on your keyboard to speak.' });
+          help: 'A few sentences is plenty. Tap the mic to speak instead.' });
         var s1 = sheetSection('What kind of idea?'); s1.style.marginTop = '4px';
         s1.appendChild(kindChoices('', function (v) { f.kind = v; touch(); }));
         var s2 = sheetSection('About it');
@@ -9328,24 +9449,39 @@ var Kit = (function () {
         list.appendChild(row);
       });
       ctl.body.appendChild(list);
+      // her own reasons, added to the list as she goes
+      var addOwn = K.textField({ label: 'Add your own', compact: true, maxlength: 200, enterkeyhint: 'done', onEnter: function () { addMine(); } });
+      function addMine() {
+        var k = addOwn.input.value.trim();
+        if (!k) { addOwn.input.focus(); return; }
+        failed[k] = true;
+        list.appendChild(h('button', { type: 'button', class: 'check-row press soft flat', role: 'checkbox', 'aria-checked': 'true', onclick: function (e) {
+          failed[k] = !failed[k]; var r = e.currentTarget; r.setAttribute('aria-checked', String(!!failed[k])); r.firstChild.textContent = failed[k] ? 'cancel' : 'check_circle'; K.haptic();
+        } }, icon('cancel', true), h('span', { text: k })));
+        addOwn.input.value = ''; K.haptic();
+      }
+      ctl.body.appendChild(h('div', { class: 'row', style: 'gap:8px;margin-top:10px;align-items:flex-start' }, h('div', { class: 'grow' }, addOwn),
+        K.iconBtn('add', 'Add it to the list', addMine)));
       ctl.body.appendChild(h('div', { style: 'margin-top:18px' }, K.textField({ suggest: ['Shorter, please', 'A different photo', 'Less salesy', 'Add the story behind it'], label: 'What should change? (optional)', multiline: true, maxlength: 500, onInput: function (v) { note = v; } })));
       var reedit = false;
       if (c.videoUrl) ctl.body.appendChild(h('div', { class: 'switch-row', style: 'margin-top:8px' },
         h('div', {}, h('div', { class: 'title-m', text: 'Re-edit the video too' }), h('div', { class: 'body-m', text: 'Otherwise only the words are redrafted.' })),
         K.switchBtn({ checked: false, label: 'Re-edit the video too', onChange: function (v) { reedit = v; } })));
-      if (c.revisions >= S.data.studio.maxRevisions) ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, note_('This has already been redrafted ' + c.revisions + ' times, so it will be set aside rather than tried again.', 'info', 'warn')));
-      var send = btn('filled', 'Send back to redraft', { icon: 'refresh', lg: true, block: true });
+      if (c.revisions >= S.data.studio.maxRevisions) ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, note_('This has been redrafted a few times now. It’s quickest to finish it yourself.', 'info', 'warn')));
+      var mine = btn('outlined', 'Fix it myself', { icon: 'edit', lg: true });
+      mine.addEventListener('click', function () { ctl.close(); setTimeout(function () { openPost(c.id); }, 320); });
+      var send = btn('filled', 'Redo it for me', { icon: 'auto_awesome', lg: true });
       send.addEventListener('click', function () {
         var picked = Object.keys(failed).filter(function (k) { return failed[k]; });
         if (!picked.length && !note.trim()) { toast('Tap what isn’t right, or say what to change.'); return; }
         K.setBusy(send, true);
         api('requestRevision', c.id, picked, note, reedit).then(function (res) {
           K.haptic('success');
-          toast(res.status === 'Revising' ? 'Sent back. The new version will come back here.' : 'Set aside. That’s been noted for next time.');
+          toast('On it. The new version will come back here.');
           return refresh();
         }).then(function () { render(); ctl.close(); if (after) after(); }).catch(function (e) { K.setBusy(send, false); fail(e); });
       });
-      ctl.foot.appendChild(send);
+      ctl.foot.appendChild(h('div', { class: 'btn-row' }, mine, send));
     } });
   }
   var note_ = function (text, iconName, tone) { return note(text, iconName, tone); };
@@ -9465,11 +9601,11 @@ var Kit = (function () {
     var shotsOpen = all.filter(function (c) { return c.type === 'Shot' && c.status === 'Suggested'; });
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.contentTab, onChange: function (v) { S.contentTab = v; S.animate = true; render(); },
-      options: [{ value: 'review', label: 'Review', count: (mine.length + S.data.questions.length) || undefined }, { value: 'footage', label: 'Footage' },
+      options: [{ value: 'review', label: 'Review', count: (mine.length + S.data.questions.length) || undefined }, { value: 'footage', label: 'Content' },
         { value: 'plan', label: 'Plan', count: shotsOpen.length || undefined }, { value: 'ready', label: 'Ready', count: outCount || undefined }]
     })), 1));
     ({ review: tabReview, footage: tabFootage, plan: tabPlan, ready: tabReady }[S.contentTab] || tabReview)(main, { posts: posts, mine: mine, ready: ready, all: all, shotsOpen: shotsOpen });
-    fab(main, 'Add footage', 'add', function () { openAddFootage(); });
+    fab(main, 'Add content', 'add', function () { openAddFootage(); });
   }
 
   function studioStatus() {
@@ -9724,48 +9860,130 @@ var Kit = (function () {
     return sec;
   }
 
+  var POST_FORMATS = ['Photo post', 'Carousel', 'Reel', 'Story', 'Ad'], POST_PLACES = ['Instagram', 'Facebook', 'Instagram and Facebook'];
+  /** Photos and clips in a post: reorder, remove, add more from her footage. */
+  function mediaEditor(ids, onChange) {
+    var box = h('div');
+    function draw() {
+      box.textContent = '';
+      var row = h('div', { class: 'media-edit' });
+      ids.forEach(function (id, i) {
+        var f = footage(id); if (!f) return;
+        row.appendChild(h('div', { class: 'me' },
+          f.thumbIds.length ? h('img', { alt: f.description || f.kind, loading: 'lazy', dataset: { thumb: f.thumbIds[0] } }) : h('div', { class: 'pm-blank' }, icon(f.kind === 'Video' ? 'videocam' : 'image')),
+          h('span', { class: 'me-n', text: String(i + 1) }),
+          h('div', { class: 'me-row' },
+            h('button', { type: 'button', 'aria-label': 'Move earlier', disabled: i === 0 ? true : null, onclick: function () { ids.splice(i - 1, 0, ids.splice(i, 1)[0]); onChange(); draw(); } }, icon('chevron_left')),
+            h('button', { type: 'button', 'aria-label': 'Take it out', onclick: function () { if (ids.length === 1) { toast('A post needs at least one photo or clip.'); return; } ids.splice(i, 1); onChange(); draw(); } }, icon('close')),
+            h('button', { type: 'button', 'aria-label': 'Move later', disabled: i === ids.length - 1 ? true : null, onclick: function () { ids.splice(i + 1, 0, ids.splice(i, 1)[0]); onChange(); draw(); } }, icon('chevron_right')))));
+      });
+      row.appendChild(h('button', { type: 'button', class: 'me-add press', onclick: function () { pickFootage(ids, function () { onChange(); draw(); }); } }, icon('add'), 'Add more'));
+      box.appendChild(row);
+      setTimeout(loadThumbs, 0);
+    }
+    draw();
+    return box;
+  }
+  function pickFootage(ids, done) {
+    var all = (S.data.footage || []).filter(function (f) { return f.thumbIds.length || f.kind === 'Video'; });
+    K.sheet({ title: 'Add photos or clips', tall: true, build: function (ctl) {
+      if (!all.length) { ctl.body.appendChild(emptyState('perm_media', 'No footage yet', 'Add photos or video first.')); return; }
+      var grid = h('div', { class: 'pick-grid' });
+      all.slice().reverse().forEach(function (f) {
+        var b = h('button', { type: 'button', class: ids.indexOf(f.id) >= 0 ? 'in' : '', 'aria-label': f.description || f.kind },
+          f.thumbIds.length ? h('img', { alt: '', loading: 'lazy', dataset: { thumb: f.thumbIds[0] } }) : h('div', { class: 'pm-blank' }, icon('videocam')),
+          h('span', { class: 'pk-tick' }, icon('check')));
+        b.addEventListener('click', function () {
+          var at = ids.indexOf(f.id);
+          if (at >= 0) { if (ids.length === 1) { toast('A post needs at least one photo or clip.'); return; } ids.splice(at, 1); b.classList.remove('in'); }
+          else { if (ids.length >= 10) { toast('Ten is the most a post can hold.'); return; } ids.push(f.id); b.classList.add('in'); }
+          K.haptic();
+        });
+        grid.appendChild(b);
+      });
+      ctl.body.appendChild(grid);
+      setTimeout(loadThumbs, 0);
+      var ok = btn('filled', 'Done', { icon: 'check', lg: true, block: true });
+      ok.addEventListener('click', function () { ctl.close(); done(); });
+      ctl.foot.appendChild(ok);
+    } });
+  }
+
   function openPost(id) {
     var c = byId(S.data.content, id);
     if (!c) return;
-    var f = { title: c.title, caption: c.caption, hashtags: c.hashtags, onScreen: c.onScreen }, dirty = false;
+    var reviewing = c.status === 'Suggested';
+    var f = { title: c.title, caption: c.caption, hashtags: c.hashtags, onScreen: c.onScreen, format: c.format, platform: c.platform,
+      cta: c.cta || '', plan: c.plan.join('\n'), footageIds: c.footageIds.filter(function (x) { return footage(x); }) }, dirty = false;
+    function payload() { var p = Object.assign({}, f); p.plan = f.plan.split('\n').map(function (x) { return x.trim(); }).filter(String); return p; }
     K.sheet({
       title: c.title || c.format, tall: true, guard: function () { return dirty; },
       build: function (ctl) {
         function touch() { dirty = true; }
-        var media = mediaStrip(c, true);
-        if (media) ctl.body.appendChild(h('div', { style: 'border-radius:16px;overflow:hidden' }, media));
-        ctl.body.appendChild(h('div', { style: 'margin-top:4px' }, whyBox(c)));
-        ctl.body.appendChild(checksBox(c));
-        ctl.body.appendChild(steerBox(c, ctl));
-        var caption = K.textField({ label: 'Caption', value: f.caption, multiline: true, maxlength: 3000, onInput: function (v) { f.caption = v; touch(); }, help: 'Fix any words here, or tap a change above.' });
+        var sm = sheetSection('Photos and clips');
+        sm.appendChild(mediaEditor(f.footageIds, touch));
+        ctl.body.appendChild(sm);
+        if (reviewing) {
+          ctl.body.appendChild(h('div', { style: 'margin-top:4px' }, whyBox(c)));
+          ctl.body.appendChild(checksBox(c));
+          ctl.body.appendChild(steerBox(c, ctl));
+        }
+        var caption = K.textField({ label: 'Caption', value: f.caption, multiline: true, maxlength: 3000, onInput: function (v) { f.caption = v; touch(); }, help: reviewing ? 'Change anything here, or tap a change above.' : 'Change anything here.' });
         caption.input.style.minHeight = '180px';
         var s1 = sheetSection('The words');
         s1.appendChild(h('div', { class: 'field-gap' },
-          K.textField({ label: c.format === 'Ad' ? 'Headline' : 'Working title', value: f.title, maxlength: 160, onInput: function (v) { f.title = v; touch(); } }),
+          K.textField({ label: f.format === 'Ad' ? 'Headline' : 'Title', value: f.title, maxlength: 160, onInput: function (v) { f.title = v; touch(); } }),
           caption,
           K.textField({ label: 'Hashtags', value: f.hashtags, maxlength: 400, onInput: function (v) { f.hashtags = v; touch(); } }),
-          c.format === 'Reel' || c.format === 'Story' || c.onScreen ? K.textField({ label: 'Text on screen', value: f.onScreen, multiline: true, maxlength: 600, onInput: function (v) { f.onScreen = v; touch(); } }) : null));
+          K.textField({ label: 'Text on the picture or video (optional)', value: f.onScreen, multiline: true, maxlength: 600, onInput: function (v) { f.onScreen = v; touch(); } }),
+          K.textField({ label: 'What you’re inviting people to do (optional)', value: f.cta, maxlength: 200, onInput: function (v) { f.cta = v; touch(); }, help: 'For example: tap the link to see the print.' })));
         ctl.body.appendChild(s1);
-        if (c.plan.length) {
-          var s2 = sheetSection('Edit plan');
-          s2.appendChild(h('div', { class: 'card pad' }, h('ol', { class: 'bullets' }, c.plan.map(function (s) { return h('li', { text: s }); }))));
-          s2.appendChild(h('p', { class: 'tf-help', style: 'margin-left:4px', text: 'The cuts to make in a video editing app. The video itself isn’t edited for you.' }));
+        var s3 = sheetSection('Kind of post');
+        s3.appendChild(h('div', { class: 'field-gap' },
+          K.choices({ label: 'Kind of post', value: f.format, options: POST_FORMATS, onChange: function (v) { f.format = v; touch(); } }),
+          h('div', { class: 'label-s', text: 'Where it goes' }),
+          K.choices({ label: 'Where it goes', value: f.platform, options: POST_PLACES, onChange: function (v) { f.platform = v; touch(); } })));
+        ctl.body.appendChild(s3);
+        if (c.plan.length || f.format === 'Reel' || f.format === 'Story') {
+          var s2 = sheetSection('How the video goes');
+          s2.appendChild(K.textField({ label: 'One step per line', value: f.plan, multiline: true, maxlength: 3000, onInput: function (v) { f.plan = v; touch(); } }));
           ctl.body.appendChild(s2);
         }
-        if (c.purpose) ctl.body.appendChild(h('div', { style: 'margin-top:16px' }, note('Planned to: ' + plain(c.purpose), 'flag')));
-        var changes = btn('tonal', 'Needs changes', { icon: 'edit', lg: true }), ok = btn('filled', 'Approve', { icon: 'check', lg: true });
-        changes.addEventListener('click', function () { ctl.close(); setTimeout(function () { openChanges(c); }, 320); });
-        ok.addEventListener('click', function () {
-          var go = function () { decide(c, 'approve', [ok, changes], function () { ctl.close(); }); };
-          if (!dirty) { go(); return; }
-          if (!f.caption.trim()) { toast('The caption can’t be empty.'); return; }
-          K.setBusy(ok, true);
-          api('updateContent', c.id, f).then(function () { dirty = false; K.setBusy(ok, false); go(); }).catch(function (e) { K.setBusy(ok, false); fail(e); });
-        });
-        ctl.foot.appendChild(h('div', { class: 'btn-row' }, changes, ok));
-        ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Discard this post', { danger: true, icon: 'delete', onclick: function (e) {
-          decide(c, 'reject', [e.currentTarget, ok, changes], function () { dirty = false; ctl.close(); });
-        } })));
+        if (c.purpose && reviewing) ctl.body.appendChild(h('div', { style: 'margin-top:16px' }, note('Planned to: ' + plain(c.purpose), 'flag')));
+        function save() {
+          if (!f.caption.trim()) { toast('The caption can’t be empty.'); return Promise.reject(null); }
+          return api('updateContent', c.id, payload()).then(function () { dirty = false; });
+        }
+        if (reviewing) {
+          var changes = btn('tonal', 'Needs changes', { icon: 'edit', lg: true }), ok = btn('filled', 'Approve', { icon: 'check', lg: true });
+          changes.addEventListener('click', function () {
+            var go = function () { ctl.close(); setTimeout(function () { openChanges(byId(S.data.content, c.id) || c); }, 320); };
+            if (!dirty) { go(); return; }
+            save().then(refresh).then(go).catch(function (e) { if (e) fail(e); });
+          });
+          ok.addEventListener('click', function () {
+            var go = function () { decide(c, 'approve', [ok, changes], function () { ctl.close(); }); };
+            if (!dirty) { go(); return; }
+            K.setBusy(ok, true);
+            save().then(function () { K.setBusy(ok, false); go(); }).catch(function (e) { K.setBusy(ok, false); if (e) fail(e); });
+          });
+          ctl.foot.appendChild(h('div', { class: 'btn-row' }, changes, ok));
+          ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' },
+            btn('text', 'Save without approving', { icon: 'check', onclick: function (e) {
+              var b = e.currentTarget; K.setBusy(b, true);
+              save().then(refresh).then(function () { render(); toast('Saved.'); ctl.close(); }).catch(function (err) { K.setBusy(b, false); if (err) fail(err); });
+            } }),
+            btn('text', 'Discard this post', { danger: true, icon: 'delete', onclick: function (e) {
+              decide(c, 'reject', [e.currentTarget, ok, changes], function () { dirty = false; ctl.close(); });
+            } })));
+        } else {
+          var saveBtn = btn('filled', 'Save changes', { icon: 'check', lg: true, block: true });
+          saveBtn.addEventListener('click', function () {
+            K.setBusy(saveBtn, true);
+            save().then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); ctl.close(); }).catch(function (e) { K.setBusy(saveBtn, false); if (e) fail(e); });
+          });
+          ctl.foot.appendChild(saveBtn);
+        }
         setTimeout(loadThumbs, 0);
       }
     });
@@ -9849,7 +10067,7 @@ var Kit = (function () {
   function openAddFootage() {
     var files = [], context = '', quick = false, campaignId = '', dirty = false;
     K.sheet({
-      title: 'Add footage', tall: true, guard: function () { return dirty; },
+      title: 'Add content', tall: true, guard: function () { return dirty; },
       build: function (ctl) {
         var input = h('input', { type: 'file', accept: 'image/*,video/*', multiple: true, hidden: true });
         var grid = h('div', { class: 'fgrid', style: 'margin-top:12px' });
@@ -10003,6 +10221,7 @@ var Kit = (function () {
       });
       main.appendChild(rise(ts, n++));
     }
+    function editPost(c) { return btn('text', 'Edit', { icon: 'edit', sm: true, onclick: function () { openPost(c.id); } }); }
     function backToReview(c) {
       return btn('text', 'Undo approval', { icon: 'undo', sm: true, onclick: function (e) {
         var b = e.currentTarget; K.setBusy(b, true);
@@ -10023,11 +10242,11 @@ var Kit = (function () {
             api('schedulePost', c.id, 'next').then(function (r) { return refresh().then(function () { return r; }); })
               .then(function (r) { render(); toast('Scheduled for ' + whenLabel(r.at) + '.'); }).catch(function (e) { K.setBusy(sch, false); fail(e); });
           });
-          card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' }, sch, backToReview(c)));
+          card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' }, sch, editPost(c), backToReview(c)));
         } else {
           var when = btn(c.remindAt ? 'outlined' : 'filled', c.remindAt ? 'Change time' : 'Pick a time', { icon: 'schedule', sm: true, onclick: function () { openPlanTime(c); } });
           card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' },
-            c.remindAt ? chip('Post ' + whenLabel(c.remindAt), new Date(c.remindAt) < new Date() ? 'pending' : 'outline', 'notifications') : null, when, backToReview(c)));
+            c.remindAt ? chip('Post ' + whenLabel(c.remindAt), new Date(c.remindAt) < new Date() ? 'pending' : 'outline', 'notifications') : null, when, editPost(c), backToReview(c)));
         }
         hs.appendChild(card);
       });
