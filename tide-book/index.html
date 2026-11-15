@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -227,6 +227,7 @@ body.wide main { max-width: 1120px; }
   animation: pop var(--spring-d) var(--spring) 0.12s backwards;
 }
 @media (min-width: 840px) { .fab { bottom: 28px; right: 28px; } }
+.fab-space { height: 80px; }   /* so the last card's buttons can scroll clear of the floating button */
 
 /* ---------- cards and tiles ---------- */
 .card { border-radius: var(--r-l); background: var(--surface-lowest); box-shadow: var(--shadow-1); }
@@ -776,6 +777,18 @@ img, video { max-width: 100%; }
 .tldr-k { flex: none; font: 700 11px/18px var(--font); letter-spacing: 1px; padding: 1px 6px; border-radius: 6px; background: var(--on-secondary-container); color: var(--secondary-container); margin-top: 1px; }
 .tldr ul { margin: 0; padding-left: 16px; font: 500 14px/20px var(--font); }
 .tldr li + li { margin-top: 2px; }
+/* Undo card: shows for a few seconds after an action */
+.undo-card {
+  position: fixed; left: 16px; right: 16px; bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom)); z-index: 60;
+  display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 18px; border-radius: var(--r-l);
+  background: var(--inverse-surface, #2f3033); color: var(--inverse-on-surface, #f1f0f4); font: 400 15px/20px var(--font);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28); animation: pop var(--spring-d) var(--spring) backwards; transition: opacity .25s, transform .25s;
+}
+.undo-card.out { opacity: 0; transform: translateY(12px); }
+.undo-card .undo-btn { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--r-full); padding: 10px 16px;
+  background: transparent; color: var(--inverse-primary, #a8c8ff); font: 600 15px/20px var(--font); }
+@media (min-width: 840px) { .undo-card { left: auto; width: 420px; bottom: 28px; } }
+
 </style>
 
   <script>
@@ -940,7 +953,7 @@ var TIDE_SCHEMAS = {
       ['format', 'Format', 'text'], ['pillar', 'Pillar', 'text'], ['title', 'Title', 'text'], ['caption', 'Caption or brief', 'text'],
       ['hashtags', 'Hashtags', 'text'], ['onScreen', 'On-screen text', 'text'], ['plan', 'Edit plan', 'json'],
       ['footageIds', 'Footage', 'list'], ['cta', 'Call to action', 'text'], ['why', 'Why', 'text'], ['status', 'Status', 'text'],
-      ['purpose', 'Purpose', 'text'], ['checks', 'Checks', 'json'], ['revisions', 'Redrafts', 'number'], ['feedback', 'Feedback', 'json'],
+      ['purpose', 'Purpose', 'text'], ['checks', 'Checks', 'json'], ['revisions', 'Redrafts', 'number'], ['feedback', 'Feedback', 'json'], ['nudges', 'Ideas to improve', 'json'],
       ['campaign', 'Campaign', 'text'], ['round', 'Round', 'text'], ['tries', 'Tries', 'number'],
       ['videoId', 'Edited video', 'text'], ['editStatus', 'Edit status', 'text'], ['editClaimed', 'Edit claimed', 'date'],
       ['editNote', 'Edit note', 'text'], ['edits', 'Edit log', 'json'], ['reedit', 'Re-edit', 'bool'],
@@ -2461,7 +2474,7 @@ function tideContent(env, t) {
         var ready = c.type === 'Shot' || approversFor(c).every(function (r) { return after[r] === 'Approved'; });
         if (ready) {
           out.status = 'Approved'; out.decided = now; out.goSchedule = c.type === 'Post';
-          if (c.type === 'Post') {
+          if (c.type === 'Post' && !t.rows('calendar').some(function (r) { return r.link === c.id; })) {
             env.table('calendar').append({
               added: now, week: '', pillar: c.pillar, format: c.format,
               idea: [c.title, c.caption].filter(String).join(': ').slice(0, 1000),
@@ -2503,6 +2516,42 @@ function tideContent(env, t) {
       learn('On "' + c.title + '": ' + (checks.length ? 'failed ' + checks.join('; ') : '') + (checks.length && why ? '. ' : '') + why, c.id);
       if (out.status === 'Revising') env.requestStudio();
       return { ok: true, status: out.status };
+    });
+  }
+
+  /**
+   * Steer: she taps a direction ("Shorter", "Open with the heart stone", or her own few words) and the
+   * post is redone that way, keeping everything else. No form to fill in, and it doesn't use up the
+   * automatic redraft limit; it stops only after many rounds, when hand edits are quicker.
+   */
+  function steerContent(id, direction) {
+    var role = t.need(['admin', 'artist']);
+    var how = t.text(direction, 300);
+    if (!how) t.fail('Choose how to change it.');
+    if (!env.features.studio) t.fail(role === 'admin' ? 'Drafting isn’t switched on.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
+    return env.lock(function () {
+      var c = t.find('content', id), now = t.nowIso();
+      if (c.status !== 'Suggested' || c.type !== 'Post') t.fail('This one can’t be changed now.');
+      if ((Number(c.revisions) || 0) >= 10) t.fail('This one has been reworked a lot. Make the last touches by hand in the caption box.');
+      var feedback = t.list(c.feedback).concat([{ by: role, failed: [], note: 'Rework it this way: ' + how + '. Keep everything else that works.', at: now }]);
+      env.table('content').update(id, { feedback: feedback, artistDecision: '', adminDecision: '', reedit: false, nudges: [], status: 'Revising', updated: now });
+      learn('On "' + c.title + '": asked for ' + how, c.id);
+      env.requestStudio();
+      return { ok: true, status: 'Revising' };
+    });
+  }
+
+  /** Undo an approval: the post goes back to review, its time is cleared. Only before it has gone out. */
+  function undoApproval(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var c = t.find('content', id);
+      if (c.type !== 'Post') t.fail('Only posts can be moved back.');
+      if (['Approved', 'Scheduled', 'Held', 'Failed'].indexOf(c.status) < 0) t.fail(c.status === 'Posted' || c.status === 'Posting' ? 'This one has already gone out.' : 'This one isn’t approved.');
+      // back to review for a fresh look: both approvals are cleared
+      var out = { status: 'Suggested', decided: '', remindAt: '', reminded: false, scheduledAt: '', artistDecision: '', adminDecision: '', updated: t.nowIso() };
+      env.table('content').update(id, out);
+      return { ok: true };
     });
   }
 
@@ -2644,7 +2693,7 @@ function tideContent(env, t) {
         id: c.id, created: c.created, type: c.type, platform: c.platform || '', format: c.format || '', pillar: c.pillar || '',
         title: c.title || '', caption: c.caption || '', hashtags: c.hashtags || '', onScreen: c.onScreen || '',
         plan: t.list(c.plan), footageIds: t.list(c.footageIds), cta: c.cta || '', why: c.why || '', status: c.status,
-        purpose: c.purpose || '', checks: t.list(c.checks), revisions: Number(c.revisions) || 0, feedback: t.list(c.feedback),
+        purpose: c.purpose || '', checks: t.list(c.checks), revisions: Number(c.revisions) || 0, feedback: t.list(c.feedback), nudges: t.list(c.nudges),
         campaign: c.campaign || '', round: c.round || '',
         videoUrl: c.videoId ? env.files.viewUrl(c.videoId) : '', videoThumb: c.videoThumb || '', editStatus: c.editStatus || '', editNote: c.editNote || '',
         scheduledAt: c.scheduledAt || '', targets: c.targets || {}, stats: c.stats || null, preflight: c.preflight || null,
@@ -2883,6 +2932,7 @@ function tideContent(env, t) {
           caption: caption, hashtags: t.text(r.hashtags, 400), onScreen: t.text(r.on_screen_text, 600),
           plan: c.format === 'Reel' || c.format === 'Story' ? cleanList(r.edit_plan, 12, 300) : [],
           cta: t.text(r.call_to_action, 200), why: t.text(r.why, 600) || c.purpose, clash: t.text(r.clash, 300),
+          nudges: t.list(r.nudges).slice(0, 3).map(function (n) { return { label: t.text(n && n.label, 60), tip: t.text(n && n.tip, 240) }; }).filter(function (n) { return n.label; }),
           revisions: c.status === 'Redrafting' ? (Number(c.revisions) || 0) + 1 : (Number(c.revisions) || 0),
           status: next, tries: 0, updated: now
         });
@@ -2905,7 +2955,7 @@ function tideContent(env, t) {
       startRound: startRound, finishRound: finishRound, addFootage: addFootage, uploadFootagePhoto: uploadFootagePhoto,
       uploadFootageFrame: uploadFootageFrame, startVideoUpload: startVideoUpload, finishVideoUpload: finishVideoUpload,
       updateFootage: updateFootage, answerQuestion: answerQuestion,
-      decideContent: decideContent, requestRevision: requestRevision, updateContent: updateContent, markContent: markContent,
+      decideContent: decideContent, undoApproval: undoApproval, steerContent: steerContent, requestRevision: requestRevision, updateContent: updateContent, markContent: markContent,
       requestSuggestions: requestSuggestions, saveBrief: saveBrief, addNote: addNote, removeNote: removeNote,
       saveCampaign: saveCampaign, completeCampaign: completeCampaign, makePost: makePost
     },
@@ -5675,6 +5725,7 @@ function tideDirection(env, t) {
         (last ? '\n\nFixed: ' + ((last.failed || []).join('; ') || '') + (last.note ? ' ' + last.note : '') : ''),
       hashtags: '#oceanart #artprocess', on_screen_text: c.format === 'Reel' ? 'Sample on-screen text' : '',
       edit_plan: c.format === 'Reel' ? ['Sample cut: open on the first 3 seconds of the video.', 'Sample cut: hold the clearest photo for 2 seconds.', 'Sample cut: end on the last 4 seconds.'] : [],
+      nudges: [{ label: 'Open with the close-up', tip: 'Sample tip: starting on the detail stops people scrolling.' }, { label: 'Say where it was painted', tip: 'Sample tip: a place makes it feel personal.' }],
       call_to_action: '', why: revising ? 'Sample reason: redrafted to fix what was flagged, keeping the rest.' : 'Sample reason: in the real app this explains how the post meets its checks.'
     };
   }
@@ -6785,6 +6836,7 @@ var Kit = (function () {
     if (sub) main.appendChild(rise(h('p', { class: 'page-sub', text: sub }), 0));
   }
   function fab(main, label, iconName, onclick) {
+    main.appendChild(h('div', { class: 'fab-space', 'aria-hidden': 'true' }));
     main.appendChild(h('button', { class: 'fab press', type: 'button', onclick: onclick }, icon(iconName), label));
   }
 
@@ -8358,7 +8410,7 @@ var Kit = (function () {
         var s5 = sheetSection('What’s included?');
         s5.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 6px', text: 'List the parts of the idea. You can add to this or change it later.' }));
         s5.appendChild(scopeEditor(f.scope, { ticks: false, onChange: touch }));
-        ctl.body.append(s1, s2, s3, s4, s5);
+        ctl.body.append(s1, s2, s5, s3, s4);
 
         var send = btn('filled', 'Send idea', { icon: 'send', lg: true, block: true });
         send.addEventListener('click', function () {
@@ -8473,9 +8525,9 @@ var Kit = (function () {
         var s3 = sheetSection(ADMIN ? 'Priority' : 'How important is it to you?');
         s3.appendChild(K.segmented({ label: 'Priority', value: f.priority, onChange: function (v) { f.priority = v; touch(); },
           options: S.data.options.priorities.map(function (p) { return { value: p, label: p }; }) }));
-        var s4 = sheetSection('Scope');
+        var s4 = sheetSection(ADMIN ? 'Scope' : 'What’s included');
         s4.appendChild(scopeEditor(f.scope, { ticks: true, onChange: touch }));
-        ctl.body.append(s1, s2, s3, s4);
+        ctl.body.append(s1, s4, s2, s3);
 
         // its notes, from the notebook
         var mineNotes = notesFor(x.id), sn = sheetSection('Notes');
@@ -9224,6 +9276,24 @@ var Kit = (function () {
     return strip;
   }
 
+  /** A card at the bottom for a few seconds after an action, with Undo. */
+  var undoTimer = null;
+  function undoCard(msg, undo, undoneMsg) {
+    var old = document.getElementById('undo-card');
+    if (old) old.remove();
+    clearTimeout(undoTimer);
+    var card = h('div', { id: 'undo-card', class: 'undo-card', role: 'status' }, h('span', { class: 'grow', text: msg }));
+    var b = h('button', { type: 'button', class: 'undo-btn press' }, icon('undo'), 'Undo');
+    b.addEventListener('click', function () {
+      b.disabled = true;
+      undo().then(refresh).then(function () { card.remove(); K.haptic('success'); render(); toast(undoneMsg || 'Undone.'); })
+        .catch(function (e) { b.disabled = false; fail(e); });
+    });
+    card.appendChild(b);
+    document.body.appendChild(card);
+    undoTimer = setTimeout(function () { card.classList.add('out'); setTimeout(function () { card.remove(); }, 300); }, 9000);
+  }
+
   /** Approve, or discard with a reason. Discarding is final; "Needs changes" is the fix route. */
   function decide(c, decision, buttons, after) {
     function send(reason) {
@@ -9232,7 +9302,7 @@ var Kit = (function () {
         K.haptic('success');
         if (decision === 'reject') toast(c.type === 'Shot' ? 'Left off the list.' : 'Discarded. That’s been noted for next time.');
         else if (c.type === 'Shot') toast('Added to the list.');
-        else toast(res.status === 'Approved' ? 'Approved. It’s under Ready.' : 'Approved. Waiting for ' + otherName() + '.');
+        else undoCard(res.status === 'Approved' || res.status === 'Scheduled' ? 'Approved. It’s under Ready.' : 'Approved. Waiting for ' + otherName() + '.', function () { return api('undoApproval', c.id); }, 'Back in review.');
         return refresh();
       }).then(function () { render(); if (after) after(); }).catch(function (e) { buttons.forEach(function (b) { b.disabled = false; }); fail(e); });
     }
@@ -9293,7 +9363,19 @@ var Kit = (function () {
     no.addEventListener('click', function () { decide(c, 'reject', [yes, no]); });
     return h('div', { class: 'btn-row' }, yes, no);
   }
-  function whyBox(c) { return c.why ? h('div', { class: 'why' }, icon('lightbulb'), h('div', {}, h('b', { text: 'Why this' }), h('p', { text: c.why }))) : null; }
+  /** For the artist: no reference codes, and no sentences about checks, approvals or how a draft was made. */
+  function plain(s) {
+    s = String(s || '');
+    if (ADMIN) return s;
+    s = s.replace(/\s*\((?:[A-Z]{2,3}-\d{3,5}[,;\s]*(?:and\s+)?)+\)/g, '')
+      .replace(/\s*\b(?:from|in|of|on)\s+(?:[A-Z]{2,3}-\d{3,5}[,\s]*(?:and\s+)?)+/g, ' ')
+      .replace(/[,\s]*\b[A-Z]{2,3}-\d{3,5}\b/g, '')
+      .replace(/,?\s*(?:which|that|and)\s+(?:fits|suits|matches|sits in)\s+(?:the\s+)?[\w ]+?\s+pillar/gi, '')
+      .replace(/\s+([,.!?])/g, '$1').replace(/\s{2,}/g, ' ');
+    var keep = (s.match(/[^.!?]+[.!?]*/g) || []).filter(function (x) { return !/approv|sign-?off|\bchecks?\b|\brules?\b|pillar|the caption|does not claim|avoids|\bdraft/i.test(x); });
+    return keep.join('').trim();
+  }
+  function whyBox(c) { var w = plain(c.why); return w ? h('div', { class: 'why' }, icon('lightbulb'), h('div', {}, h('b', { text: 'Why this' }), h('p', { text: w }))) : null; }
   function checksBox(c) {
     if (!c.checks.length) return null;
     return h('div', { class: 'plan' }, h('b', { text: 'Checks it should pass' }), h('ul', { class: 'bullets', style: 'padding-left:18px' }, c.checks.map(function (k) { return h('li', { text: k }); })));
@@ -9320,7 +9402,7 @@ var Kit = (function () {
           h('p', { text: (last.failed.length ? last.failed.join('; ') : '') + (last.failed.length && last.note ? '. ' : '') + (last.note || '') })));
       }
       if (c.clash) body.appendChild(h('div', { style: 'margin-top:10px' }, note((ADMIN ? 'Needs your OK too: ' : 'Needs ' + adminName() + '’s OK too: ') + c.clash, 'gavel', 'warn')));
-      if (otherDecision(c) === 'Approved') body.appendChild(h('div', { style: 'margin-top:10px' }, chip(cap(otherName()) + ' approved', 'approved', 'check')));
+      if (otherDecision(c) === 'Approved' && (c.needs || []).length > 1) body.appendChild(h('div', { style: 'margin-top:10px' }, chip(cap(otherName()) + ' approved', 'approved', 'check')));
       body.appendChild(h('div', { style: 'margin-top:14px' }, reviewButtons(c)));
       card.addEventListener('click', function (e) { if (!e.target.closest('button, a')) openPost(c.id); });
       card.style.cursor = 'pointer';
@@ -9610,6 +9692,38 @@ var Kit = (function () {
 
   function tabReady(main, d) { readyPosting(main, d); }
 
+  /** Make it better: tailored tips plus quick directions; one tap and the post is redone that way. */
+  var QUICK_STEERS = ['Shorter', 'Warmer', 'More about how it’s made', 'A gentle nudge to buy'];
+  function steerBox(c, ctl) {
+    var sec = sheetSection('Make it better');
+    function go(b, how) {
+      K.setBusy(b, true);
+      api('steerContent', c.id, how).then(refresh).then(function () {
+        K.haptic('success'); render(); ctl.close(); toast('Reworking it: ' + how.toLowerCase() + '. Back in a minute.');
+      }).catch(function (e) { K.setBusy(b, false); fail(e); });
+    }
+    (c.nudges || []).forEach(function (n) {
+      var b = btn('tonal', n.label, { icon: 'auto_awesome', sm: true });
+      b.addEventListener('click', function () { go(b, n.label); });
+      sec.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:8px' },
+        n.tip ? h('p', { class: 'body-m', style: 'margin:0 0 8px', text: plain(n.tip) }) : null, b));
+    });
+    var row = h('div', { class: 'chip-wrap' });
+    QUICK_STEERS.forEach(function (q) {
+      var b = h('button', { type: 'button', class: 'choice press soft' }, q);
+      b.addEventListener('click', function () { go(b, q); });
+      row.appendChild(b);
+    });
+    var own = h('button', { type: 'button', class: 'choice press soft' }, icon('edit'), 'Something else…');
+    own.addEventListener('click', function () {
+      K.ask({ title: 'How should it change?', text: 'A few words is plenty.', label: 'For example: mention the creek', confirmLabel: 'Rework it' })
+        .then(function (how) { if (how && how.trim()) go(own, how.trim()); });
+    });
+    row.appendChild(own);
+    sec.appendChild(row);
+    return sec;
+  }
+
   function openPost(id) {
     var c = byId(S.data.content, id);
     if (!c) return;
@@ -9622,7 +9736,8 @@ var Kit = (function () {
         if (media) ctl.body.appendChild(h('div', { style: 'border-radius:16px;overflow:hidden' }, media));
         ctl.body.appendChild(h('div', { style: 'margin-top:4px' }, whyBox(c)));
         ctl.body.appendChild(checksBox(c));
-        var caption = K.textField({ label: 'Caption', value: f.caption, multiline: true, maxlength: 3000, onInput: function (v) { f.caption = v; touch(); }, help: 'Small fixes can be made here. For bigger ones, use Needs changes.' });
+        ctl.body.appendChild(steerBox(c, ctl));
+        var caption = K.textField({ label: 'Caption', value: f.caption, multiline: true, maxlength: 3000, onInput: function (v) { f.caption = v; touch(); }, help: 'Fix any words here, or tap a change above.' });
         caption.input.style.minHeight = '180px';
         var s1 = sheetSection('The words');
         s1.appendChild(h('div', { class: 'field-gap' },
@@ -9637,7 +9752,7 @@ var Kit = (function () {
           s2.appendChild(h('p', { class: 'tf-help', style: 'margin-left:4px', text: 'The cuts to make in a video editing app. The video itself isn’t edited for you.' }));
           ctl.body.appendChild(s2);
         }
-        if (c.purpose) ctl.body.appendChild(h('div', { style: 'margin-top:16px' }, note('Planned to: ' + c.purpose, 'flag')));
+        if (c.purpose) ctl.body.appendChild(h('div', { style: 'margin-top:16px' }, note('Planned to: ' + plain(c.purpose), 'flag')));
         var changes = btn('tonal', 'Needs changes', { icon: 'edit', lg: true }), ok = btn('filled', 'Approve', { icon: 'check', lg: true });
         changes.addEventListener('click', function () { ctl.close(); setTimeout(function () { openChanges(c); }, 320); });
         ok.addEventListener('click', function () {
@@ -9888,6 +10003,13 @@ var Kit = (function () {
       });
       main.appendChild(rise(ts, n++));
     }
+    function backToReview(c) {
+      return btn('text', 'Undo approval', { icon: 'undo', sm: true, onclick: function (e) {
+        var b = e.currentTarget; K.setBusy(b, true);
+        api('undoApproval', c.id).then(refresh).then(function () { K.haptic('success'); render(); toast('Back in review.'); })
+          .catch(function (err) { K.setBusy(b, false); fail(err); });
+      } });
+    }
     var hand = d.ready.slice().sort(function (a, b) { return (a.remindAt || 'z') < (b.remindAt || 'z') ? -1 : 1; });
     if (hand.length) {
       var hs = section(st.enabled ? 'Approved, to post by hand' : 'Approved, ready to post');
@@ -9901,11 +10023,11 @@ var Kit = (function () {
             api('schedulePost', c.id, 'next').then(function (r) { return refresh().then(function () { return r; }); })
               .then(function (r) { render(); toast('Scheduled for ' + whenLabel(r.at) + '.'); }).catch(function (e) { K.setBusy(sch, false); fail(e); });
           });
-          card.querySelector('.post-body').appendChild(h('div', { style: 'margin-top:10px' }, sch));
+          card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' }, sch, backToReview(c)));
         } else {
           var when = btn(c.remindAt ? 'outlined' : 'filled', c.remindAt ? 'Change time' : 'Pick a time', { icon: 'schedule', sm: true, onclick: function () { openPlanTime(c); } });
           card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' },
-            c.remindAt ? chip('Post ' + whenLabel(c.remindAt), new Date(c.remindAt) < new Date() ? 'pending' : 'outline', 'notifications') : null, when));
+            c.remindAt ? chip('Post ' + whenLabel(c.remindAt), new Date(c.remindAt) < new Date() ? 'pending' : 'outline', 'notifications') : null, when, backToReview(c)));
         }
         hs.appendChild(card);
       });
