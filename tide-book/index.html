@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Tide Book (demo)</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#FCF9F4">
@@ -731,6 +731,13 @@ a.li { text-decoration: none; }
 .inspo-img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: var(--surface-highest); }
 .inspo-img.blank { display: grid; place-content: center; gap: 4px; justify-items: center; color: var(--on-surface-variant); font-size: 13px; }
 .inspo-cap { padding: 10px 12px 12px; display: grid; gap: 4px; }
+.check-row { gap: 8px; align-items: center; margin: 10px 0 8px; }
+.check-row .filter-row { margin: 0; padding: 0; }
+.talk-q textarea { min-height: 64px; height: 64px; }
+.setup-step.done { opacity: .8; }
+/* phones: comfortable reading size, and nothing wider than the screen */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+img, video { max-width: 100%; }
 </style>
 
   <script>
@@ -4956,7 +4963,7 @@ function tideReports(env, t) {
     L.api.loadStarter();
     // a couple of saved inspirations (samples)
     var i1 = L.api.addInspiration({ url: 'https://www.instagram.com/p/sample-post/', note: 'Sample: the way the light sits on the water', tags: ['Ocean', 'Colour'] });
-    db.inspiration.filter(function (x) { return x.id === i1.id; })[0].thumbIds = [art('footage-ocean', '#06345E', '#3fb6c8', 'Light', [0, 90, 361, 460])];
+    db.inspiration.filter(function (x) { return x.id === i1.id; })[0].thumbIds = [art('footage-ocean', '#06345E', '#3fb6c8', 'Light')];
     L.api.addInspiration({ url: 'https://pin.it/sample', note: 'Sample: mushrooms and moss, so small and magic', tags: ['Mind Garden', 'Texture'] });
     var AL = createTideLogic(makeEnv('artist'));
     function runAi() { var tl = createTideLogic(makeEnv('admin')).talk; tl.local.next(5).forEach(function (j) { tl.local.done(j.id, talkAnswer(j.context), 'gemma3:12b'); }); tl.ai.pending().forEach(function (r) { var c = tl.ai.context(r.id); tl.ai.sent(r.id); tl.ai.save(r.id, talkAnswer(c), 'Claude'); }); }
@@ -6503,7 +6510,7 @@ var Kit = (function () {
         // 2. Claude
         var key = '';
         var kField = K.textField({ label: by('claude').done ? 'Replace the key' : 'Claude API key', type: 'password', onInput: function (v) { key = v; },
-          help: 'From console.anthropic.com → API keys (it needs a payment method; most questions cost a few cents). Kept in the script’s private settings, never in the Sheet.' });
+          help: 'From console.anthropic.com → API keys (it needs a payment method; most questions cost a few cents). Kept privately with the app, never in your records.' });
         var kBody = h('div', { class: 'field-gap' }, kField, btn('tonal', 'Check and save', { icon: 'check', onclick: function (e) {
           if (!key.trim()) { kField.input.focus(); return; }
           K.setBusy(e.currentTarget, true);
@@ -6733,7 +6740,7 @@ var Kit = (function () {
       grid.appendChild(rise(card, 3 + Math.min(n, 8)));
     });
     main.appendChild(grid);
-    fab(main, 'Save inspiration', 'add', function () { openInspo(null); });
+    if (shown.length > 4) fab(main, 'Save inspiration', 'add', function () { openInspo(null); });
   }
 
   function openInspo(id, preset) {
@@ -6817,13 +6824,17 @@ var Kit = (function () {
             h('p', { class: 'body-m', style: 'margin-top:4px', text: 'A few more questions are ready, whenever you are.' }))),
         h('div', { style: 'margin-top:12px' }, btn('tonal', 'Answer', { icon: 'arrow_forward', onclick: function () { openTopic(tp.id); } }))));
     });
-    oks.forEach(function (p) {
-      sec.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
-        h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' }, h('span', { class: 'ic' }, icon('verified')),
-          h('div', { class: 'grow' }, h('div', { class: 'title-m', text: p.title }),
-            h('p', { class: 'body-m', style: 'margin-top:4px', text: p.stage === 'Sample' ? 'The sample needs your OK.' : p.stage === 'Listing & launch' ? 'The listing needs your OK before it goes live.' : 'This stage needs your OK.' }))),
-        h('div', { style: 'margin-top:12px' }, btn('tonal', 'Have a look', { icon: 'arrow_forward', onclick: function () { openItem(p.id); } }))));
-    });
+    if (oks.length) {
+      var okList = h('div', { class: 'list' });
+      oks.forEach(function (p) {
+        okList.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { openItem(p.id); } },
+          h('div', { class: 'th-blank' }, icon('verified')),
+          h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
+            h('div', { class: 'li-sup', text: 'Needs your OK · ' + p.stage })),
+          h('div', { class: 'li-trail' }, icon('chevron_right'))));
+      });
+      sec.appendChild(okList);
+    }
     main.appendChild(rise(sec, n++));
     return n;
   }
@@ -7076,9 +7087,9 @@ var Kit = (function () {
           f.checks.forEach(function (c, i) {
             ck.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
               h('div', { class: 'body-m', text: c.item }), c.ai ? h('div', { class: 'body-s', style: 'color:var(--on-surface-variant);margin-top:2px', text: 'Drafted by AI: verify it' }) : null,
-              h('div', { style: 'margin:10px 0 8px' }, K.choices({ row: true, label: 'Status', value: c.status, options: T.checkStatus, onChange: function (v) { c.status = v; touch(); } })),
-              K.textField({ label: 'Note', value: c.note, compact: true, maxlength: 300, onInput: function (v) { c.note = v; touch(); } }),
-              h('div', { style: 'text-align:right' }, K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); }))));
+              h('div', { class: 'row check-row' }, h('div', { class: 'grow' }, K.choices({ row: true, label: 'Status', value: c.status, options: T.checkStatus, onChange: function (v) { c.status = v; touch(); } })),
+                K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); })),
+              K.textField({ label: 'Note', value: c.note, compact: true, maxlength: 300, onInput: function (v) { c.note = v; touch(); } })));
           });
         }
         drawChecks();
@@ -7097,7 +7108,7 @@ var Kit = (function () {
                 K.textField({ label: 'Supplier', value: x.supplier, compact: true, maxlength: 120, onInput: function (v) { x.supplier = v; touch(); } })),
               h('div', { class: 'cols' }, K.textField({ label: 'Cost each', prefix: '$', inputmode: 'decimal', compact: true, value: x.cost || '', onInput: function (v) { x.cost = K.num(v); touch(); } }),
                 K.textField({ label: 'How many', inputmode: 'numeric', compact: true, value: x.qty || 1, onInput: function (v) { x.qty = Math.max(1, Math.round(K.num(v)) || 1); touch(); } })),
-              h('div', { style: 'text-align:right' }, K.iconBtn('delete', 'Remove part', function () { f.parts.splice(i, 1); drawParts(); touch(); }))));
+              h('div', { style: 'text-align:right;margin-top:-4px' }, btn('text', 'Remove', { sm: true, icon: 'delete', onclick: function () { f.parts.splice(i, 1); drawParts(); touch(); } }))));
           });
         }
         drawParts();
@@ -9068,7 +9079,7 @@ var Kit = (function () {
     pageTitle(main, 'Admin', 'Contacts, email lists, accounts and settings.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.adminTab, onChange: function (v) { S.adminTab = v; S.animate = true; render(); },
-      options: [{ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined }, { value: 'contacts', label: 'Contacts' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Accounts' }, { value: 'settings', label: 'Settings' }]
+      options: [{ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined }, { value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'settings', label: 'Settings' }]
     })), 1));
     ({ reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, settings: viewSettings }[S.adminTab] || tabContacts)(main);
   }
