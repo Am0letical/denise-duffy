@@ -944,7 +944,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 <script>
 /* Living gallery: a walk INTO the work. Warm paper haze, pieces hanging at different depths; scrolling carries
    you forward past them on a gently winding path, her words floating between. "Feel the texture" opens the
-   raking-light viewer below. Reduced-motion visitors get a plain scroll. No libraries. */
+   raking-light viewer below. Reduced-motion visitors still walk in 3D, without the drifting and swaying. No libraries. */
 (function () {
   'use strict';
   var ART = window.ART || {};
@@ -970,7 +970,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   var el, scroller, track, stage, world, hint, bar, items = [], motes = [], open = false, raf = 0, target = 0, cur = 0, wheeling = false;
   // 3D walk: every item hangs at its own depth; scrolling carries you forward through them.
   // dz = how far an item is in front of (+) or behind (-) the picture plane. Natural size at dz 0.
-  var GAP = 1150, FIRST = 900, STOP = 380, maxP = 0, W = 0, H = 0, FLAT = REDUCED;
+  var GAP = 1150, FIRST = 900, STOP = 380, maxP = 0, W = 0, H = 0, FLAT = false;
   var cam = { x: 0, y: 0, ox: 50, oy: 46, tox: 50, toy: 46 }, moved = false;
 
   function h(tag, attrs, html) { var e = document.createElement(tag); if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); }); if (html != null) e.innerHTML = html; return e; }
@@ -1039,7 +1039,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     }
     world.addEventListener('click', function (e) { var b = e.target.closest('[data-feel]'); if (b) openViewer(WALK[+b.dataset.feel]); });
     // weighted wheel/trackpad scrolling; phones keep their own natural momentum
-    if (!TOUCH && !REDUCED) {
+    if (!TOUCH) {
       scroller.addEventListener('wheel', function (e) {
         if (document.querySelector('.rv.on')) return;
         e.preventDefault();
@@ -1102,7 +1102,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (y > 20 && !moved) { moved = true; hint.classList.add('gone'); }
     bar.style.transform = 'scaleY(' + (maxP ? p / maxP : 0).toFixed(4) + ')';
     // the path wanders gently, like a winding track; the pointer leans the view
-    cam.x = Math.sin(p / 2300) * W * 0.05; cam.y = Math.sin(p / 3100 + 1) * H * 0.025;
+    cam.x = REDUCED ? 0 : Math.sin(p / 2300) * W * 0.05; cam.y = REDUCED ? 0 : Math.sin(p / 3100 + 1) * H * 0.025;
     cam.ox += (cam.tox - cam.ox) * 0.05; cam.oy += (cam.toy - cam.oy) * 0.05;
     stage.style.perspectiveOrigin = cam.ox.toFixed(2) + '% ' + cam.oy.toFixed(2) + '%';
     world.style.transform = 'translate3d(' + (-cam.x).toFixed(1) + 'px,' + (-cam.y).toFixed(1) + 'px,0)';
@@ -1112,7 +1112,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var o = near * smooth(-3600, -1500, dz);
       if (o < 0.002) { if (n._vis !== false) { n.style.visibility = 'hidden'; n._vis = false; } return; }
       if (n._vis !== true) { n.style.visibility = 'visible'; n._vis = true; }
-      var bob = Math.sin(t * 0.6 + n._i * 1.7) * 7, sway = Math.sin(t * 0.4 + n._i) * 0.8;
+      var bob = REDUCED ? 0 : Math.sin(t * 0.6 + n._i * 1.7) * 7, sway = REDUCED ? 0 : Math.sin(t * 0.4 + n._i) * 0.8;
       n.style.opacity = o.toFixed(3);
       n.style.transform = 'translate(-50%,-50%) translate3d(' + n._X.toFixed(1) + 'px,' + (n._Y + bob).toFixed(1) + 'px,' + dz.toFixed(1) + 'px) rotateY(' + (n._rot + sway).toFixed(2) + 'deg)';
       n.style.pointerEvents = o > 0.35 ? 'auto' : 'none';
@@ -1121,7 +1121,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var dz = p - m._D, o = (1 - smooth(-200, 700, dz)) * smooth(-3800, -1800, dz);
       if (o < 0.002) { m.style.visibility = 'hidden'; return; }
       m.style.visibility = 'visible'; m.style.opacity = o.toFixed(3);
-      m.style.transform = 'translate(-50%,-50%) translate3d(' + (m._x * W + Math.sin(t * 0.15 + i) * 30).toFixed(1) + 'px,' + (m._y * H + Math.cos(t * 0.12 + i) * 24).toFixed(1) + 'px,' + dz.toFixed(1) + 'px)';
+      m.style.transform = 'translate(-50%,-50%) translate3d(' + (m._x * W + (REDUCED ? 0 : Math.sin(t * 0.15 + i) * 30)).toFixed(1) + 'px,' + (m._y * H + (REDUCED ? 0 : Math.cos(t * 0.12 + i) * 24)).toFixed(1) + 'px,' + dz.toFixed(1) + 'px)';
     });
     if (!document.querySelector('.rv.on')) raf = requestAnimationFrame(tick);
   }
