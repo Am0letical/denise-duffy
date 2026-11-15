@@ -84,7 +84,7 @@ button { cursor: pointer; }
 
 /* ---------- sections ---------- */
 .wrap { max-width: 1320px; margin: 0 auto; padding: 0 22px; }
-.sec { padding: clamp(70px, 10vw, 140px) 0 0; }
+.sec { padding-top: clamp(70px, 10vw, 140px); }
 .sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 24px; }
 .sec-head h2 { font: 500 clamp(34px, 5vw, 64px)/1 var(--display); letter-spacing: -1.2px; }
 .sec-head a { font: 500 11px/1 var(--font); letter-spacing: 2px; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid; padding-bottom: 4px; }
@@ -298,6 +298,27 @@ body:has(.mock) .hero { height: calc(100svh - 30px); }
 .btn[disabled] { opacity: .5; pointer-events: none; }
 
 .express[hidden] { display: none !important; }
+
+/* made from the places: four materials, like swatches on paper */
+.made { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.made-c { padding: 22px 20px 24px; border-radius: 18px; background: var(--paper, #FCF9F4); box-shadow: inset 0 0 0 1px rgba(6, 40, 74, .1); position: relative; overflow: hidden; }
+.made-c::before { content: ''; position: absolute; inset: -30% -20% auto auto; width: 70%; aspect-ratio: 1; border-radius: 50%; opacity: .5; filter: blur(26px); background: var(--aqua); }
+.made-c:nth-child(2)::before { background: #E9B36B; } .made-c:nth-child(3)::before { background: var(--pink); } .made-c:nth-child(4)::before { background: #8FB89A; }
+.made-c > * { position: relative; }
+.made-c .lbl { color: var(--muted); }
+.made-c b { display: block; font: 500 italic 22px/1.2 var(--display); margin: 26px 0 8px; color: var(--ocean-ink, #06284A); }
+.made-c p { font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+@media (max-width: 900px) { .made { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .made { grid-template-columns: 1fr; } }
+
+/* pockets of magic: her invitation, on a blush wash */
+.pocket { margin-top: clamp(60px, 9vw, 120px); padding: clamp(56px, 8vw, 110px) 0; text-align: center;
+  background: radial-gradient(60% 90% at 20% 20%, rgba(143, 211, 223, .35), transparent 70%), radial-gradient(55% 90% at 85% 80%, rgba(242, 196, 90, .28), transparent 70%), var(--blush, #FBDCE4); color: #3E0B22; }
+.pocket .lbl { opacity: .7; margin-bottom: 14px; }
+.pocket h2 { font: 500 clamp(38px, 6vw, 84px)/1.02 var(--display); letter-spacing: -.02em; margin-bottom: 22px; }
+.pocket h2 .it { font-style: italic; color: var(--pink-deep); }
+.pocket p { max-width: 620px; margin: 0 auto 14px; font-size: 17px; line-height: 1.6; }
+.pocket a { color: var(--ocean); }
 
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
@@ -631,7 +652,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     ocean: { title: 'Ocean', sub: 'Sharks, rays and the sea, made with the Irukandji Shark & Ray Centre. 20% of every marine print supports Sea Shelter.', img: 'sharkTall' },
     mindgarden: { title: 'Mind Garden', sub: 'Manta rays flying like butterflies over flowers. A whale swimming through the night sky. Everything I love, mixed into one magical, make-believe world, and a reminder to tend the garden of your mind.', img: 'flowersTall', soon: 'The first Mind Garden pieces are being made now.' },
     pockets: { title: 'Pockets of Magic', sub: 'The little things I pick up in nature: a rock with a pattern in it, a heart-shaped stone, a barnacle. Each one holds a moment. Some I grind into the pigments I paint with.', img: 'flowersDetail', soon: 'Paintings of my keepsakes, and little gifts made from them, are on their way.' },
-    studio: { title: 'Studio', sub: 'Earlier work: wildflowers, roots and rock pools in watercolour and ink. 20% off this week.', img: 'rootsTall' },
+    studio: { title: 'Studio', sub: 'Earlier work: wildflowers, roots and rock pools in watercolour and ink. A little thank-you for being here early: 20% off for now.', img: 'rootsTall' },
     wear: { title: 'Wear & home', sub: 'My artworks on lounge wear, totes and cards, printed to order.', img: 'flowersMacro' },
     sets: { title: 'Sets & gifts', sub: 'Print sets, bundles and gift cards. Any 3 A4 prints save 15%, taken off in the cart.', img: 'rootsTall' },
     originals: { title: 'Originals & commissions', sub: 'One-off pieces, and works made just for you.', img: 'rootsTall' },
@@ -683,7 +704,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   function tile(k, n) {
     var c = COLS[k];
     return '<a class="tile wipe" href="#/c/' + k + '"><div class="im par" data-speed="0.06" style="background-image:url(' + IMG[c.img] + ')"></div><span class="n lbl">0' + n + '</span>' +
-      '<div class="tx"><span class="lbl">' + (k === 'ocean' ? 'With Irukandji' : k === 'mindgarden' ? 'Coming soon' : k === 'pockets' ? 'My keepsakes' : k === 'studio' ? '20% off this week' : 'Printed to order') + '</span><b>' + c.title + '</b><span class="ex lbl">Explore <i></i></span></div></a>';
+      '<div class="tx"><span class="lbl">' + (k === 'ocean' ? 'With Irukandji' : k === 'mindgarden' ? 'Coming soon' : k === 'pockets' ? 'My keepsakes' : k === 'studio' ? 'A little thank-you' : 'Printed to order') + '</span><b>' + c.title + '</b><span class="ex lbl">Explore <i></i></span></div></a>';
   }
   function signup() {
     return '<form class="signup" onsubmit="return false"><input type="email" placeholder="Your email" aria-label="Your email"><button type="button" data-act="join">Join →</button></form>';
@@ -694,7 +715,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     home: function () {
       var name = 'Denise Duffy'.split(' ');
       var word = name.map(function (w, wi) { return '<span class="ln">' + w.split('').map(function (c, i) { return '<span class="ch" style="transition-delay:' + (0.25 + (wi * 6 + i) * 0.05) + 's">' + c + '</span>'; }).join('') + '</span>'; }).join('');
-      var titles = ['Coastal wildflowers', 'Blue roots', 'Shark in the shallows', 'Carved paper', 'Light on the water', 'Flannel flowers', 'Stillness', 'Pattern', 'Light'];
+      var titles = ['Wonder', 'Mind Garden', 'Joy', 'Pockets of Magic', 'Hope', 'Moon water ink', 'Calm', 'A whale in the night sky', 'Heart-shaped rocks'];
       return '<section class="hero"><div class="bg par" data-speed="0.18" style="background-image:url(' + IMG.flowersMacro + ')"></div>' +
         '<div class="accent">pockets<br>of magic</div>' +
         '<div class="base"><div class="cta"><a class="chipbtn" href="#/c/ocean">Shop the art +</a></div><div class="rule lbl"><span>Mind Garden</span><span>Pockets of Magic</span><span>Mixed media</span><span>Medowie</span></div><div class="word">' + word + '</div></div></section>' +
@@ -707,13 +728,21 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">Collections</h2><a href="#/c/sets" class="reveal">Sets &amp; gifts</a></div>' +
         '<div class="tiles">' + tile('mindgarden', 1) + tile('pockets', 2) + tile('ocean', 3) + '</div></section>' +
 
+        '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">Made from <span class="it" style="color:var(--teal)">the places</span> themselves</h2></div>' +
+        '<p class="plede reveal" style="margin-bottom:26px">I’m drawn to texture, and to using many materials to tell one story.</p><div class="made">' +
+        [['Moon water inks', 'Inks I mix with moon water, or water carried home from the rainforest.'],
+          ['Pigment from the shore', 'Rocks and barnacles I gather, ground down into colour.'],
+          ['Torn and sewn paper', 'Fragments of painting, torn by hand and stitched back together.'],
+          ['Collage and weaving', 'Layers, threads and found things, woven through the work.']]
+          .map(function (m, i) { return '<div class="made-c reveal"><span class="lbl">0' + (i + 1) + '</span><b>' + m[0] + '</b><p>' + m[1] + '</p></div>'; }).join('') + '</div></section>' +
+
         '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">New &amp; <span class="it" style="color:var(--pink-deep)">loved</span></h2><a href="#/c/studio" class="reveal">See everything</a></div>' +
         '<div class="cards">' + ARTWORKS.slice(0, 3).map(function (a) { return card(a); }).join('') + (ARTWORKS[1] && ARTWORKS[1].products[1] ? card(ARTWORKS[1], ARTWORKS[1].products[1]) : '') + '</div></section>' +
 
         '<section class="band-night"><div class="glow"></div><div class="grid"></div>' +
         '<div class="ticker"><div>' + titles.concat(titles).map(function (t) { return '<span>' + t + ' ✦</span>'; }).join('') + '</div></div>' +
-        '<div class="inner"><div><div class="lbl" style="opacity:.7">The living gallery</div><h2 class="reveal">Walk through the work. <span class="it" style="color:var(--aqua)">Feel</span> the texture.</h2>' +
-        '<p class="reveal">A slow, free-form walk through the paintings and the studio. Open any piece in 3D and sweep the light across it to see the surface of the real thing.</p>' +
+        '<div class="inner"><div><div class="lbl" style="opacity:.7">The living gallery</div><h2 class="reveal">Wander the wall. <span class="it" style="color:var(--aqua)">Feel</span> the texture.</h2>' +
+        '<p class="reveal">An endless wall of my work to drift through in any direction, at your own pace. Open any painting and sweep the light across it to see the surface of the real thing.</p>' +
         '<a class="chipbtn light" href="#/gallery">Enter the gallery +</a></div><div class="frame wipe"><img class="par" data-speed="-0.05" alt="" src="' + IMG.roots + '"></div></div></section>' +
 
         '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">Ways to <span class="it" style="color:var(--ocean)">bring it home</span></h2></div><div class="mlist" id="mlist">' +
@@ -723,11 +752,23 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 
         '<section class="sec wrap"><div class="split"><div class="ph wipe"><img class="par" data-speed="-0.06" alt="The shark painting at the Irukandji Shark &amp; Ray Centre" src="' + IMG.oceanTall + '"></div><div>' +
         '<div class="lbl" style="color:var(--teal)">Made with the Irukandji Shark &amp; Ray Centre</div><h2 class="reveal">Every ocean print <span class="it" style="color:var(--teal)">gives back</span></h2>' +
-        '<p class="reveal">The ocean collection is made with the Irukandji Shark &amp; Ray Centre in Anna Bay. Part of every sale goes to Sea Shelter, a Hunter-region group that rescues, rehabilitates and releases marine life.</p>' +
+        '<p class="reveal">The ocean collection is made with the Irukandji Shark &amp; Ray Centre in Anna Bay. 20% of every marine print goes to Sea Shelter, a Hunter-region group that rescues, rehabilitates and releases marine life.</p>' +
         '<p style="margin-top:24px" class="reveal"><a class="chipbtn" href="#/c/ocean">Shop the ocean collection +</a></p></div></div></section>' +
 
+        '<section class="pocket"><div class="wrap"><div class="lbl reveal">Pockets of magic</div>' +
+        '<h2 class="reveal">What’s in <span class="it">your</span> pocket?</h2>' +
+        '<p class="reveal">You pause, you notice a rock with a pattern in it, and you just have to take it home. It’s a memory. I always have a heart-shaped rock or something with me. They bring you back to a moment.</p>' +
+        '<p class="reveal">Show me the little thing you had to pick up. Tag <a href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">@deniseduffyartist</a> and tell me the moment it holds.</p>' +
+        '<p class="prop reveal">Her photos of her own collections (bowls of rocks, shells, sticks and feathers) go here.</p></div></section>' +
+
+        '<section class="sec wrap"><div class="split"><div class="ph wipe"><img class="par" data-speed="-0.06" alt="Sunflowers in the morning light" src="' + IMG.sun + '"></div><div>' +
+        '<div class="lbl" style="color:var(--teal)">A small ritual</div><h2 class="reveal">Five quiet minutes, <span class="it" style="color:var(--teal)">every morning</span></h2>' +
+        '<p class="reveal">Each morning I light a candle, sit quietly, write a little, and do a quick round of gratitude. It’s how I start my day.</p>' +
+        '<p class="reveal" style="margin-top:12px">I’m making that ritual into something you can hold: a small tin with five tiny paintings, a hand-shaped candle holder and a beeswax candle. A gift for someone who needs a soft moment, or for you.</p>' +
+        '<p style="margin-top:20px" class="reveal"><span class="chipbtn light" style="border:1px solid var(--night);cursor:default">Ritual tins · coming soon</span></p></div></div></section>' +
+
         '<section class="sec wrap"><div class="split"><div><div class="lbl" style="color:var(--pink-deep)">Letters from the studio</div><h2 class="reveal">A little <span class="it" style="color:var(--pink-deep)">magic</span> in your inbox</h2>' +
-        '<p class="reveal">New work, studio moments and first look at new prints, about once a month. Join and get the wildflowers phone wallpaper free.</p>' + signup() + '</div>' +
+        '<p class="reveal">New work, things I’ve noticed, and first look at new pieces, about once a month. Join and I’ll send you my morning ritual to try. <span class="prop">(Proposal: the guide isn’t written yet.)</span></p>' + signup() + '</div>' +
         '<div class="ph wipe"><img class="par" data-speed="-0.06" alt="Denise drawing in her sketchbook" src="' + IMG.studioTall + '"></div></div></section>';
     },
     collection: function (k) {
@@ -756,14 +797,14 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var also = ARTWORKS.filter(function (x) { return x !== a; }).map(function (x) { return card(x); }).join('');
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · <a href="#/c/' + a.col + '">' + COLS[a.col].title + '</a></div><div class="pp">' +
         '<div class="big wipe' + (a.contain ? ' contain' : '') + '"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '"></div><div class="side">' +
-        '<div class="lbl" style="color:' + (a.sale && p.type === 'Print' ? 'var(--pink-deep)' : 'var(--teal)') + '">' + (a.sale && p.type === 'Print' ? '20% off this week' : a.sea ? 'Supports Sea Shelter' : 'Denise Duffy') + '</div>' +
+        '<div class="lbl" style="color:' + (a.sale && p.type === 'Print' ? 'var(--pink-deep)' : 'var(--teal)') + '">' + (a.sale && p.type === 'Print' ? 'A little thank-you: 20% off' : a.sea ? '20% goes to Sea Shelter' : 'Denise Duffy') + '</div>' +
         '<h1>' + esc(a.title) + '</h1>' + tabs +
         '<div class="price" id="price"></div><div class="pay4">or 4 payments of <b id="p4"></b> with pay-later <span class="prop">(provider to confirm)</span></div>' + opts + addons +
         edition(a, p) +
         '<button class="btn block" style="margin-top:16px" type="button" data-act="add" id="mainAdd"' + (heldPrint(a, p) || soldOriginal(a, p) ? ' disabled' : '') + '>' +
           (heldPrint(a, p) ? 'Prints open ' + opensOn(a.ed) : soldOriginal(a, p) ? 'Sold' : p.type === 'Original' ? 'Buy the original' : 'Add to cart') + '</button>' +
         (heldPrint(a, p) || soldOriginal(a, p) ? '' : '<div class="or">or check out in one tap</div>') + '<div class="express"' + (heldPrint(a, p) || soldOriginal(a, p) ? ' hidden' : '') + '><button class="xb shop" type="button" data-act="express" data-via="Link">Link</button><button class="xb apple" type="button" data-act="express" data-via="Apple Pay">Apple Pay</button><button class="xb google" type="button" data-act="express" data-via="Google Pay">G Pay</button></div>' +
-        bundle + (a.sea ? '<div class="note">🌊 Part of this sale supports Sea Shelter’s marine rescue and rehabilitation.</div>' : '') +
+        bundle + (a.sea ? '<div class="note">🌊 20% of every marine print goes to Sea Shelter’s marine rescue and rehabilitation.</div>' : '') +
         '<p class="story">' + esc(a.story) + '</p>' +
         '<div class="acc"><details><summary>Delivery</summary><p>Free over $100, otherwise $12 in Australia. Prints posted flat or in a tube; framed pieces by courier. Downloads by email straight away. (Sample terms.)</p></details>' +
         '<details><summary>Returns</summary><p>A clear, friendly returns promise belongs here. (Proposal.)</p></details>' +
@@ -1037,7 +1078,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     el = h('div', { class: 'lg', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Living gallery' });
     el.innerHTML = '<div class="lg-wash"></div><div class="lg-wall"><div class="lg-stage"></div></div><div class="lg-fade"></div>' +
       '<div class="lg-top"><a class="lg-name" href="#/">Denise Duffy<small>Living gallery</small></a><button class="lg-close" type="button" aria-label="Leave the gallery">Close</button></div>' +
-      '<div class="lg-foot"><p>Immerse yourself in the beauty and wonder of nature.</p><span class="lg-note">' + (TOUCH ? 'Swipe any way to wander' : 'Drag or scroll any way to wander') + '</span>' +
+      '<div class="lg-foot"><p>Stop. Pause. Look around for the pockets of magic.</p><span class="lg-note">' + (TOUCH ? 'Swipe any way to wander' : 'Drag or scroll any way to wander') + '</span>' +
       '<div class="lg-links"><a class="lg-link" href="#/c/coast">Shop the work</a><a class="lg-link" href="#/c/originals">Commission a piece</a></div></div>' +
       '<div class="lg-intro"><h2></h2><p>Living gallery</p></div>';
     document.body.appendChild(el);
