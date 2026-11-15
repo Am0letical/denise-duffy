@@ -282,72 +282,54 @@ footer .legal { max-width: 1320px; margin: 18px auto 0; display: flex; justify-c
 body:has(.mock) .hero { height: calc(100svh - 30px); }
 @media (max-width: 640px) { body:has(.mock) .hero { height: calc(100svh - 48px); min-height: 560px; } }
 
-/* ================= Living gallery: a walk into the work, on warm paper ================= */
-.lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; }
+/* ================= Living gallery: an endless wall of her work, on warm paper ================= */
+.lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
 .lg.on { opacity: 1; pointer-events: auto; }
 .lg-wash { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(55vw 45vh at 8% 6%, rgba(143, 211, 223, .22), transparent 70%),
               radial-gradient(45vw 40vh at 96% 30%, rgba(233, 138, 166, .14), transparent 70%),
               radial-gradient(60vw 45vh at 40% 104%, rgba(143, 211, 223, .16), transparent 70%); }
+.lg-wall { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.lg-wall.dragging { cursor: grabbing; }
+.lg-wall.dragging .lg-tile { pointer-events: none; }
+.lg-stage { position: absolute; inset: 0; will-change: transform; transform-origin: 50% 50%; }
+.lg-row { position: absolute; left: 0; top: 0; display: flex; white-space: nowrap; will-change: transform; }
+
+/* each piece bleeds into the paper at its edges, like a wash, and lifts a little when you look at it */
+.lg-tile { position: relative; flex: none; margin: 0; cursor: pointer; transition: transform .9s cubic-bezier(.16, 1, .3, 1); }
+.lg-tile img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+  -webkit-mask-image: var(--deckle, none); mask-image: var(--deckle, none); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+.lg-tile::after { content: ''; position: absolute; z-index: -1; left: 7%; right: 7%; top: 10%; bottom: 4%; background: rgba(60, 45, 30, .18); filter: blur(22px); transform: translate(8px, 14px); opacity: .7; transition: opacity .9s ease, transform .9s cubic-bezier(.16, 1, .3, 1); }
+.lg-tile:hover { transform: translateY(-6px) scale(1.02); }
+.lg-tile:hover::after { opacity: 1; transform: translate(10px, 22px); }
+.lg-tile figcaption { position: absolute; left: 0; right: 0; bottom: -2px; transform: translateY(100%); padding-top: 10px; display: flex; gap: 6px 14px; align-items: baseline; flex-wrap: wrap;
+  opacity: 0; transition: opacity .5s ease; pointer-events: none; white-space: normal; }
+.lg-tile:hover figcaption { opacity: 1; pointer-events: auto; }
+.lg-tile figcaption b { font: 500 italic 16px/1.2 var(--display, Georgia, serif); }
+.lg-tile figcaption span, .lg-tile figcaption a { font: 500 9.5px/1.6 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; color: #5d6168; }
+.lg-tile figcaption a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
+
+/* paper fades in at the edges so the wall floats rather than ends */
+.lg-fade { position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: linear-gradient(180deg, #FBF7F0 0, rgba(251, 247, 240, 0) 18%, rgba(251, 247, 240, 0) 70%, #FBF7F0 100%); }
+
 .lg-top { position: absolute; z-index: 5; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 44px 22px 18px; pointer-events: none; }
 .lg-top > * { pointer-events: auto; }
 .lg-name { text-decoration: none; color: inherit; font: 500 19px/1.1 var(--display, Georgia, serif); }
 .lg-name small { display: block; font: 500 10px/1.8 var(--font, sans-serif); letter-spacing: 3px; text-transform: uppercase; opacity: .6; }
 .lg-close { border: 0; border-radius: 999px; height: 40px; padding: 0 18px; background: rgba(251, 247, 240, .85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0 0 0 1px rgba(26, 29, 34, .14); font: 500 11px/1 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; color: inherit; }
+  box-shadow: inset 0 0 0 1px rgba(26, 29, 34, .14); font: 500 11px/1 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; color: inherit; cursor: pointer; }
 
-/* the scroll only measures how far you've walked; the stage stays put and the world moves past you */
-.lg-scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-.lg-scroll::-webkit-scrollbar { display: none; }
-.lg-track { position: relative; }
-.lg-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; perspective: 1000px; perspective-origin: 50% 46%; }
-.lg-world { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; will-change: transform; }
-.lg-item { position: absolute; left: 0; top: 0; margin: 0; visibility: hidden; will-change: transform, opacity; backface-visibility: hidden; }
-.lg-mote { position: absolute; left: 0; top: 0; border-radius: 50%; pointer-events: none; visibility: hidden; will-change: transform, opacity; }
-
-/* pieces: edges feather into the paper, a soft shadow lifts them off it */
-.lg-img { position: relative; overflow: hidden; cursor: zoom-in; aspect-ratio: var(--ar, 4 / 5);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent), linear-gradient(180deg, transparent, #000 5%, #000 95%, transparent);
-  -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent), linear-gradient(180deg, transparent, #000 5%, #000 95%, transparent); mask-composite: intersect; }
-.lg-piece::before { content: ''; position: absolute; z-index: -1; left: 8%; right: 8%; top: 12%; height: 76%; background: rgba(60, 45, 30, .16); filter: blur(28px); transform: translate(10px, 18px); pointer-events: none; }
-.lg-img canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s cubic-bezier(.16, 1, .3, 1); }
-.lg-img:hover canvas { transform: scale(1.03); }
-.lg-piece figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 12px; padding: 0 4%; }
-.lg-piece figcaption b { font: 500 italic 18px/1.3 var(--display, Georgia, serif); }
-.lg-piece figcaption span { font: 400 13px/1.4 var(--font, sans-serif); color: #5d6168; width: 100%; order: 2; }
-.lg-link { border: 0; background: none; padding: 0; color: inherit; text-decoration: none; font: 500 10px/1.8 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid currentColor; cursor: pointer; order: 3; }
+/* her words, and where to go next */
+.lg-foot { position: absolute; z-index: 5; left: 22px; right: 22px; bottom: 22px; display: flex; align-items: flex-end; gap: 10px 28px; flex-wrap: wrap; pointer-events: none; }
+.lg-foot > * { pointer-events: auto; }
+.lg-foot p { font: 500 italic clamp(20px, 2.4vw, 30px)/1.15 var(--display, Georgia, serif); color: var(--ocean, #1B4F86); max-width: 15em; margin: 0; }
+.lg-note { font: 500 10px/1 var(--font, sans-serif); letter-spacing: 3px; text-transform: uppercase; color: #5d6168; padding-bottom: 6px; transition: opacity .8s ease; }
+.lg-note.gone { opacity: 0; }
+.lg-links { margin-left: auto; display: flex; gap: 22px; padding-bottom: 4px; }
+.lg-link { border: 0; background: none; padding: 0; color: inherit; text-decoration: none; font: 500 10px/1.8 var(--font, sans-serif); letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid currentColor; cursor: pointer; }
 .lg-link:hover { color: var(--pink-deep, #A3426A); }
-.lg-piece.wait .lg-img { cursor: default; }
-.lg-ph { position: absolute; inset: 0; display: grid; place-items: center; background: repeating-linear-gradient(135deg, rgba(26, 29, 34, .04) 0 10px, transparent 10px 20px), rgba(143, 211, 223, .12); }
-.lg-ph span { font: 500 italic 20px/1 var(--display, Georgia, serif); opacity: .55; }
-
-/* her words, floating in the middle of the path */
-.lg-words { text-align: center; pointer-events: none; }
-.lg-words p { font: 500 clamp(34px, 5.4vw, 78px)/1.06 var(--display, Georgia, serif); letter-spacing: -.02em; }
-.lg-words.it p { font-style: italic; color: var(--ocean, #1B4F86); }
-.lg-words.small p { font-size: clamp(26px, 3.4vw, 46px); }
-.lg-words span { display: block; font: 500 10px/1 var(--font, sans-serif); letter-spacing: 3px; text-transform: uppercase; color: #5d6168; margin-bottom: 14px; }
-.lg-end { text-align: center; }
-.lg-end p { font: 500 italic clamp(28px, 3.8vw, 52px)/1.2 var(--display, Georgia, serif); margin-bottom: 22px; }
-.lg-end div { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
-
-.lg-words p, .lg-end p { text-shadow: 0 0 18px #FBF7F0, 0 0 36px #FBF7F0; }
-@media (max-width: 700px) { .lg-words p { font-size: 50px; } .lg-words.small p { font-size: 40px; } .lg-end p { font-size: 40px; } .lg-bar { right: 12px; } }
-
-/* where you are, and a first nudge */
-.lg-hint { position: absolute; z-index: 4; left: 50%; bottom: 34px; transform: translateX(-50%); font: 500 10px/1 var(--font, sans-serif); letter-spacing: 3px; text-transform: uppercase; color: #5d6168; pointer-events: none; transition: opacity .8s ease; animation: lgHint 2.4s ease-in-out infinite; }
-.lg-hint::after { content: ''; display: block; width: 1px; height: 26px; margin: 12px auto 0; background: currentColor; opacity: .6; }
-.lg-hint.gone { opacity: 0; animation: none; }
-@keyframes lgHint { 50% { transform: translate(-50%, 6px); } }
-.lg-bar { position: absolute; z-index: 4; right: 22px; top: 50%; height: 120px; margin-top: -60px; width: 1px; background: rgba(26, 29, 34, .14); }
-.lg-bar i { position: absolute; inset: 0; background: var(--ocean, #1B4F86); transform-origin: top; transform: scaleY(0); }
-
-/* reduced motion: a plain scroll, no flying */
-.lg.flat .lg-stage { position: static; height: auto; perspective: none; overflow: visible; }
-.lg.flat .lg-world { position: relative; left: 0; top: 0; width: auto; height: auto; max-width: 1280px; margin: 0 auto; padding: 22vh 22px 16vh; display: flex; flex-direction: column; gap: 90px; transform: none; }
-.lg.flat .lg-item { position: relative; visibility: visible; transform: none; }
-.lg.flat .lg-words { text-align: left; } .lg.flat .lg-end { text-align: center; }
-.lg.flat .lg-mote, .lg.flat .lg-hint, .lg.flat .lg-bar { display: none; }
+@media (max-width: 700px) { .lg-links { margin-left: 0; width: 100%; } .lg-note { display: none; } .lg-tile figcaption { display: none; } }
 
 /* intro: her name rises, then the paper opens */
 .lg-intro { position: absolute; inset: 0; z-index: 9; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FBF7F0; transition: opacity .9s ease .1s, visibility 0s 1s; }
@@ -942,9 +924,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 })();
 </script>
 <script>
-/* Living gallery: a walk INTO the work. Warm paper haze, pieces hanging at different depths; scrolling carries
-   you forward past them on a gently winding path, her words floating between. "Feel the texture" opens the
-   raking-light viewer below. Reduced-motion visitors still walk in 3D, without the drifting and swaying. No libraries. */
+/* Living gallery: an endless wall of her work, wandered in any direction (in the spirit of ruthgriffioen.art).
+   It drifts on its own; drag, swipe, scroll or use the arrow keys to move it; it leans toward the pointer.
+   Clicking a painting opens the raking-light texture viewer below. No libraries. */
 (function () {
   'use strict';
   var ART = window.ART || {};
@@ -967,12 +949,6 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     { kind: 'piece', id: 'light', title: 'Light on the water', medium: 'Port Stephens', src: 'footage-ocean', crop: [0, 90, 361, 460], photo: true, size: 0.3, x: 0.56, speed: 0.18, lift: 80 },
     { kind: 'end' }
   ];
-  var el, scroller, track, stage, world, hint, bar, items = [], motes = [], open = false, raf = 0, target = 0, cur = 0, wheeling = false;
-  // 3D walk: every item hangs at its own depth; scrolling carries you forward through them.
-  // dz = how far an item is in front of (+) or behind (-) the picture plane. Natural size at dz 0.
-  var GAP = 1150, FIRST = 900, STOP = 380, maxP = 0, W = 0, H = 0, FLAT = false;
-  var cam = { x: 0, y: 0, ox: 50, oy: 46, tox: 50, toy: 46 }, moved = false;
-
   function h(tag, attrs, html) { var e = document.createElement(tag); if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); }); if (html != null) e.innerHTML = html; return e; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pieceCanvas(p, max) {
@@ -989,141 +965,138 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   }
   window.__galleryPieceCanvas = pieceCanvas;
 
+  // ================= The wall: an endless field of her work you can wander in any direction =================
+  // Rows of pieces fill the screen and repeat forever both ways. The wall drifts on its own; drag, swipe, scroll or
+  // use the arrow keys to move it any way you like (it glides to a stop); it leans gently towards the pointer, and
+  // slows right down while you look at a piece. Clicking a painting opens the texture viewer.
+  var el, wall, stage, note, rows = [], tiles = [], open = false, raf = 0, last = 0;
+  var X = 0, Y = 0, vx = 0, vy = 0, wx = 0, wy = 0, slow = 1, slowTo = 1, drag = null, touched = false;
+  var mouse = { x: 0, y: 0, tx: 0, ty: 0 }, W = 0, H = 0, period = 0, span = 0;
+
   function build() {
-    el = h('div', { class: 'lg' + (FLAT ? ' flat' : ''), role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Living gallery' });
-    el.innerHTML = '<div class="lg-wash"></div>' +
+    el = h('div', { class: 'lg', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Living gallery' });
+    el.innerHTML = '<div class="lg-wash"></div><div class="lg-wall"><div class="lg-stage"></div></div><div class="lg-fade"></div>' +
       '<div class="lg-top"><a class="lg-name" href="#/">Denise Duffy<small>Living gallery</small></a><button class="lg-close" type="button" aria-label="Leave the gallery">Close</button></div>' +
-      '<div class="lg-scroll"><div class="lg-track"><div class="lg-stage"><div class="lg-world"></div></div></div></div>' +
-      '<div class="lg-hint">Scroll to walk in</div><div class="lg-bar"><i></i></div>' +
+      '<div class="lg-foot"><p>Immerse yourself in the beauty and wonder of nature.</p><span class="lg-note">' + (TOUCH ? 'Swipe any way to wander' : 'Drag or scroll any way to wander') + '</span>' +
+      '<div class="lg-links"><a class="lg-link" href="#/c/coast">Shop the work</a><a class="lg-link" href="#/c/originals">Commission a piece</a></div></div>' +
       '<div class="lg-intro"><h2></h2><p>Living gallery</p></div>';
     document.body.appendChild(el);
-    scroller = el.querySelector('.lg-scroll'); track = el.querySelector('.lg-track'); stage = el.querySelector('.lg-stage');
-    world = el.querySelector('.lg-world'); hint = el.querySelector('.lg-hint'); bar = el.querySelector('.lg-bar i');
+    wall = el.querySelector('.lg-wall'); stage = el.querySelector('.lg-stage'); note = el.querySelector('.lg-note');
     el.querySelector('.lg-close').addEventListener('click', function () { location.hash = '#/'; });
-    var side = 1;
-    WALK.forEach(function (w, i) {
-      var node;
-      if (w.kind === 'words') {
-        node = h('div', { class: 'lg-item lg-words' + (w.small ? ' small' : '') + (w.italic ? ' it' : '') }, (w.sub ? '<span>' + esc(w.sub) + '</span>' : '') + '<p>' + esc(w.text) + '</p>');
-      } else if (w.kind === 'end') {
-        node = h('div', { class: 'lg-item lg-end' }, '<p>Every piece begins with noticing.</p><div><a class="lg-link" href="#/c/coast">Shop the work</a><a class="lg-link" href="#/c/originals">Commission a piece</a><a class="lg-link" href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a></div>');
-      } else {
-        node = h('figure', { class: 'lg-item lg-piece' + (w.tall ? ' tall' : '') + (w.kind === 'wait' ? ' wait' : '') });
-        var frame = h('div', { class: 'lg-img' });
-        frame.style.setProperty('--ar', w.crop ? w.crop[2] + ' / ' + w.crop[3] : w.kind === 'wait' ? '4 / 5' : '1');
-        if (w.kind === 'wait') frame.innerHTML = '<div class="lg-ph"><span>' + esc(w.title) + '</span></div>';
-        else pieceCanvas(w, 1400).then(function (cv) { frame.appendChild(cv); });
-        node.appendChild(frame);
-        var cap = '<figcaption><b>' + esc(w.title) + '</b><span>' + esc(w.medium) + '</span>';
-        if (w.kind === 'piece' && !w.photo) cap += '<button class="lg-link" type="button" data-feel="' + i + '">Feel the texture</button>';
-        if (w.shop) cap += '<a class="lg-link" href="#/a/' + w.shop + '">Shop</a>';
-        node.insertAdjacentHTML('beforeend', cap + '</figcaption>');
-        // a far piece flies you to it; a near one opens the texture viewer
-        frame.addEventListener('click', function () {
-          if (!FLAT && node._dz < -700) { flyTo(node); return; }
-          if (w.kind === 'piece' && !w.photo) openViewer(w);
-        });
-        node._side = w.x + w.size / 2 < 0.5 ? -1 : 1;
-        if (Math.abs(w.x + w.size / 2 - 0.5) < 0.08) { node._side = side; side = -side; }
-      }
-      node._w = w; node._i = i; node._D = FIRST + i * GAP;
-      world.appendChild(node); items.push(node);
+
+    // every piece (and the close-up details) becomes a tile; images are made once and shared by all the copies
+    var list = WALK.filter(function (w) { return w.kind === 'piece'; });
+    Promise.all(list.map(function (w) { return pieceCanvas(w, 1100).then(function (cv) { return { w: w, src: cv.toDataURL('image/jpeg', 0.86), ar: cv.width / cv.height }; }); }))
+      .then(function (t) { tiles = t; layout(); });
+
+    // drag or swipe, with a fling that glides to a stop
+    wall.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    wall.addEventListener('pointerdown', function (e) {
+      if (e.button) return;
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), moved: 0 }; vx = vy = 0; wx = wy = 0; seen();
     });
-    // soft washes of pigment hanging at every depth, so the space reads as deep
-    var COLS = ['143,211,223', '233,138,166', '27,79,134', '242,196,90'];
-    for (var m = 0; m < 22; m++) {
-      var mo = h('i', { class: 'lg-mote' }), r = Math.sin(m * 91.7) * 0.5 + 0.5, q = Math.sin(m * 37.3) * 0.5 + 0.5;
-      mo._D = 300 + (m / 22) * (WALK.length * GAP) + r * 400; mo._x = (q - 0.5) * 2.4; mo._y = (r - 0.5) * 1.6; mo._s = 160 + q * 360;
-      mo.style.background = 'radial-gradient(closest-side, rgba(' + COLS[m % 4] + ',' + (m % 4 === 2 ? 0.12 : 0.28) + '), transparent)';
-      world.appendChild(mo); motes.push(mo);
+    window.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'mouse') { mouse.tx = e.clientX / innerWidth * 2 - 1; mouse.ty = e.clientY / innerHeight * 2 - 1; }
+      var d = drag; if (!d || e.pointerId !== d.id) return;
+      var now = performance.now(), dx = e.clientX - d.x, dy = e.clientY - d.y, ms = Math.max(8, now - d.t);
+      d.x = e.clientX; d.y = e.clientY; d.t = now; d.moved += Math.abs(dx) + Math.abs(dy);
+      if (d.moved > 6 && !wall.classList.contains('dragging')) { wall.classList.add('dragging'); try { wall.setPointerCapture(d.id); } catch (er) {} }
+      X += dx; Y += dy; vx = vx * 0.25 + dx / ms * 0.75; vy = vy * 0.25 + dy / ms * 0.75;
+    }, { passive: true });
+    function end(e) {
+      var d = drag; if (!d || e.pointerId !== d.id) return;
+      if (performance.now() - d.t > 90) vx = vy = 0;
+      drag = null; wall.classList.remove('dragging');
+      if (d.moved > 6) { var stop = function (ev) { ev.preventDefault(); ev.stopPropagation(); }; wall.addEventListener('click', stop, { capture: true, once: true }); setTimeout(function () { wall.removeEventListener('click', stop, true); }, 0); }
     }
-    world.addEventListener('click', function (e) { var b = e.target.closest('[data-feel]'); if (b) openViewer(WALK[+b.dataset.feel]); });
-    // weighted wheel/trackpad scrolling; phones keep their own natural momentum
-    if (!TOUCH) {
-      scroller.addEventListener('wheel', function (e) {
-        if (document.querySelector('.rv.on')) return;
-        e.preventDefault();
-        if (!wheeling) { target = cur = scroller.scrollTop; wheeling = true; }
-        var d = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaMode === 2 ? e.deltaY * H : e.deltaY;
-        target = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, target + d * 1.15));
-      }, { passive: false });
-    }
+    window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
+    // a wheel or trackpad moves it both ways (shift + wheel goes sideways)
+    wall.addEventListener('wheel', function (e) {
+      e.preventDefault(); seen();
+      var k = e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? H : 1, dx = e.deltaX * k, dy = e.deltaY * k;
+      if (e.shiftKey && !dx) { dx = dy; dy = 0; }
+      wx -= dx; wy -= dy;
+    }, { passive: false });
     document.addEventListener('keydown', function (e) {
       if (!open || document.querySelector('.rv.on')) return;
+      var m = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
       if (e.key === 'Escape') location.hash = '#/';
-      var step = FLAT ? H * 0.6 : GAP;
-      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go((wheeling ? target : scroller.scrollTop) + step); }
-      if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go((wheeling ? target : scroller.scrollTop) - step); }
+      if (m) { e.preventDefault(); seen(); wx += m[0] * W * 0.35; wy += m[1] * H * 0.35; }
     });
-    if (!TOUCH && !REDUCED) el.addEventListener('pointermove', function (e) { cam.tox = 50 - (e.clientX / W - 0.5) * 14; cam.toy = 46 - (e.clientY / H - 0.5) * 10; });
-    if (FLAT) scroller.addEventListener('scroll', kick, { passive: true });
-    scroller.addEventListener('scroll', function () { if (scroller.scrollTop > 20 && !moved) { moved = true; hint.classList.add('gone'); } kick(); }, { passive: true });
-    window.addEventListener('resize', layout);
+    // looking at a piece slows the wall right down
+    wall.addEventListener('pointerover', function (e) { if (e.target.closest('.lg-tile')) slowTo = 0.15; });
+    wall.addEventListener('pointerout', function (e) { if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('.lg-tile')) slowTo = 1; });
+    wall.addEventListener('click', function (e) {
+      var t = e.target.closest('.lg-tile'); if (!t) return;
+      var w = WALK[+t.dataset.i];
+      if (e.target.closest('[data-shop]')) return;
+      if (!w.photo) openViewer(w); else if (w.shop) location.hash = '#/a/' + w.shop;
+    });
+    var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 200); });
   }
+  function seen() { if (!touched) { touched = true; note.classList.add('gone'); } }
 
-  function go(y) { cur = scroller.scrollTop; target = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, y)); wheeling = true; kick(); }
-  function flyTo(n) { go(n._D - (n._w.kind === 'end' ? STOP : 520)); }
-
-  // place everything in the world for this screen size
+  // lay out the rows for this screen: tile height from the screen, rows long enough to loop seamlessly
   function layout() {
-    if (!el) return;
-    W = scroller.clientWidth || innerWidth; H = scroller.clientHeight || innerHeight;
-    var narrow = W < 700, unit = Math.min(W, 1400);
-    items.forEach(function (n) {
-      var w = n._w;
-      if (FLAT) { if (w.size) { n.style.width = (narrow ? 78 : w.size * 100) + '%'; n.style.marginLeft = (narrow ? (n._i % 2) * 22 : w.x * 100) + '%'; } return; }
-      if (w.kind === 'words' || w.kind === 'end') { n._X = 0; n._Y = w.kind === 'end' ? 0 : -H * 0.04; n.style.width = Math.min(W * 0.84, w.kind === 'end' ? 900 : 760) + 'px'; n._rot = 0; return; }
-      var size = narrow ? Math.min(0.74, w.size * 2) : w.size * 1.05;
-      if (w.tall) size *= narrow ? 0.78 : 0.9;
-      var px = size * unit;
-      n.style.width = px + 'px';
-      n._X = n._side * (narrow ? 0.1 * W : px / 2 + 0.15 * W);
-      n._Y = narrow ? (n._i % 2 ? 1 : -1) * H * 0.05 : (w.lift || 0) * 1.2 + (n._i % 3 - 1) * H * 0.07;
-      n._rot = -n._side * (narrow ? 5 : 9);
-    });
-    motes.forEach(function (m) { m.style.width = m.style.height = m._s + 'px'; });
-    maxP = items[items.length - 1]._D - STOP;
-    track.style.height = FLAT ? '' : (maxP + H) + 'px';
+    if (!el || !tiles.length) return;
+    W = innerWidth; H = innerHeight;
+    var portrait = H / W > 1.2, show = portrait ? 3.3 : 2.35;
+    var tileH = Math.round(H / show), gap = Math.round(tileH * 0.16);
+    period = tileH + gap;
+    var count = Math.ceil(H / period) + 3;
+    span = count * period;
+    stage.innerHTML = ''; rows = [];
+    var prev = [];
+    for (var r = 0; r < count; r++) {
+      // shuffle, never repeating a piece next to itself or directly under the same piece in the row above
+      var seq = [], x = 0, guard = 0, minW = Math.max(W * 1.6, 1400);
+      while ((x < minW || seq.length < 4) && guard++ < 60) {
+        var pool = tiles.slice().sort(function () { return Math.random() - 0.5; });
+        var pick = pool.find(function (t) {
+          var w = Math.round(tileH * t.ar);
+          if (seq.length && seq[seq.length - 1].t === t) return false;
+          return !prev.some(function (p) { return p.t === t && p.from < x + w + gap && p.to > x - gap; });
+        }) || pool[0];
+        var pw = Math.round(tileH * pick.ar);
+        seq.push({ t: pick, w: pw, from: x, to: x + pw }); x += pw + gap;
+      }
+      if (seq.length > 1 && seq[0].t === seq[seq.length - 1].t) { var sw = seq.pop(); x -= sw.w + gap; }
+      prev = seq;
+      var row = h('div', { class: 'lg-row' });
+      for (var c = 0; c < 2; c++) seq.forEach(function (s) {
+        var w = s.t.w, i = WALK.indexOf(w), a = h('figure', { class: 'lg-tile' + (w.photo ? ' photo' : ''), 'data-i': i, style: 'width:' + s.w + 'px;height:' + tileH + 'px;margin-right:' + gap + 'px' });
+        a.innerHTML = '<img alt="' + esc(w.title + (c ? '' : ', ' + w.medium)) + '" src="' + s.t.src + '" draggable="false">' +
+          '<figcaption><b>' + esc(w.title) + '</b><span>' + esc(w.photo ? w.medium : 'Feel the texture') + '</span>' +
+          (w.shop ? '<a data-shop href="#/a/' + w.shop + '">Shop</a>' : '') + '</figcaption>';
+        if (c) a.setAttribute('aria-hidden', 'true');
+        row.appendChild(a);
+      });
+      stage.appendChild(row);
+      rows.push({ el: row, loop: x, phase: (r * 0.37 % 1) * x, speed: 1 + (r % 3 - 1) * 0.12 });
+    }
     kick();
   }
 
-  function kick() { if (!raf && open) raf = requestAnimationFrame(tick); }
-  function smooth(a, b, x) { x = Math.max(0, Math.min(1, (x - a) / (b - a))); return x * x * (3 - 2 * x); }
+  function mod(a, n) { return ((a % n) + n) % n; }
+  function kick() { if (!raf && open) { last = performance.now(); raf = requestAnimationFrame(tick); } }
   function tick(now) {
     raf = 0;
-    if (!open) return;
-    if (wheeling) {
-      cur += (target - cur) * 0.075;
-      if (Math.abs(target - cur) < 0.5) { cur = target; wheeling = false; }
-      scroller.scrollTop = cur;
+    if (!open || document.querySelector('.rv.on')) return;
+    var dt = Math.min(0.05, (now - last) / 1000), ms = dt * 1000; last = now;
+    mouse.x += (mouse.tx - mouse.x) * (REDUCED ? 1 : 0.045); mouse.y += (mouse.ty - mouse.y) * (REDUCED ? 1 : 0.045);
+    slow += (slowTo - slow) * 0.06;
+    // its own slow drift, up and to the left; leaning the pointer right speeds it a little
+    if (!drag && !REDUCED) { var s = 20 * (H / 900) * slow * (1 + mouse.x * 0.3) * dt; X -= s; Y -= s * 0.62; }
+    // wheel and keys ease in; a fling glides out
+    var ex = wx * 0.14, ey = wy * 0.14; X += ex; Y += ey; wx -= ex; wy -= ey;
+    if (!drag && (vx || vy)) { X += vx * ms; Y += vy * ms; var keep = Math.exp(-ms / 340); vx *= keep; vy *= keep; if (Math.abs(vx) + Math.abs(vy) < 0.01) vx = vy = 0; }
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i], rx = mod(X * r.speed + r.phase, r.loop) - r.loop, ry = mod(Y + i * period, span) - period * 1.5;
+      r.el.style.transform = 'translate3d(' + rx.toFixed(1) + 'px,' + ry.toFixed(1) + 'px,0)';
     }
-    if (FLAT) { if (wheeling) raf = requestAnimationFrame(tick); return; }
-    var y = scroller.scrollTop, p = Math.min(maxP, y), t = (now || 0) * 0.001;
-    if (y > 20 && !moved) { moved = true; hint.classList.add('gone'); }
-    bar.style.transform = 'scaleY(' + (maxP ? p / maxP : 0).toFixed(4) + ')';
-    // the path wanders gently, like a winding track; the pointer leans the view
-    cam.x = REDUCED ? 0 : Math.sin(p / 2300) * W * 0.05; cam.y = REDUCED ? 0 : Math.sin(p / 3100 + 1) * H * 0.025;
-    cam.ox += (cam.tox - cam.ox) * 0.05; cam.oy += (cam.toy - cam.oy) * 0.05;
-    stage.style.perspectiveOrigin = cam.ox.toFixed(2) + '% ' + cam.oy.toFixed(2) + '%';
-    world.style.transform = 'translate3d(' + (-cam.x).toFixed(1) + 'px,' + (-cam.y).toFixed(1) + 'px,0)';
-    items.forEach(function (n) {
-      var dz = p - n._D; n._dz = dz;
-      var near = n._w.kind === 'end' ? 1 : n._w.kind === 'words' ? 1 - smooth(-650, 120, dz) : 1 - smooth(260, 760, dz);
-      var o = near * smooth(-3600, -1500, dz);
-      if (o < 0.002) { if (n._vis !== false) { n.style.visibility = 'hidden'; n._vis = false; } return; }
-      if (n._vis !== true) { n.style.visibility = 'visible'; n._vis = true; }
-      var bob = REDUCED ? 0 : Math.sin(t * 0.6 + n._i * 1.7) * 7, sway = REDUCED ? 0 : Math.sin(t * 0.4 + n._i) * 0.8;
-      n.style.opacity = o.toFixed(3);
-      n.style.transform = 'translate(-50%,-50%) translate3d(' + n._X.toFixed(1) + 'px,' + (n._Y + bob).toFixed(1) + 'px,' + dz.toFixed(1) + 'px) rotateY(' + (n._rot + sway).toFixed(2) + 'deg)';
-      n.style.pointerEvents = o > 0.35 ? 'auto' : 'none';
-    });
-    motes.forEach(function (m, i) {
-      var dz = p - m._D, o = (1 - smooth(-200, 700, dz)) * smooth(-3800, -1800, dz);
-      if (o < 0.002) { m.style.visibility = 'hidden'; return; }
-      m.style.visibility = 'visible'; m.style.opacity = o.toFixed(3);
-      m.style.transform = 'translate(-50%,-50%) translate3d(' + (m._x * W + (REDUCED ? 0 : Math.sin(t * 0.15 + i) * 30)).toFixed(1) + 'px,' + (m._y * H + (REDUCED ? 0 : Math.cos(t * 0.12 + i) * 24)).toFixed(1) + 'px,' + dz.toFixed(1) + 'px)';
-    });
-    if (!document.querySelector('.rv.on')) raf = requestAnimationFrame(tick);
+    var px = -mouse.x * W * 0.016, py = -mouse.y * H * 0.02;
+    stage.style.transform = REDUCED ? '' : 'translate3d(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px,0) perspective(1800px) rotateX(' + (-mouse.y * 2).toFixed(3) + 'deg) rotateY(' + (mouse.x * 2.4).toFixed(3) + 'deg)';
+    raf = requestAnimationFrame(tick);
   }
 
   function show() {
@@ -1134,10 +1107,12 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       title.innerHTML = 'Denise Duffy'.split('').map(function (c, i) { return '<span style="animation-delay:' + (REDUCED ? 0 : 0.1 + i * 0.04) + 's">' + (c === ' ' ? '&nbsp;' : esc(c)) + '</span>'; }).join('');
       setTimeout(function () { intro.classList.add('done'); }, REDUCED ? 150 : 1700);
     }
-    layout(); kick();
+    if (W !== innerWidth || H !== innerHeight) layout();
+    kick();
   }
   function hide() { if (!el) return; open = false; el.classList.remove('on'); document.documentElement.style.overflow = ''; closeViewer(); }
-  window.__galleryState = function () { return { p: scroller && Math.min(maxP, scroller.scrollTop), maxP: maxP, vis: items.filter(function (n) { return n._vis; }).map(function (n) { return n._i + ':' + Math.round(n._dz); }) }; };
+  window.__galleryState = function () { return { X: Math.round(X), Y: Math.round(Y), rows: rows.length, tiles: tiles.length, period: period }; };
+  window.__galleryMove = function (dx, dy) { X += dx; Y += dy; };
 
   // ================= texture viewer (WebGL): the painting as a surface, lit by a raking light =================
   var rv, gl, prog, buf = {}, mesh = null, view = { yaw: -0.35, pitch: 0.35, dist: 2.6, depth: 0.35, auto: true, lx: 0.6, ly: 0.5 }, rvRaf = 0;
