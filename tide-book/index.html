@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,text_fields,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,text_fields,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -916,6 +916,28 @@ img, video { max-width: 100%; }
 .wish-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .wish-photos img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; }
 .wish-photos.big img { width: 132px; height: 132px; }
+
+/* ---------- her private writing ---------- */
+.priv-card { padding: 16px; border-radius: 18px; background: var(--surface-high); }
+.priv-h { display: flex; align-items: center; gap: 10px; font: 500 17px/1.3 var(--font); }
+.priv-h .ms { color: var(--primary); }
+.priv-card p { margin: 6px 0 12px; font: 400 14px/1.5 var(--font); color: var(--on-surface-variant); }
+.priv-more { border: 0; background: none; padding: 6px 2px; color: var(--primary); font: 500 13.5px/1.2 var(--font); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.priv-note { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 14px; background: var(--surface-high); font: 400 13px/1.4 var(--font); color: var(--on-surface-variant); }
+.priv-note .ms { font-size: 18px; color: var(--primary); flex: none; }
+.priv-note span { flex: 1; }
+.priv-row { display: flex; gap: 14px; padding: 12px 2px; }
+.priv-row .ms { color: var(--primary); flex: none; margin-top: 2px; }
+.priv-row b { font: 500 15px/1.3 var(--font); }
+.priv-row p { margin: 4px 0 0; font: 400 14px/1.5 var(--font); color: var(--on-surface-variant); }
+.priv-done { text-align: center; padding: 8px 4px; }
+.priv-done > .ms { font-size: 44px; color: #2e7d45; }
+.priv-done b { display: block; margin: 8px 0; font: 500 18px/1.3 var(--font); }
+.priv-done p { margin: 0 0 14px; font: 400 14px/1.5 var(--font); color: var(--on-surface-variant); }
+.priv-code { font: 500 22px/1.4 'Roboto Mono', ui-monospace, monospace; letter-spacing: 2px; padding: 14px; border-radius: 14px; background: var(--surface-high); user-select: all; }
+.priv-sent { display: flex; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #e3f3e7; }
+.priv-sent > .ms { color: #2e7d45; }
+.priv-sent p { margin: 4px 0 0; font: 400 14px/1.5 var(--font); }
 </style>
 
   <script>
@@ -2351,7 +2373,7 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
@@ -2431,6 +2453,25 @@ function createTideLogic(env) {
   // ---------- what the website needs from her (LogicSite.gs)
   var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push });
 
+  // ---------- her private writing: locked with her passphrase (the PC server's vault; elsewhere there's no lock to show)
+  function privacyState() {
+    var v = env.vault, real = env.user.realRole || env.user.role;
+    if (!v) return { available: false };
+    return { available: true, state: v.status(), mine: real === 'artist' };
+  }
+  function vaultRole() { var real = env.user.realRole || env.user.role; if (real !== 'artist' || env.user.role !== 'artist') fail('Only ' + env.brand.artistName + ' can do this, from her own phone.'); if (!env.vault) fail('Not available here.'); }
+  function vaultSetup(pass) { vaultRole(); return env.vault.setup(String(pass || '')); }
+  function vaultUnlock(pass) { vaultRole(); return env.vault.unlock(String(pass || '')); }
+  function vaultRecover(code, pass) { vaultRole(); return env.vault.recover(String(code || ''), String(pass || '')); }
+  function vaultLock() { vaultRole(); return env.vault.lock(); }
+  /** In Claude chat mode jobs are pasted into a chat by the admin, so her private ones go to the PC's own model instead. */
+  function privateToLocal() {
+    var n = 0;
+    rows('notebook').forEach(function (x) { if (x.private && !x.deleted && x.expandStatus === 'Queued' && (x.expandRoute || 'claude') === 'claude') { env.table('notebook').update(x.id, { expandRoute: 'local' }); n++; } });
+    rows('topics').forEach(function (x) { if (x.private && !x.deleted && x.aiStatus === 'Queued' && x.aiRoute === 'claude') { env.table('topics').update(x.id, { aiRoute: 'local' }); n++; } });
+    return n;
+  }
+
   // ---------- ads (LogicAds.gs)
   var ads = tideAds(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: publish.push });
 
@@ -2480,6 +2521,7 @@ function createTideLogic(env) {
     consentHit: consentHit,
     publishFeed: publishFeed,
     ads: ads,
+    privateToLocal: privateToLocal,
     fyOf: fyOf
   };
   Object.keys(content.api).forEach(function (k) { out.api[k] = content.api[k]; });
@@ -2492,6 +2534,7 @@ function createTideLogic(env) {
   Object.keys(direction.api).forEach(function (k) { out.api[k] = direction.api[k]; });
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
+  out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock;
   Object.keys(siteWishes.api).forEach(function (k) { out.api[k] = siteWishes.api[k]; });
   return out;
 }
@@ -3950,6 +3993,10 @@ function tideNotes(env, t) {
   var N = TIDE_NOTES;
 
   function live() { return t.rows('notebook').filter(function (n) { return !n.deleted; }); }
+  /** What a person may see: hers are private, and the admin never gets them. */
+  /** Her private writing is for her alone: not the admin, and not the admin viewing the app as her. */
+  function herself() { return env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist'; }
+  function visible(role) { return live().filter(function (n) { return herself() || !n.private; }); }
   function get(id) {
     var n = t.rows('notebook').filter(function (x) { return x.id === id && !x.deleted; })[0];
     if (!n) t.fail('That note has been removed.');
@@ -3981,7 +4028,7 @@ function tideNotes(env, t) {
     return ideaId;
   }
   function keepVersion(n) {
-    env.table('notebookHistory').append({
+    env.table('notebookHistory').append({ private: n.private === true,
       id: env.nextId('NV', 5), noteId: n.id, revision: Number(n.revision) || 1, saved: n.updated || n.created,
       savedBy: n.updatedBy || '', title: n.title, body: n.body
     });
@@ -4018,6 +4065,8 @@ function tideNotes(env, t) {
       if (clash) t.fail('There’s already a note called “' + clash.title + '”. Give this one a different name so links stay clear.');
       if (p.id) {
         var n = get(p.id);
+        if (n.locked) t.fail('Unlock your private writing first.');
+        if (n.private && !herself()) t.fail('That note is private.');
         if (Number(p.revision) !== Number(n.revision)) t.fail('This note was changed on another phone. Close it and open it again to see the latest, then make your change.');
         if (n.title === title && n.body === body && (n.ideaId || '') === ideaId) return { id: n.id, revision: n.revision, unchanged: true };
         keepVersion(n);
@@ -4030,7 +4079,7 @@ function tideNotes(env, t) {
       var id = env.nextId('NT', 4), r2 = resolve(body, id);
       env.table('notebook').append({
         id: id, created: now, createdBy: env.user.email, title: title, body: body, ideaId: ideaId, links: r2.links,
-        revision: 1, updated: now, updatedBy: env.user.role, deleted: false,
+        revision: 1, updated: now, updatedBy: env.user.role, deleted: false, private: p.private === true || env.user.role === 'artist',
         expandStatus: '', expansion: null, expandTries: 0, expandNote: '', expandedAt: ''
       });
       relinkAll();
@@ -4050,6 +4099,7 @@ function tideNotes(env, t) {
   }
 
   function noteHistory(id) {
+    var hn = t.rows('notebook').filter(function (x) { return x.id === id; })[0]; if (hn && hn.private && !herself()) t.fail('That note is private.');
     t.need(['admin', 'artist']);
     get(id);
     return t.rows('notebookHistory').filter(function (v) { return v.noteId === id; })
@@ -4150,7 +4200,7 @@ function tideNotes(env, t) {
   }
 
   function snapshot(role) {
-    var notes = live();
+    var notes = visible(role);
     var back = {};
     notes.forEach(function (n) { t.list(n.links).forEach(function (to) { (back[to] = back[to] || []).push(n.id); }); });
     return notes.map(function (n) {
@@ -4159,7 +4209,7 @@ function tideNotes(env, t) {
         unresolved: resolve(n.body, n.id, notes).unresolved, revision: Number(n.revision) || 1,
         created: n.created, updated: n.updated, by: who(n.updatedBy),
         expandStatus: n.expandStatus || '', expansion: n.expansion || null, expandNote: n.expandNote || '', expandedAt: n.expandedAt || '',
-        expandRoute: n.expandRoute || '', expandWhy: n.expandWhy || ''
+        expandRoute: n.expandRoute || '', expandWhy: n.expandWhy || '', private: n.private === true, locked: n.locked === true
       };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
   }
@@ -4167,7 +4217,7 @@ function tideNotes(env, t) {
   // ---------------------------------------------------------------- Claude hand-off (Notes.gs / demo)
   var expand = {
     /** Waiting for Claude (local jobs are handed out by local.next). */
-    pending: function () { return live().filter(function (n) { return n.expandStatus === 'Queued' && (n.expandRoute || 'claude') === 'claude'; }); },
+    pending: function () { return live().filter(function (n) { return !n.locked && n.expandStatus === 'Queued' && (n.expandRoute || 'claude') === 'claude'; }); },
     sent: function (ids) { env.lock(function () { t.list(ids).forEach(function (id) { env.table('notebook').update(id, { expandStatus: 'Expanding' }); }); }); },
     /** The note and the notes it links to directly, trimmed, with a note of anything left out. */
     context: function (id) {
@@ -4242,7 +4292,7 @@ function tideNotes(env, t) {
             env.table('notebook').update(n.id, { expandStatus: 'Queued' });
           }
         });
-        live().filter(function (n) { return n.expandStatus === 'Queued' && n.expandRoute === 'local'; })
+        live().filter(function (n) { return !n.locked && n.expandStatus === 'Queued' && n.expandRoute === 'local'; })
           .slice(0, Math.max(1, Math.min(5, Number(max) || 1))).forEach(function (n) {
             env.table('notebook').update(n.id, { expandStatus: 'Expanding', expandClaimed: t.nowIso() });
             out.push(n.id);
@@ -4437,8 +4487,17 @@ function tideTalk(env, t) {
           decisions: cleanList(res.decisions, 20, 300), open: openText(res.open_questions || res.open), openOptions: openOpts(res.open_questions || res.open),
           nextStep: clean(res.next_step || res.nextStep, 400), by: by2, at: now
         };
-        env.table('topics').update(id, { outcome: out, status: 'Done', aiStatus: '', aiNote: '', updated: now });
-        pushOut = ['admin', r.title + ': talked through', 'Filed as ' + kind.toLowerCase() + '. ' + out.summary.slice(0, 140)];
+        var fa = res.for_admin || {};
+        out.forAdmin = { title: clean(fa.title, 120) || out.title, summary: clean(fa.summary, 600), decisions: cleanList(fa.decisions, 12, 300) };
+        if (r.private) {
+          // hers: nothing reaches the admin until she has seen exactly what will, and sent it
+          out.shareState = 'Waiting';
+          env.table('topics').update(id, { outcome: out, status: 'Done', aiStatus: '', aiNote: '', updated: now });
+          pushOut = ['artist', r.title + ': all written up', 'Have a look at what Jye will see before anything goes to him.'];
+        } else {
+          env.table('topics').update(id, { outcome: out, status: 'Done', aiStatus: '', aiNote: '', updated: now });
+          pushOut = ['admin', r.title + ': talked through', 'Filed as ' + kind.toLowerCase() + '. ' + out.summary.slice(0, 140)];
+        }
       } else if (tb === 'pipeline' && r.aiJob === 'checks') {
         var checks = withChecks(r.checks, t.list(res.checks).slice(0, 15), 'draft');
         var parts = t.list(r.parts).length ? t.list(r.parts) : t.list(res.parts).slice(0, 20).map(function (p) {
@@ -4457,9 +4516,10 @@ function tideTalk(env, t) {
         var checks2 = t.list(r.checks).map(function (c) {
           var v = byId2[c.id];
           if (!v || (c.status !== 'To check' && !(c.status === 'Problem' && !c.verdict))) return c;
-          var go = v.verdict === 'Go';
+          var go = v.verdict === 'Go', fix = clean(v.action, 300);
+          if (!go && !fix) return c;   // a no go always comes with a fix that makes it a go; without one, it's researched again
           if (go) cleared++; else blocked++;
-          return Object.assign({}, c, { verdict: go ? 'Go' : 'No go', why: clean(v.why, 300), action: go ? '' : clean(v.action, 300), status: go ? 'OK' : 'Problem', by: by2 });
+          return Object.assign({}, c, { verdict: go ? 'Go' : 'No go', why: clean(v.why, 300), action: go ? '' : fix, status: go ? 'OK' : 'Problem', by: by2 });
         });
         env.table('pipeline').update(id, { checks: checks2, aiStatus: '', aiNote: '', aiBy: by2, updated: now,
           log: logAdd(r, by2 + ' cleared ' + cleared + ' check' + (cleared === 1 ? '' : 's') + (blocked ? '; ' + blocked + ' need an action' : '')) });
@@ -4489,7 +4549,7 @@ function tideTalk(env, t) {
   var ai = {
     pending: function () {
       return AI_TABLES.reduce(function (all, tb) {
-        return all.concat(t.rows(tb).filter(function (r) { return r.aiStatus === 'Queued' && r.aiRoute === 'claude'; }));
+        return all.concat(t.rows(tb).filter(function (r) { return !r.locked && r.aiStatus === 'Queued' && r.aiRoute === 'claude'; }));
       }, []);
     },
     sent: function (id) { env.lock(function () { if (rowOf(id)) env.table(tableOf(id)).update(id, { aiStatus: 'Working', aiClaimed: t.nowIso() }); }); },
@@ -4508,7 +4568,7 @@ function tideTalk(env, t) {
       env.lock(function () {
         AI_TABLES.forEach(function (tb) {
           t.rows(tb).forEach(function (r) {
-            if (r.aiStatus === 'Queued' && r.aiRoute === 'local' && Date.parse(r.aiQueued) < env.now().getTime() - mins * 60000) { escalate(r, 'The PC didn’t pick it up within ' + mins + ' minutes'); moved++; }
+            if (!r.locked && r.aiStatus === 'Queued' && r.aiRoute === 'local' && Date.parse(r.aiQueued) < env.now().getTime() - mins * 60000) { escalate(r, 'The PC didn’t pick it up within ' + mins + ' minutes'); moved++; }
           });
         });
       });
@@ -4525,7 +4585,7 @@ function tideTalk(env, t) {
           t.rows(tb).forEach(function (r) {
             if (r.aiStatus === 'Working' && r.aiRoute === 'local' && Date.parse(r.aiClaimed) < now - K.LOCAL_CLAIM_MINS * 60000) env.table(tb).update(r.id, { aiStatus: 'Queued' });
           });
-          t.rows(tb).filter(function (r) { return r.aiStatus === 'Queued' && r.aiRoute === 'local'; }).forEach(function (r) {
+          t.rows(tb).filter(function (r) { return !r.locked && r.aiStatus === 'Queued' && r.aiRoute === 'local'; }).forEach(function (r) {
             if (out.length >= Math.max(1, Math.min(5, Number(max) || 1))) return;
             env.table(tb).update(r.id, { aiStatus: 'Working', aiClaimed: t.nowIso() });
             out.push(r.id);
@@ -4564,7 +4624,7 @@ function tideTalk(env, t) {
     if (!title) t.fail('What would you like to talk through?');
     var res = env.lock(function () {
       var id = env.nextId('TP', 4), now = t.nowIso();
-      env.table('topics').append({ id: id, created: now, createdBy: role, title: title, detail: t.text(p.detail, 2000), status: 'Thinking',
+      env.table('topics').append({ id: id, created: now, createdBy: role, private: role === 'artist', title: title, detail: t.text(p.detail, 2000), status: 'Thinking',
         rounds: [], outcome: null, filed: null, maxQ: K.MAX_Q, updated: now, aiJob: '', aiStatus: '' });
       queue(id, 'round');
       return { id: id };
@@ -4586,7 +4646,7 @@ function tideTalk(env, t) {
     if (!qs.length) t.fail('Add at least one question.');
     var res = env.lock(function () {
       var id = env.nextId('TP', 4), now = t.nowIso();
-      env.table('topics').append({ id: id, created: now, createdBy: forRole, title: title, detail: t.text(p.detail, 2000), status: 'Your turn',
+      env.table('topics').append({ id: id, created: now, createdBy: forRole, private: forRole === 'artist', title: title, detail: t.text(p.detail, 2000), status: 'Your turn',
         rounds: [{ questions: qs, readyToWrap: true, by: who(role), at: now }], outcome: null, filed: null, maxQ: qs.length,
         updated: now, aiJob: '', aiStatus: '' });
       return { id: id };
@@ -4603,7 +4663,7 @@ function tideTalk(env, t) {
     if (!lines.length) t.fail('There are no questions in this note yet.');
     var res = env.lock(function () {
       var id = env.nextId('TP', 4), now = t.nowIso();
-      env.table('topics').append({ id: id, created: now, createdBy: 'artist', title: t.text(n.title, 120),
+      env.table('topics').append({ id: id, created: now, createdBy: 'artist', private: true, title: t.text(n.title, 120),
         detail: t.text('These questions come from a note. Ask exactly these, in this order, one each, each with 2 to 4 suggested answers she can tap. Add nothing else.\n- ' + lines.join('\n- '), 2000),
         status: 'Thinking', rounds: [], outcome: null, filed: null, maxQ: Math.max(1, Math.min(K.MAX_Q, lines.length)), updated: now, aiJob: '', aiStatus: '' });
       queue(id, 'round');
@@ -4641,8 +4701,26 @@ function tideTalk(env, t) {
   }
 
   /** answers: one per question in the open round: {picked: [option indexes], text, skip}. wrap: that's enough for now. */
+  /** She sends the admin what he needs to act on: the decisions she has checked (or nothing at all). */
+  function shareTopic(id, p) {
+    t.need(['artist']);
+    p = p || {};
+    var res = env.lock(function () {
+      var tp = topic(id), o = tp.outcome || {};
+      if (tp.locked) t.fail('Unlock your private writing first.');
+      if (!tp.private) t.fail('This one isn\u2019t private.');
+      if (p.keep === true) { env.table('topics').update(id, { outcome: Object.assign({}, o, { shareState: 'Kept' }), shared: null, updated: t.nowIso() }); return { kept: true }; }
+      var shared = { title: t.text(p.title, 120) || (o.forAdmin && o.forAdmin.title) || 'From ' + env.brand.artistName, summary: t.text(p.summary, 600), decisions: cleanList(p.decisions, 12, 300), at: t.nowIso() };
+      if (!shared.summary && !shared.decisions.length) t.fail('There\u2019s nothing to send. Keep it to yourself instead, or add a line.');
+      env.table('topics').update(id, { outcome: Object.assign({}, o, { shareState: 'Sent' }), shared: shared, updated: t.nowIso() });
+      return { sent: true, title: shared.title };
+    });
+    if (res.sent) { file(id); if (t.push) t.push('admin', 'From ' + env.brand.artistName + ': ' + res.title, 'Decisions to act on are in Tide Book.'); }
+    return res;
+  }
   function answerRound(id, answers, opts) {
     t.need(['admin', 'artist']);
+    if (env.user.role === 'artist') { var tpv = t.rows('topics').filter(function (x) { return x.id === id; })[0]; if (tpv && !tpv.private) env.table('topics').update(id, { private: true }); }
     opts = opts || {};
     var res = env.lock(function () {
       var tp = topic(id), round = openRound(tp);
@@ -4728,13 +4806,17 @@ function tideTalk(env, t) {
     var title = t.text('Talk: ' + (o.title || tp.title), 120);
     if (!filed.noteId) {
       var taken = t.rows('notebook').some(function (n) { return !n.deleted && n.title.toLowerCase() === title.toLowerCase(); });
-      try { filed.noteId = t.saveNote({ title: taken ? t.text(title + ' (' + id + ')', 120) : title, body: noteBody(tp) }).id; } catch (e) { filed.noteError = String(e.message || e); }
+      try { filed.noteId = t.saveNote({ title: taken ? t.text(title + ' (' + id + ')', 120) : title, body: noteBody(tp), private: tp.private === true }).id; } catch (e) { filed.noteError = String(e.message || e); }
     }
+    // a private conversation becomes a product or idea only once she has sent its decisions, and only with those
+    var sent = tp.private ? tp.shared : null;
+    if (tp.private && !sent) { filed.kind = o.kind; env.lock(function () { env.table('topics').update(id, { filed: filed }); }); return filed; }
+    var src = sent ? { title: sent.title, summary: sent.summary, decisions: t.list(sent.decisions), open: [], openOptions: [] } : o;
     if (o.kind === 'Product' && !filed.pipelineId) {
-      filed.pipelineId = env.lock(function () { return addItem({ title: o.title || tp.title, summary: o.summary, stage: 'Decisions', fromTopic: id, decisions: o.decisions, open: t.list(o.open).map(function (q, i) { return { q: q, a: '', options: t.list((o.openOptions || [])[i]) }; }) }); });
+      filed.pipelineId = env.lock(function () { return addItem({ title: src.title || tp.title, summary: src.summary, stage: 'Decisions', fromTopic: id, decisions: src.decisions, open: t.list(src.open).map(function (q, i) { return { q: q, a: '', options: t.list((src.openOptions || [])[i]) }; }) }); });
     }
     if (o.kind === 'Idea' && !filed.ideaId) {
-      try { filed.ideaId = t.createIdea({ kind: 'Other', title: o.title || tp.title, note: (o.summary || '') + (t.list(o.decisions).length ? '\n\nDecided: ' + t.list(o.decisions).join('; ') : ''), scope: [] }).id; } catch (e) { filed.ideaError = String(e.message || e); }
+      try { filed.ideaId = t.createIdea({ kind: 'Other', title: src.title || tp.title, note: (src.summary || '') + (t.list(src.decisions).length ? '\n\nDecided: ' + t.list(src.decisions).join('; ') : ''), scope: [] }).id; } catch (e) { filed.ideaError = String(e.message || e); }
     }
     filed.kind = o.kind;
     env.lock(function () { env.table('topics').update(id, { filed: filed }); });
@@ -4773,7 +4855,7 @@ function tideTalk(env, t) {
     return t.list(existing).concat(t.list(extra).map(function (s) { return typeof s === 'string' ? { item: s } : (s || {}); })
       .filter(function (s) { var k = checkKey(s.item || s.check); if (!k || have[k]) return false; have[k] = true; return true; })
       .map(function (s) {
-        var v = s.verdict === 'Go' ? 'Go' : s.verdict === 'No go' ? 'No go' : '';
+        var v = s.verdict === 'Go' ? 'Go' : s.verdict === 'No go' && String(s.action || '').trim() ? 'No go' : '';   // a no go without its fix is checked again
         return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(s.item || s.check, 300), status: v === 'Go' ? 'OK' : v ? 'Problem' : 'To check', note: '', from: from || '',
           verdict: v, why: t.text(s.why, 300), action: v === 'No go' ? t.text(s.action, 300) : '' };
       }));
@@ -4942,11 +5024,18 @@ function tideTalk(env, t) {
   function snapshot(role) {
     var s = env.settings.get(), fee = Number(setting('paymentFeePct')) || 0, goal = Number(setting('incomeGoalWeekly')) || 200;
     var reg = !!s.gstRegisteredFrom && s.gstRegisteredFrom <= env.today();
-    var topics = t.rows('topics').filter(function (x) { return !x.deleted; }).map(function (x) {
+    var hers = env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist';
+    var topics = t.rows('topics').filter(function (x) { return !x.deleted && (hers || !x.private || x.shared); }).map(function (x) {
+      if (!hers && x.private) {
+        var sh = x.shared;   // what she sent: business decisions only, never her answers
+        return { id: x.id, title: sh.title, detail: '', by: who(x.createdBy), mine: false, status: 'Done', rounds: [], answered: 0, max: 0, min: 0, private: true,
+          outcome: { title: sh.title, summary: sh.summary, decisions: t.list(sh.decisions), open: [], kind: (x.outcome && x.outcome.kind) || 'Other', shareState: 'Sent' },
+          filed: x.filed ? { kind: x.filed.kind, pipelineId: x.filed.pipelineId || '', ideaId: x.filed.ideaId || '' } : null, aiStatus: '', created: x.created, updated: x.updated };
+      }
       return { id: x.id, title: x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status,
         rounds: t.list(x.rounds), answered: asked(x), max: Number(x.maxQ) || K.MAX_Q, min: K.MIN_Q,
         outcome: x.outcome || null, filed: x.filed || null, aiStatus: x.aiStatus || '', aiRoute: x.aiRoute || '', aiNote: x.aiNote || '', aiWhy: x.aiWhy || '',
-        created: x.created, updated: x.updated };
+        private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
     var items = t.rows('pipeline').map(function (r) {
       var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
@@ -5062,7 +5151,7 @@ function tideTalk(env, t) {
 
   return {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
-    api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
+    api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
       createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts }
   };
 }
@@ -5259,7 +5348,7 @@ function tideInspo(env, t) {
     if (!url && !p.hasPhotos && !note) t.fail('Paste a link, add a screenshot, or jot what inspired you.');
     return env.lock(function () {
       var id = env.nextId('IN', 4), now = t.nowIso();
-      env.table('inspiration').append({ id: id, created: now, createdBy: role, url: url, source: sourceOf(url), note: note, tags: tags(p.tags),
+      env.table('inspiration').append({ id: id, created: now, createdBy: role, private: role === 'artist', url: url, source: sourceOf(url), note: note, tags: tags(p.tags),
         photoIds: [], thumbIds: [], folderUrl: '', topicId: '', ideaId: '', deleted: false, updated: now });
       return { id: id };
     });
@@ -5292,9 +5381,11 @@ function tideInspo(env, t) {
     return { topicId: made.id };
   }
 
-  function snapshot() {
+  function snapshot(role) {
     return t.rows('inspiration').filter(function (r) { return !r.deleted; }).map(function (r) {
-      return { id: r.id, url: r.url || '', source: r.source || '', note: r.note || '', tags: t.list(r.tags), thumbIds: t.list(r.thumbIds),
+      // what she writes about it is hers; the admin sees the picture and the link, never her words
+      var hide = r.private && !(env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist');
+      return { id: r.id, url: r.url || '', source: r.source || '', note: hide ? '' : r.note || '', private: r.private === true, locked: r.locked === true, tags: t.list(r.tags), thumbIds: t.list(r.thumbIds),
         photoUrls: t.list(r.photoIds).map(function (x) { return env.files.viewUrl(x); }), topicId: r.topicId || '', by: r.createdBy === 'artist' ? env.brand.artistName : (env.brand.adminName || 'admin'), created: r.created };
     }).sort(function (a, b) { return a.created < b.created ? 1 : -1; });
   }
@@ -8252,10 +8343,11 @@ var Kit = (function () {
   // ------------------------------------------------------------------ Inspiration (LogicInspo.gs)
   function inspoList() { return S.data.inspiration || []; }
   function viewInspo(main) {
-    var all = inspoList(), tag = S.inspoTag || '';
+    var all = inspoList(), tag = S.inspoTag || '', pbi = privacyBar();
+    if (pbi) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pbi), 1));
     main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:14px' },
       h('div', { class: 'title-m', text: 'Saw something that inspired you?' }),
-      h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Save a screenshot or paste the link to the post, and a word on what caught your eye. Kept private, just for you.' }),
+      h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Save a screenshot or paste the link to the post, and a word on what caught your eye.' }),
       btn('filled', 'Save inspiration', { icon: 'add', onclick: function () { openInspo(null); } })), 2));
     if (all.length) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({ row: true, label: 'Show', value: tag, allowNone: true,
       options: [{ value: '', label: 'All' }].concat((S.data.inspoTags || []).filter(function (x) { return all.some(function (i) { return i.tags.indexOf(x) >= 0; }); })),
@@ -8379,8 +8471,115 @@ var Kit = (function () {
     return n;
   }
 
+
+  // ------------------------------------------------------------------ her private writing (the lock lives on the PC)
+  function privacy() { return S.data.privacy || { available: false }; }
+  function isLocked() { var P = privacy(); return P.available && P.mine && P.state === 'locked'; }
+  /** At the top of her notes, conversations and inspiration: what's private, and the lock. The admin gets a plain note instead. */
+  function privacyBar() {
+    var P = privacy();
+    if (ADMIN) return h('div', { class: 'priv-note' }, icon('lock'), h('span', { text: cap(artist()) + '\u2019s own notes, conversations and inspiration notes are private to her. You see only the decisions she chooses to send you.' }));
+    if (!P.available || !P.mine) return null;
+    if (P.state === 'none') return h('div', { class: 'priv-card' }, h('div', { class: 'priv-h' }, icon('lock'), h('b', { text: 'Make your writing private' })),
+      h('p', { text: 'What you write here is yours. Choose a passphrase and it\u2019s locked away, so only you can ever read it.' }),
+      btn('filled', 'Choose a passphrase', { icon: 'lock', onclick: openPrivacySetup }), h('button', { type: 'button', class: 'priv-more', onclick: openPrivacyAbout }, 'How it works'));
+    if (P.state === 'locked') {
+      var pass = K.textField({ label: 'Your passphrase', type: 'password', compact: true, maxlength: 200 });
+      var go = btn('filled', 'Unlock', { icon: 'lock_open', onclick: function () {
+        K.setBusy(go, true);
+        api('vaultUnlock', pass.input.value).then(refresh).then(function () { K.haptic('success'); render(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+      } });
+      pass.input.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
+      return h('div', { class: 'priv-card' }, h('div', { class: 'priv-h' }, icon('lock'), h('b', { text: 'Your private writing is locked' })),
+        h('p', { text: 'Only your passphrase opens it. Nobody else can read it, not even ' + adminName() + '.' }), pass, h('div', { class: 'row', style: 'gap:10px;margin-top:10px;flex-wrap:wrap' }, go,
+          h('button', { type: 'button', class: 'priv-more', onclick: openPrivacyRecover }, 'Forgotten it?')));
+    }
+    return h('div', { class: 'priv-note mine' }, icon('lock'), h('span', { text: 'Private to you. ' + adminName() + ' only sees decisions you choose to send him.' }),
+      h('button', { type: 'button', class: 'priv-more', onclick: function () { api('vaultLock').then(refresh).then(function () { toast('Locked.'); render(); }).catch(fail); } }, 'Lock now'));
+  }
+  function openPrivacyAbout() {
+    K.sheet({ title: 'Your private writing', build: function (ctl) {
+      [['lock', 'Only you can read it', 'Your notes, what you say when you talk things through, and what you write about your inspiration are locked with a passphrase only you know. They\u2019re stored scrambled on the family computer, so nobody can open them there either.'],
+        ['visibility_off', adminName() + ' doesn\u2019t see it', 'Not in the app, and not on the computer. When something you\u2019ve talked through becomes a decision for the business, like a product, a price or a date, you\u2019ll see exactly what ' + adminName() + ' will get, and nothing goes to him until you send it.'],
+        ['auto_awesome', 'Your helpers still work', 'While you\u2019re signed in, your helpers can read your writing to grow your notes and ask you questions. Sometimes a helper outside the house reads a piece for a moment to help; it isn\u2019t kept.'],
+        ['key', 'Keep your passphrase safe', 'You\u2019ll get a recovery code when you set it up. Write it down and keep it somewhere safe: it\u2019s the only way back in if you forget your passphrase.']]
+        .forEach(function (r) { ctl.body.appendChild(h('div', { class: 'priv-row' }, icon(r[0]), h('div', {}, h('b', { text: r[1] }), h('p', { text: r[2] })))); });
+    } });
+  }
+  function openPrivacySetup() {
+    K.sheet({ title: 'Choose a passphrase', build: function (ctl) {
+      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'A few words you\u2019ll remember, like a line from a favourite song or place. At least 8 letters. Only you will know it.' }));
+      var a = K.textField({ label: 'Passphrase', type: 'password', maxlength: 200 }), b = K.textField({ label: 'Once more', type: 'password', maxlength: 200 });
+      ctl.body.append(h('div', { class: 'field-gap' }, a, b));
+      var go = btn('filled', 'Lock my writing', { icon: 'lock', lg: true, block: true, onclick: function () {
+        if (a.input.value.length < 8) { toast('Use at least 8 letters or words.'); return; }
+        if (a.input.value !== b.input.value) { toast('Those two don\u2019t match.'); return; }
+        K.setBusy(go, true);
+        api('vaultSetup', a.input.value).then(function (r) {
+          ctl.body.textContent = ''; ctl.foot.textContent = '';
+          ctl.body.appendChild(h('div', { class: 'priv-done' }, icon('check_circle', true), h('b', { text: 'Locked. Only you can read it now.' }),
+            h('p', { text: 'Here\u2019s your recovery code. Write it down and keep it somewhere safe, away from your phone. It\u2019s the only way back in if you forget your passphrase, and it won\u2019t be shown again.' }),
+            h('div', { class: 'priv-code', text: r.recovery })));
+          ctl.foot.appendChild(btn('filled', 'I\u2019ve written it down', { lg: true, block: true, onclick: function () { refresh().then(function () { ctl.close(); render(); }); } }));
+        }).catch(function (e) { K.setBusy(go, false); fail(e); });
+      } });
+      ctl.foot.appendChild(go);
+      ctl.foot.appendChild(h('button', { type: 'button', class: 'priv-more', style: 'display:block;margin:10px auto 0', onclick: openPrivacyAbout }, 'How it works'));
+    } });
+  }
+  function openPrivacyRecover() {
+    K.sheet({ title: 'Use your recovery code', build: function (ctl) {
+      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'The code you wrote down when you set this up, and a new passphrase to use from now on.' }));
+      var c = K.textField({ label: 'Recovery code', maxlength: 40 }), n = K.textField({ label: 'New passphrase', type: 'password', maxlength: 200 });
+      ctl.body.append(h('div', { class: 'field-gap' }, c, n));
+      var go = btn('filled', 'Unlock', { icon: 'lock_open', lg: true, block: true, onclick: function () {
+        K.setBusy(go, true);
+        api('vaultRecover', c.input.value, n.input.value).then(refresh).then(function () { K.haptic('success'); toast('Unlocked, with your new passphrase.'); ctl.close(); render(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+      } });
+      ctl.foot.appendChild(go);
+    } });
+  }
+  /** After a conversation: exactly what the admin will see, hers to change, and nothing goes until she sends it. */
+  function shareCard(tp, reopen) {
+    var o = tp.outcome || {}, fa = o.forAdmin || {}, st = o.shareState;
+    var sec = sheetSection('What ' + adminName() + ' will see');
+    if (st === 'Sent') {
+      var sh = tp.shared || {};
+      sec.appendChild(h('div', { class: 'priv-sent' }, icon('check_circle'), h('div', {}, h('b', { text: 'Sent: ' + (sh.title || '') }), sh.summary ? h('p', { text: sh.summary }) : null,
+        (sh.decisions || []).length ? h('ul', { class: 'talk-list' }, sh.decisions.map(function (d) { return h('li', { text: d }); })) : null)));
+      sec.appendChild(h('p', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Everything else you said stays private to you.' }));
+      return sec;
+    }
+    if (st === 'Kept') { sec.appendChild(h('p', { class: 'body-m', text: 'You kept all of this to yourself. Nothing went to ' + adminName() + '.' })); return sec; }
+    sec.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 10px', text: 'Only the business side: what to make or do. Nothing personal goes, and nothing is sent until you tap Send. Change or remove anything.' }));
+    var f = { title: fa.title || o.title || '', summary: fa.summary || '', decisions: (fa.decisions || []).slice() };
+    var lines = h('div', { class: 'field-gap' });
+    function draw() {
+      lines.textContent = '';
+      f.decisions.forEach(function (d, i) {
+        lines.appendChild(h('div', { class: 'row', style: 'gap:6px;align-items:flex-start' }, h('div', { class: 'grow' }, K.textField({ label: 'Decision ' + (i + 1), value: d, compact: true, maxlength: 300, onInput: function (v) { f.decisions[i] = v; } })),
+          K.iconBtn('close', 'Leave this out', function () { f.decisions.splice(i, 1); draw(); })));
+      });
+      if (!f.decisions.length) lines.appendChild(h('p', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'No decisions to send.' }));
+    }
+    draw();
+    sec.append(h('div', { class: 'field-gap' }, K.textField({ label: 'Name', value: f.title, compact: true, maxlength: 120, onInput: function (v) { f.title = v; } }),
+      K.textField({ label: 'In short', value: f.summary, multiline: true, compact: true, maxlength: 600, onInput: function (v) { f.summary = v; } })), lines,
+      h('div', { style: 'margin-top:6px' }, btn('text', 'Add a line', { icon: 'add', sm: true, onclick: function () { f.decisions.push(''); draw(); } })));
+    var send = btn('filled', 'Send to ' + adminName(), { icon: 'send', block: true, onclick: function () {
+      K.setBusy(send, true);
+      api('shareTopic', tp.id, { title: f.title, summary: f.summary, decisions: f.decisions.filter(function (x) { return String(x).trim(); }) })
+        .then(refresh).then(function () { K.haptic('success'); toast('Sent. The rest stays with you.'); reopen(); }).catch(function (e) { K.setBusy(send, false); fail(e); });
+    } });
+    var keep = btn('text', 'Keep it all to myself', { onclick: function () { api('shareTopic', tp.id, { keep: true }).then(refresh).then(reopen).catch(fail); } });
+    sec.appendChild(h('div', { class: 'field-gap', style: 'margin-top:12px' }, send, keep));
+    return sec;
+  }
+
   function viewTalk(main) {
-    var T = talkData();
+    var T = talkData(), pb = privacyBar();
+    if (pb) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pb), 1));
+    if (isLocked()) return;
     main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:16px' },
       h('div', { class: 'title-m', text: 'Talk something through' }),
       h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Name anything: a product, a painting, a story, something about Tide Book. You’ll get a few questions at a time, 10 to 20 in all, then it’s written up and filed in the right place.' }),
@@ -8497,6 +8696,8 @@ var Kit = (function () {
           var o = tp.outcome, f = tp.filed || {};
           ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, chip(o.kind, 'outline', TALK_ICON[o.kind] || 'category')));
           if (o.summary) ctl.body.appendChild(h('p', { class: 'body-l', style: 'margin-bottom:14px', text: o.summary }));
+          if (!ADMIN && tp.private && o.shareState) ctl.body.appendChild(shareCard(tp, reopen));
+          if (ADMIN && tp.private) ctl.body.appendChild(h('div', { style: 'margin-bottom:14px' }, note('Sent by ' + cap(artist()) + '. Only these decisions came to you; her conversation stays private to her.', 'lock')));
           function list(title, items) {
             if (!items.length) return;
             var s = sheetSection(title), ul = h('ul', { class: 'talk-list' });
@@ -8893,6 +9094,9 @@ var Kit = (function () {
   }
 
   function viewNotebook(main) {
+    var pbn = privacyBar();
+    if (pbn) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pbn), 1));
+    if (isLocked() && !S.data.notebook.some(function (n) { return !n.locked; })) return;
     var listEl = h('div');
     function draw() {
       var q = (S.noteQuery || '').trim().toLowerCase();

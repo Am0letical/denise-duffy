@@ -3288,9 +3288,12 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   // the + tag; pass an image key (or an artwork), and optionally a product to open on
   function tag(k, a, p, cls) {
     a = a || art(SOURCE[k]); if (!buyable(a) || (p && !canBuy(a, p))) return '';
-    var price = p ? from(p) : lowest(a), label = p && p !== a.products[0] ? p.name : a.title;
-    return '<button class="qa' + (cls ? ' ' + cls : '') + '" type="button" data-qa="' + a.id + '"' + (p ? ' data-qa-p="' + p.id + '"' : '') + ' aria-label="Buy ' + esc(label) + ' from here, from ' + money(price) + '">' +
-      '<i aria-hidden="true">+</i><em aria-hidden="true">' + (p && p.options.length < 2 ? '' : 'from ') + money(price) + '</em><span aria-hidden="true">' + esc(label) + '</span></button>';
+    var label = p && p !== a.products[0] ? p.name : a.title;
+    // just a plus: the price shows where you choose. An original isn't dropped in a cart: its plus opens the piece
+    var buyP = p || a.products.filter(function (x) { return canBuy(a, x); })[0];
+    if (buyP && buyP.type === 'Original') return '<a class="qa' + (cls ? ' ' + cls : '') + '" href="#/a/' + a.id + '/' + buyP.id + '" aria-label="See ' + esc(a.title) + ', the original"><i aria-hidden="true">+</i><span aria-hidden="true">' + esc(a.title) + '</span></a>';
+    return '<button class="qa' + (cls ? ' ' + cls : '') + '" type="button" data-qa="' + a.id + '"' + (p ? ' data-qa-p="' + p.id + '"' : '') + ' aria-label="Add ' + esc(label) + '">' +
+      '<i aria-hidden="true">+</i><span aria-hidden="true">' + esc(label) + '</span></button>';
   }
   // a small thumbnail of a piece that adds it
   function thumb(a, here) {
