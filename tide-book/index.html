@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -841,6 +841,47 @@ img, video { max-width: 100%; }
 .welcome-item { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border: 0; border-radius: 12px; background: transparent; text-align: left; color: var(--on-surface); font: 400 14px/20px var(--font); }
 .welcome-item .ic { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex: none; background: var(--surface-high); color: var(--primary); }
 .welcome-item > .ms { color: var(--on-surface-variant); }
+
+/* ---------- checks: closed loops, go or no go ---------- */
+.check-sum { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.chk-pill { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px 0 7px; border-radius: 999px; font: 500 12px/16px var(--font); }
+.chk-pill .ms { font-size: 16px; }
+.chk-pill.go { background: #d9f1df; color: #1d5b2c; }
+.chk-pill.nogo { background: #fde3d6; color: #7a3315; }
+.chk-pill.wait { background: var(--surface-high); color: var(--on-surface-variant); }
+.check-card { background: var(--surface-lowest, #fff); border: 1px solid var(--hairline); border-radius: 16px; padding: 12px 12px 12px 14px; margin-bottom: 10px; }
+.check-card.nogo { border-color: #f3c3ad; }
+.chk-ic { color: var(--on-surface-variant); margin-top: 1px; }
+.check-card.nogo .chk-ic { color: #b4532a; }
+.chk-why { color: var(--on-surface-variant); margin-top: 3px; }
+.chk-action { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #fdf0e8; color: #5c2a12; font: 400 14px/20px var(--font); }
+.chk-done { display: flex; gap: 8px; align-items: flex-start; padding: 8px 2px; }
+.chk-done > .ms { color: #2e7d45; font-size: 18px; margin-top: 1px; }
+.chk-undo { border: 0; background: none; color: var(--primary); font: 500 12px/16px var(--font); padding: 4px; }
+
+/* ---------- first-time walkthroughs ---------- */
+.tut { text-align: center; padding: 8px 8px 4px; }
+.tut-ic { width: 72px; height: 72px; margin: 4px auto 14px; border-radius: 24px; display: flex; align-items: center; justify-content: center; background: var(--primary-container, #d6e6f7); color: var(--primary); }
+.tut-ic .ms { font-size: 36px; }
+.tut-t { font: 500 20px/26px var(--font); margin: 0 0 6px; }
+.tut-p { margin: 0 auto; max-width: 320px; color: var(--on-surface-variant); }
+.tut-dots { display: flex; justify-content: center; gap: 6px; margin: 16px 0 4px; }
+.tut-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--hairline); transition: width 0.2s; }
+.tut-dots span.on { width: 20px; border-radius: 4px; background: var(--primary); }
+
+/* ---------- ads ---------- */
+.ad-sum { display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 16px; background: var(--surface-high); }
+.ad-line { display: flex; gap: 12px; align-items: flex-start; }
+.ad-line > .ms { color: var(--primary); margin-top: 1px; }
+.ad-line b { display: block; font: 500 12px/16px var(--font); letter-spacing: 0.3px; color: var(--on-surface-variant); }
+.ad-line span { font: 400 15px/21px var(--font); }
+.ad-facts { display: grid; grid-template-columns: 112px 1fr; gap: 6px 12px; margin: 14px 0 8px; font: 400 14px/20px var(--font); }
+.ad-facts dt { color: var(--on-surface-variant); }
+.ad-facts dd { margin: 0; }
+.ad-plan { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.ad-total { font: 500 16px/22px var(--font); padding: 10px 12px; border-radius: 12px; background: var(--secondary-container); color: var(--on-secondary-container); }
+.ad-date-row { display: flex; align-items: center; gap: 12px; }
+.ad-date { flex: 1; height: 44px; padding: 0 12px; border: 1px solid var(--outline, #c9c2b8); border-radius: 10px; background: transparent; font: 400 15px/20px var(--font); color: var(--on-surface); }
 </style>
 
   <script>
@@ -1055,7 +1096,11 @@ var TIDE_SCHEMAS = {
       ['artistDecision', 'Artist decision', 'text'], ['adminDecision', 'Admin decision', 'text'],
       ['rejectedBy', 'Rejected by', 'text'], ['rejectReason', 'Reject reason', 'text'], ['decided', 'Decided', 'date'],
       ['clash', 'Clash', 'text'], ['remindAt', 'Post at', 'date'], ['reminded', 'Reminded', 'bool'],
-      ['source', 'Source', 'text'], ['updated', 'Updated', 'date']
+      ['source', 'Source', 'text'],
+      ['adStatus', 'Ad status', 'text'], ['adResearch', 'Ad research', 'json'], ['adPlan', 'Ad plan', 'json'], ['adNote', 'Ad note', 'text'],
+      ['adTries', 'Ad tries', 'number'], ['adAt', 'Ad researched', 'date'], ['adConfirmedAt', 'Ad confirmed', 'date'], ['adStarted', 'Ad started', 'date'],
+      ['adFinished', 'Ad finished', 'date'], ['adMeta', 'Ad in Meta', 'json'],
+      ['updated', 'Updated', 'date']
     ]
   },
   rounds: {
@@ -1775,6 +1820,7 @@ function createTideLogic(env) {
     else if (kind === 'product') { talk.research.sent([id]); talk.research.save(id, result, by); }
     else if (kind === 'talk') { talk.ai.sent(id); talk.ai.save(id, result, by); }
     else if (kind === 'note') { notebook.expand.sent([id]); notebook.expand.save(id, result, by); }
+    else if (kind === 'ad') { ads.research.sent([id]); ads.research.save(id, result, by); }
     else fail('Unknown kind of job: ' + kind);
     return { ok: true };
   }
@@ -2225,6 +2271,12 @@ function createTideLogic(env) {
     salesCache = null;
     var prints = rows('prints').map(function (p) { return clientPrint(p, role, s, registered); }).reverse();
     var studioData = content.snapshot(role), publishData = publish.snapshot(role);
+    // each ad carries its research and plan (the artist sees the short version)
+    var byIdC = {}; rows('content').forEach(function (c) { byIdC[c.id] = c; });
+    studioData.content.forEach(function (c) { var raw = byIdC[c.id]; var v = raw ? ads.view(raw, role) : null; if (v) c.ad = v; });
+    if (role === 'admin') ads.waiting().forEach(function (a) {
+      publishData.todo.unshift({ key: 'ad-' + a.id, text: 'Confirm the ad plan for “' + a.title + '”', why: 'The research is in. Check the budget, audience and dates, adjust anything, then confirm.', where: 'Content › the post' });
+    });
     return {
       role: role, brand: env.brand, today: today,
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
@@ -2307,6 +2359,9 @@ function createTideLogic(env) {
     publish: publish, consentHit: consentHit
   });
 
+  // ---------- ads (LogicAds.gs)
+  var ads = tideAds(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: publish.push });
+
   // ---------- admin hub (LogicHub.gs)
   var hub = tideHub(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso });
 
@@ -2352,6 +2407,7 @@ function createTideLogic(env) {
     siteData: siteData,
     consentHit: consentHit,
     publishFeed: publishFeed,
+    ads: ads,
     fyOf: fyOf
   };
   Object.keys(content.api).forEach(function (k) { out.api[k] = content.api[k]; });
@@ -2363,6 +2419,7 @@ function createTideLogic(env) {
   Object.keys(inspo.api).forEach(function (k) { out.api[k] = inspo.api[k]; });
   Object.keys(direction.api).forEach(function (k) { out.api[k] = direction.api[k]; });
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
+  Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
   return out;
 }
 
@@ -3310,14 +3367,13 @@ function tideHub(env, t) {
  */
 
 var TIDE_PUBLISH = {
-  // Automatic posting (the TGS port: Meta posting, learned times, results) stays off in code until TGS
-  // meets the standard. Everygen edits still run; approved posts wait in Ready to be posted by hand.
-  // Set to true, redeploy, then connect Facebook in Admin › Settings to turn it on.
-  DIRECT_POSTING: false,
+  // Automatic posting (the TGS port: Meta posting, learned times, results): green-lit by the admin, 2026-11-16.
+  // Still off until Facebook is connected in Admin › Settings and posting is switched on, and a dry run comes first.
+  DIRECT_POSTING: true,
   EDIT_FORMATS: ['Reel', 'Story'],
-  AUTO_FORMATS: { 'Photo post': ['instagram', 'facebook'], 'Carousel': ['instagram', 'facebook'], 'Reel': ['instagram', 'facebook'] },
-  // Stories and ads are posted by hand: Stories need the phone, ads go through Ads Manager.
-  MANUAL_FORMATS: ['Story', 'Ad'],
+  AUTO_FORMATS: { 'Photo post': ['instagram', 'facebook'], 'Carousel': ['instagram', 'facebook'], 'Reel': ['instagram', 'facebook'], 'Ad': ['instagram', 'facebook'] },
+  // Stories are posted by hand (they need the phone). An Ad goes up as a post, then is promoted (LogicAds.gs).
+  MANUAL_FORMATS: ['Story'],
   CLAIM_HOURS: 6,                 // a claimed edit that never comes back is released after this
   RESULT_HOURS: 48,               // a post's views are judged at this age
   HEALTH_WORDS: ['cure', 'cures', 'heal', 'heals', 'healing power', 'treat', 'treats', 'treatment', 'therapy', 'therapeutic',
@@ -4209,7 +4265,7 @@ function tideTalk(env, t) {
   /** Queues an AI job on a topic or pipeline row. Facts-heavy jobs go straight to Claude when it's there. */
   function queue(id, job, opts) {
     opts = opts || {};
-    var needsFacts = job === 'checks';
+    var needsFacts = job === 'checks' || job === 'clear';
     var route = opts.claude || needsFacts || !localFirst() ? 'claude' : 'local';
     if (route === 'claude' && !env.features.research) {
       if (localFirst()) route = 'local';
@@ -4247,6 +4303,7 @@ function tideTalk(env, t) {
       kind: 'product', job: r.aiJob, title: r.title, summary: r.summary || '', stage: r.stage,
       decisions: t.list(r.decisions), open: t.list(r.open), parts: t.list(r.parts), checks: t.list(r.checks),
       sample: r.sample || {}, price: (r.pricing || {}).price || 0,
+      toClear: t.list(r.checks).filter(function (c) { return c.status === 'To check' || (c.status === 'Problem' && !c.verdict); }).map(function (c) { return { id: c.id, item: c.item }; }),
       steer: tideSteer(tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()))
     };
   }
@@ -4288,16 +4345,30 @@ function tideTalk(env, t) {
         env.table('topics').update(id, { outcome: out, status: 'Done', aiStatus: '', aiNote: '', updated: now });
         pushOut = ['admin', r.title + ': talked through', 'Filed as ' + kind.toLowerCase() + '. ' + out.summary.slice(0, 140)];
       } else if (tb === 'pipeline' && r.aiJob === 'checks') {
-        var checks = t.list(r.checks).concat(t.list(res.checks).slice(0, 15).map(function (c) {
-          return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: clean(c && c.item, 300), status: 'To check', note: clean(c && c.how, 300), ai: true };
-        }).filter(function (c) { return c.item; }));
+        var checks = withChecks(r.checks, t.list(res.checks).slice(0, 15), 'draft');
         var parts = t.list(r.parts).length ? t.list(r.parts) : t.list(res.parts).slice(0, 20).map(function (p) {
           return { part: clean(p && p.part, 120), supplier: clean(p && p.supplier, 120), cost: 0, qty: Math.max(1, Math.round(Number(p && p.qty) || 1)), ai: true };
         }).filter(function (p) { return p.part; });
         var risks = cleanList(res.risks, 10, 300);
         env.table('pipeline').update(id, { checks: checks, parts: parts, risks: risks, aiStatus: '', aiNote: '', aiBy: by2, updated: now,
           log: logAdd(r, by2 + ' drafted ' + checks.length + ' checks and ' + parts.length + ' parts (to verify)') });
-        pushOut = ['admin', r.title + ': checks drafted', 'Everything is marked "to check" until you confirm it.'];
+        var nogo = checks.filter(function (c) { return c.status === 'Problem'; }).length;
+        pushOut = ['admin', r.title + ': checks drafted', nogo ? nogo + ' need an action before it\u2019s a go.' : 'Everything checked so far is a go.'];
+      } else if (tb === 'pipeline' && r.aiJob === 'clear') {
+        // closed loop: every open check gets a go or no go, and the simplest action that makes it a go
+        var byId2 = {};
+        t.list(res.verdicts).forEach(function (v) { if (v && v.id) byId2[v.id] = v; });
+        var cleared = 0, blocked = 0;
+        var checks2 = t.list(r.checks).map(function (c) {
+          var v = byId2[c.id];
+          if (!v || (c.status !== 'To check' && !(c.status === 'Problem' && !c.verdict))) return c;
+          var go = v.verdict === 'Go';
+          if (go) cleared++; else blocked++;
+          return Object.assign({}, c, { verdict: go ? 'Go' : 'No go', why: clean(v.why, 300), action: go ? '' : clean(v.action, 300), status: go ? 'OK' : 'Problem', by: by2 });
+        });
+        env.table('pipeline').update(id, { checks: checks2, aiStatus: '', aiNote: '', aiBy: by2, updated: now,
+          log: logAdd(r, by2 + ' cleared ' + cleared + ' check' + (cleared === 1 ? '' : 's') + (blocked ? '; ' + blocked + ' need an action' : '')) });
+        pushOut = ['admin', r.title + ': checks done', blocked ? cleared + ' are a go; ' + blocked + ' need one small action each.' : 'Every check is a go.'];
       } else if (tb === 'reports' && r.aiJob === 'triage') {
         var tri = {
           summary: clean(res.summary, 600), type: ['Bug', 'Idea', 'Question', 'Confusing'].indexOf(res.type) >= 0 ? res.type : 'Bug',
@@ -4601,10 +4672,16 @@ function tideTalk(env, t) {
     ];
   }
   function checkKey(s) { return String(s || '').toLowerCase().replace(/[^a-z]+/g, ' ').trim().slice(0, 40); }
+  /** Adds checks (plain text, or { item, verdict, why, action } from research) that aren't there yet. */
   function withChecks(existing, extra, from) {
     var have = {}; t.list(existing).forEach(function (c) { have[checkKey(c.item)] = true; });
-    return t.list(existing).concat(t.list(extra).filter(function (s) { var k = checkKey(s); if (!k || have[k]) return false; have[k] = true; return true; })
-      .map(function (s) { return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(s, 300), status: 'To check', note: '', from: from || '' }; }));
+    return t.list(existing).concat(t.list(extra).map(function (s) { return typeof s === 'string' ? { item: s } : (s || {}); })
+      .filter(function (s) { var k = checkKey(s.item || s.check); if (!k || have[k]) return false; have[k] = true; return true; })
+      .map(function (s) {
+        var v = s.verdict === 'Go' ? 'Go' : s.verdict === 'No go' ? 'No go' : '';
+        return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(s.item || s.check, 300), status: v === 'Go' ? 'OK' : v ? 'Problem' : 'To check', note: '', from: from || '',
+          verdict: v, why: t.text(s.why, 300), action: v === 'No go' ? t.text(s.action, 300) : '' };
+      }));
   }
 
   function addItem(p) {
@@ -4644,7 +4721,8 @@ function tideTalk(env, t) {
         out.checks = t.list(ch.checks).slice(0, 40).map(function (c) {
           c = c || {};
           return { id: /^C[A-Z0-9]{3,8}$/.test(String(c.id)) ? c.id : 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(c.item, 300),
-            status: K.CHECK_STATUS.indexOf(c.status) >= 0 ? c.status : 'To check', note: t.text(c.note, 300), ai: c.ai === true };
+            status: K.CHECK_STATUS.indexOf(c.status) >= 0 ? c.status : 'To check', note: t.text(c.note, 300), ai: c.ai === true,
+            verdict: c.verdict === 'Go' || c.verdict === 'No go' ? c.verdict : '', why: t.text(c.why, 300), action: t.text(c.action, 300), from: t.text(c.from, 20) };
         }).filter(function (c) { return c.item; });
         what.push('checks');
       }
@@ -4744,7 +4822,7 @@ function tideTalk(env, t) {
   /** AI drafts: 'checks' (parts, checks, risks, to verify) or 'copy' (listing and launch posts in her voice). */
   function draftItem(id, job) {
     t.need(['admin', 'artist']);
-    t.oneOf(job, ['checks', 'copy'], 'what to draft');
+    t.oneOf(job, ['checks', 'copy', 'clear'], 'what to draft');
     var res = env.lock(function () {
       var r = item(id);
       if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') t.fail('Already working on it.');
@@ -4815,7 +4893,7 @@ function tideTalk(env, t) {
         costing: { low: num(c.unit_cost_low), high: num(c.unit_cost_high), price: num(c.suggested_price), notes: t.text(c.notes, 400) },
         comparables: t.list(res.comparables).slice(0, 6).map(function (x) { x = x || {}; return { name: t.text(x.name, 120), price: num(x.price_aud), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.name; }),
         risks: cleanList(res.risks, 4, 240),
-        legal: cleanList(res.legal_checks, 8, 300),
+        legal: t.list(res.legal_checks).slice(0, 8).map(function (c) { return typeof c === 'string' ? { check: t.text(c, 300) } : { check: t.text(c && c.check, 300), verdict: c && c.verdict, why: t.text(c && c.why, 300), action: t.text(c && c.action, 300) }; }).filter(function (c) { return c.check; }),
         sources: t.list(res.sources).slice(0, 10).map(function (x) { x = x || {}; return { title: t.text(x.title, 120), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.url; })
       };
       var pushed = null;
@@ -4826,6 +4904,7 @@ function tideTalk(env, t) {
         pushed = r.title;
       });
       if (pushed && t.push) t.push('admin', pushed + ': market research is in', clean.verdict + ', ' + clean.viability + '/100. Suppliers, costing and demand are on the product.');
+      clearSoon(id);
       return true;
     },
     fail: function (id, why, permanent) {
@@ -4836,6 +4915,17 @@ function tideTalk(env, t) {
       });
     }
   };
+  /** Queues clearing of any open checks, if nothing else is being drafted. Quietly does nothing when it can't. */
+  function clearSoon(id) {
+    try {
+      env.lock(function () {
+        var r = rowOf(id);
+        if (!r || r.aiStatus === 'Queued' || r.aiStatus === 'Working') return;
+        if (!t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return;
+        queue(id, 'clear');
+      });
+    } catch (e) { /* the AI may be off: the checks wait for a person */ }
+  }
   /** Research (again) on request. */
   function researchItem(id) {
     t.need(['admin', 'artist']);
@@ -5271,6 +5361,191 @@ function tideDirection(env, t) {
 
   return { context: context, snapshot: snapshot,
     api: { addDirection: addDirection, updateDirection: updateDirection, deleteDirection: deleteDirection, ideaToDirection: ideaToDirection } };
+}
+
+/**
+ * Tide Book: ads. Shared by the app and the demo.
+ *
+ * A post that is (or becomes) an Ad gets proper market research straight away: how promising it is, what it
+ * should focus on, who it's for, and a recommended daily budget and length, with the reasoning. The artist sees
+ * a short plain summary; the admin gets the full research and the plan to confirm or adjust. Nothing is spent
+ * until the admin confirms the exact amount. Once confirmed and the post is up, the admin can start it through
+ * Meta (Publish.gs, env.publisher.boost): a dry run first, like posting.
+ *
+ * The research itself runs as a half-price batch with web search (AdResearch.gs), or in Claude chat.
+ */
+
+var TIDE_ADS = {
+  STATUSES: ['', 'Researching', 'Ready', 'Confirmed', 'Running', 'Finished', 'Failed'],
+  MAX_TRIES: 3,
+  // the post must be written before its ad can be researched
+  WRITTEN: ['Suggested', 'Approved', 'Scheduled', 'Held', 'Failed', 'Revising', 'Posted']
+};
+
+function tideAds(env, t) {
+  var A = TIDE_ADS;
+  function row(id) { var c = t.rows('content').filter(function (x) { return x.id === id; })[0]; if (!c) t.fail('That post has been removed.'); return c; }
+  function num(v, lo, hi) { v = Number(v); if (!isFinite(v)) return lo; return Math.max(lo, Math.min(hi, v)); }
+  function money2(v) { return Math.round(num(v, 0, 1e6) * 100) / 100; }
+  function isAd(c) { return c.type === 'Post' && c.format === 'Ad'; }
+
+  // ---------------------------------------------------------------- research (AdResearch.gs / Claude chat)
+  var research = {
+    /** Every written Ad post with no research yet. */
+    pending: function () {
+      return t.rows('content').filter(function (c) {
+        return isAd(c) && A.WRITTEN.indexOf(c.status) >= 0 && !c.adResearch && c.adStatus !== 'Researching' && c.adStatus !== 'Failed';
+      }).map(function (c) {
+        return { id: c.id, title: c.title || '', caption: c.caption || '', platform: c.platform || '', pillar: c.pillar || '', cta: c.cta || '', purpose: c.purpose || '' };
+      });
+    },
+    sent: function (ids) { env.lock(function () { t.list(ids).forEach(function (id) { env.table('content').update(id, { adStatus: 'Researching', adNote: '' }); }); }); },
+    save: function (id, res, by) {
+      res = res || {};
+      var aud = res.audience || {}, b = res.budget || {};
+      var clean = {
+        by: t.text(by || 'Claude', 60), summary: t.text(res.summary, 800),
+        viability: Math.round(num(res.viability, 0, 100)),
+        verdict: ['Strong', 'Promising', 'Uncertain', 'Weak'].indexOf(res.verdict) >= 0 ? res.verdict : 'Uncertain',
+        focus: t.text(res.focus, 400),
+        audience: { who: t.text(aud.who, 300), ageMin: Math.round(num(aud.age_min, 18, 65)), ageMax: Math.round(num(aud.age_max, 18, 65)),
+          places: t.text(aud.places, 200), interests: t.list(aud.interests).slice(0, 8).map(function (x) { return t.text(x, 60); }).filter(String) },
+        budget: { daily: money2(b.daily_aud), days: Math.round(num(b.days, 1, 60)), reasoning: t.text(b.reasoning, 500) },
+        expected: t.text(res.expected_results, 400),
+        risks: t.list(res.risks).slice(0, 4).map(function (x) { return t.text(x, 240); }).filter(String),
+        sources: t.list(res.sources).slice(0, 8).map(function (x) { x = x || {}; return { title: t.text(x.title, 120), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.url; })
+      };
+      if (clean.audience.ageMax < clean.audience.ageMin) clean.audience.ageMax = clean.audience.ageMin;
+      var title = '';
+      env.lock(function () {
+        var c = t.rows('content').filter(function (x) { return x.id === id; })[0]; if (!c) return;
+        env.table('content').update(id, { adResearch: clean, adStatus: 'Ready', adAt: t.nowIso(), adNote: '',
+          adPlan: planFrom(clean), updated: t.nowIso() });
+        title = c.title || 'An ad';
+      });
+      if (title && t.push) t.push('admin', 'Ad plan to confirm: ' + title, clean.verdict + ', ' + clean.viability + '/100 · about $' + clean.budget.daily + ' a day for ' + clean.budget.days + ' days. Check and adjust it on the post.');
+      return true;
+    },
+    fail: function (id, why, permanent) {
+      env.lock(function () {
+        var c = t.rows('content').filter(function (x) { return x.id === id; })[0]; if (!c) return;
+        var tries = (Number(c.adTries) || 0) + 1, again = !permanent && tries < A.MAX_TRIES;
+        env.table('content').update(id, { adStatus: again ? '' : 'Failed', adTries: tries, adNote: t.text(why, 300) });
+      });
+    }
+  };
+  /** The plan starts as the research recommends; the admin adjusts it before confirming. */
+  function planFrom(r) {
+    var start = new Date(env.now().getTime() + 86400000).toISOString().slice(0, 10);
+    return { daily: r.budget.daily, days: r.budget.days, start: start, ageMin: r.audience.ageMin, ageMax: r.audience.ageMax,
+      places: r.audience.places, interests: r.audience.interests.slice(), focus: r.focus };
+  }
+  function cleanPlan(p) {
+    p = p || {};
+    var plan = {
+      daily: money2(p.daily), days: Math.round(num(p.days, 1, 90)), start: /^\d{4}-\d{2}-\d{2}$/.test(String(p.start)) ? String(p.start) : '',
+      ageMin: Math.round(num(p.ageMin, 18, 65)), ageMax: Math.round(num(p.ageMax, 18, 65)), places: t.text(p.places, 200),
+      interests: t.list(p.interests).slice(0, 8).map(function (x) { return t.text(x, 60); }).filter(String), focus: t.text(p.focus, 400)
+    };
+    if (!(plan.daily > 0)) t.fail('Set a daily budget above $0.');
+    if (!plan.start) t.fail('Pick a start date.');
+    if (plan.ageMax < plan.ageMin) t.fail('The oldest age is below the youngest.');
+    return plan;
+  }
+
+  // ---------------------------------------------------------------- the screens
+  /** Research it (again). */
+  function researchAd(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var c = row(id);
+      if (!isAd(c)) t.fail('Only an ad has ad research.');
+      if (c.adStatus === 'Researching') return { ok: true, already: true };
+      if (['Confirmed', 'Running'].indexOf(c.adStatus) >= 0) t.fail('The plan is already set. Change it on the post instead.');
+      env.table('content').update(id, { adResearch: null, adStatus: '', adTries: 0, adNote: '' });
+      return { ok: true };
+    });
+  }
+  /** Admin: confirm the plan, with any changes. The exact spend is shown back. */
+  function confirmAd(id, p) {
+    t.need(['admin']);
+    return env.lock(function () {
+      var c = row(id);
+      if (!isAd(c)) t.fail('Only an ad has a plan.');
+      if (c.adStatus === 'Running') t.fail('It’s already running.');
+      var plan = cleanPlan(p);
+      env.table('content').update(id, { adPlan: plan, adStatus: 'Confirmed', adConfirmedAt: t.nowIso(), updated: t.nowIso() });
+      if (t.push) t.push('artist', 'Your ad is planned: ' + (c.title || 'your post'), '$' + plan.daily + ' a day for ' + plan.days + ' days, from ' + env.localLabel(plan.start + 'T09:00:00') + '.');
+      return { ok: true, total: Math.round(plan.daily * plan.days * 100) / 100 };
+    });
+  }
+  /** Admin: back to the plan stage (before it runs). */
+  function reopenAd(id) {
+    t.need(['admin']);
+    return env.lock(function () {
+      var c = row(id);
+      if (c.adStatus !== 'Confirmed') t.fail('Only a confirmed plan can be reopened.');
+      env.table('content').update(id, { adStatus: 'Ready', updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
+  /** Admin: start it through Meta (needs the post to be up on Facebook), or mark it started by hand. */
+  function startAd(id, byHand) {
+    t.need(['admin']);
+    var c = row(id);
+    if (c.adStatus !== 'Confirmed') t.fail('Confirm the plan first.');
+    var plan = c.adPlan || {};
+    if (byHand === true) {
+      env.lock(function () { env.table('content').update(id, { adStatus: 'Running', adStarted: t.nowIso(), adMeta: { byHand: true }, updated: t.nowIso() }); });
+      return { ok: true, byHand: true };
+    }
+    if (!env.publisher || !env.publisher.boost) t.fail('Starting ads from here isn’t available on this copy. Start it in Ads Manager and mark it started.');
+    var fb = (c.targets || {}).facebook || {};
+    if (!fb.id || fb.status !== 'ok') t.fail('The post needs to be up on Facebook first: the ad promotes that post.');
+    var s = env.settings.get(), acct = String(s.adAccountId || '').replace(/^act_/, '');
+    if (!/^\d{5,20}$/.test(acct)) t.fail('Add the ad account number first (Settings › Posting).');
+    var dry = String(s.postingDryRun) !== 'false' && s.postingDryRun !== false;
+    var res = env.publisher.boost({ account: acct, postId: fb.id, name: c.title || c.id, plan: plan, dryRun: dry });
+    env.lock(function () {
+      env.table('content').update(id, { adStatus: dry ? 'Confirmed' : 'Running', adStarted: dry ? '' : t.nowIso(), adMeta: res, updated: t.nowIso() });
+    });
+    if (!dry && t.push) t.push('both', 'Your ad has started: ' + (c.title || 'your post'), '$' + plan.daily + ' a day for ' + plan.days + ' days.');
+    return { ok: true, dryRun: dry, meta: res };
+  }
+  function finishAd(id) {
+    t.need(['admin']);
+    return env.lock(function () {
+      var c = row(id);
+      if (c.adStatus !== 'Running') t.fail('It isn’t running.');
+      env.table('content').update(id, { adStatus: 'Finished', adFinished: t.nowIso(), updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
+  function saveAdAccount(acct) {
+    t.need(['admin']);
+    var v = String(acct || '').trim().replace(/^act_/, '');
+    if (v && !/^\d{5,20}$/.test(v)) t.fail('The ad account number is just digits (you can leave off “act_”).');
+    env.settings.set({ adAccountId: v });
+    return { ok: true };
+  }
+
+  /** What each post's ad looks like to the screens. The artist gets the plain summary only. */
+  function view(c, role) {
+    if (!isAd(c)) return null;
+    var R = c.adResearch || null, plan = c.adPlan || null;
+    var out = { status: c.adStatus || (R ? 'Ready' : A.WRITTEN.indexOf(c.status) >= 0 ? 'Researching' : ''), at: c.adAt || '', confirmedAt: c.adConfirmedAt || '',
+      started: c.adStarted || '', plan: plan, total: plan ? Math.round(plan.daily * plan.days * 100) / 100 : 0 };
+    if (R) out.summary = { verdict: R.verdict, viability: R.viability, focus: R.focus, who: R.audience.who, daily: R.budget.daily, days: R.budget.days };
+    if (role === 'admin') { out.research = R; out.note = c.adNote || ''; out.meta = c.adMeta || null; out.account = String(env.settings.get().adAccountId || ''); }
+    return out;
+  }
+  /** Admin to-dos: plans waiting for a yes. */
+  function waiting() { return t.rows('content').filter(function (c) { return isAd(c) && c.adStatus === 'Ready'; }).map(function (c) { return { id: c.id, title: c.title || 'An ad' }; }); }
+
+  return {
+    research: research, view: view, waiting: waiting,
+    api: { researchAd: researchAd, confirmAd: confirmAd, reopenAd: reopenAd, startAd: startAd, finishAd: finishAd, saveAdAccount: saveAdAccount }
+  };
 }
 
 </script>
@@ -8216,7 +8491,7 @@ var Kit = (function () {
         ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
         ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Parked. Bring it back when you’re ready.', 'pause_circle')));
-        if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
+        if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.aiJob === 'clear' ? 'Checking each one…' : 'Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
         if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (ADMIN && p.aiNote ? ': ' + p.aiNote : '. Try it again.'), 'warning', 'warn')));
 
         var s1 = sheetSection('What it is');
@@ -8241,21 +8516,58 @@ var Kit = (function () {
         } })));
         ctl.body.appendChild(s3);
 
+        // Checks are closed loops: each ends in a go or no go, and a no go comes with the one simplest action
+        // that makes it a go. Cleared ones fold away; what's left is a short list of things to do.
         var s4 = sheetSection('Checks'), ck = h('div');
+        var clearing = p.aiJob === 'clear' && (p.aiStatus === 'Queued' || p.aiStatus === 'Working');
         function drawChecks() {
           ck.textContent = '';
-          f.checks.forEach(function (c, i) {
-            ck.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
-              h('div', { class: 'body-m', text: c.item }), c.ai ? h('div', { class: 'body-s', style: 'color:var(--on-surface-variant);margin-top:2px', text: 'A suggestion: worth a double-check' }) : null,
-              h('div', { class: 'row check-row' }, h('div', { class: 'grow' }, K.choices({ row: true, label: 'Status', value: c.status, options: T.checkStatus, onChange: function (v) { c.status = v; touch(); } })),
-                K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); })),
-              K.textField({ suggest: ['Confirmed', 'Waiting to hear back', 'Needs a quote', 'Not needed'], suggestReplace: true, label: 'Note', value: c.note, compact: true, maxlength: 300, onInput: function (v) { c.note = v; touch(); } })));
+          var open = [], done = [];
+          f.checks.forEach(function (c, i) { (c.status === 'OK' ? done : open).push({ c: c, i: i }); });
+          var nogo = open.filter(function (x) { return x.c.status === 'Problem'; }).length, unknown = open.length - nogo;
+          ck.appendChild(h('div', { class: 'check-sum' },
+            h('span', { class: 'chk-pill go' }, icon('check_circle'), done.length + ' a go'),
+            nogo ? h('span', { class: 'chk-pill nogo' }, icon('flag'), nogo + ' to sort') : null,
+            unknown ? h('span', { class: 'chk-pill wait' }, icon(clearing ? 'hourglass_top' : 'help'), unknown + (clearing ? ' being checked' : ' not checked yet')) : null));
+          open.forEach(function (x) {
+            var c = x.c, i = x.i, isNo = c.status === 'Problem';
+            var card = h('div', { class: 'check-card' + (isNo ? ' nogo' : '') },
+              h('div', { class: 'row', style: 'gap:8px;align-items:flex-start' },
+                h('span', { class: 'chk-ic' }, icon(isNo ? 'flag' : 'help')),
+                h('div', { class: 'grow' }, h('div', { class: 'body-m', text: c.item }),
+                  c.why ? h('div', { class: 'body-s chk-why', text: c.why }) : null),
+                K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); })));
+            if (isNo && c.action) card.appendChild(h('div', { class: 'chk-action' }, h('b', { text: 'To make it a go: ' }), c.action));
+            var row = h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:10px' });
+            if (isNo) {
+              row.appendChild(btn('filled', c.action ? 'Done that' : 'Sorted', { icon: 'check', sm: true, onclick: function () {
+                c.status = 'OK'; c.verdict = 'Go'; c.note = c.action ? 'Done: ' + c.action : 'Sorted'; drawChecks(); touch(); K.haptic('success'); } }));
+            } else {
+              row.appendChild(btn('tonal', 'It\u2019s a go', { icon: 'check', sm: true, onclick: function () { c.status = 'OK'; c.verdict = 'Go'; drawChecks(); touch(); } }));
+              row.appendChild(btn('text', 'No go', { icon: 'flag', sm: true, onclick: function () {
+                K.ask({ title: 'What would make it a go?', label: 'The simplest fix', maxlength: 300, confirmLabel: 'Save' }).then(function (v) {
+                  if (v == null) return; c.status = 'Problem'; c.verdict = 'No go'; c.action = v; drawChecks(); touch(); });
+              } }));
+            }
+            card.appendChild(row);
+            ck.appendChild(card);
           });
+          if (done.length) {
+            var dl = h('details', { class: 'talk-past', style: 'margin-top:6px' }, h('summary', { text: 'A go (' + done.length + ')' }));
+            done.forEach(function (x) {
+              dl.appendChild(h('div', { class: 'chk-done' }, icon('check_circle'), h('div', { class: 'grow' }, h('div', { class: 'body-s', text: x.c.item }),
+                x.c.why || x.c.note ? h('div', { class: 'body-s chk-why', text: x.c.note && /^Done/.test(x.c.note) ? x.c.note : x.c.why || x.c.note }) : null),
+                h('button', { type: 'button', class: 'chk-undo', onclick: function () { x.c.status = 'To check'; x.c.verdict = ''; drawChecks(); touch(); } }, 'Reopen')));
+            });
+            ck.appendChild(dl);
+          }
         }
         drawChecks();
+        var unchecked = f.checks.some(function (c) { return c.status === 'To check'; });
         s4.append(ck, h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:6px' },
-          btn('text', 'Add a check', { icon: 'add', onclick: function () { K.ask({ title: 'Add a check', label: 'What needs confirming?', maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.checks.push({ item: q, status: 'To check', note: '' }); drawChecks(); touch(); } }); } }),
-          btn('tonal', 'Draft checks and parts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'checks'); }).then(refresh).then(function () { toast('Drafting. It’ll appear here shortly.'); reopen(); }).catch(fail); } })));
+          unchecked && !clearing ? btn('filled', 'Check these for me', { icon: 'fact_check', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'clear'); }).then(refresh).then(function () { toast('Checking. Each one comes back as a go, or the one thing to do.'); reopen(); }).catch(fail); } }) : null,
+          btn('text', 'Add a check', { icon: 'add', onclick: function () { K.ask({ title: 'Add a check', label: 'What needs settling?', maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.checks.push({ item: q, status: 'To check', note: '' }); drawChecks(); touch(); } }); } }),
+          btn('text', 'Draft checks and parts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'checks'); }).then(refresh).then(function () { toast('Drafting. It\u2019ll appear here shortly.'); reopen(); }).catch(fail); } })));
         if (p.risks.length) { var rl = h('ul', { class: 'talk-list', style: 'margin-top:10px' }); p.risks.forEach(function (r) { rl.appendChild(h('li', { text: r })); }); s4.append(h('div', { class: 'label-s', style: 'margin:14px 4px 4px', text: 'Risks to watch' }), rl); }
         ctl.body.appendChild(s4);
 
@@ -9657,6 +9969,35 @@ var Kit = (function () {
   }
 
   /** Approve, or discard with a reason. Discarding is final; "Needs changes" is the fix route. */
+  /** The first time she approves a post once posting is automatic: a short walkthrough of what happens next. */
+  function autoPostTutorial() {
+    var P = S.data.posting || {};
+    if (ADMIN || !P.enabled || P.dryRun) return;
+    try { if (localStorage.getItem('tb_tut_autopost')) return; localStorage.setItem('tb_tut_autopost', String(Date.now())); } catch (e) { return; }
+    var steps = [
+      ['schedule', 'It picks a good time', 'Your approved post takes the next good posting time. You’ll find it under Ready, with the day and time.'],
+      ['rocket_launch', 'It goes out by itself', 'At that time it’s posted to Instagram and Facebook for you. Nothing to copy, nothing to remember.'],
+      ['edit', 'Change your mind any time', 'Until it goes out, open it under Ready to change the words, the photos or the time, or take it back.'],
+      ['notifications', 'You’ll hear when it’s up', 'A little buzz on your phone lets you know it’s out.']
+    ].filter(function (st) { return st[0] !== 'notifications' || P.notifyMine; });
+    K.sheet({ title: 'Posts now go out by themselves', build: function (ctl) {
+      var i = 0, box = h('div', { class: 'tut' }), dots = h('div', { class: 'tut-dots' }), next = btn('filled', 'Next', { icon: 'arrow_forward', lg: true, block: true });
+      function draw() {
+        var st = steps[i];
+        box.textContent = '';
+        box.appendChild(h('div', { class: 'tut-ic' }, icon(st[0], true)));
+        box.appendChild(h('h3', { class: 'tut-t', text: st[1] }));
+        box.appendChild(h('p', { class: 'body-m tut-p', text: st[2] }));
+        dots.textContent = '';
+        steps.forEach(function (_, j) { dots.appendChild(h('span', { class: j === i ? 'on' : '' })); });
+        K.setLabel(next, i === steps.length - 1 ? 'Lovely, got it' : 'Next');
+      }
+      next.addEventListener('click', function () { K.haptic(); if (i < steps.length - 1) { i++; draw(); } else ctl.close(); });
+      ctl.body.append(box, dots);
+      ctl.foot.appendChild(next);
+      draw();
+    } });
+  }
   function decide(c, decision, buttons, after) {
     function send(reason) {
       buttons.forEach(function (b) { b.disabled = true; });
@@ -9666,7 +10007,8 @@ var Kit = (function () {
         else if (c.type === 'Shot') toast('Added to the list.');
         else undoCard(res.status === 'Approved' || res.status === 'Scheduled' ? 'Approved. It’s under Ready.' : 'Approved. Waiting for ' + otherName() + '.', function () { return api('undoApproval', c.id); }, 'Back in review.');
         return refresh();
-      }).then(function () { render(); if (after) after(); }).catch(function (e) { buttons.forEach(function (b) { b.disabled = false; }); fail(e); });
+      }).then(function () { render(); if (after) after(); if (decision === 'approve' && c.type !== 'Shot') setTimeout(autoPostTutorial, 700); })
+        .catch(function (e) { buttons.forEach(function (b) { b.disabled = false; }); fail(e); });
     }
     if (decision === 'approve') { send(''); return; }
     K.ask({ title: c.type === 'Shot' ? 'Why not this one?' : 'Discard this post?', text: c.type === 'Shot' ? 'A short reason helps the next suggestions fit better.' : 'It won’t be redrafted. A short reason helps the next ones fit better.',
@@ -9772,7 +10114,7 @@ var Kit = (function () {
       icon('play_circle', true), h('span', { class: 'grow', text: 'Watch the edited video' }), chip('Edited in Everygen', 'approved')), body);
     else if (c.editStatus === 'Skipped' && mode === 'review') card.insertBefore(h('div', { class: 'video-bar off' }, icon('info'), h('span', { class: 'grow', text: 'Not edited: ' + (c.editNote || 'see the edit plan') })), body);
     if (mode === 'review') {
-      body.appendChild(whyBox(c));
+      var wb = whyBox(c); if (wb) body.appendChild(wb);
       if (c.revisions && c.feedback.length) {
         var last = c.feedback[c.feedback.length - 1];
         body.appendChild(h('div', { class: 'plan' }, h('b', { text: 'Fixed since last time' }),
@@ -10150,6 +10492,107 @@ var Kit = (function () {
     } });
   }
 
+
+  // ------------------------------------------------------------------ ads (LogicAds.gs)
+  /** On an Ad post: the research and plan. Hers is a short plain summary; the admin confirms and adjusts. */
+  function adBox(c, ctl) {
+    var A = c.ad; if (!A) return null;
+    var sec = sheetSection('The ad'), when = function (d) { return d ? new Date(d + 'T09:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }) : ''; };
+    var reopen = function () { ctl.close(); setTimeout(function () { openPost(c.id); }, 280); };
+    var S2 = A.summary, P = A.plan;
+    if (!S2) {
+      sec.appendChild(note(A.status === 'Failed' ? (ADMIN ? 'The ad research didn\u2019t finish' + (A.note ? ': ' + A.note : '.') : 'The plan for this ad is taking a little longer.') :
+        'Working out who it\u2019s for, what it should focus on and what it might cost. It\u2019ll be here soon.', A.status === 'Failed' ? 'warning' : 'campaign', A.status === 'Failed' ? 'warn' : ''));
+      if (A.status === 'Failed') sec.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Try again', { icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('researchAd', c.id).then(refresh).then(reopen).catch(fail); } })));
+      return sec;
+    }
+    var total = function (pl) { return money(Math.round(pl.daily * pl.days * 100) / 100, { cents: true }); };
+    if (!ADMIN) {
+      var lines = [
+        ['insights', 'How it looks', S2.verdict + (S2.verdict === 'Weak' || S2.verdict === 'Uncertain' ? ': worth keeping it small.' : '.')],
+        ['group', 'Who it\u2019s for', S2.who],
+        ['flag', 'What it focuses on', (P && P.focus) || S2.focus],
+        ['savings', 'Roughly', P ? money(P.daily, { cents: true }) + ' a day for ' + P.days + ' days (' + total(P) + ')' : money(S2.daily, { cents: true }) + ' a day for ' + S2.days + ' days']
+      ];
+      var card = h('div', { class: 'ad-sum' });
+      lines.forEach(function (l) { card.appendChild(h('div', { class: 'ad-line' }, icon(l[0]), h('div', {}, h('b', { text: l[1] }), h('span', { text: l[2] })))); });
+      sec.appendChild(card);
+      sec.appendChild(h('p', { class: 'body-s', style: 'margin:8px 4px 0;color:var(--on-surface-variant)', text:
+        A.status === 'Running' ? 'It\u2019s running now.' : A.status === 'Finished' ? 'All done.' : A.status === 'Confirmed' ? 'Set to start ' + when(P.start) + '.' : adminName() + ' will check it and set it going.' }));
+      return sec;
+    }
+    // the admin: full research, then the plan to confirm or adjust
+    var R = A.research || {};
+    var head = h('div', { class: 'row', style: 'gap:14px;align-items:flex-start' }, K.ring(R.viability),
+      h('div', { class: 'grow' }, h('div', { class: 'title-m', text: R.verdict + ' \u00b7 ' + R.viability + '/100' }), h('p', { class: 'body-m', style: 'margin:4px 0 0', text: R.summary })));
+    sec.appendChild(head);
+    var facts = h('dl', { class: 'ad-facts' });
+    [['Focus', R.focus], ['Audience', (R.audience || {}).who + ' (' + (R.audience || {}).ageMin + '\u2013' + (R.audience || {}).ageMax + ', ' + (R.audience || {}).places + ')'],
+      ['Interests', ((R.audience || {}).interests || []).join(', ')], ['Recommended', money((R.budget || {}).daily, { cents: true }) + ' a day for ' + (R.budget || {}).days + ' days'],
+      ['Why that budget', (R.budget || {}).reasoning], ['What to expect', R.expected], ['Watch for', (R.risks || []).join(' \u00b7 ')]]
+      .forEach(function (f) { if (f[1]) { facts.appendChild(h('dt', { text: f[0] })); facts.appendChild(h('dd', { text: f[1] })); } });
+    sec.appendChild(facts);
+    if ((R.sources || []).length) {
+      var src = h('details', { class: 'talk-past' }, h('summary', { text: 'Sources (' + R.sources.length + ')' }));
+      R.sources.forEach(function (x) { src.appendChild(h('div', { class: 'body-s', style: 'padding:3px 0' }, h('a', { href: x.url, target: '_blank', rel: 'noopener', text: x.title || x.url }))); });
+      sec.appendChild(src);
+    }
+    var pl = Object.assign({}, P || {}), editable = A.status === 'Ready' || A.status === '' || A.status === 'Researching';
+    var box = h('div', { class: 'ad-plan card pad' }, h('div', { class: 'title-m', text: editable ? 'The plan: adjust, then confirm' : 'The plan' }));
+    var sumLine = h('div', { class: 'ad-total' });
+    function drawTotal() { sumLine.textContent = pl.daily > 0 && pl.days > 0 ? money(pl.daily, { cents: true }) + ' a day \u00d7 ' + pl.days + ' days = ' + total(pl) : 'Set a daily budget and days'; }
+    if (editable) {
+      box.appendChild(h('div', { class: 'cols' },
+        K.textField({ label: 'Per day', prefix: '$', inputmode: 'decimal', compact: true, value: pl.daily || '', onInput: function (v) { pl.daily = K.num(v); drawTotal(); } }),
+        K.textField({ label: 'Days', inputmode: 'numeric', compact: true, value: pl.days || '', onInput: function (v) { pl.days = Math.round(K.num(v)); drawTotal(); } })));
+      var startIn = h('input', { type: 'date', class: 'ad-date', value: pl.start || '' }); startIn.addEventListener('input', function () { pl.start = startIn.value; });
+      box.appendChild(h('label', { class: 'ad-date-row' }, h('span', { class: 'label-s', text: 'Starts' }), startIn));
+      box.appendChild(h('div', { class: 'cols' },
+        K.textField({ label: 'Youngest', inputmode: 'numeric', compact: true, value: pl.ageMin || '', onInput: function (v) { pl.ageMin = Math.round(K.num(v)); } }),
+        K.textField({ label: 'Oldest', inputmode: 'numeric', compact: true, value: pl.ageMax || '', onInput: function (v) { pl.ageMax = Math.round(K.num(v)); } })));
+      box.appendChild(K.textField({ label: 'Where', compact: true, value: pl.places || '', maxlength: 200, onInput: function (v) { pl.places = v; } }));
+      box.appendChild(K.textField({ label: 'Interests (comma between)', compact: true, value: (pl.interests || []).join(', '), maxlength: 400, onInput: function (v) { pl.interests = v.split(',').map(function (x) { return x.trim(); }).filter(String); } }));
+      box.appendChild(K.textField({ label: 'Focus', multiline: true, compact: true, value: pl.focus || '', maxlength: 400, onInput: function (v) { pl.focus = v; } }));
+      drawTotal(); box.appendChild(sumLine);
+      box.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Confirm the plan', { icon: 'verified', block: true, onclick: function (e) {
+        var b = e.currentTarget;
+        K.confirm({ title: 'Confirm ' + total(pl) + '?', text: money(pl.daily, { cents: true }) + ' a day for ' + pl.days + ' days, from ' + when(pl.start) + '. Nothing is spent until you start it.', confirmLabel: 'Confirm' }).then(function (yes) {
+          if (!yes) return; K.setBusy(b, true);
+          api('confirmAd', c.id, pl).then(refresh).then(function () { K.haptic('success'); toast('Confirmed. ' + cap(artist()) + ' has been told.'); reopen(); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+        });
+      } })));
+    } else {
+      drawTotal();
+      box.appendChild(h('p', { class: 'body-m', style: 'margin:6px 0', text: 'From ' + when(pl.start) + ' \u00b7 ages ' + pl.ageMin + '\u2013' + pl.ageMax + ' \u00b7 ' + (pl.places || 'Australia') }));
+      box.appendChild(sumLine);
+      var row = h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:10px' });
+      if (A.status === 'Confirmed') {
+        var posting = S.data.posting || {}, fbUp = c.targets && c.targets.facebook && c.targets.facebook.status === 'ok';
+        if (A.meta && A.meta.dryRun) box.appendChild(note('Dry run: checked and ready. Nothing was spent. Switch off the dry run in Settings to start it for real.', 'science'));
+        if (posting.enabled && fbUp && A.account) row.appendChild(btn('filled', posting.dryRun ? 'Try it (dry run)' : 'Start the ad \u00b7 ' + total(pl), { icon: 'rocket_launch', onclick: function (e) {
+          var b = e.currentTarget;
+          K.confirm({ title: posting.dryRun ? 'Dry run?' : 'Start spending ' + total(pl) + '?', text: posting.dryRun ? 'It\u2019s checked with Facebook\u2019s rules but nothing is sent or spent.' : 'This starts the ad in Meta and money is spent from the ad account.', confirmLabel: posting.dryRun ? 'Try it' : 'Start it', danger: !posting.dryRun }).then(function (yes) {
+            if (!yes) return; K.setBusy(b, true);
+            api('startAd', c.id, false).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+          });
+        } }));
+        else box.appendChild(note(!posting.enabled ? 'Automatic posting is off, so start it in Ads Manager with this plan, then mark it started.' : !fbUp ? 'It starts once the post is up on Facebook: the ad promotes that post.' : 'Add the ad account number below to start it from here.', 'info'));
+        row.appendChild(btn('tonal', 'I started it in Ads Manager', { icon: 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('startAd', c.id, true).then(refresh).then(reopen).catch(fail); } }));
+        row.appendChild(btn('text', 'Change the plan', { icon: 'edit', onclick: function () { api('reopenAd', c.id).then(refresh).then(reopen).catch(fail); } }));
+        if (!A.account) {
+          var acct = K.textField({ label: 'Ad account number', compact: true, inputmode: 'numeric', help: 'Ads Manager \u203a the account menu. Digits only.' });
+          box.appendChild(h('div', { style: 'margin-top:10px' }, acct, btn('text', 'Save it', { icon: 'check', onclick: function () { api('saveAdAccount', acct.input.value).then(refresh).then(function () { toast('Saved.'); reopen(); }).catch(fail); } })));
+        }
+      } else if (A.status === 'Running') {
+        box.appendChild(note('Running since ' + K.dateLabel(A.started) + '.', 'campaign', 'good'));
+        row.appendChild(btn('tonal', 'It\u2019s finished', { icon: 'flag', onclick: function (e) { K.setBusy(e.currentTarget, true); api('finishAd', c.id).then(refresh).then(reopen).catch(fail); } }));
+      } else if (A.status === 'Finished') box.appendChild(note('Finished.', 'check_circle', 'good'));
+      box.appendChild(row);
+    }
+    sec.appendChild(box);
+    return sec;
+  }
+
   function openPost(id) {
     var c = byId(S.data.content, id);
     if (!c) return;
@@ -10164,10 +10607,11 @@ var Kit = (function () {
         var sm = sheetSection('Photos and clips');
         sm.appendChild(mediaEditor(f.footageIds, touch));
         ctl.body.appendChild(sm);
+        var ab = adBox(c, ctl); if (ab) ctl.body.appendChild(ab);
         if (reviewing) {
           ctl.body.appendChild(h('div', { style: 'margin-top:4px' }, whyBox(c)));
-          ctl.body.appendChild(checksBox(c));
-          ctl.body.appendChild(steerBox(c, ctl));
+          var cb = checksBox(c); if (cb) ctl.body.appendChild(cb);
+          var sb = steerBox(c, ctl); if (sb) ctl.body.appendChild(sb);
         }
         var caption = K.textField({ label: 'Caption', value: f.caption, multiline: true, maxlength: 3000, onInput: function (v) { f.caption = v; touch(); }, help: reviewing ? 'Change anything here, or tap a change above.' : 'Change anything here.' });
         caption.input.style.minHeight = '180px';
