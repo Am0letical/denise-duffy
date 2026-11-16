@@ -5021,6 +5021,17 @@ function tideTalk(env, t) {
       });
     } catch (e) { /* the AI may be off: the checks wait for a person */ }
   }
+  /** Timer: any product with checks nobody has settled gets them researched (a few at a time). */
+  function autoClear() {
+    var n = 0;
+    t.rows('pipeline').forEach(function (r) {
+      if (n >= 3 || r.parked === true || r.retired === true || r.aiStatus === 'Queued' || r.aiStatus === 'Working') return;
+      if (!t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return;
+      if (r.aiJob === 'clear' && r.aiStatus === 'Failed' && Date.parse(r.updated || '') > env.now().getTime() - 6 * 3600000) return;   // give a failed one a rest
+      clearSoon(r.id); n++;
+    });
+    return n;
+  }
   /** Research (again) on request. */
   function researchItem(id) {
     t.need(['admin', 'artist']);
@@ -5050,9 +5061,9 @@ function tideTalk(env, t) {
   function queueJob(id, job) { try { return env.lock(function () { return queue(id, job); }); } catch (e) { return ''; } }
 
   return {
-    ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research,
+    ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
-      createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts }
+      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts }
   };
 }
 
@@ -7364,23 +7375,22 @@ var Kit = (function () {
   // ------------------------------------------------------------------ an idea's day (TIDE_DAY in Logic.gs)
   // Sunrise to golden hour as it's made and put out; sunset when it's retired; dusk, then night, while it rests.
   function skyStrip(d) { return d ? h('span', { class: 'sky-strip sky-' + d.key, 'aria-hidden': 'true' }) : null; }
-  function dayChip(d) { return d ? h('span', { class: 'day-chip sky-' + d.key, title: d.hint }, icon(d.icon), d.word) : null; }
+  function dayChip(d) { return null; }   // the time of day is felt, not named: the colour strip and tint carry it
   var DAY_SAY = {
-    sunrise: 'A brand new idea. Morning is for planning, so let it grow.',
-    morning: 'Planning time. Grow it, ask the big questions, see where it could go.',
-    midday: 'It’s being made. Settle the details and keep going.',
-    afternoon: 'Late in the day: time to finish it and put it out there.',
-    golden: 'It’s out in the world. Enjoy it.',
-    sunset: 'Retired. It had its day.',
+    sunrise: 'A brand new idea. Let it grow.',
+    morning: 'Still taking shape. Grow it, ask the big questions, see where it could go.',
+    midday: 'It\u2019s being made. Settle the details and keep going.',
+    afternoon: 'Nearly there: time to finish it and put it out there.',
+    golden: 'It\u2019s out in the world. Enjoy it.',
+    sunset: 'Retired. It had its moment.',
     dusk: 'Resting for now. Wake it whenever you like.',
-    night: 'Asleep. It’ll keep until you want it.'
+    night: 'Asleep. It\u2019ll keep until you want it.'
   };
   /** The top of an idea: its time of day, a line about it, and the buttons that suit that time. */
   function ideaDayCard(x, ctl) {
     var d = x.day; if (!d) return null;
     var next = (x.scope || []).filter(function (p) { return !p.done; })[0];
     var card = h('div', { class: 'day-card sky-' + d.key },
-      h('div', { class: 'day-head' }, icon(d.icon, true), h('b', { text: d.word })),
       h('p', { class: 'day-say', text: DAY_SAY[d.key] || '' }));
     var row = h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' });
     function act(label, ic, kind, fn) {
@@ -8744,28 +8754,23 @@ var Kit = (function () {
           ck.appendChild(h('div', { class: 'check-sum' },
             h('span', { class: 'chk-pill go' }, icon('check_circle'), done.length + ' a go'),
             nogo ? h('span', { class: 'chk-pill nogo' }, icon('flag'), nogo + ' to sort') : null,
-            unknown ? h('span', { class: 'chk-pill wait' }, icon(clearing ? 'hourglass_top' : 'help'), unknown + (clearing ? ' being checked' : ' not checked yet')) : null));
+            unknown ? h('span', { class: 'chk-pill wait' }, icon('hourglass_top'), unknown + ' being checked') : null));
           open.forEach(function (x) {
             var c = x.c, i = x.i, isNo = c.status === 'Problem';
             var card = h('div', { class: 'check-card' + (isNo ? ' nogo' : '') },
               h('div', { class: 'row', style: 'gap:8px;align-items:flex-start' },
-                h('span', { class: 'chk-ic' }, icon(isNo ? 'flag' : 'help')),
+                h('span', { class: 'chk-ic' }, icon(isNo ? 'flag' : 'hourglass_top')),
                 h('div', { class: 'grow' }, h('div', { class: 'body-m', text: c.item }),
                   c.why ? h('div', { class: 'body-s chk-why', text: c.why }) : null),
                 K.iconBtn('delete', 'Remove check', function () { f.checks.splice(i, 1); drawChecks(); touch(); })));
             if (isNo && c.action) card.appendChild(h('div', { class: 'chk-action' }, h('b', { text: 'To make it a go: ' }), c.action));
             var row = h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:10px' });
+            // settled checks need nothing from her; a no go needs only its one action doing
             if (isNo) {
               row.appendChild(btn('filled', c.action ? 'Done that' : 'Sorted', { icon: 'check', sm: true, onclick: function () {
                 c.status = 'OK'; c.verdict = 'Go'; c.note = c.action ? 'Done: ' + c.action : 'Sorted'; drawChecks(); touch(); K.haptic('success'); } }));
-            } else {
-              row.appendChild(btn('tonal', 'It\u2019s a go', { icon: 'check', sm: true, onclick: function () { c.status = 'OK'; c.verdict = 'Go'; drawChecks(); touch(); } }));
-              row.appendChild(btn('text', 'No go', { icon: 'flag', sm: true, onclick: function () {
-                K.ask({ title: 'What would make it a go?', label: 'The simplest fix', maxlength: 300, confirmLabel: 'Save' }).then(function (v) {
-                  if (v == null) return; c.status = 'Problem'; c.verdict = 'No go'; c.action = v; drawChecks(); touch(); });
-              } }));
-            }
-            card.appendChild(row);
+              card.appendChild(row);
+            } else card.appendChild(h('div', { class: 'body-s chk-why', style: 'margin-top:8px', text: 'Being looked into. It comes back as a go, or with the one thing to do.' }));
             ck.appendChild(card);
           });
           if (done.length) {
@@ -8779,9 +8784,7 @@ var Kit = (function () {
           }
         }
         drawChecks();
-        var unchecked = f.checks.some(function (c) { return c.status === 'To check'; });
         s4.append(ck, h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:6px' },
-          unchecked && !clearing ? btn('filled', 'Check these for me', { icon: 'fact_check', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'clear'); }).then(refresh).then(function () { toast('Checking. Each one comes back as a go, or the one thing to do.'); reopen(); }).catch(fail); } }) : null,
           btn('text', 'Add a check', { icon: 'add', onclick: function () { K.ask({ title: 'Add a check', label: 'What needs settling?', maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.checks.push({ item: q, status: 'To check', note: '' }); drawChecks(); touch(); } }); } }),
           btn('text', 'Draft checks and parts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'checks'); }).then(refresh).then(function () { toast('Drafting. It\u2019ll appear here shortly.'); reopen(); }).catch(fail); } })));
         if (p.risks.length) { var rl = h('ul', { class: 'talk-list', style: 'margin-top:10px' }); p.risks.forEach(function (r) { rl.appendChild(h('li', { text: r })); }); s4.append(h('div', { class: 'label-s', style: 'margin:14px 4px 4px', text: 'Risks to watch' }), rl); }
