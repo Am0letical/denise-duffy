@@ -1069,7 +1069,8 @@ var TIDE_SETTING_DEFAULTS = {
   // the artist's side: her cover artwork, and 'taking it easy' (ISO date, 'open', or blank)
   coverPrintId: '', restUntil: '',
   adLimit: 100,             // ads she starts herself up to this total; over it, the admin OKs (LogicAds.gs)
-  adAccountId: '',           // the Meta ad account number, for starting ads from Tide Book
+  adAccountId: '',
+  metaLoginState: '',       // the one Facebook sign-in under way (a random check value, kept 30 minutes)           // the Meta ad account number, for starting ads from Tide Book
   siteWishDone: '', siteWishLater: '',   // the website's wish list (LogicSite.gs), kept as JSON text
   lastBackupAt: '',         // set when the PC finishes a local backup (Backup.gs)
   // local models on the PC first, Claude when it escalates (LogicNotes.gs)
@@ -3851,7 +3852,8 @@ function tidePublish(env, t) {
     if (role === 'admin') {
       if (!env.features.studio) items.push({ key: 'key', text: 'Add the Anthropic API key', why: 'Turns on idea research and drafting from footage.', where: 'Setup guide, step 8' });
       if (!P.DIRECT_POSTING) { /* posting by hand for now: nothing to connect */ }
-      else if (!env.publisher.connected()) items.push({ key: 'meta', text: 'Connect the Facebook Page and Instagram', why: 'Needed before anything can post by itself.', where: 'Admin › Settings › Posting' });
+      else if (!env.publisher.connected() && !canSignIn()) items.push({ key: 'meta-app', text: 'Set up the Meta app (once)', why: 'Then ' + env.brand.artistName + ' links Facebook and Instagram herself, by signing in.', where: 'Admin › Settings › Posting', link: true });
+      else if (!env.publisher.connected()) items.push({ key: 'meta', text: 'Waiting for ' + env.brand.artistName + ' to link Facebook and Instagram', why: 'It’s on her to-do list. Or link them here with her login.', where: 'Admin › Settings › Posting', link: true });
       else if (!on('postingEnabled')) items.push({ key: 'posting', text: 'Switch on posting (start with the dry run)', why: 'Approved posts then take a posting time.', where: 'Admin › Settings › Posting' });
       if (!on('editEnabled')) items.push({ key: 'edit', text: 'Set up the Everygen edit task', why: 'So reels arrive edited instead of as a plan.', where: 'Setup guide, Everygen edits' });
       else {
@@ -3865,6 +3867,12 @@ function tidePublish(env, t) {
       t.rows('content').filter(function (c) { return c.status === 'Failed' || c.status === 'Held'; }).forEach(function (c) {
         items.push({ key: 'fail-' + c.id, text: (c.status === 'Held' ? 'Held: ' : 'Didn’t post: ') + c.title, why: c.postError || 'See the post.', where: 'Content › Ready', id: c.id });
       });
+    }
+    if (role === 'artist' && P.DIRECT_POSTING) {
+      var lk = links(role);
+      if (!lk.facebook.connected && lk.canSignIn) items.push({ key: 'link', text: 'Link your Facebook and Instagram', why: 'One sign-in, about two minutes. Then your approved posts go out by themselves.', where: 'Link accounts', link: true });
+      else if (lk.facebook.connected && !lk.ads.account && lk.ads.choices.length > 1) items.push({ key: 'link-ads', text: 'Pick the ad account to use', why: 'So ads you start here are paid from the right one.', where: 'Link accounts', link: true });
+      if (!lk.buzz.mine) items.push({ key: 'link-buzz', text: 'Let Tide Book buzz your phone', why: 'A gentle buzz when something’s ready for you. Free, about a minute.', where: 'Link accounts', link: true });
     }
     var q = t.rows('questions').filter(function (x) { return x.status === 'Open'; }).length;
     if (q) items.push({ key: 'q', text: q + ' quick question' + (q === 1 ? '' : 's') + ' about footage', why: 'Posts are planned once they’re answered.', where: 'Content › Review' });
@@ -3915,8 +3923,81 @@ function tidePublish(env, t) {
     if (!t.text(appId, 40) || !t.text(appSecret, 80) || !t.text(userToken, 600)) t.fail('Paste all three: App ID, App secret and the user token.');
     return env.publisher.connect(t.text(appId, 40), t.text(appSecret, 80), t.text(userToken, 600));
   }
-  function choosePage(pageId) { t.need(['admin']); return env.publisher.choosePage(t.text(pageId, 40)); }
-  function disconnectMeta() { t.need(['admin']); env.settings.set({ postingEnabled: false }); return env.publisher.disconnect(); }
+  function choosePage(pageId) { linker(); return env.publisher.choosePage(t.text(pageId, 40)); }
+  function disconnectMeta() { linker(); env.settings.set({ postingEnabled: false }); return env.publisher.disconnect(); }
+
+  // ---- linking, guided: she signs in with Facebook herself; the admin only sets the Meta app up once
+  /** Denise (from her own login) or an admin: not an admin who is only viewing as her. */
+  function linker() {
+    var role = t.need(['admin', 'artist']), real = env.user.realRole || env.user.role;
+    if (role !== real) t.fail('You’re viewing as ' + env.brand.artistName + ', so nothing is linked. She links her accounts from her own phone.');
+    needDirect();
+    return role;
+  }
+  function appUrl() { try { return env.setup && env.setup.connections ? String(env.setup.connections().appUrl || '') : ''; } catch (e) { return ''; } }
+  function canSignIn() { return !!(env.publisher && env.publisher.appReady && env.publisher.appReady() && appUrl()); }
+  function redirectUrl() { return appUrl().replace(/\/?$/, '/') + 'meta/callback'; }
+  function saveMetaApp(appId, secret, configId) {
+    t.need(['admin']); needDirect();
+    appId = t.text(appId, 40).replace(/\s/g, ''); secret = t.text(secret, 80).replace(/\s/g, ''); configId = t.text(configId, 40).replace(/\s/g, '');
+    if (!/^\d{6,20}$/.test(appId)) t.fail('The App ID is a long number, from the top of the app’s dashboard.');
+    if (!/^[0-9a-f]{20,64}$/i.test(secret)) t.fail('The App secret is 32 letters and numbers, from App settings › Basic (tap Show).');
+    if (configId && !/^\d{6,20}$/.test(configId)) t.fail('The configuration ID is a long number.');
+    return env.publisher.saveApp(appId, secret, configId);
+  }
+  function startMetaLogin() {
+    var role = linker();
+    if (!canSignIn()) t.fail(role === 'artist' ? env.brand.adminName + ' needs to finish one setup step first. They’ve been told.' : 'Set up the Meta app first (Settings › Posting › Link accounts).');
+    var state = env.uid ? env.uid() : String(Math.random()).slice(2) + String(Date.now());
+    env.settings.set({ metaLoginState: JSON.stringify({ state: state, at: t.nowIso(), by: role }) });
+    return { url: env.publisher.loginUrl(redirectUrl(), state), state: state };
+  }
+  /** Called by the PC when Facebook sends her back. Picks the Page and ad account by itself when there's only one. */
+  function finishMetaLogin(code, state) {
+    linker();
+    var st = {}; try { st = JSON.parse(env.settings.get().metaLoginState || '{}'); } catch (e) {}
+    env.settings.set({ metaLoginState: '' });
+    if (!st.state || st.state !== String(state || '') || (Date.now() - Date.parse(st.at)) > 30 * 60000) t.fail('That sign-in took too long or came from somewhere else. Tap Continue with Facebook again.');
+    var res = env.publisher.finishLogin(t.text(code, 1000), redirectUrl());
+    var live = (res.adAccounts || []).filter(function (x) { return x.active; });
+    if (live.length === 1) { env.settings.set({ adAccountId: live[0].id }); res.adAccount = live[0].name; }
+    else if (live.length > 1) res.chooseAd = true;
+    return res;
+  }
+  function chooseAdAccount(id) {
+    linker();
+    var a = (env.publisher.adAccounts() || []).filter(function (x) { return x.id === String(id); })[0];
+    if (!a) t.fail('That ad account isn’t in the list.');
+    env.settings.set({ adAccountId: a.id });
+    return { ok: true, name: a.name };
+  }
+  /** Her own phone buzzes: a private name is made up for her, so all she does is subscribe to it. */
+  function setupMyBuzz() {
+    var role = t.need(['admin', 'artist']), real = env.user.realRole || env.user.role;
+    if (role !== real) t.fail('You’re viewing as ' + env.brand.artistName + ', so nothing is changed.');
+    var key = role === 'artist' ? 'notifyArtist' : 'notifyAdmin', cur = env.settings.get()[key];
+    if (!cur) {
+      var r = (env.uid ? env.uid() : '') + Date.now().toString(36) + String(Math.random()).slice(2, 10);
+      cur = 'tidebook-' + r.replace(/[^A-Za-z0-9]/g, '').slice(-22).toLowerCase();
+      var o = {}; o[key] = cur; env.settings.set(o);
+    }
+    return { topic: cur, server: 'ntfy.sh' };
+  }
+  /** What's linked and what's left, for the guide. Names only: no tokens or keys ever leave the PC. */
+  function links(role) {
+    var s = env.settings.get(), acct = env.publisher && env.publisher.account ? env.publisher.account() : {};
+    var ads = env.publisher && env.publisher.adAccounts ? env.publisher.adAccounts() : [];
+    var ad = String(s.adAccountId || '');
+    return {
+      direct: P.DIRECT_POSTING, canSignIn: canSignIn(), appReady: !!(env.publisher && env.publisher.appReady && env.publisher.appReady()),
+      redirect: role === 'admin' && appUrl() ? redirectUrl() : '',
+      facebook: { connected: !!acct.connected, page: acct.connected ? acct.page || '' : '', instagram: acct.connected ? acct.instagram || '' : '',
+        pages: acct.connected ? [] : (acct.pages || []).map(function (p) { return { id: p.id, name: p.name, instagram: p.instagram }; }) },
+      ads: { account: ad, name: (ads.filter(function (x) { return x.id === ad; })[0] || {}).name || (ad ? 'Ad account ' + ad : ''),
+        choices: ads.filter(function (x) { return x.active; }).map(function (x) { return { id: x.id, name: x.name }; }) },
+      buzz: { mine: role === 'artist' ? !!s.notifyArtist : !!s.notifyAdmin, topic: role === 'artist' ? s.notifyArtist || '' : s.notifyAdmin || '' }
+    };
+  }
   function testBuzz() {
     var role = t.need(['admin', 'artist']);
     if (!env.notify) t.fail('Buzzes aren’t available here.');
@@ -3936,7 +4017,8 @@ function tidePublish(env, t) {
         account: role === 'admin' ? env.publisher.account() : null,
         notifyArtist: role === 'admin' ? s.notifyArtist || '' : '', notifyAdmin: role === 'admin' ? s.notifyAdmin || '' : '',
         notifyMine: role === 'artist' ? !!s.notifyArtist : !!s.notifyAdmin,
-        suggestTimes: suggestTimes('')
+        suggestTimes: suggestTimes(''),
+        links: links(role)
       },
       todo: todo(role),
       rest: rest(),
@@ -3948,6 +4030,7 @@ function tidePublish(env, t) {
     api: {
       cancelSchedule: cancelSchedule, schedulePost: schedulePost, savePosting: savePosting,
       connectMeta: connectMeta, choosePage: choosePage, disconnectMeta: disconnectMeta, testBuzz: testBuzz,
+      saveMetaApp: saveMetaApp, startMetaLogin: startMetaLogin, finishMetaLogin: finishMetaLogin, chooseAdAccount: chooseAdAccount, setupMyBuzz: setupMyBuzz,
       setRest: setRest, setCover: setCover, planPost: planPost
     },
     afterDraft: afterDraft, onApproved: onApproved, preflight: preflight, tick: tick, pullResults: pullResults,
@@ -5949,7 +6032,12 @@ function tideSiteWishes(env, t) {
         account: function () { return db.meta ? { connected: true, page: db.meta.page, instagram: db.meta.ig, pages: [] } : { connected: false, pages: [] }; },
         connect: function () { db.meta = { page: 'Studio Page (demo)', ig: 'studio_demo' }; save(); return { ok: true, page: db.meta.page, instagram: db.meta.ig }; },
         choosePage: function () { return { ok: true, page: db.meta.page, instagram: db.meta.ig }; },
-        disconnect: function () { db.meta = null; save(); return { ok: true }; },
+        disconnect: function () { db.meta = null; db.metaAds = null; save(); return { ok: true }; },
+        appReady: function () { return true; },
+        saveApp: function () { return { ok: true }; },
+        loginUrl: function () { return '#demo-facebook'; },
+        finishLogin: function () { var r = this.connect(); db.metaAds = [{ id: '1234567', name: 'Studio ads (demo)', active: true, currency: 'AUD' }]; save(); r.adAccounts = db.metaAds; return r; },
+        adAccounts: function () { return db.metaAds || []; },
         share: function (ids) { var o = {}; ids.forEach(function (i) { o[i] = '#demo-photo'; }); return o; },
         unshare: function () {},
         post: function (net) { return { id: net + '-' + Math.random().toString(36).slice(2, 8), link: '#demo-post' }; },
@@ -11762,6 +11850,7 @@ var Kit = (function () {
     var list = h('div', { class: 'list' });
     items.slice(0, 6).forEach(function (t) {
       list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () {
+        if (t.link) { openLinkAccounts(); return; }
         if (t.site) { openSiteWish(t); return; }
         if (t.sitein) { openSiteIn(t.sitein); return; }
         if (/^Content/.test(t.where)) { S.contentTab = /Ready/.test(t.where) ? 'ready' : 'review'; go('content'); }
@@ -11790,7 +11879,8 @@ var Kit = (function () {
               .then(function (yes) { if (yes) api('disconnectMeta').then(refresh).then(render).catch(fail); });
           } }))));
     } else {
-      ps.appendChild(btn('tonal', 'Connect Facebook and Instagram', { icon: 'link', block: true, onclick: openConnect }));
+      ps.appendChild(btn('tonal', (S.data.posting.links || {}).appReady ? 'Link accounts (or see where ' + artist() + ' is up to)' : 'Set up the Meta app, then ' + artist() + ' links her accounts', { icon: 'link', block: true, onclick: function () { openLinkAccounts(); } }));
+      ps.appendChild(h('div', { style: 'margin-top:6px' }, btn('text', 'Or paste a token instead', { sm: true, icon: 'key', onclick: openConnect })));
     }
     var f = st.direct ? { postingEnabled: st.enabled, postingDryRun: st.dryRun, slotTimes: st.slotTimes, postsPerDay: st.postsPerDay } : {};
     Object.assign(f, { editEnabled: st.editEnabled, editWeeklyCredits: st.editWeeklyCredits, notifyArtist: st.notifyArtist, notifyAdmin: st.notifyAdmin });
@@ -11881,6 +11971,149 @@ var Kit = (function () {
     });
     main.appendChild(rise(h('div', { style: 'margin-top:16px' }, save), n++));
     return n;
+  }
+
+  /** Linking accounts, guided: one card per account, done in order, each with the next thing to tap.
+   *  Facebook and Instagram are linked by signing in with Facebook (Tide Book never sees the password). */
+  function openLinkAccounts(back) {
+    var L = S.data.posting.links || {}, fb = L.facebook || {}, ads = L.ads || {}, bz = L.buzz || {};
+    var me = S.data.me || {}, viewing = me.real && me.real !== me.role;
+    var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    K.sheet({ title: 'Link your accounts', tall: true, onClose: function () { render(); }, build: function (ctl) {
+      function again(msg) { refresh().then(function () { ctl.close(); setTimeout(function () { openLinkAccounts(); if (msg) toast(msg); }, 320); }).catch(fail); }
+      function stepCard(n, title, done, body, ic) {
+        return h('div', { class: 'card pad link-step' + (done ? ' done' : ''), style: 'margin-bottom:12px;--sheet-bg:var(--surface-lowest)' },
+          h('div', { class: 'row', style: 'gap:12px;align-items:center' },
+            h('span', { class: 'ic', style: done ? 'background:var(--tertiary-container, #cdeccf);color:var(--on-tertiary-container, #0f3d14)' : '' }, icon(done ? 'check' : ic)),
+            h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Step ' + n }), h('div', { class: 'title-m', text: title }))),
+          body ? h('div', { style: 'margin-top:12px' }, body) : null);
+      }
+      function steps(list, from) { return h('ol', { class: 'bullets', start: from ? String(from) : null, style: 'margin:0 0 12px' }, list.map(function (x) { return h('li', { text: x }); })); }
+      function copyRow(label, text) {
+        return h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:6px 0' },
+          h('code', { class: 'body-s grow', style: 'word-break:break-all;padding:8px 10px;border-radius:8px;background:var(--surface-high)', text: text }),
+          btn('text', 'Copy', { sm: true, icon: 'content_copy', onclick: function () { copyText(text, label + ' copied.'); } }));
+      }
+      if (back && back.err) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note(back.err, 'warning', 'warn')));
+      if (viewing) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('You’re viewing as ' + artist() + ', so this is how her guide looks. Nothing links from here: she does it on her own phone.', 'visibility')));
+      var doneCount = (fb.connected ? 1 : 0) + (bz.mine ? 1 : 0), total = 2;
+      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 14px;color:var(--on-surface-variant)',
+        text: doneCount === total ? 'All linked. You can come back here any time.' : doneCount + ' of ' + total + ' linked. Each takes a minute or two, and you can stop part way: it remembers.' }));
+      var n = 1;
+
+      // the admin's one-time part: the Meta app that the sign-in goes through
+      if (ADMIN && !L.appReady) {
+        var mf = { id: '', secret: '', config: '' };
+        var perms = 'pages_show_list, pages_read_engagement, pages_manage_posts, read_insights, instagram_basic, instagram_content_publish, instagram_manage_insights, business_management, ads_management, ads_read';
+        var body = h('div', {},
+          h('p', { class: 'body-m', style: 'margin:0 0 8px', text: 'Once only, then ' + artist() + ' links everything herself by signing in. About 10 minutes.' }),
+          steps(['At developers.facebook.com › My Apps › Create app. Pick “Other”, then “Business”. Any name, e.g. Tide Book.',
+            'Add the product “Facebook Login for Business”. Under its Settings, paste this into Valid OAuth Redirect URIs and save:']),
+          L.redirect ? copyRow('The address', L.redirect) : note('The PC’s tailnet address isn’t set (publicUrl in pc-server/config.json).', 'warning', 'warn'),
+          steps(['Under Facebook Login for Business › Configurations › Create: User access token, and tick these permissions. Copy the Configuration ID:'], 3),
+          copyRow('The permissions', perms),
+          steps(['App roles › Roles › Add People: add ' + artist() + ' as an Administrator. She accepts from her Facebook notifications (or developers.facebook.com/requests).',
+            'App settings › Basic: copy the App ID and App secret (tap Show). Paste all three here.'], 4),
+          h('div', { class: 'field-gap' },
+            K.textField({ label: 'App ID', inputmode: 'numeric', onInput: function (v) { mf.id = v; } }),
+            K.textField({ label: 'App secret', type: 'password', onInput: function (v) { mf.secret = v; } }),
+            K.textField({ label: 'Configuration ID', inputmode: 'numeric', onInput: function (v) { mf.config = v; } }),
+            note('Checked with Facebook, then kept on the PC only. Never in the records, never shown again.', 'lock'),
+            btn('filled', 'Check and save', { icon: 'check', block: true, onclick: function (e) {
+              var b = e.currentTarget; K.setBusy(b, true);
+              api('saveMetaApp', mf.id, mf.secret, mf.config).then(function () { again('Saved. ' + artist() + ' can link her accounts now.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+            } })));
+        ctl.body.appendChild(stepCard(n++, 'Set up the Meta app', false, body, 'settings'));
+      }
+
+      // Facebook and Instagram
+      var fbBody;
+      if (fb.connected) {
+        fbBody = h('div', {},
+          h('p', { class: 'body-m', style: 'margin:0', text: 'Linked to the Page “' + fb.page + '”' + (fb.instagram ? ' and Instagram @' + fb.instagram + '.' : '.') }),
+          fb.instagram ? null : h('div', { style: 'margin-top:10px' }, note('Instagram isn’t linked to this Page yet, so only Facebook gets posts. To fix: in the Instagram app, Settings › Account type and tools › Switch to professional account. Then Settings › Accounts Center › add your Facebook Page. Then tap Check again.', 'info')),
+          h('div', { class: 'btn-row', style: 'margin-top:10px' },
+            fb.instagram ? null : btn('tonal', 'Check again', { icon: 'refresh', onclick: signIn }),
+            btn('text', 'Unlink', { icon: 'close', danger: true, onclick: function () {
+              K.confirm({ title: 'Unlink Facebook and Instagram?', text: 'Nothing posts by itself until they’re linked again.', confirmLabel: 'Unlink', danger: true })
+                .then(function (yes) { if (yes) api('disconnectMeta').then(function () { again('Unlinked.'); }).catch(fail); });
+            } })));
+      } else if (fb.pages && fb.pages.length) {
+        fbBody = h('div', {}, h('p', { class: 'body-m', style: 'margin:0 0 10px', text: 'You look after more than one Page. Which is the art business?' }),
+          h('div', { class: 'list' }, fb.pages.map(function (p) {
+            return h('button', { type: 'button', class: 'li press', onclick: function () { api('choosePage', p.id).then(function (r) { again('Linked: ' + r.page + (r.instagram ? ' and @' + r.instagram : '') + '.'); }).catch(fail); } },
+              h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.name }), h('div', { class: 'li-sup', text: p.instagram ? 'Instagram @' + p.instagram : 'No Instagram linked' })), icon('chevron_right'));
+          })));
+      } else if (!L.canSignIn) {
+        fbBody = note(ADMIN ? 'Set up the Meta app above first.' : adminName() + ' has one setup step to do first. It’s on their list; this step opens up once it’s done.', 'hourglass_top');
+      } else {
+        fbBody = h('div', {},
+          h('p', { class: 'body-m', style: 'margin:0 0 8px', text: 'You’ll sign in on Facebook’s own page, so Tide Book never sees your password. Then:' }),
+          steps(['Tap Continue on the screens Facebook shows.', 'When it asks which Pages and Instagram accounts, tick your art business Page and its Instagram.', 'Leave every permission switched on, then tap Save. You come straight back here.']),
+          h('p', { class: 'tf-help', style: 'margin:0 0 12px', text: 'Posts only ever go out after you’ve approved them. You can unlink any time.' }),
+          btn('filled', 'Continue with Facebook', { icon: 'arrow_forward', lg: true, block: true, onclick: signIn }));
+      }
+      function signIn(e) {
+        var b = e && e.currentTarget; if (b) K.setBusy(b, true);
+        api('startMetaLogin').then(function (r) {
+          if (window.TIDE_DEMO) return api('finishMetaLogin', 'demo', r.state).catch(function () {}).then(function () { again('Linked (demo).'); });
+          location.href = r.url;
+        }).catch(function (err) { if (b) K.setBusy(b, false); fail(err); });
+      }
+      ctl.body.appendChild(stepCard(n++, 'Facebook and Instagram', !!fb.connected, fbBody, 'link'));
+
+      // the ad account: found by itself when there's only one
+      if (fb.connected && (ads.account || ads.choices.length)) {
+        var adBody = ads.account ? h('p', { class: 'body-m', style: 'margin:0', text: 'Ads you start in Tide Book are paid from “' + ads.name + '”.' + (ads.choices.length > 1 ? '' : ' Found by itself.') })
+          : h('div', {}, h('p', { class: 'body-m', style: 'margin:0 0 10px', text: 'Which ad account should pay for ads?' }));
+        if (ads.choices.length > 1) adBody.appendChild(h('div', { class: 'chip-wrap', style: 'margin-top:10px' }, ads.choices.map(function (x) {
+          return h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(x.id === ads.account), onclick: function () {
+            api('chooseAdAccount', x.id).then(function (r) { again('Ads now use ' + r.name + '.'); }).catch(fail);
+          } }, x.name);
+        })));
+        ctl.body.appendChild(stepCard(n++, 'Paying for ads', !!ads.account, adBody, 'campaign'));
+      }
+
+      // phone buzzes: a private name is made for her; she only subscribes to it
+      var bzBody = h('div', {});
+      function drawBuzz(topic) {
+        bzBody.textContent = '';
+        if (!topic) {
+          bzBody.append(h('p', { class: 'body-m', style: 'margin:0 0 8px', text: 'A gentle buzz when something’s ready for you. It uses ntfy, a free app with no account or sign-up.' }),
+            steps(['Get the free ntfy app.', 'Come back here and tap Add to ntfy.', 'Send yourself a test buzz.']),
+            h('div', { class: 'btn-row' },
+              h('a', { class: 'btn tonal', href: IOS ? 'https://apps.apple.com/app/ntfy/id1625396347' : 'https://play.google.com/store/apps/details?id=io.heckel.ntfy', target: '_blank', rel: 'noopener' }, icon('download'), h('span', { text: 'Get ntfy' })),
+              btn('filled', 'I have it: next', { icon: 'arrow_forward', onclick: function (e) {
+                var b = e.currentTarget; K.setBusy(b, true);
+                api('setupMyBuzz').then(function (r) { K.setBusy(b, false); drawBuzz(r.topic); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+              } })));
+          return;
+        }
+        bzBody.append(
+          IOS ? steps(['Copy your private name below.', 'Open ntfy, tap +, paste it, and tap Subscribe.', 'Come back and send a test buzz.'])
+            : steps(['Tap Add to ntfy, then Subscribe.', 'Come back and send a test buzz.']),
+          IOS ? null : h('a', { class: 'btn filled block', href: 'ntfy://ntfy.sh/' + topic, style: 'margin-bottom:8px' }, icon('notifications'), h('span', { text: 'Add to ntfy' })),
+          copyRow('Your private name', topic),
+          h('p', { class: 'tf-help', style: 'margin:4px 0 10px', text: 'Keep the name to yourself: anyone with it could see the buzzes.' }),
+          btn(IOS ? 'filled' : 'tonal', 'Send me a test buzz', { icon: 'notifications', block: true, onclick: function (e) {
+            var b = e.currentTarget; K.setBusy(b, true);
+            api('testBuzz').then(function () { K.setBusy(b, false); toast('Sent. Did your phone buzz?'); refresh().catch(function () {}); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+          } }));
+      }
+      drawBuzz(bz.topic || (bz.mine ? '' : ''));
+      if (bz.mine && !bz.topic) bzBody.appendChild(btn('tonal', 'Send me a test buzz', { icon: 'notifications', block: true, onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); api('testBuzz').then(function () { K.setBusy(b, false); toast('Sent. Did your phone buzz?'); }).catch(function (err) { K.setBusy(b, false); fail(err); }); } }));
+      ctl.body.appendChild(stepCard(n++, 'Buzz my phone', !!bz.mine, bzBody, 'notifications'));
+      // back from Facebook: say what got linked, and leave the guide open on whatever is next
+      if (back && back.ok && fb.connected) setTimeout(function () { K.haptic('success'); toast('Linked: ' + fb.page + (fb.instagram ? ' and @' + fb.instagram : '') + '.' + (bz.mine ? '' : ' One more step below.')); }, 300);
+    } });
+  }
+  /** Facebook sends her back with ?link=meta: open the guide on the result. */
+  function takeLinkReturn() {
+    var q = new URLSearchParams(location.search);
+    if (q.get('link') !== 'meta') return false;
+    history.replaceState(null, '', location.pathname);
+    openLinkAccounts({ ok: q.get('ok') === '1', err: q.get('err') || '' });
+    return true;
   }
 
   function openConnect() {
@@ -12290,6 +12523,14 @@ var Kit = (function () {
     }
     pt.appendChild(ptCard);
     main.appendChild(rise(pt, 3));
+    if (!ADMIN && S.data.posting.direct) {
+      var lks = S.data.posting.links || {}, lkDone = (lks.facebook && lks.facebook.connected ? 1 : 0) + (lks.buzz && lks.buzz.mine ? 1 : 0);
+      var la = section('Linked accounts');
+      la.appendChild(h('div', { class: 'card pad', style: '--sheet-bg:var(--surface-lowest)' },
+        h('p', { class: 'body-m', style: 'margin:0 0 10px', text: lkDone === 2 ? 'Facebook, Instagram and phone buzzes are linked.' : lkDone + ' of 2 linked: Facebook and Instagram, and phone buzzes. A guided minute or two each.' }),
+        btn(lkDone === 2 ? 'tonal' : 'filled', lkDone === 2 ? 'See linked accounts' : 'Link accounts', { icon: 'link', block: true, onclick: function () { openLinkAccounts(); } })));
+      main.appendChild(rise(la, 4));
+    }
     if (!ADMIN) {
       var stA = section('Online store');
       stA.appendChild(h('div', { class: 'btn-row' }, btn('tonal', 'Import store orders', { icon: 'upload', onclick: openImport })));
@@ -12379,7 +12620,7 @@ var Kit = (function () {
     return true;
   }
 
-  refresh().then(render).then(function () { if (!takeShare()) setTimeout(artistWelcome, 600); }).catch(function (e) {
+  refresh().then(render).then(function () { if (!takeShare() && !takeLinkReturn()) setTimeout(artistWelcome, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
