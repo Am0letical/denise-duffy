@@ -6811,7 +6811,18 @@ var Kit = (function () {
       wrap.appendChild(b);
       return b;
     });
-    function paint() { buttons.forEach(function (b, i) { b.setAttribute('aria-pressed', String(items[i].value === value)); }); }
+    if (o.own) {
+      var mine = h('button', { type: 'button', class: 'choice press soft' }, icon('edit'), h('span'));
+      var showMine = function () { var custom = value && !items.some(function (x) { return x.value === value; }); mine.lastChild.textContent = custom ? value : (typeof o.own === 'string' ? o.own : 'Your own…'); mine.setAttribute('aria-pressed', String(!!custom)); };
+      mine.addEventListener('click', function () {
+        ask({ title: o.label || 'Your own', label: 'In your own words', value: items.some(function (x) { return x.value === value; }) ? '' : value, maxlength: o.ownMax || 80, confirmLabel: 'Use this' }).then(function (t) {
+          if (!t) return; value = t; paint(); if (o.onChange) o.onChange(value);
+        });
+      });
+      wrap.appendChild(mine);
+    }
+    function paint() { buttons.forEach(function (b, i) { b.setAttribute('aria-pressed', String(items[i].value === value)); }); if (showMine) showMine(); }
+    var showMine;
     paint();
     wrap.value = function () { return value; };
     return wrap;
@@ -6822,7 +6833,7 @@ var Kit = (function () {
   function suggest(field, options, o) {
     o = o || {};
     var input = field && field.input, row = h('div', { class: 'suggest', role: 'group', 'aria-label': o.label || 'Suggestions' });
-    (options || []).filter(Boolean).slice(0, 2).forEach(function (txt) {   // this, that, or your own words
+    (options || []).filter(Boolean).slice(0, o.max || 2).forEach(function (txt) {   // this, that, or your own words
       row.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () {
         if (!input) return;
         var cur = input.value.replace(/\s+$/, '');
@@ -7065,10 +7076,12 @@ var Kit = (function () {
   function ask(o) {
     return new Promise(function (resolve) {
       var wrap = h('div', { class: 'dialog-wrap' });
-      var field = textField({ label: o.label, maxlength: o.maxlength || 300, multiline: true });
+      var field = textField({ label: o.label, value: o.value, maxlength: o.maxlength || 300, multiline: true });
       function done(v) { wrap.remove(); resolve(v); }
+      var picks = o.options && o.options.length ? suggest(field, o.options, { replace: true, max: o.max || 3, label: 'Answers to tap' }) : null;
+      if (picks) picks.style.marginBottom = '10px';
       wrap.appendChild(h('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': o.title },
-        h('h2', { text: o.title }), o.text ? h('p', { text: o.text }) : null, field,
+        h('h2', { text: o.title }), o.text ? h('p', { text: o.text }) : null, picks, field,
         h('div', { class: 'actions' }, btn('text', 'Cancel', { onclick: function () { done(null); } }),
           btn('filled', o.confirmLabel || 'OK', { danger: o.danger, onclick: function () {
             if (!field.input.value.trim()) { field.input.focus(); return; }
@@ -7095,9 +7108,14 @@ var Kit = (function () {
               onclick: function () { chosen = item.value; haptic(); ctl.close(); }
             }, h('span', { class: 'grow', text: item.label }), icon('check')));
           });
+          if (o.own) list.appendChild(h('button', { type: 'button', class: 'opt press', role: 'option',
+            onclick: function () { chosen = { own: true }; haptic(); ctl.close(); } }, icon('edit'), h('span', { class: 'grow', text: typeof o.own === 'string' ? o.own : 'Your own…' })));
           ctl.body.appendChild(list);
         }
       });
+    }).then(function (v) {
+      if (!v || !v.own) return v;
+      return ask({ title: o.title, label: o.ownLabel || 'In your own words', maxlength: o.ownMax || 120, confirmLabel: 'Use this' }).then(function (t) { return t || undefined; });
     });
   }
 
@@ -7999,6 +8017,7 @@ var Kit = (function () {
         ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-bottom:14px;color:var(--on-surface-variant)', text: 'In your own words. Some to start with: Mission, Who it’s for, What we’ll never do, How it should feel. It stays private: it steers Tide Book’s suggestions and is never put on the website.' }));
         var title = K.textField({ label: 'Name', value: f.title, maxlength: 80, onInput: function (v) { f.title = v; dirty = true; } });
         ctl.body.appendChild(title);
+        if (!d) { var st = K.suggest(title, ['Mission', 'Who it’s for', 'What we’ll never do', 'How it should feel'], { replace: true, max: 4, label: 'Names to start with' }); st.style.margin = '6px 0 12px'; ctl.body.appendChild(st); }
         ctl.body.appendChild(K.textField({ label: 'In your words', value: f.body, multiline: true, rows: 9, maxlength: 4000, onInput: function (v) { f.body = v; dirty = true; } }));
         if (d) ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Last changed ' + K.dateLabel(d.updated) + '.' }));
         if (d) ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, btn('text', 'Remove', { icon: 'delete', onclick: function (e) {
@@ -8794,7 +8813,7 @@ var Kit = (function () {
       K.setBusy(e.currentTarget, true); api('loadBacklog').then(function (r) { return refresh().then(function () { toast(r.added + ' added.'); render(); }); }).catch(fail);
     } })), i++));
     fab(main, 'Add a product', 'add', function () {
-      K.ask({ title: 'Add a product', label: 'What is it?', maxlength: 120, confirmLabel: 'Add' }).then(function (t) {
+      K.ask({ title: 'Add a product', label: 'What is it?', options: ['Tote bags', 'Greeting cards', 'Tea towels'], maxlength: 120, confirmLabel: 'Add' }).then(function (t) {
         if (!t) return;
         api('createItem', { title: t }).then(function (r) { return refresh().then(function () { render(); openItem(r.id); }); }).catch(fail);
       });
@@ -8814,6 +8833,28 @@ var Kit = (function () {
       .forEach(function (f) { if (f[1]) { dl.appendChild(h('dt', { text: f[0] })); dl.appendChild(h('dd', { text: f[1] })); } });
     box.appendChild(dl);
     return box;
+  }
+  /** A supplier she chose herself: who, what for, and the cost if she knows it. Calls done({ part, supplier, cost, qty }). */
+  function openOwnSupplier(done) {
+    var w = { supplier: '', part: '', cost: '' };
+    K.sheet({
+      title: 'Your own supplier',
+      build: function (ctl) {
+        var who = K.textField({ label: 'Who is it?', maxlength: 80, onInput: function (v) { w.supplier = v; } });
+        var what = K.textField({ label: 'What do they make for it?', maxlength: 80, onInput: function (v) { w.part = v; } });
+        ctl.body.append(who, h('div', { style: 'height:10px' }), what,
+          (function () { var st = K.suggest(what, ['Printing', 'Packaging', 'Tins'], { replace: true, max: 3 }); st.style.margin = '6px 0 12px'; return st; })(),
+          h('div', { class: 'label-s', style: 'margin:4px 4px 6px', text: 'Cost each, if you know it' }),
+          K.amountField({ label: 'Cost each in dollars', onInput: function (v) { w.cost = v; } }));
+        ctl.foot.appendChild(btn('filled', 'Add as a part', { icon: 'add', lg: true, block: true, onclick: function () {
+          var name = String(w.supplier || '').trim();
+          if (!name) { who.input.focus(); return; }
+          ctl.close();
+          done({ part: String(w.part || '').trim() || name, supplier: name, cost: Number(w.cost) > 0 ? Number(w.cost) : 0, qty: 1 });
+        } }));
+        setTimeout(function () { who.input.focus(); }, 60);
+      }
+    });
   }
   function researchCard(p, f, reopen, saveFirst, touch) {
     var R = p.research, sec = sheetSection('Market research');
@@ -8849,7 +8890,19 @@ var Kit = (function () {
             saveFirst().then(refresh).then(function () { toast('Added as a part. Check the cost and quantity.'); reopen(); }).catch(fail);
           } }, icon('add'), 'Add as a part')));
       });
+      sl.appendChild(ownSupplierRow());
       sec.appendChild(sl);
+    } else sec.appendChild(h('div', { class: 'research-list' }, h('div', { class: 'label-s', text: 'Suppliers' }), ownSupplierRow()));
+    function ownSupplierRow() {
+      return h('div', { class: 'research-row' },
+        h('div', { class: 'grow' }, h('div', { class: 'body-m', style: 'font-weight:500', text: 'Someone you know?' }),
+          h('div', { class: 'body-s', text: 'A supplier of your own choosing, like a local printer or a shop you trust.' })),
+        h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+          openOwnSupplier(function (pt) {
+            f.parts.push(pt); touch();
+            saveFirst().then(refresh).then(function () { toast('Added as a part.' + (pt.cost ? '' : ' Add the cost when you know it.')); reopen(); }).catch(fail);
+          });
+        } }, icon('edit'), 'Add your own'));
     }
     if (R.comparables.length) {
       var cl = h('div', { class: 'research-list' }, h('div', { class: 'label-s', text: 'Similar things for sale' }));
@@ -8868,6 +8921,12 @@ var Kit = (function () {
     if (c.price && c.price !== f.price) nx.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () {
       f.price = c.price; touch(); saveFirst().then(refresh).then(function () { toast('Price set to ' + money2(c.price) + '.'); reopen(); }).catch(fail);
     } }, icon('sell'), 'Use ' + money2(c.price) + ' as the price'));
+    nx.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () {
+      K.ask({ title: 'Your own price', label: 'Price in dollars', options: [c.price ? String(c.price) : '', c.high ? String(Math.ceil(c.high * 2.5)) : ''].filter(Boolean), maxlength: 10, confirmLabel: 'Use this' }).then(function (v) {
+        var n = Number(String(v || '').replace(/[^0-9.]/g, '')); if (!(n > 0)) { if (v) toast('That doesn’t look like a price.'); return; }
+        f.price = Math.round(n * 100) / 100; touch(); saveFirst().then(refresh).then(function () { toast('Price set to ' + money2(f.price) + '.'); reopen(); }).catch(fail);
+      });
+    } }, icon('edit'), 'My own price'));
     nx.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: ask }, icon('refresh'), 'Research again'));
     sec.appendChild(h('div', {}, h('div', { class: 'label-s', style: 'margin-top:12px', text: 'What next?' }), nx));
     sec.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: (ADMIN ? 'From ' + String(R.by || 'Claude').replace(/^Claude (\w)/, function (x, c) { return 'Claude ' + c.toUpperCase(); }) + ' · ' : '') + (p.researchAt ? ago(p.researchAt) : '') + ' · check prices with the supplier before ordering' }));
@@ -8941,7 +9000,7 @@ var Kit = (function () {
         }
         drawOpen();
         s3.append(oq, h('div', { style: 'margin-top:10px' }, btn('text', 'Add a question', { icon: 'add', onclick: function () {
-          K.ask({ title: 'Open question', label: 'What still needs answering?', maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.open.push({ q: q, a: '' }); drawOpen(); touch(); } });
+          K.ask({ title: 'Open question', label: 'What still needs answering?', options: ['Who is it for?', 'What will it cost to make?', 'When should it launch?'], maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.open.push({ q: q, a: '' }); drawOpen(); touch(); } });
         } })));
         ctl.body.appendChild(s3);
 
@@ -8988,7 +9047,7 @@ var Kit = (function () {
         }
         drawChecks();
         s4.append(ck, h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:6px' },
-          btn('text', 'Add a check', { icon: 'add', onclick: function () { K.ask({ title: 'Add a check', label: 'What needs settling?', maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.checks.push({ item: q, status: 'To check', note: '' }); drawChecks(); touch(); } }); } }),
+          btn('text', 'Add a check', { icon: 'add', onclick: function () { K.ask({ title: 'Add a check', label: 'What needs settling?', options: ['Is there a supplier in Australia?', 'Does the price cover the costs?', 'Is it safe to post?'], maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.checks.push({ item: q, status: 'To check', note: '' }); drawChecks(); touch(); } }); } }),
           btn('text', 'Draft checks and parts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'checks'); }).then(refresh).then(function () { toast('Drafting. It\u2019ll appear here shortly.'); reopen(); }).catch(fail); } })));
         if (p.risks.length) { var rl = h('ul', { class: 'talk-list', style: 'margin-top:10px' }); p.risks.forEach(function (r) { rl.appendChild(h('li', { text: r })); }); s4.append(h('div', { class: 'label-s', style: 'margin:14px 4px 4px', text: 'Risks to watch' }), rl); }
         ctl.body.appendChild(s4);
@@ -9894,7 +9953,7 @@ var Kit = (function () {
         return { type: type, name: name.slice(0, 60), status: 'Draft', fulfilment: t.fulfil,
           variants: (type === 'Apparel' ? ['S', 'M', 'L', 'XL'] : t.options).map(function (o) { return { option: o, cost: 0, markupPct: s.defaultMarkupPct, price: 0 }; }) };
       };
-      if (!t.items.length) return K.ask({ title: 'What is it?', label: 'For example, a beach towel', maxlength: 60, confirmLabel: 'Next' }).then(make);
+      if (!t.items.length) return K.ask({ title: 'What is it?', label: 'For example, a beach towel', options: ['Beach towel', 'Tea towel', 'Cushion cover'], maxlength: 60, confirmLabel: 'Next' }).then(make);
       if (t.items.length === 1) return make(t.items[0]);
       return K.pickFromList({ title: labels[type], options: t.items.concat(['Something else…']) }).then(function (item) {
         if (item === undefined) return null;
@@ -9931,7 +9990,7 @@ var Kit = (function () {
           K.pickFromList({ title: 'Add an option', options: choices }).then(function (o) {
             if (o === undefined) return;
             var add = function (name) { if (!name) return; if (used.indexOf(name.toLowerCase()) >= 0) { toast('Already listed.'); return; } work.variants.push({ option: name.slice(0, 40), cost: 0, markupPct: S.data.settings.defaultMarkupPct, price: 0 }); draw(); };
-            if (o === 'Another…') K.ask({ title: 'Another option', label: 'For example, XXL or Pack of 10', maxlength: 40, confirmLabel: 'Add' }).then(add); else add(o);
+            if (o === 'Another…') K.ask({ title: 'Another option', label: 'For example, XXL or Pack of 10', options: ['XXL', 'Pack of 10', 'Gift wrapped'], maxlength: 40, confirmLabel: 'Add' }).then(add); else add(o);
           });
         } });
         s2.append(cards, h('div', { style: 'margin-top:12px' }, addOpt));
@@ -10026,7 +10085,7 @@ var Kit = (function () {
               drawVariants(); touch();
               setTimeout(function () { var last = cards.lastElementChild; if (last) { last.scrollIntoView({ behavior: 'smooth', block: 'center' }); var inp = last.querySelector('input'); if (inp) inp.focus({ preventScroll: true }); } }, 60);
             };
-            if (picked === 'Another size…') K.ask({ title: 'Another size', label: 'Size, e.g. 40 x 60 cm', maxlength: 40, confirmLabel: 'Add' }).then(done);
+            if (picked === 'Another size…') K.ask({ title: 'Another size', label: 'Size, e.g. 40 x 60 cm', options: ['40 x 60 cm', 'A2', '50 x 50 cm'], maxlength: 40, confirmLabel: 'Add' }).then(done);
             else done(picked);
           });
         } });
@@ -10323,7 +10382,7 @@ var Kit = (function () {
         }
         if (t && !voided) {
           ctl.body.appendChild(h('div', { style: 'margin-top:24px;text-align:center' }, btn('text', 'Cancel this record', { danger: true, icon: 'block', onclick: function () {
-            K.ask({ title: 'Cancel this record?', text: 'It stays in the ledger, marked as cancelled, so the books keep a full history.', label: 'Why is it being cancelled?', confirmLabel: 'Cancel record', danger: true })
+            K.ask({ title: 'Cancel this record?', text: 'It stays in the ledger, marked as cancelled, so the books keep a full history.', label: 'Why is it being cancelled?', options: ['Entered by mistake', 'The sale fell through', 'Entered twice'], confirmLabel: 'Cancel record', danger: true })
               .then(function (why) {
                 if (!why) return;
                 api('voidTransaction', t.id, why).then(refresh).then(function () { dirty = false; render(); toast('Record cancelled.'); ctl.close(); }).catch(fail);
@@ -10460,7 +10519,8 @@ var Kit = (function () {
     }
     if (decision === 'approve') { send(''); return; }
     K.ask({ title: c.type === 'Shot' ? 'Why not this one?' : 'Discard this post?', text: c.type === 'Shot' ? 'A short reason helps the next suggestions fit better.' : 'It won’t be redrafted. A short reason helps the next ones fit better.',
-      label: 'Reason', confirmLabel: c.type === 'Shot' ? 'Not this' : 'Discard', danger: true }).then(function (why) { if (why) send(why); });
+      label: 'Reason', options: c.type === 'Shot' ? ['Not my style', 'Posted something like it', 'Not this season'] : ['Doesn’t sound like me', 'Wrong time for it', 'Already said this'],
+      confirmLabel: c.type === 'Shot' ? 'Not this' : 'Discard', danger: true }).then(function (why) { if (why) send(why); });
   }
 
   /** Verify: tick the checks it fails, add a note, and it goes back to be redrafted. */
@@ -10842,7 +10902,7 @@ var Kit = (function () {
       })));
     main.appendChild(rise(bs, n++));
     var ns = section('What it has learned', btn('text', 'Add', { sm: true, icon: 'add', onclick: function () {
-      K.ask({ title: 'Tell the studio something', text: 'A standing preference, like “no hashtags on Facebook”.', label: 'Note', maxlength: 300, confirmLabel: 'Save' })
+      K.ask({ title: 'Tell the studio something', text: 'A standing preference, like “no hashtags on Facebook”.', label: 'Note', options: ['No hashtags on Facebook', 'Keep captions short', 'Always mention the place'], maxlength: 300, confirmLabel: 'Save' })
         .then(function (t) { if (t) api('addNote', t).then(refresh).then(function () { render(); toast('Noted.'); }).catch(fail); });
     } }));
     if (!S.data.notes.length) ns.appendChild(note('Every time a post is sent back or discarded, the reason is kept here and used for the next ones.', 'school'));
@@ -10883,7 +10943,7 @@ var Kit = (function () {
     });
     var own = h('button', { type: 'button', class: 'choice press soft' }, icon('edit'), 'Something else…');
     own.addEventListener('click', function () {
-      K.ask({ title: 'How should it change?', text: 'A few words is plenty.', label: 'For example: mention the creek', confirmLabel: 'Rework it' })
+      K.ask({ title: 'How should it change?', text: 'A few words is plenty.', label: 'For example: mention the creek', options: ['Shorter', 'Warmer, more like me', 'Mention where it was made'], confirmLabel: 'Rework it' })
         .then(function (how) { if (how && how.trim()) go(own, how.trim()); });
     });
     row.appendChild(own);
@@ -11983,7 +12043,7 @@ var Kit = (function () {
         h('div', { class: 'btn-row', style: 'margin-top:14px' }, copy, add)), 2 + i));
     });
     main.appendChild(rise(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Start a new list', { icon: 'add', onclick: function () {
-      K.ask({ title: 'New email list', label: 'Name of the list, e.g. Stockists', maxlength: 40, confirmLabel: 'Next' }).then(function (name) { if (name) openListImport(name.replace(/\s+/g, ' ')); });
+      K.ask({ title: 'New email list', label: 'Name of the list, e.g. Stockists', options: ['Stockists', 'Workshop people', 'Collectors'], maxlength: 40, confirmLabel: 'Next' }).then(function (name) { if (name) openListImport(name.replace(/\s+/g, ' ')); });
     } })), 8));
   }
 
