@@ -7154,6 +7154,16 @@ var Kit = (function () {
     var withPhoto = S.data.prints.filter(function (p) { return p.thumbIds.length; });
     return byId(withPhoto, S.data.coverPrintId) || withPhoto.filter(function (p) { return p.status === 'Live'; })[0] || withPhoto[0] || null;
   }
+  // research she hasn't opened yet (remembered on this device), so the Home line can mention it once
+  function seenKey(id) { return 'tb_seen_research_' + id; }
+  function markSeen(id, at) { try { if (at) localStorage.setItem(seenKey(id), at); } catch (e) {} }
+  function freshResearch() {
+    var week = Date.now() - 7 * 86400000, out = [];
+    function add(id, title, at) { if (at && Date.parse(at) > week) { var seen = ''; try { seen = localStorage.getItem(seenKey(id)) || ''; } catch (e) {} if (seen !== at) out.push({ title: title, at: at }); } }
+    S.data.ideas.forEach(function (x) { if (x.research) add(x.id, x.title, x.researchedAt); });
+    talkData().pipeline.forEach(function (p) { if (p.research) add(p.id, p.title, p.researchAt); });
+    return out.sort(function (a, b) { return a.at < b.at ? 1 : -1; });
+  }
   /** The line under her greeting: what's actually waiting, gently, with the best place to start. */
   function homeLine(needs, day) {
     var T = talkData(), q = function (x) { return '“' + x + '”'; };
@@ -7163,12 +7173,15 @@ var Kit = (function () {
     var fin = closestToDone(), next = fin && (fin.x.scope || []).filter(function (p) { return !p.done; })[0];
     var todo = [];
     if (needs.length) todo.push(needs.length === 1 ? adminName() + ' has a question for you.' : adminName() + ' has ' + needs.length + ' questions for you.');
-    if (oks.length) todo.push(oks.length === 1 ? q(oks[0].title) + ' is waiting for your OK.' : oks.length + ' things are waiting for your OK. ' + q(oks[0].title) + ' is a nice one to start with.');
+    if (oks.length) todo.push(oks.length === 1 ? q(oks[0].title) + ' is waiting for your OK.' : oks.length + ' things are waiting for your OK, starting with ' + q(oks[0].title) + '.');
+    var found = freshResearch();
+    if (found.length) todo.push(found.length === 1 ? 'Some thoughts came back on ' + q(found[0].title) + ', whenever you’d like a look.'
+      : 'Some thoughts came back on ' + q(found[0].title) + ' and ' + (found.length === 2 ? q(found[1].title) : found.length - 1 + ' more') + ', whenever you’d like a look.');
     if (talks.length) todo.push('A few questions are ready about ' + q(talks[0].title) + '.');
     if (posts) todo.push(posts === 1 ? 'A post is ready for a look.' : posts + ' posts are ready for a look.');
     if (quick) todo.push(quick === 1 ? 'One quick question about your footage.' : quick + ' quick questions about your footage.');
     if (fin && fin.x.day && fin.x.day.mode !== 'plan') todo.push(q(fin.x.title) + (next ? ' is close: next is ' + q(next.text) + '.' : ' is ready to go out.'));
-    if (todo.length) return todo[0] + (todo.length > 1 ? ' No rush on the rest.' : '');
+    if (todo.length) return todo.slice(0, 2).join(' ') + (todo.length > 2 ? ' No rush on the rest.' : '');
     var live = S.data.prints.filter(function (p) { return p.status === 'Live'; }).length;
     if (live) return 'Nothing needs you today. ' + (live === 1 ? 'Your artwork is' : 'Your ' + live + ' artworks are') + ' out there doing the work.';
     return ['Nothing needs you today. A lovely day to make something.', 'All quiet. One photo of your work would be plenty today.'][day % 2];
@@ -8103,6 +8116,7 @@ var Kit = (function () {
   function openItem(id) {
     var p = byId(talkData().pipeline, id);
     if (!p) return;
+    if (p.research) markSeen(p.id, p.researchAt);
     var T = talkData(), s = S.data.settings, dirty = false, ctlRef = null;
     var f = JSON.parse(JSON.stringify({ title: p.title, summary: p.summary, decisions: p.decisions, open: p.open, checks: p.checks, parts: p.parts,
       price: p.price, sample: p.sample, listing: { copy: (p.listing || {}).copy || '', posts: ((p.listing || {}).posts || []).slice() } }));
@@ -8760,6 +8774,7 @@ var Kit = (function () {
   function openIdea(id) {
     var x = byId(S.data.ideas, id);
     if (!x) return;
+    if (x.research) markSeen(x.id, x.researchedAt);
     var f = { title: x.title, note: x.note, kind: x.kind, timeline: x.timeline, priority: x.priority, stage: x.stage, health: !!x.health,
       adminNotes: x.adminNotes || '', scope: x.scope.map(function (s) { return { id: s.id, text: s.text, done: s.done }; }), files: [] }, dirty = false;
     K.sheet({
