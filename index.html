@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0b1622">
 <title>Denise Duffy · Visual artist, Port Stephens</title>
-<meta name="description" content="Mixed-media art by Medowie artist Denise Duffy: Mind Garden, Pockets of Magic and the ocean. Prints, originals and commissions.">
+<meta name="description" content="Mixed-media art by Medowie artist Denise Duffy: Mind Garden, Pockets of Magic and the ocean. Prints, originals and gifts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@300;400;500;700&display=swap">
@@ -473,6 +473,30 @@ html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 /* the IKEA rule must never depend on an animation: tags are always there */
 .pcw > .qa, .tilew > .qa, .hot > .qa { opacity: 1 !important; transform: none; }
 
+/* ===== the funnel: one tap first, a + on every piece, and every story page ends with pieces to take home ===== */
+.xlbl { margin: 18px 0 8px; color: var(--teal); }
+.express.first { margin-top: 0; gap: 8px; }
+.express.first .xb { min-height: 54px; font-size: 15px; border-radius: 999px; box-shadow: 0 6px 18px rgba(6, 20, 36, .14); }
+.express.first .xb.google { box-shadow: 0 6px 18px rgba(6, 20, 36, .08); }
+.btn.ghost { min-height: 46px; }
+.btn.ghost:hover { color: var(--paper); }
+.qs-buy .xlbl { margin: 0; text-align: right; }
+.qs .express.first { margin-top: 10px; }
+.qs .or { margin: 14px 0 10px; }
+.qs .qs-buy .btn { max-width: none; }
+/* the + on the big picture of a piece, and on each original in the room */
+.pp .big { position: relative; }
+.pp .big > .qa { top: 22px; right: 22px; }
+.room-frame > .qa { top: 14px; right: 14px; z-index: 5; }
+/* the gentle close of a story page */
+.close-buy > .lbl { color: var(--teal); margin-bottom: 14px; }
+.close-buy .plede { margin: -6px 0 26px; max-width: 560px; }
+@media (min-width: 900px) { .close-buy .cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 899px) { .close-buy .cards > .pcw:nth-child(n+3) { display: none; } }
+.room .close-buy { padding-top: clamp(80px, 10vw, 140px); }
+/* the living gallery still carries an old commission link; commissions are off */
+.lg-link[href="#/c/originals"] { display: none; }
+
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
 .lg.on { opacity: 1; pointer-events: auto; }
@@ -743,7 +767,7 @@ body.intro-hold .hero .accent, body.intro-hold .hero .cta, body.intro-hold .hero
   <div class="cols">
     <div><div class="lbl" style="opacity:.6;margin-bottom:12px">Stop. Pause. Look around.</div><div style="font:500 italic 24px/1.35 var(--display);max-width:380px">Art to help you find the pockets of magic.</div></div>
     <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Shop</div><a href="#/c/ocean">Ocean</a><a href="#/c/forest">Forest</a><a href="#/c/skies">Skies &amp; Waters</a><a href="#/c/gratitude">Living in Gratitude</a><a href="#/c/wear">Wear &amp; home</a><a href="#/c/sets">Sets &amp; gifts</a><a href="#/c/digital">Downloads</a></div>
-    <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Studio</div><a href="#/gallery">Living gallery</a><a href="#/originals">The originals</a><a href="#/c/originals">Commissions</a><a href="#/about">About</a><a href="#/centre">At Irukandji</a></div>
+    <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Studio</div><a href="#/gallery">Living gallery</a><a href="#/originals">The originals</a><a href="#/about">About</a><a href="#/centre">At Irukandji</a></div>
     <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Help</div><a href="#/about">Delivery</a><a href="#/about">Returns</a><a href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a></div>
   </div>
   <div class="big">Denise Duffy</div>
@@ -811,8 +835,6 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       story: 'Tree roots in deep indigo washes, with texture you can almost touch. (Sample text.)',
       products: [PRINT(false), { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 1200 }] }] }
   ];
-  // made for others: shown, not sold
-  var COMMISSIONS = [{ title: 'Coastal wildflowers', for: 'A fabric design, commissioned for Oztag', img: 'wildflowers' }];
   var SETS = [
     { id: 'trio', title: 'Sea and forest pair', note: 'Two A4 prints, chosen to hang together.', img: 'sharkSq', price: 79, was: 90, items: ['shark', 'walkway'] },
     { id: 'gift', title: 'Gift card', note: 'Any amount, sent by email with a note. They choose.', img: 'flowersDetail', price: 50, was: 0, gift: true }
@@ -838,7 +860,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     gratitude: { title: 'Living in Gratitude', sub: 'Finding hope and magic in the soft moments: small rituals, gratitude, and the little things that bring you back to a moment.', img: 'moonwater', soon: 'Ritual tins and gratitude pieces are on their way.' },
     wear: { title: 'Wear & home', sub: 'My artworks on lounge wear, totes and cards, printed to order.', img: 'flowersMacro' },
     sets: { title: 'Sets & gifts', sub: 'Print sets, bundles and gift cards. Any 3 A4 prints save 15%, taken off in the cart.', img: 'rootsTall' },
-    originals: { title: 'Originals & commissions', sub: 'One-off pieces, and works made just for you.', img: 'rootsTall' },
+    originals: { title: 'Originals', sub: 'One-off pieces: the real paper, the real pigment. Each one, only ever one.', img: 'rootsTall' },
     digital: { title: 'Downloads', sub: 'Phone wallpapers and printable art. Instant, nothing to post.', img: 'flowersDetail' }
   };
   var FREE_SHIP = 100, SHIP = 12, BUNDLE_N = 3, BUNDLE_OFF = 0.15;
@@ -915,6 +937,19 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   function signup() {
     return '<form class="signup" onsubmit="return false"><input type="email" placeholder="Your email" aria-label="Your email"><button type="button" data-act="join">Join →</button></form>';
   }
+  // the one-tap buttons (Link, Apple Pay, Google Pay), shown first wherever something can be bought
+  function expressBtns(hidden) {
+    return '<div class="express first"' + (hidden ? ' hidden' : '') + '><button class="xb shop" type="button" data-act="express" data-via="Link">Link</button><button class="xb apple" type="button" data-act="express" data-via="Apple Pay">Apple Pay</button><button class="xb google" type="button" data-act="express" data-via="Google Pay">G Pay</button></div>';
+  }
+  // the gentle end of a story page: two or three pieces that belong to it, each with its + tag.
+  // prefer picks the pieces tied to the page; the rest fill in. Nothing for sale: nothing shown.
+  function closing(kicker, head, line, prefer) {
+    var ok = ARTWORKS.filter(buyable), first = prefer ? ok.filter(prefer) : [];
+    var list = first.concat(ok.filter(function (a) { return first.indexOf(a) < 0; })).slice(0, 3);
+    if (!list.length) return '';
+    return '<section class="sec close-buy"><div class="lbl reveal">' + kicker + '</div><div class="sec-head"><h2 class="reveal">' + head + '</h2></div>' +
+      (line ? '<p class="plede reveal">' + line + '</p>' : '') + '<div class="cards">' + list.map(function (a) { return card(a); }).join('') + '</div></section>';
+  }
 
   // ---------- pages ----------
   var views = {
@@ -953,7 +988,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 
         '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">Ways to <span class="it" style="color:var(--ocean)">bring it home</span></h2></div><div class="mlist" id="mlist">' +
         [['Art prints', 'From $45', 'flowersTall', '#/c/forest'], ['Lounge wear', 'From $89', 'flowersMacro', '#/c/wear'], ['Cards & gifts', 'From $25', 'flowersDetail', '#/c/sets'],
-          ['Originals', 'On request', 'rootsTall', '#/c/originals'], ['Commissions', 'Made for you', 'studioTall', '#/c/originals'], ['Downloads', 'From $6', 'sharkTall', '#/c/digital']]
+          ['Originals', 'One of a kind', 'rootsTall', '#/originals'],['Downloads', 'From $6', 'sharkTall', '#/c/digital']]
           .map(function (m) { return '<a class="mrow reveal" href="' + m[3] + '" data-img="' + m[2] + '"><b>' + m[0] + '</b><span class="c">' + m[1] + '</span></a>'; }).join('') + '</div></section>' +
 
         '<section class="sec wrap"><div class="split"><div class="ph wipe"><img class="par" data-speed="-0.06" alt="The shark painting at the Irukandji Shark &amp; Ray Centre" src="' + IMG.oceanTall + '">' + tag('oceanTall', null, null, 'hot-shark') + '</div><div>' +
@@ -987,7 +1022,12 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         if ((k === 'wear' && /Apparel|Cards|Homewares/.test(p.type)) || (k === 'digital' && p.type === 'Download') || (k === 'originals' && p.type === 'Original')) cards += card(a, p);
       }); });
       if (k === 'originals') cards = '<a class="room-door reveal" href="#/originals"><span class="lbl">The originals</span><b>Walk through the originals still looking for a home</b><span>How the prints work, and how many are left of each <i>→</i></span></a>' + cards;
-      var extra = c.soon && !cards ? '<div class="edn hold" style="max-width:640px"><b>' + esc(c.soon) + '</b><p>Join my letters from the studio and you’ll see them first.</p>' + signup() + '</div>' : k === 'originals' ? commission() : k === 'wear' ? '<p class="prop" style="margin-top:20px">Here the photos would be the print partner’s mock-ups of each item with her art on it.</p>' : '';
+      // an art set with nothing in it yet: say why, rather than an empty page
+      if (!cards && !c.soon && ['ocean', 'forest', 'skies', 'gratitude'].indexOf(k) >= 0) cards = '<div class="edn hold" style="grid-column:1/-1;max-width:640px"><b>' +
+        (REAL && REAL.preview ? 'No artworks in this set yet' : 'New pieces are on their way') + '</b><p>' +
+        (REAL && REAL.preview ? 'Add an artwork in Tide Book, give it this series, put a price on it and switch it on sale. It appears here with its photos and buying options.' : 'Join my letters from the studio and you’ll see them first.') + '</p>' + (REAL && REAL.preview ? '' : signup()) + '</div>';
+      var extra = c.soon && !cards ? '<div class="edn hold" style="max-width:640px"><b>' + esc(c.soon) + '</b><p>Join my letters from the studio and you’ll see them first.</p>' + signup() + '</div>' +
+        closing('In the meantime', 'A soft moment <span class="it" style="color:var(--teal)">for your wall</span>', 'Until they’re ready, these pieces hold the same quiet.', function (a) { return a.col === k; }) : k === 'wear' ? '<p class="prop" style="margin-top:20px">Here the photos would be the print partner’s mock-ups of each item with her art on it.</p>' : '';
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · Shop</div><h1 class="ptitle reveal">' + c.title.replace('&', '<span class="it" style="color:var(--ocean)">&amp;</span>') + '</h1>' +
         '<p class="plede reveal">' + c.sub + (c.link ? ' <a href="' + c.link[0] + '">' + c.link[1] + ' →</a>' : '') + '</p><div class="cards">' + cards + '</div>' + extra + '</div>';
     },
@@ -1003,14 +1043,16 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var bundle = p.type === 'Print' ? '<div class="bundle"><h3>Complete the set, save 15%</h3><div class="th">' + ARTWORKS.filter(printable).map(function (x) { return thumb(x, a); }).join('') + '</div><p style="font-size:14px">Any 3 A4 prints, taken off in the cart. Or the <a href="#/s/trio">Sea and shore pair</a> for ' + money(SETS[0].price) + '.</p></div>' : '';
       var also = ARTWORKS.filter(function (x) { return x !== a; }).map(function (x) { return card(x); }).join('');
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · <a href="#/c/' + a.col + '">' + COLS[a.col].title + '</a></div><div class="pp">' +
-        '<div class="big wipe' + (a.contain ? ' contain' : '') + '"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '"></div><div class="side">' +
+        '<div class="big wipe' + (a.contain ? ' contain' : '') + '"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '">' + tag(null, a, canBuy(a, p) ? p : null) + '</div><div class="side">' +
         '<div class="lbl" style="color:' + (a.sale && p.type === 'Print' ? 'var(--pink-deep)' : 'var(--teal)') + '">' + (a.sale && p.type === 'Print' ? 'A little thank-you: 20% off' : a.sea ? '20% goes to Sea Shelter' : 'Denise Duffy') + '</div>' +
         '<h1>' + esc(a.title) + '</h1>' + tabs +
         '<div class="price" id="price"></div><div class="pay4">or 4 payments of <b id="p4"></b> with pay-later <span class="prop">(provider to confirm)</span></div>' + opts + addons +
         edition(a, p) +
-        '<button class="btn block" style="margin-top:16px" type="button" data-act="add" id="mainAdd"' + (heldPrint(a, p) || soldOriginal(a, p) ? ' disabled' : '') + '>' +
-          (heldPrint(a, p) ? 'Prints open ' + opensOn(a.ed) : soldOriginal(a, p) ? 'Sold' : p.type === 'Original' ? 'Buy the original' : 'Add to cart') + '</button>' +
-        (heldPrint(a, p) || soldOriginal(a, p) ? '' : '<div class="or">or check out in one tap</div>') + '<div class="express"' + (heldPrint(a, p) || soldOriginal(a, p) ? ' hidden' : '') + '><button class="xb shop" type="button" data-act="express" data-via="Link">Link</button><button class="xb apple" type="button" data-act="express" data-via="Apple Pay">Apple Pay</button><button class="xb google" type="button" data-act="express" data-via="Google Pay">G Pay</button></div>' +
+        // one tap first; the cart is the quieter second way
+        (canBuy(a, p) ? '<div class="lbl xlbl">' + (p.type === 'Original' ? 'Make it yours in one tap' : 'Check out in one tap') + '</div>' : '') + expressBtns(!canBuy(a, p)) +
+        (canBuy(a, p) ? '<div class="or">or</div>' : '') +
+        '<button class="btn block' + (canBuy(a, p) ? ' ghost' : '') + '" style="margin-top:' + (canBuy(a, p) ? '4' : '16') + 'px" type="button" data-act="add" id="mainAdd"' + (canBuy(a, p) ? '' : ' disabled') + '>' +
+          (heldPrint(a, p) ? 'Prints open ' + opensOn(a.ed) : soldOriginal(a, p) ? 'Sold' : p.type === 'Original' ? 'Add the original to cart' : 'Add to cart') + '</button>' +
         bundle + (a.sea ? '<div class="note">🌊 20% of every marine print goes to Sea Shelter’s marine rescue and rehabilitation.</div>' : '') +
         '<p class="story">' + esc(a.story) + '</p>' +
         '<div class="acc"><details><summary>Delivery</summary><p>Free over $100, otherwise $12 in Australia. Prints posted flat or in a tube; framed pieces by courier. Downloads by email straight away. (Sample terms.)</p></details>' +
@@ -1034,8 +1076,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         '<p class="reveal" style="margin-top:18px">My process is an act of discovery—an exploration rooted in curiosity and play. It begins with the act of noticing and an immersion in nature; gathering materials and moments to filter through the lens of my imagination.</p>' +
         '<p class="reveal" style="margin-top:12px">I draw from a treasure chest of processes, mediums, and materials to capture movement, light, texture, and rhythm. The essence of place. My practice often involves rituals of integration, where elements from the original source of inspiration are physically woven into the work.</p>' +
         '<p class="reveal" style="margin-top:12px">From paper carving, sculpting, and assemblage to the alchemy of grinding site-sourced pigments, my work is a constant dialogue between hands, heart, and the natural world.</p>' +
-        madeForOthers() +
-        '<p style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap" class="reveal"><a class="chipbtn" href="#/c/originals">Commission a piece +</a><a class="chipbtn light" style="border:1px solid var(--night)" href="#/gallery">Living gallery</a></p></div></div></div>';
+        '<p style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap" class="reveal"><a class="chipbtn" href="#/originals">The originals +</a><a class="chipbtn light" style="border:1px solid var(--night)" href="#/gallery">Living gallery</a></p></div></div>' +
+        closing('From the studio', 'Bring a soft moment <span class="it" style="color:var(--ocean)">home</span>', 'If something here stayed with you, these are a gentle way to keep it close.') + '</div>';
     },
     originals: function () {
       var here = ARTWORKS.filter(function (a) { return a.products.some(function (p) { return p.type === 'Original' && canBuy(a, p); }); });
@@ -1057,7 +1099,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
           '<div><dt>Prints sold so far</dt><dd>' + (head ? 'None. Prints open ' + opensOn(e) : opened ? opened + '' : 'None yet') + '</dd></div>' +
           '<div><dt>If it finds its home today</dt><dd>' + after + ' more prints, then no more</dd></div>' +
           '<div><dt>The most there will ever be</dt><dd>' + (opened + after) + ' prints, and this one original</dd></div></dl>';
-        return '<section class="room-piece' + (i % 2 ? ' flip' : '') + '"><div class="room-frame wipe"><div class="mat"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '"></div></div>' +
+        return '<section class="room-piece' + (i % 2 ? ' flip' : '') + '"><div class="room-frame wipe"><div class="mat"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '"></div>' + tag(null, a, og) + '</div>' +
           '<div class="placard"><div class="lbl">No. ' + (i < 9 ? '0' : '') + (i + 1) + ' · ' + esc((COLS[a.col] || {}).title || 'Studio') + '</div>' +
           '<h2 class="reveal">' + esc(a.title) + '</h2><p class="room-story reveal">' + esc(a.story) + '</p>' +
           '<div class="room-price reveal">' + money(og.options[0].price) + '<span>the original · ' + esc(og.options[0].note) + '</span></div>' + ledger +
@@ -1071,26 +1113,17 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         '<h1 class="reveal">One of each. <span class="it">Only ever one.</span></h1>' +
         '<p class="plede reveal">Each piece here is the real thing: the paper I painted on, the pigment I ground, the stitches I sewed. Owning an original also shapes its story, because the day it finds a home, its prints become limited.</p>' +
         rules + '</header><div class="wrap">' + pieces + '</div>' +
-        '<div class="wrap room-end"><p class="reveal">Looking for something made just for you?</p><a class="chipbtn" href="#/c/originals">Commission a piece +</a></div></div>';
+        '<div class="wrap">' + closing('The same moments, on paper', 'Or begin with <span class="it">a print</span>', 'Each original also lives as prints, posted to you, for as long as its run lasts.', function (a) { return a.products.some(function (p) { return p.type === 'Print' && canBuy(a, p); }); }) + '</div></div>';
     },
     centre: function () {
       return '<div class="page wrap"><div class="crumbs">Welcome from the centre</div><h1 class="ptitle reveal">You met my work at <span class="it" style="color:var(--teal)">Irukandji</span></h1>' +
         '<p class="plede reveal">Thank you for stopping by. Fell for a piece but couldn’t carry it home? Every ocean print comes bigger and framed, delivered anywhere in Australia.</p>' +
         '<div class="note reveal">🎁 Visitors’ welcome: free delivery on your first order with code <b>&nbsp;IRUKANDJI</b>. <span class="prop">&nbsp;(Proposal.)</span></div>' +
         '<p style="margin:26px 0" class="reveal"><a class="chipbtn" href="#/c/ocean">See the ocean collection +</a></p>' + signup() +
-        '<p class="prop" style="margin-top:18px">This is the page the QR card beside the prints at the centre opens. In Tide Book, sign-ups from here are tagged “QR card at the centre”.</p></div>';
+        '<p class="prop" style="margin-top:18px">This is the page the QR card beside the prints at the centre opens. In Tide Book, sign-ups from here are tagged “QR card at the centre”.</p>' +
+        closing('Made with Irukandji', 'Take the <span class="it" style="color:var(--teal)">ocean</span> home', 'The pieces you met at the centre, printed and posted to you. 20% of every marine print supports Sea Shelter.', function (a) { return a.sea; }) + '</div>';
     }
   };
-  function madeForOthers() {
-    return '<div class="made-for reveal"><div class="lbl" style="color:var(--teal);margin:26px 0 12px">Made for others</div>' + COMMISSIONS.map(function (c) {
-      return '<div class="mf"><img alt="' + esc(c.title) + '" src="' + IMG[c.img] + '"><div><b>' + esc(c.title) + '</b><span>' + esc(c.for) + '</span></div></div>';
-    }).join('') + '</div>';
-  }
-  function commission() {
-    return '<section class="sec"><div class="split"><div><h2>Commission <span class="it" style="color:var(--ocean)">a piece</span></h2><p>Whether you have a question about a specific piece, a vision for a custom commission, a kindred collaboration or simply want to share a bit of magic you noticed today, I would love to hear from you.</p>' + madeForOthers() + '</div>' +
-      '<form class="form" onsubmit="return false"><input placeholder="Your name" aria-label="Your name"><input type="email" placeholder="Email" aria-label="Email"><textarea placeholder="What would you love?" aria-label="What would you love?"></textarea>' +
-      '<button class="btn" type="button" data-act="commission">Send</button></form></div></section>';
-  }
 
   // ---------- routing with a veil between pages ----------
   var first = true;
@@ -1247,8 +1280,10 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       (ok && p.options.length > 1 ? '<div class="qs-opts" role="group" aria-label="Size">' + p.options.map(function (x) { return '<button type="button" class="qs-opt" data-qo="' + x.id + '" aria-pressed="' + (x === o) + '"><span>' + esc(x.label) + '</span><b>' + money(x.price) + '</b></button>'; }).join('') + '</div>' : '') +
       '<p class="qs-note">' + esc(heldPrint(a, p) ? 'Prints open ' + opensOn(a.ed) + '. Until then, the original is the only way to own it.' : soldOriginal(a, p) ? 'The original has found its home.' : o.note) + '</p>' +
       (ed ? '<p class="qs-ed">' + esc(ed) + '</p>' : '') +
-      '<div class="qs-buy"><div class="qs-price">' + (ok ? money(o.price) + (o.was ? '<s>' + money(o.was) + '</s>' : '') : '') + '</div>' +
-      '<button class="btn" type="button" data-act="qadd"' + (ok ? '' : ' disabled') + '>' + (heldPrint(a, p) ? 'Not yet' : soldOriginal(a, p) ? 'Sold' : p.type === 'Original' ? 'Buy the original' : 'Add to cart') + '</button></div>' +
+      // one tap first; the cart is the quieter second way
+      (ok ? '<div class="qs-buy"><div class="qs-price">' + money(o.price) + (o.was ? '<s>' + money(o.was) + '</s>' : '') + '</div><div class="lbl xlbl">' + (p.type === 'Original' ? 'Make it yours in one tap' : 'Check out in one tap') + '</div></div>' +
+        expressBtns() + '<div class="or">or</div><button class="btn block ghost" type="button" data-act="qadd">' + (p.type === 'Original' ? 'Add the original to cart' : 'Add to cart') + '</button>'
+        : '<div class="qs-buy"><button class="btn block" type="button" data-act="qadd" disabled>' + (heldPrint(a, p) ? 'Not yet' : 'Sold') + '</button></div>') +
       '<a class="qs-more" href="#/a/' + a.id + (p === a.products[0] ? '' : '/' + p.id) + '">See the whole piece <i aria-hidden="true">→</i></a>';
   }
   function openQuick(id, pid, opener) {
@@ -1257,7 +1292,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     qs = { a: a, p: p, o: p.options[0] }; qsFrom = opener || null;
     drawQuick();
     document.body.classList.add('qs-open');
-    setTimeout(function () { var b = $('#qs [data-act="qadd"]'); if (b) b.focus({ preventScroll: true }); }, 60);
+    setTimeout(function () { var b = $('#qs .express .xb') || $('#qs [data-act="qadd"]'); if (b) b.focus({ preventScroll: true }); }, 60);
   }
   function closeQuick(quiet) {
     if (!document.body.classList.contains('qs-open')) return;
@@ -1321,7 +1356,6 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     else if (act === 'express') toast('On the live site, ' + t.dataset.via + ' fills in the address and card: one tap and it’s paid.');
     else if (act === 'checkout') toast('On the live site this goes to the secure checkout.');
     else if (act === 'join') toast('On the live site this joins the newsletter and sends the wallpaper.');
-    else if (act === 'commission') toast('On the live site this lands in Tide Book for Denise.');
   });
   document.addEventListener('change', function (e) { var t = e.target.closest('input[data-act]'); if (!t) return; if (t.dataset.act === 'frame') state.frame = t.checked; if (t.dataset.act === 'gift') state.gift = t.checked; paintPrice(); });
   $('#cartBtn').addEventListener('click', function () { openCart(true); });
@@ -1350,7 +1384,6 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     { kind: 'words', text: 'Stillness. Movement. Pattern. Light.', small: true, x: 0.12 },
     { kind: 'piece', id: 'shark', title: 'Shark in the shallows', medium: 'Ocean collection, with the Irukandji Shark & Ray Centre', src: 'print-shark-at-centre', crop: [292, 84, 126, 214], tall: true, shop: 'shark', size: 0.3, x: 0.2, speed: 0.12 },
     { kind: 'piece', id: 'detail', title: 'Into the rainforest, up close', medium: 'Detail', src: 'print-walkway', crop: [380, 380, 420, 420], size: 0.34, x: 0.58, speed: 0.04, lift: 40, shop: 'walkway' },
-    { kind: 'piece', id: 'commission', title: 'Coastal wildflowers', medium: 'Commissioned: a fabric design for Oztag', src: 'print-wildflowers', size: 0.3, x: 0.2, speed: 0.09 },
     { kind: 'words', text: 'Finding hope and magic in the soft moments.', italic: true },
     { kind: 'piece', id: 'roots-close', title: 'Blue roots, up close', medium: 'Detail', src: 'print-roots', crop: [260, 260, 340, 340], size: 0.3, x: 0.62, speed: 0.14, shop: 'roots' },
     { kind: 'wait', title: 'Carved paper', medium: 'Photographs coming soon', size: 0.26, x: 0.14, speed: 0.08, lift: -60 },
@@ -1388,7 +1421,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     el.innerHTML = '<div class="lg-wash"></div><div class="lg-wall"><div class="lg-stage"></div></div><div class="lg-fade"></div>' +
       '<div class="lg-top"><a class="lg-name" href="#/">Denise Duffy<small>Living gallery</small></a><button class="lg-close" type="button" aria-label="Leave the gallery">Close</button></div>' +
       '<div class="lg-foot"><p>Stop. Pause. Look around for the pockets of magic.</p><span class="lg-note">' + (TOUCH ? 'Swipe any way to wander' : 'Drag or scroll any way to wander') + '</span>' +
-      '<div class="lg-links"><a class="lg-link" href="#/c/coast">Shop the work</a><a class="lg-link" href="#/originals">The originals</a><a class="lg-link" href="#/c/originals">Commission a piece</a></div></div>' +
+      '<div class="lg-links"><a class="lg-link" href="#/c/coast">Shop the work</a><a class="lg-link" href="#/originals">The originals</a></div></div>' +
       '<div class="lg-intro"><h2></h2><p>Living gallery</p></div>';
     document.body.appendChild(el);
     wall = el.querySelector('.lg-wall'); stage = el.querySelector('.lg-stage'); note = el.querySelector('.lg-note');

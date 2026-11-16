@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,text_fields,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -882,6 +882,35 @@ img, video { max-width: 100%; }
 .ad-total { font: 500 16px/22px var(--font); padding: 10px 12px; border-radius: 12px; background: var(--secondary-container); color: var(--on-secondary-container); }
 .ad-date-row { display: flex; align-items: center; gap: 12px; }
 .ad-date { flex: 1; height: 44px; padding: 0 12px; border: 1px solid var(--outline, #c9c2b8); border-radius: 10px; background: transparent; font: 400 15px/20px var(--font); color: var(--on-surface); }
+
+/* ---------- research: advertising go / no go ---------- */
+.adv { margin-top: 14px; padding: 12px 14px 4px; border-radius: 14px; background: var(--surface-high); }
+.adv.go { background: #e3f1fb; }
+.adv-head { display: flex; align-items: center; gap: 8px; font: 500 15px/20px var(--font); }
+.adv.go .adv-head .ms { color: var(--primary); }
+.adv p { margin: 6px 0 0; font: 400 14px/20px var(--font); }
+.adv .ad-facts { margin-top: 10px; }
+
+/* ---------- the editor ---------- */
+.ed-stage { display: flex; justify-content: center; align-items: center; min-height: 220px; background: #111a22; border-radius: 16px; padding: 10px; }
+.ed-canvas { max-width: 100%; border-radius: 6px; background: #000; }
+.ed-status { text-align: center; min-height: 18px; margin: 6px 0; color: var(--on-surface-variant); }
+.ed-tools { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 10px; scrollbar-width: none; }
+.ed-tool { flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; border: 0; border-radius: 14px; background: transparent; color: var(--on-surface-variant); font: 500 12px/16px var(--font); }
+.ed-tool.on { background: var(--secondary-container); color: var(--on-secondary-container); }
+.ed-panel { display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+.ed-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.ed-chip { border: 1px solid var(--hairline); background: transparent; border-radius: 999px; padding: 7px 14px; font: 500 13px/18px var(--font); color: var(--on-surface); }
+.ed-chip.on { background: var(--secondary-container); border-color: transparent; color: var(--on-secondary-container); }
+.ed-slider { display: grid; grid-template-columns: 96px 1fr 40px; align-items: center; gap: 8px; font: 400 13px/18px var(--font); }
+.ed-slider input { width: 100%; accent-color: var(--primary); }
+.ed-val { text-align: right; color: var(--on-surface-variant); font-variant-numeric: tabular-nums; }
+.ed-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
+.ed-theme { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: transparent; padding: 4px; border-radius: 12px; font: 500 12px/16px var(--font); color: var(--on-surface); }
+.ed-theme canvas { width: 60px; height: 60px; border-radius: 10px; background: var(--surface-high); }
+.ed-theme.on canvas { outline: 3px solid var(--primary); outline-offset: 2px; }
+.ed-trim-info { font: 500 14px/20px var(--font); font-variant-numeric: tabular-nums; }
+.me-row button[aria-label="Edit"] { color: var(--primary); }
 </style>
 
   <script>
@@ -986,6 +1015,14 @@ function tideDay(o, nowMs) {
   return { key: key, word: p.word, icon: p.icon, hint: p.hint, mode: p.mode };
 }
 function tideSteer(day) { return TIDE_DAY.STEER[day.mode] || ''; }
+/** Research's advertising verdict, cleaned (idea and product research share it). */
+function tideAdvertising(a) {
+  if (!a || typeof a !== 'object') return null;
+  var t = function (v, n) { return String(v == null ? '' : v).slice(0, n); }, go = a.verdict === 'Go';
+  var budget = Number(a.budget_aud), days = Math.round(Number(a.days));
+  return { verdict: go ? 'Go' : 'No go', why: t(a.why, 400), how: t(a.how, 400),
+    budget: go && isFinite(budget) && budget > 0 ? Math.round(budget * 100) / 100 : 0, days: go && days > 0 ? Math.min(90, days) : 0, expected: t(a.expected_return, 400) };
+}
 
 var TIDE_SETTING_DEFAULTS = {
   gstRegisteredFrom: '',     // 'YYYY-MM-DD' from the day the business is registered for GST
@@ -1099,7 +1136,7 @@ var TIDE_SCHEMAS = {
       ['source', 'Source', 'text'],
       ['adStatus', 'Ad status', 'text'], ['adResearch', 'Ad research', 'json'], ['adPlan', 'Ad plan', 'json'], ['adNote', 'Ad note', 'text'],
       ['adTries', 'Ad tries', 'number'], ['adAt', 'Ad researched', 'date'], ['adConfirmedAt', 'Ad confirmed', 'date'], ['adStarted', 'Ad started', 'date'],
-      ['adFinished', 'Ad finished', 'date'], ['adMeta', 'Ad in Meta', 'json'],
+      ['adFinished', 'Ad finished', 'date'], ['adMeta', 'Ad in Meta', 'json'], ['adNeedsOk', 'Ad needs OK', 'bool'], ['adOkBy', 'Ad OK by', 'text'],
       ['updated', 'Updated', 'date']
     ]
   },
@@ -2275,7 +2312,7 @@ function createTideLogic(env) {
     var byIdC = {}; rows('content').forEach(function (c) { byIdC[c.id] = c; });
     studioData.content.forEach(function (c) { var raw = byIdC[c.id]; var v = raw ? ads.view(raw, role) : null; if (v) c.ad = v; });
     if (role === 'admin') ads.waiting().forEach(function (a) {
-      publishData.todo.unshift({ key: 'ad-' + a.id, text: 'Confirm the ad plan for “' + a.title + '”', why: 'The research is in. Check the budget, audience and dates, adjust anything, then confirm.', where: 'Content › the post' });
+      publishData.todo.unshift({ key: 'ad-' + a.id, text: 'OK the spend on “' + a.title + '” ($' + a.total + ')', why: 'It’s over your ad limit, so it waits for you before it can start.', where: 'Content › the post' });
     });
     return {
       role: role, brand: env.brand, today: today,
@@ -2324,7 +2361,7 @@ function createTideLogic(env) {
           return { name: text(c && c.name, 120), price: text(c && c.price, 60), note: text(c && c.note, 200) };
         }),
         risks: list(r.risks).slice(0, 6).map(function (x) { return text(x, 240); }).filter(String),
-        firstStep: text(r.first_step || r.firstStep, 400),
+        firstStep: text(r.first_step || r.firstStep, 400), advertising: tideAdvertising(r.advertising),
         sources: list(r.sources).slice(0, 8).map(function (c) {
           var url = text(c && c.url, 500);
           return { title: text(c && c.title, 160), url: /^https?:\/\//i.test(url) ? url : '' };
@@ -2526,6 +2563,23 @@ function tideContent(env, t) {
         context: '', batch: rd, duration: Number(p.duration) > 0 ? r2(Number(p.duration)) : '',
         fileId: '', thumbIds: [], folderUrl: env.files.folder(['Footage', now.slice(0, 7)]),
         description: '', group: '', status: 'New', tries: 0, excluded: false, updated: now
+      });
+      return { id: id };
+    });
+  }
+
+  /** A new item for an edited copy (the editor): same context and description, no round, so no new drafts start. */
+  function addEditedFootage(fromId, p) {
+    t.need(['admin', 'artist']);
+    p = p || {};
+    return env.lock(function () {
+      var src = t.find('footage', fromId), now = t.nowIso(), id = env.nextId('FT', 4);
+      env.table('footage').append({
+        id: id, created: now, createdBy: env.user.email, kind: src.kind, name: t.text((src.name || src.id) + ' (edited)', 200),
+        context: src.context || '', batch: '', duration: Number(p.duration) > 0 ? r2(Number(p.duration)) : (src.duration || ''),
+        fileId: '', thumbIds: [], folderUrl: src.folderUrl || env.files.folder(['Footage', now.slice(0, 7)]),
+        description: src.description || '', group: src.group || '', status: src.status === 'New' ? 'Seen' : (src.status || 'Seen'), tries: 0, excluded: false,
+        editedFrom: src.id, edit: p.edit || null, updated: now
       });
       return { id: id };
     });
@@ -3112,7 +3166,7 @@ function tideContent(env, t) {
   return {
     api: {
       startRound: startRound, finishRound: finishRound, addFootage: addFootage, uploadFootagePhoto: uploadFootagePhoto,
-      uploadFootageFrame: uploadFootageFrame, startVideoUpload: startVideoUpload, finishVideoUpload: finishVideoUpload,
+      uploadFootageFrame: uploadFootageFrame, addEditedFootage: addEditedFootage, startVideoUpload: startVideoUpload, finishVideoUpload: finishVideoUpload,
       updateFootage: updateFootage, answerQuestion: answerQuestion,
       decideContent: decideContent, undoApproval: undoApproval, steerContent: steerContent, requestRevision: requestRevision, updateContent: updateContent, markContent: markContent,
       requestSuggestions: requestSuggestions, saveBrief: saveBrief, addNote: addNote, removeNote: removeNote,
@@ -3617,7 +3671,9 @@ function tidePublish(env, t) {
       if (!c || ['Approved', 'Scheduled', 'Failed', 'Held'].indexOf(c.status) < 0) t.fail('Only approved posts can be scheduled.');
       if (!on('postingEnabled')) t.fail('Posting isn’t switched on yet (Admin › Settings).');
       if (!networksFor(c).length) t.fail(c.format + 's are posted by hand.');
-      var at = when === 'now' ? iso(nowMs() + 60000) : nextSlot(takenSlots().filter(function (x) { return x !== c.scheduledAt; }));
+      // 'now': the next free minute (she gets a minute to undo); a time: put back to it (the undo); else the next good slot
+      var back = /^\d{4}-\d{2}-\d{2}T/.test(String(when)) && Date.parse(when) > nowMs() ? new Date(Date.parse(when)).toISOString() : '';
+      var at = when === 'now' ? iso(nowMs() + 60000) : back || nextSlot(takenSlots().filter(function (x) { return x !== c.scheduledAt; }));
       env.table('content').update(id, { status: 'Scheduled', scheduledAt: at, preflight: preflight(c), postError: '', updated: t.nowIso() });
       return { ok: true, at: at };
     });
@@ -3735,7 +3791,7 @@ function tidePublish(env, t) {
     var waiting = t.rows('content').filter(function (c) { return c.status === 'Suggested' && c.type === 'Post' && c[mine] !== 'Approved' && (t.postNeeds ? t.postNeeds(c) : ['artist']).indexOf(role) >= 0; }).length;
     if (waiting) items.push({ key: 'review', text: waiting + ' post' + (waiting === 1 ? '' : 's') + ' to review', why: role === 'admin' ? 'These clash with a rule, so they need your OK as well.' : 'Nothing goes out until you’ve approved it.', where: 'Content › Review' });
     var hand = t.rows('content').filter(function (c) { return c.status === 'Approved' && c.type === 'Post'; }).length;
-    if (hand) items.push({ key: 'hand', text: hand + ' approved post' + (hand === 1 ? '' : 's') + ' to put out', why: on('postingEnabled') ? 'Stories and ads are posted by hand.' : 'These go out by hand for now. Mark each one posted once it’s up.', where: 'Content › Ready' });
+    if (hand) items.push({ key: 'hand', text: hand + ' approved post' + (hand === 1 ? '' : 's') + ' to put out', why: on('postingEnabled') ? 'Stories are posted by hand.' : 'These go out by hand for now. Mark each one posted once it’s up.', where: 'Content › Ready' });
     return items;
   }
 
@@ -3744,7 +3800,8 @@ function tidePublish(env, t) {
     var role = t.need(['admin', 'artist']);
     ch = ch || {};
     // her posting times are hers; the switches, credits and buzz topics stay with the admin
-    if (role === 'artist') { var mine = {}; ['slotTimes', 'postsPerDay'].forEach(function (k) { if (k in ch) mine[k] = ch[k]; }); ch = mine; }
+    // she can also pause and resume automatic posting (connecting Facebook stays with the admin)
+    if (role === 'artist') { var mine = {}; ['slotTimes', 'postsPerDay', 'postingEnabled'].forEach(function (k) { if (k in ch) mine[k] = ch[k]; }); ch = mine; }
     var out = {};
     if ('postingEnabled' in ch) {
       if (ch.postingEnabled === true) needDirect();
@@ -3791,6 +3848,8 @@ function tidePublish(env, t) {
     return {
       posting: {
         direct: P.DIRECT_POSTING, enabled: on('postingEnabled'), dryRun: on('postingDryRun'), editEnabled: on('editEnabled'),
+        connected: P.DIRECT_POSTING && env.publisher && env.publisher.connected ? !!env.publisher.connected() : false,
+        adLimit: Number(s.adLimit) > 0 ? Number(s.adLimit) : 100,
         slotTimes: String(setting('slotTimes')), learnedSlots: String(s.learnedSlots || '').split(/[,\s]+/).filter(Boolean), postsPerDay: Number(setting('postsPerDay')) || 1,
         editWeeklyCredits: Number(setting('editWeeklyCredits')) || 0, editSpent: editsThisWeek(),
         account: role === 'admin' ? env.publisher.account() : null,
@@ -4892,7 +4951,7 @@ function tideTalk(env, t) {
         suppliers: t.list(res.suppliers).slice(0, 5).map(function (s) { s = s || {}; return { name: t.text(s.name, 100), what: t.text(s.what, 160), unit: num(s.unit_cost_aud), minOrder: t.text(s.min_order, 80), where: t.text(s.location, 80), url: /^https?:\/\//.test(s.url) ? t.text(s.url, 400) : '' }; }).filter(function (s) { return s.name; }),
         costing: { low: num(c.unit_cost_low), high: num(c.unit_cost_high), price: num(c.suggested_price), notes: t.text(c.notes, 400) },
         comparables: t.list(res.comparables).slice(0, 6).map(function (x) { x = x || {}; return { name: t.text(x.name, 120), price: num(x.price_aud), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.name; }),
-        risks: cleanList(res.risks, 4, 240),
+        risks: cleanList(res.risks, 4, 240), advertising: tideAdvertising(res.advertising),
         legal: t.list(res.legal_checks).slice(0, 8).map(function (c) { return typeof c === 'string' ? { check: t.text(c, 300) } : { check: t.text(c && c.check, 300), verdict: c && c.verdict, why: t.text(c && c.why, 300), action: t.text(c && c.action, 300) }; }).filter(function (c) { return c.check; }),
         sources: t.list(res.sources).slice(0, 10).map(function (x) { x = x || {}; return { title: t.text(x.title, 120), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.url; })
       };
@@ -5368,8 +5427,9 @@ function tideDirection(env, t) {
  *
  * A post that is (or becomes) an Ad gets proper market research straight away: how promising it is, what it
  * should focus on, who it's for, and a recommended daily budget and length, with the reasoning. The artist sees
- * a short plain summary; the admin gets the full research and the plan to confirm or adjust. Nothing is spent
- * until the admin confirms the exact amount. Once confirmed and the post is up, the admin can start it through
+ * the summary and the plan, and runs it herself end to end: adjust, confirm, start, finish. A plan whose total is over
+ * the admin's limit (Settings, default $100) also needs the admin's OK before it can start. Nothing is spent
+ * until a person confirms the exact amount. Once confirmed and the post is up, the admin can start it through
  * Meta (Publish.gs, env.publisher.boost): a dry run first, like posting.
  *
  * The research itself runs as a half-price batch with web search (AdResearch.gs), or in Claude chat.
@@ -5423,7 +5483,7 @@ function tideAds(env, t) {
           adPlan: planFrom(clean), updated: t.nowIso() });
         title = c.title || 'An ad';
       });
-      if (title && t.push) t.push('admin', 'Ad plan to confirm: ' + title, clean.verdict + ', ' + clean.viability + '/100 · about $' + clean.budget.daily + ' a day for ' + clean.budget.days + ' days. Check and adjust it on the post.');
+      if (title && t.push) t.push('artist', 'Your ad plan is ready: ' + title, 'About $' + clean.budget.daily + ' a day for ' + clean.budget.days + ' days. Have a look, change anything, then confirm it.');
       return true;
     },
     fail: function (id, why, permanent) {
@@ -5466,22 +5526,45 @@ function tideAds(env, t) {
       return { ok: true };
     });
   }
-  /** Admin: confirm the plan, with any changes. The exact spend is shown back. */
+  function limit() { var v = Number(env.settings.get().adLimit); return isFinite(v) && v > 0 ? v : 100; }
+  function totalOf(plan) { return Math.round(plan.daily * plan.days * 100) / 100; }
+  /** Confirm the plan, with any changes. Hers over the limit also needs the admin's OK; the admin's own needs nothing more. */
   function confirmAd(id, p) {
-    t.need(['admin']);
+    var role = t.need(['admin', 'artist']);
     return env.lock(function () {
       var c = row(id);
       if (!isAd(c)) t.fail('Only an ad has a plan.');
       if (c.adStatus === 'Running') t.fail('It’s already running.');
-      var plan = cleanPlan(p);
-      env.table('content').update(id, { adPlan: plan, adStatus: 'Confirmed', adConfirmedAt: t.nowIso(), updated: t.nowIso() });
-      if (t.push) t.push('artist', 'Your ad is planned: ' + (c.title || 'your post'), '$' + plan.daily + ' a day for ' + plan.days + ' days, from ' + env.localLabel(plan.start + 'T09:00:00') + '.');
-      return { ok: true, total: Math.round(plan.daily * plan.days * 100) / 100 };
+      var plan = cleanPlan(p), total = totalOf(plan), over = role === 'artist' && total > limit();
+      env.table('content').update(id, { adPlan: plan, adStatus: 'Confirmed', adConfirmedAt: t.nowIso(), adNeedsOk: over, adOkBy: over ? '' : role, updated: t.nowIso() });
+      if (t.push) {
+        if (over) t.push('admin', 'An ad needs your OK: ' + (c.title || 'a post'), '$' + total + ' in all, over your $' + limit() + ' limit. Check it on the post.');
+        else if (role === 'admin') t.push('artist', 'Your ad is planned: ' + (c.title || 'your post'), '$' + plan.daily + ' a day for ' + plan.days + ' days, from ' + env.localLabel(plan.start + 'T09:00:00') + '.');
+      }
+      return { ok: true, total: total, needsOk: over };
     });
   }
-  /** Admin: back to the plan stage (before it runs). */
-  function reopenAd(id) {
+  /** Admin: OK a plan that's over the limit. */
+  function okAdSpend(id) {
     t.need(['admin']);
+    return env.lock(function () {
+      var c = row(id);
+      if (!c.adNeedsOk) t.fail('This one doesn’t need your OK.');
+      env.table('content').update(id, { adNeedsOk: false, adOkBy: 'admin', updated: t.nowIso() });
+      if (t.push) t.push('artist', 'Your ad is good to go: ' + (c.title || 'your post'), 'Start it whenever you like.');
+      return { ok: true };
+    });
+  }
+  function saveAdLimit(v) {
+    t.need(['admin']);
+    var n = Math.round(Number(v));
+    if (!(n > 0)) t.fail('Set a limit above $0.');
+    env.settings.set({ adLimit: n });
+    return { ok: true };
+  }
+  /** Back to the plan stage (before it runs). */
+  function reopenAd(id) {
+    t.need(['admin', 'artist']);
     return env.lock(function () {
       var c = row(id);
       if (c.adStatus !== 'Confirmed') t.fail('Only a confirmed plan can be reopened.');
@@ -5491,9 +5574,10 @@ function tideAds(env, t) {
   }
   /** Admin: start it through Meta (needs the post to be up on Facebook), or mark it started by hand. */
   function startAd(id, byHand) {
-    t.need(['admin']);
+    var role = t.need(['admin', 'artist']);
     var c = row(id);
     if (c.adStatus !== 'Confirmed') t.fail('Confirm the plan first.');
+    if (c.adNeedsOk) t.fail(role === 'admin' ? 'OK the spend first.' : 'Waiting for ' + (env.brand.adminName || 'your admin') + '’s OK on the spend.');
     var plan = c.adPlan || {};
     if (byHand === true) {
       env.lock(function () { env.table('content').update(id, { adStatus: 'Running', adStarted: t.nowIso(), adMeta: { byHand: true }, updated: t.nowIso() }); });
@@ -5503,7 +5587,7 @@ function tideAds(env, t) {
     var fb = (c.targets || {}).facebook || {};
     if (!fb.id || fb.status !== 'ok') t.fail('The post needs to be up on Facebook first: the ad promotes that post.');
     var s = env.settings.get(), acct = String(s.adAccountId || '').replace(/^act_/, '');
-    if (!/^\d{5,20}$/.test(acct)) t.fail('Add the ad account number first (Settings › Posting).');
+    if (!/^\d{5,20}$/.test(acct)) t.fail(role === 'admin' ? 'Add the ad account number first (on the ad).' : 'Not available yet. ' + (env.brand.adminName || 'Your admin') + ' can switch it on.');
     var dry = String(s.postingDryRun) !== 'false' && s.postingDryRun !== false;
     var res = env.publisher.boost({ account: acct, postId: fb.id, name: c.title || c.id, plan: plan, dryRun: dry });
     env.lock(function () {
@@ -5513,7 +5597,7 @@ function tideAds(env, t) {
     return { ok: true, dryRun: dry, meta: res };
   }
   function finishAd(id) {
-    t.need(['admin']);
+    t.need(['admin', 'artist']);
     return env.lock(function () {
       var c = row(id);
       if (c.adStatus !== 'Running') t.fail('It isn’t running.');
@@ -5534,17 +5618,18 @@ function tideAds(env, t) {
     if (!isAd(c)) return null;
     var R = c.adResearch || null, plan = c.adPlan || null;
     var out = { status: c.adStatus || (R ? 'Ready' : A.WRITTEN.indexOf(c.status) >= 0 ? 'Researching' : ''), at: c.adAt || '', confirmedAt: c.adConfirmedAt || '',
-      started: c.adStarted || '', plan: plan, total: plan ? Math.round(plan.daily * plan.days * 100) / 100 : 0 };
+      started: c.adStarted || '', plan: plan, total: plan ? Math.round(plan.daily * plan.days * 100) / 100 : 0,
+      needsOk: c.adNeedsOk === true, limit: limit(), canStartHere: /^\d{5,20}$/.test(String(env.settings.get().adAccountId || '')) };
     if (R) out.summary = { verdict: R.verdict, viability: R.viability, focus: R.focus, who: R.audience.who, daily: R.budget.daily, days: R.budget.days };
     if (role === 'admin') { out.research = R; out.note = c.adNote || ''; out.meta = c.adMeta || null; out.account = String(env.settings.get().adAccountId || ''); }
     return out;
   }
-  /** Admin to-dos: plans waiting for a yes. */
-  function waiting() { return t.rows('content').filter(function (c) { return isAd(c) && c.adStatus === 'Ready'; }).map(function (c) { return { id: c.id, title: c.title || 'An ad' }; }); }
+  /** Admin to-dos: her plans over the limit, waiting for an OK. */
+  function waiting() { return t.rows('content').filter(function (c) { return isAd(c) && c.adNeedsOk === true; }).map(function (c) { return { id: c.id, title: c.title || 'An ad', total: c.adPlan ? totalOf(c.adPlan) : 0 }; }); }
 
   return {
     research: research, view: view, waiting: waiting,
-    api: { researchAd: researchAd, confirmAd: confirmAd, reopenAd: reopenAd, startAd: startAd, finishAd: finishAd, saveAdAccount: saveAdAccount }
+    api: { researchAd: researchAd, confirmAd: confirmAd, okAdSpend: okAdSpend, saveAdLimit: saveAdLimit, reopenAd: reopenAd, startAd: startAd, finishAd: finishAd, saveAdAccount: saveAdAccount }
   };
 }
 
@@ -7458,7 +7543,7 @@ var Kit = (function () {
     return since;
   })();
   function sinceVisit(iso) { return Date.parse(iso || '') > SINCE; }
-  function q(x) { return '\u201c' + x + '\u201d'; }
+  function q(x) { return '\u201c' + String(x).replace(/\s*\([^)]*\)\s*/g, ' ').trim() + '\u201d'; }
   function andMore(list) { return q(list[0]) + (list.length === 2 ? ' and ' + q(list[1]) : list.length > 2 ? ' and ' + (list.length - 1) + ' more' : ''); }
   function openPipeItem(id) { S.ideasTab = 'products'; go('ideas'); setTimeout(function () { openItem(id); }, 300); }
 
@@ -7468,7 +7553,7 @@ var Kit = (function () {
     var found = freshResearch();
     if (found.length) {
       found.forEach(function (f) { named[f.title] = 1; });
-      out.push({ icon: 'travel_explore', text: 'Some thoughts came back on ' + andMore(found.map(function (f) { return f.title; })) + ', whenever you\u2019d like a look.',
+      out.push({ icon: 'travel_explore', text: 'Some thoughts came back on ' + q(found[0].title) + (found.length > 1 ? ' and ' + (found.length - 1) + ' more.' : '.'),
         open: found[0].product ? function () { openPipeItem(found[0].id); } : function () { openIdea(found[0].id); } });
     }
     var grown = (S.data.notebook || []).filter(function (n) { return n.expandStatus === 'Done' && sinceVisit(n.expandedAt); });
@@ -7502,21 +7587,18 @@ var Kit = (function () {
     var posts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, quick = S.data.questions.length;
     var fin = closestToDone(), next = fin && (fin.x.scope || []).filter(function (pp) { return !pp.done; })[0];
     if (needs.length) out.push(needs.length === 1 ? adminName() + ' has a question for you.' : adminName() + ' has ' + needs.length + ' questions for you.');
-    if (oks.length) out.push(oks.length === 1 ? q(oks[0].title) + ' is waiting for your OK.' : oks.length + ' things are waiting for your OK, starting with ' + q(oks[0].title) + '.');
+    if (oks.length) out.push(q(oks[0].title) + (oks.length === 1 ? ' is waiting for your OK.' : ' and ' + (oks.length - 1) + ' more are waiting for your OK.'));
     if (talks.length) out.push('A few questions are ready about ' + q(talks[0].title) + '.');
     if (posts && !newPosts) out.push(posts === 1 ? 'A post is ready for a look.' : posts + ' posts are ready for a look.');
     if (quick) out.push(quick === 1 ? 'One quick question about your footage.' : quick + ' quick questions about your footage.');
     if (fin && fin.x.day && fin.x.day.mode !== 'plan') out.push(q(fin.x.title) + (next ? ' is close: next is ' + q(next.text) + '.' : ' is ready to go out.'));
     return out;
   }
-  /** The line under her greeting: the most useful thing waiting, then the best bit of news. */
+  /** The line under her greeting: one thing, the most useful, in one short gentle sentence. */
   function homeLine(needs, day, news) {
     var waiting = welcomeWaiting(needs, news.some(function (x) { return x.icon === 'perm_media'; }));
-    // when the "since you were last here" card is showing, the news lives there; the line keeps to what's waiting
-    var newsText = news.length >= 2 ? [] : news.map(function (x) { return x.text; });
-    var pick = [waiting[0], newsText[0]].filter(Boolean).concat(waiting.slice(1), newsText.slice(1)).slice(0, 2);
-    if (pick.length) return pick.join(' ') + (waiting.length + newsText.length > 2 ? ' No rush on the rest.' : '');
-    if (news.length >= 2) return 'Welcome back. Here’s what happened while you were away.';
+    var one = waiting[0] || (news[0] && news[0].text);
+    if (one) return one;
     var live = S.data.prints.filter(function (pp) { return pp.status === 'Live'; }).length;
     if (live) return 'Nothing needs you today. ' + (live === 1 ? 'Your artwork is' : 'Your ' + live + ' artworks are') + ' out there doing the work.';
     return ['Nothing needs you today. A lovely day to make something.', 'All quiet. One photo of your work would be plenty today.'][day % 2];
@@ -7539,7 +7621,6 @@ var Kit = (function () {
     var day = Math.floor(Date.now() / 86400000);
     var news = rest ? [] : welcomeNews();
     pageTitle(main, hello + ', ' + artist(), rest ? 'Taking it easy. Nothing here needs you.' : homeLine(needs, day, news));
-    var wc = welcomeCard(news); if (wc) main.appendChild(rise(wc, n++));
 
     var cover = coverPrint();
     if (cover) {
@@ -8387,6 +8468,19 @@ var Kit = (function () {
   }
 
   /** Market research on a product: viability, projected demand, costing, suppliers, comparables, and what next. */
+  /** Research's advertising verdict: go or no go, why, how, budget, how long, and the return to expect. */
+  function advertisingBlock(a) {
+    if (!a) return null;
+    var go = a.verdict === 'Go';
+    var box = h('div', { class: 'adv' + (go ? ' go' : ' nogo') },
+      h('div', { class: 'adv-head' }, icon(go ? 'campaign' : 'block'), h('b', { text: go ? 'Advertising: worth it' : 'Advertising: not needed' })),
+      a.why ? h('p', { text: a.why }) : null);
+    var dl = h('dl', { class: 'ad-facts' });
+    [[go ? 'How' : 'Instead', a.how], ['Budget', go && a.budget ? money(a.budget, { cents: a.budget < 20 }) + (a.days ? ' over ' + a.days + ' days' : '') : ''], ['Likely return', a.expected]]
+      .forEach(function (f) { if (f[1]) { dl.appendChild(h('dt', { text: f[0] })); dl.appendChild(h('dd', { text: f[1] })); } });
+    box.appendChild(dl);
+    return box;
+  }
   function researchCard(p, f, reopen, saveFirst, touch) {
     var R = p.research, sec = sheetSection('Market research');
     function link(text, url) { return url ? h('a', { href: url, target: '_blank', rel: 'noopener', text: text }) : h('span', { text: text }); }
@@ -8429,6 +8523,7 @@ var Kit = (function () {
       sec.appendChild(cl);
     }
     if (R.risks.length) sec.appendChild(h('div', { class: 'research-list' }, h('div', { class: 'label-s', text: 'Risks' }), h('ul', { class: 'talk-list' }, R.risks.map(function (x) { return h('li', { text: x }); }))));
+    var advP = advertisingBlock(R.advertising); if (advP) sec.appendChild(advP);
     if (R.legal.length) sec.appendChild(h('p', { class: 'body-s', style: 'margin-top:8px', text: R.legal.length + ' legal check' + (R.legal.length === 1 ? '' : 's') + ' for this product ' + (R.legal.length === 1 ? 'was' : 'were') + ' added to its checklist below.' }));
     if (R.sources.length) {
       var src = h('details', { class: 'talk-past', style: 'margin-top:10px' }, h('summary', { text: 'Sources (' + R.sources.length + ')' }));
@@ -9145,6 +9240,7 @@ var Kit = (function () {
         h('ul', { class: 'bullets' }, r.risks.map(function (t) { return h('li', { text: t }); }))));
     }
     if (r.firstStep) sec.appendChild(h('div', { style: 'margin-top:12px' }, note('First step: ' + r.firstStep, 'arrow_forward', 'good')));
+    var advI = advertisingBlock(r.advertising); if (advI) sec.appendChild(advI);
     if (r.sources && r.sources.length) {
       var src = h('div', { style: 'margin:12px 4px 0;font:400 13px/20px var(--font)' }, h('span', { class: 'muted', text: 'Sources: ' }));
       r.sources.forEach(function (s, i) {
@@ -9952,11 +10048,15 @@ var Kit = (function () {
 
   /** A card at the bottom for a few seconds after an action, with Undo. */
   var undoTimer = null;
-  function undoCard(msg, undo, undoneMsg) {
+  function undoCard(msg, undo, undoneMsg, secs) {
     var old = document.getElementById('undo-card');
     if (old) old.remove();
     clearTimeout(undoTimer);
-    var card = h('div', { id: 'undo-card', class: 'undo-card', role: 'status' }, h('span', { class: 'grow', text: msg }));
+    var label = h('span', { class: 'grow', text: typeof msg === 'function' ? msg(secs) : msg });
+    var card = h('div', { id: 'undo-card', class: 'undo-card', role: 'status' }, label);
+    if (secs && typeof msg === 'function') {
+      var left = secs, tickT = setInterval(function () { left--; if (!document.body.contains(card) || left <= 0) { clearInterval(tickT); return; } label.textContent = msg(left); }, 1000);
+    }
     var b = h('button', { type: 'button', class: 'undo-btn press' }, icon('undo'), 'Undo');
     b.addEventListener('click', function () {
       b.disabled = true;
@@ -9965,7 +10065,19 @@ var Kit = (function () {
     });
     card.appendChild(b);
     document.body.appendChild(card);
-    undoTimer = setTimeout(function () { card.classList.add('out'); setTimeout(function () { card.remove(); }, 300); }, 9000);
+    undoTimer = setTimeout(function () { card.classList.add('out'); setTimeout(function () { card.remove(); }, 300); }, (secs || 9) * 1000);
+  }
+  /** Post now: out in the next free minute, with a minute to change her mind. */
+  function postNowBtn(c, kind) {
+    return btn(kind || 'filled', 'Post now', { icon: 'send', sm: true, onclick: function (e) {
+      var b = e.currentTarget, before = c.status === 'Scheduled' ? c.scheduledAt : '';
+      K.setBusy(b, true);
+      api('schedulePost', c.id, 'now').then(refresh).then(function () {
+        K.haptic('success'); render();
+        undoCard(function (s) { return 'Posting ' + (c.title ? '\u201c' + c.title + '\u201d ' : '') + 'in ' + s + 's.'; },
+          function () { return before ? api('schedulePost', c.id, before) : api('cancelSchedule', c.id); }, before ? 'Back to its time.' : 'Not posted. It\u2019s back under Ready.', 60);
+      }).catch(function (err) { K.setBusy(b, false); fail(err); });
+    } });
   }
 
   /** Approve, or discard with a reason. Discarding is final; "Needs changes" is the fix route. */
@@ -10445,6 +10557,231 @@ var Kit = (function () {
 
   var POST_FORMATS = ['Photo post', 'Carousel', 'Reel', 'Story', 'Ad'], POST_PLACES = ['Instagram', 'Facebook', 'Instagram and Facebook'];
   /** Photos and clips in a post: reorder, remove, add more from her footage. */
+
+  // ------------------------------------------------------------------ the editor (photos and short clips)
+  // Shape it for the post, give it a theme, adjust the light, add words, and trim a clip. All on her phone;
+  // the result is saved as a new copy (the original stays), and swapped into the post.
+  var EDIT_SHAPES = [['orig', 'Original', 0], ['square', 'Square', 1], ['portrait', 'Portrait', 4 / 5], ['story', 'Story', 9 / 16]];
+  var EDIT_THEMES = [['none', 'Natural', ''], ['warm', 'Warm', 'sepia(0.18) saturate(1.15) brightness(1.03)'],
+    ['golden', 'Golden', 'sepia(0.35) saturate(1.3) brightness(1.05)'], ['ocean', 'Ocean', 'hue-rotate(-12deg) saturate(1.25) contrast(1.05)'],
+    ['forest', 'Forest', 'hue-rotate(10deg) saturate(1.12) contrast(1.05)'], ['cool', 'Cool', 'hue-rotate(-6deg) saturate(0.95) brightness(1.04)'],
+    ['soft', 'Soft', 'contrast(0.9) brightness(1.06) saturate(0.92)'], ['fade', 'Faded', 'contrast(0.82) brightness(1.1) saturate(0.8)'],
+    ['mono', 'Mono', 'grayscale(1) contrast(1.1)']];
+  var EDIT_FONTS = [['classic', 'Classic', 'normal 500 {s}px Lora, Georgia, serif'], ['clean', 'Clean', 'normal 500 {s}px Roboto, Arial, sans-serif'],
+    ['soft', 'Soft', 'italic 500 {s}px Lora, Georgia, serif']];
+
+  function editFilter(st) {
+    var th = EDIT_THEMES.filter(function (x) { return x[0] === st.theme; })[0], L = st.light, out = th ? th[2] : '';
+    if (L.bright) out += ' brightness(' + (1 + L.bright / 100) + ')';
+    if (L.contrast) out += ' contrast(' + (1 + L.contrast / 100) + ')';
+    if (L.sat) out += ' saturate(' + (1 + L.sat / 100) + ')';
+    if (L.warm > 0) out += ' sepia(' + (L.warm / 160) + ')';
+    if (L.warm < 0) out += ' hue-rotate(' + (L.warm / 6) + 'deg)';
+    return out.trim() || 'none';
+  }
+  /** The visible part of the source for a shape, moved by pos (0..1 each way). */
+  function editCrop(sw, sh, st) {
+    var shp = EDIT_SHAPES.filter(function (x) { return x[0] === st.shape; })[0], r = shp && shp[2] ? shp[2] : sw / sh;
+    var cw = sw, ch = sh;
+    if (sw / sh > r) cw = sh * r; else ch = sw / r;
+    return { x: (sw - cw) * st.posX, y: (sh - ch) * st.posY, w: cw, h: ch };
+  }
+  function editDraw(ctx, src, sw, sh, W, H, st) {
+    var c = editCrop(sw, sh, st);
+    ctx.save(); ctx.clearRect(0, 0, W, H);
+    if ('filter' in ctx) ctx.filter = editFilter(st);
+    ctx.drawImage(src, c.x, c.y, c.w, c.h, 0, 0, W, H);
+    ctx.restore();
+    var T = st.text;
+    if (T.value) {
+      var size = Math.round(H * T.size / 100), font = (EDIT_FONTS.filter(function (x) { return x[0] === T.font; })[0] || EDIT_FONTS[0])[2].replace('{s}', size);
+      ctx.save(); ctx.font = font; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = T.color;
+      ctx.shadowColor = T.color === '#ffffff' ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.5)'; ctx.shadowBlur = size * 0.25;
+      // wrap to the width
+      var words = T.value.split(/\s+/), lines = [], line = '';
+      words.forEach(function (w) { var tryL = line ? line + ' ' + w : w; if (ctx.measureText(tryL).width > W * 0.86 && line) { lines.push(line); line = w; } else line = tryL; });
+      if (line) lines.push(line);
+      var lh = size * 1.22, total = lh * lines.length, y0 = T.pos === 'top' ? H * 0.1 + lh / 2 : T.pos === 'middle' ? H / 2 - total / 2 + lh / 2 : H * 0.9 - total + lh / 2;
+      lines.forEach(function (l, i) { ctx.fillText(l, W / 2, y0 + i * lh); });
+      ctx.restore();
+    }
+  }
+  function outSize(sw, sh, st, longSide) {
+    var c = editCrop(sw, sh, st), k = Math.min(1, longSide / Math.max(c.w, c.h));
+    var W = Math.round(c.w * k), H = Math.round(c.h * k);
+    return { W: W - W % 2, H: H - H % 2 };
+  }
+  /** Records the trimmed, themed clip in real time. Resolves with a File. */
+  function exportClip(v, st, onProg) {
+    return new Promise(function (resolve, reject) {
+      var sz = outSize(v.videoWidth, v.videoHeight, st, 1080), cv = document.createElement('canvas');
+      cv.width = sz.W; cv.height = sz.H;
+      var ctx = cv.getContext('2d'), stream = cv.captureStream(30), ac = null;
+      try {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (AC && !v.__tbSource) { ac = new AC(); v.__tbCtx = ac; v.__tbSource = ac.createMediaElementSource(v); }
+        if (v.__tbSource) { var dest = v.__tbCtx.createMediaStreamDestination(); v.__tbSource.connect(dest); dest.stream.getAudioTracks().forEach(function (tr) { stream.addTrack(tr); }); }
+      } catch (e) { /* no sound: still a clip */ }
+      var types = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'];
+      var mime = types.filter(function (x) { return window.MediaRecorder && MediaRecorder.isTypeSupported(x); })[0];
+      if (!mime) { reject(new Error('This phone can\u2019t save edited clips. Photos still work.')); return; }
+      var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 }), parts = [], raf = 0, start = st.trim.start, end = st.trim.end;
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) parts.push(e.data); };
+      rec.onstop = function () {
+        cancelAnimationFrame(raf);
+        var ext = /mp4/.test(mime) ? 'mp4' : 'webm', blob = new Blob(parts, { type: mime.split(';')[0] });
+        resolve(new File([blob], 'edited.' + ext, { type: blob.type }));
+      };
+      function frame() {
+        editDraw(ctx, v, v.videoWidth, v.videoHeight, cv.width, cv.height, st);
+        if (onProg) onProg(Math.max(0, Math.min(1, (v.currentTime - start) / Math.max(0.1, end - start))));
+        if (v.currentTime >= end || v.ended) { v.pause(); if (rec.state !== 'inactive') rec.stop(); return; }
+        raf = requestAnimationFrame(frame);
+      }
+      v.pause(); v.muted = false;
+      v.addEventListener('seeked', function go() {
+        v.removeEventListener('seeked', go);
+        rec.start(250);
+        v.play().then(function () { frame(); }).catch(function (e) { rec.stop(); reject(e); });
+      });
+      v.currentTime = start;
+    });
+  }
+
+  function openEditor(f, done) {
+    var isVideo = f.kind === 'Video', src = f.viewUrl || '';
+    if (!src && f.thumbIds.length) src = S.thumbs[f.thumbIds[0]] || '';
+    if (!src) { toast(isVideo ? 'This clip isn\u2019t on the PC yet, so it can\u2019t be edited.' : 'This photo isn\u2019t ready to edit yet.'); return; }
+    var st = { shape: 'orig', posX: 0.5, posY: 0.5, theme: 'none', light: { bright: 0, contrast: 0, sat: 0, warm: 0 },
+      text: { value: '', font: 'classic', pos: 'bottom', color: '#ffffff', size: 6 }, trim: { start: 0, end: 0 } };
+    var dirty = false;
+    K.sheet({ title: isVideo ? 'Edit the clip' : 'Edit the photo', tall: true, guard: function () { return dirty; }, build: function (ctl) {
+      var stage = h('div', { class: 'ed-stage' }), cv = h('canvas', { class: 'ed-canvas' }), ctx = cv.getContext('2d'), media = null, sw = 0, sh = 0;
+      stage.appendChild(cv);
+      var status = h('div', { class: 'body-s ed-status', text: 'Loading\u2026' });
+      ctl.body.append(stage, status);
+      function fit() {
+        if (!sw) return;
+        var o = outSize(sw, sh, st, 1400), maxW = Math.min(stage.clientWidth || 340, 560), maxH = Math.round(window.innerHeight * 0.42);
+        var k = Math.min(maxW / o.W, maxH / o.H);
+        cv.width = Math.round(o.W * k); cv.height = Math.round(o.H * k);
+        draw();
+      }
+      function draw() { if (media && sw) editDraw(ctx, media, sw, sh, cv.width, cv.height, st); }
+      function touch() { dirty = true; fit(); }
+      // tools
+      var panel = h('div', { class: 'ed-panel' }), tools = [['shape', 'Shape', 'crop'], ['theme', 'Theme', 'palette'], ['light', 'Light', 'tune'], ['text', 'Words', 'text_fields']];
+      if (isVideo) tools.push(['trim', 'Trim', 'content_cut']);
+      var cur = 'shape', bar = h('div', { class: 'ed-tools' });
+      function slider(label, val, min, max, step, on) {
+        var out = h('span', { class: 'ed-val', text: String(val) }), r = h('input', { type: 'range', min: min, max: max, step: step || 1, value: val });
+        r.addEventListener('input', function () { out.textContent = r.value; on(Number(r.value)); });
+        return h('label', { class: 'ed-slider' }, h('span', { text: label }), r, out);
+      }
+      function chips(opts, val, on) {
+        var row = h('div', { class: 'ed-chips' });
+        opts.forEach(function (o) { row.appendChild(h('button', { type: 'button', class: 'ed-chip press soft' + (o[0] === val ? ' on' : ''), onclick: function () { on(o[0]); drawPanel(); } }, o[1])); });
+        return row;
+      }
+      function drawPanel() {
+        panel.textContent = '';
+        if (cur === 'shape') {
+          panel.appendChild(chips(EDIT_SHAPES, st.shape, function (v) { st.shape = v; touch(); }));
+          if (st.shape !== 'orig') {
+            panel.appendChild(slider('Left \u2194 right', Math.round(st.posX * 100), 0, 100, 1, function (v) { st.posX = v / 100; touch(); }));
+            panel.appendChild(slider('Up \u2195 down', Math.round(st.posY * 100), 0, 100, 1, function (v) { st.posY = v / 100; touch(); }));
+          }
+        } else if (cur === 'theme') {
+          var grid = h('div', { class: 'ed-themes' });
+          EDIT_THEMES.forEach(function (th) {
+            var tc = h('canvas', { width: 64, height: 64 });
+            if (media && sw) { var save = st.theme; st.theme = th[0]; var c2 = tc.getContext('2d'); var sq = Math.min(sw, sh);
+              if ('filter' in c2) c2.filter = editFilter(st); c2.drawImage(media, (sw - sq) / 2, (sh - sq) / 2, sq, sq, 0, 0, 64, 64); st.theme = save; }
+            grid.appendChild(h('button', { type: 'button', class: 'ed-theme press soft' + (st.theme === th[0] ? ' on' : ''), onclick: function () { st.theme = th[0]; touch(); drawPanel(); } }, tc, h('span', { text: th[1] })));
+          });
+          panel.appendChild(grid);
+        } else if (cur === 'light') {
+          panel.appendChild(slider('Brightness', st.light.bright, -50, 50, 1, function (v) { st.light.bright = v; touch(); }));
+          panel.appendChild(slider('Contrast', st.light.contrast, -50, 50, 1, function (v) { st.light.contrast = v; touch(); }));
+          panel.appendChild(slider('Colour', st.light.sat, -60, 60, 1, function (v) { st.light.sat = v; touch(); }));
+          panel.appendChild(slider('Warmth', st.light.warm, -50, 50, 1, function (v) { st.light.warm = v; touch(); }));
+          panel.appendChild(btn('text', 'Reset the light', { sm: true, icon: 'undo', onclick: function () { st.light = { bright: 0, contrast: 0, sat: 0, warm: 0 }; touch(); drawPanel(); } }));
+        } else if (cur === 'text') {
+          panel.appendChild(K.textField({ label: 'Words on it (optional)', value: st.text.value, maxlength: 120, compact: true, onInput: function (v) { st.text.value = v; touch(); } }));
+          panel.appendChild(chips(EDIT_FONTS, st.text.font, function (v) { st.text.font = v; touch(); }));
+          panel.appendChild(chips([['top', 'Top'], ['middle', 'Middle'], ['bottom', 'Bottom']], st.text.pos, function (v) { st.text.pos = v; touch(); }));
+          panel.appendChild(chips([['#ffffff', 'Light'], ['#1b2733', 'Dark']], st.text.color, function (v) { st.text.color = v; touch(); }));
+          panel.appendChild(slider('Size', st.text.size, 3, 12, 0.5, function (v) { st.text.size = v; touch(); }));
+        } else if (cur === 'trim') {
+          var dur = media && media.duration ? media.duration : 0, fmt = function (x) { return (Math.round(x * 10) / 10).toFixed(1) + 's'; };
+          var info = h('div', { class: 'ed-trim-info', text: fmt(st.trim.start) + ' \u2192 ' + fmt(st.trim.end) + ' \u00b7 ' + fmt(st.trim.end - st.trim.start) });
+          panel.appendChild(info);
+          panel.appendChild(slider('Starts', Math.round(st.trim.start * 10) / 10, 0, Math.max(0.1, Math.floor(dur * 10) / 10), 0.1, function (v) {
+            st.trim.start = Math.min(v, st.trim.end - 0.5); media.currentTime = st.trim.start; info.textContent = fmt(st.trim.start) + ' \u2192 ' + fmt(st.trim.end) + ' \u00b7 ' + fmt(st.trim.end - st.trim.start); dirty = true; }));
+          panel.appendChild(slider('Ends', Math.round(st.trim.end * 10) / 10, 0, Math.max(0.1, Math.floor(dur * 10) / 10), 0.1, function (v) {
+            st.trim.end = Math.max(v, st.trim.start + 0.5); media.currentTime = Math.max(0, st.trim.end - 0.05); info.textContent = fmt(st.trim.start) + ' \u2192 ' + fmt(st.trim.end) + ' \u00b7 ' + fmt(st.trim.end - st.trim.start); dirty = true; }));
+          panel.appendChild(btn('tonal', 'Play it', { sm: true, icon: 'play_arrow', onclick: function () {
+            media.currentTime = st.trim.start; media.muted = false; media.play().then(function loop() {
+              draw(); if (media.paused) return; if (media.currentTime >= st.trim.end) { media.pause(); return; } requestAnimationFrame(loop); }).catch(function () {});
+          } }));
+        }
+      }
+      tools.forEach(function (tl) {
+        bar.appendChild(h('button', { type: 'button', class: 'ed-tool press soft' + (tl[0] === cur ? ' on' : ''), onclick: function (e) {
+          cur = tl[0]; [].forEach.call(bar.children, function (b) { b.classList.remove('on'); }); e.currentTarget.classList.add('on'); drawPanel(); } }, icon(tl[2]), tl[1]));
+      });
+      ctl.body.append(bar, panel);
+      // the source
+      if (isVideo) {
+        media = h('video', { playsinline: true, preload: 'auto', crossOrigin: 'anonymous' });
+        media.muted = true; media.setAttribute('playsinline', '');
+        media.addEventListener('loadedmetadata', function () { sw = media.videoWidth; sh = media.videoHeight; st.trim.end = media.duration || 0; media.currentTime = Math.min(0.1, media.duration || 0); });
+        media.addEventListener('seeked', function () { status.textContent = ''; fit(); });
+        media.addEventListener('error', function () { status.textContent = 'This clip couldn\u2019t be opened on this phone.'; });
+        media.src = src;
+      } else {
+        media = new Image(); media.crossOrigin = 'anonymous';
+        media.onload = function () { sw = media.naturalWidth; sh = media.naturalHeight; status.textContent = ''; fit(); drawPanel(); };
+        media.onerror = function () { status.textContent = 'This photo couldn\u2019t be opened.'; };
+        media.src = src;
+      }
+      drawPanel();
+      var save = btn('filled', 'Save as a new copy', { icon: 'check', lg: true, block: true });
+      save.addEventListener('click', function () {
+        if (!sw) return;
+        K.setBusy(save, true);
+        var say = function (t) { status.textContent = t; };
+        var made = isVideo
+          ? exportClip(media, st, function (fr) { say('Making the clip\u2026 ' + Math.round(fr * 100) + '%'); }).then(function (file) {
+              say('Saving\u2026');
+              return K.videoFrames(file, 3).then(function (vf) {
+                return api('addEditedFootage', f.id, { duration: st.trim.end - st.trim.start, edit: st }).then(function (r) {
+                  var chain = Promise.resolve();
+                  vf.frames.forEach(function (fr) { chain = chain.then(function () { return api('uploadFootageFrame', r.id, fr); }); });
+                  return chain.then(function () { return api('startVideoUpload', r.id); }).then(function (ticket) {
+                    if (!ticket) return r.id;
+                    return K.driveUpload(ticket, file, r.id + ' edited.' + (/mp4/.test(file.type) ? 'mp4' : 'webm'), function (x) { say('Saving\u2026 ' + Math.round(x * 100) + '%'); })
+                      .then(function (fileId) { return api('finishVideoUpload', r.id, fileId); }).then(function () { return r.id; });
+                  });
+                });
+              });
+            })
+          : new Promise(function (resolve) {
+              var o = outSize(sw, sh, st, 2400), c = document.createElement('canvas'); c.width = o.W; c.height = o.H;
+              editDraw(c.getContext('2d'), media, sw, sh, o.W, o.H, st);
+              c.toBlob(function (b) { resolve(new File([b], 'edited.jpg', { type: 'image/jpeg' })); }, 'image/jpeg', 0.9);
+            }).then(function (file) { return K.prepareImage(file); }).then(function (img) {
+              return api('addEditedFootage', f.id, { edit: st }).then(function (r) { return api('uploadFootagePhoto', r.id, img.full, img.thumb).then(function () { return r.id; }); });
+            });
+        made.then(function (newId) { return refresh().then(function () { return newId; }); }).then(function (newId) {
+          dirty = false; K.haptic('success'); toast('Saved. The original is still there too.'); ctl.close(); if (done) done(newId);
+        }).catch(function (e) { K.setBusy(save, false); say(''); fail(e); });
+      });
+      ctl.foot.appendChild(save);
+      setTimeout(fit, 50);
+    } });
+  }
+
   function mediaEditor(ids, onChange) {
     var box = h('div');
     function draw() {
@@ -10458,6 +10795,7 @@ var Kit = (function () {
           h('div', { class: 'me-row' },
             h('button', { type: 'button', 'aria-label': 'Move earlier', disabled: i === 0 ? true : null, onclick: function () { ids.splice(i - 1, 0, ids.splice(i, 1)[0]); onChange(); draw(); } }, icon('chevron_left')),
             h('button', { type: 'button', 'aria-label': 'Take it out', onclick: function () { if (ids.length === 1) { toast('A post needs at least one photo or clip.'); return; } ids.splice(i, 1); onChange(); draw(); } }, icon('close')),
+            h('button', { type: 'button', 'aria-label': 'Edit', onclick: function () { openEditor(f, function (newId) { ids[i] = newId; onChange(); draw(); }); } }, icon('tune')),
             h('button', { type: 'button', 'aria-label': 'Move later', disabled: i === ids.length - 1 ? true : null, onclick: function () { ids.splice(i + 1, 0, ids.splice(i, 1)[0]); onChange(); draw(); } }, icon('chevron_right')))));
       });
       row.appendChild(h('button', { type: 'button', class: 'me-add press', onclick: function () { pickFootage(ids, function () { onChange(); draw(); }); } }, icon('add'), 'Add more'));
@@ -10494,105 +10832,109 @@ var Kit = (function () {
 
 
   // ------------------------------------------------------------------ ads (LogicAds.gs)
-  /** On an Ad post: the research and plan. Hers is a short plain summary; the admin confirms and adjusts. */
+  /** On an Ad post: the research and the plan. She runs it end to end; the admin also sees the full research. */
   function adBox(c, ctl) {
     var A = c.ad; if (!A) return null;
     var sec = sheetSection('The ad'), when = function (d) { return d ? new Date(d + 'T09:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }) : ''; };
     var reopen = function () { ctl.close(); setTimeout(function () { openPost(c.id); }, 280); };
     var S2 = A.summary, P = A.plan;
+    function act(b, call, args, msg) {
+      K.setBusy(b, true);
+      return api.apply(null, [call, c.id].concat(args || [])).then(refresh).then(function (r) { K.haptic('success'); if (msg) toast(msg); reopen(); return r; })
+        .catch(function (err) { K.setBusy(b, false); fail(err); });
+    }
     if (!S2) {
       sec.appendChild(note(A.status === 'Failed' ? (ADMIN ? 'The ad research didn\u2019t finish' + (A.note ? ': ' + A.note : '.') : 'The plan for this ad is taking a little longer.') :
         'Working out who it\u2019s for, what it should focus on and what it might cost. It\u2019ll be here soon.', A.status === 'Failed' ? 'warning' : 'campaign', A.status === 'Failed' ? 'warn' : ''));
-      if (A.status === 'Failed') sec.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Try again', { icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('researchAd', c.id).then(refresh).then(reopen).catch(fail); } })));
+      if (A.status === 'Failed') sec.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Try again', { icon: 'refresh', onclick: function (e) { act(e.currentTarget, 'researchAd'); } })));
       return sec;
     }
-    var total = function (pl) { return money(Math.round(pl.daily * pl.days * 100) / 100, { cents: true }); };
+    var total = function (pl) { return money(Math.round((pl.daily || 0) * (pl.days || 0) * 100) / 100, { cents: true }); };
+    // how it looks: plain for her, the full research for the admin
     if (!ADMIN) {
       var lines = [
         ['insights', 'How it looks', S2.verdict + (S2.verdict === 'Weak' || S2.verdict === 'Uncertain' ? ': worth keeping it small.' : '.')],
         ['group', 'Who it\u2019s for', S2.who],
-        ['flag', 'What it focuses on', (P && P.focus) || S2.focus],
-        ['savings', 'Roughly', P ? money(P.daily, { cents: true }) + ' a day for ' + P.days + ' days (' + total(P) + ')' : money(S2.daily, { cents: true }) + ' a day for ' + S2.days + ' days']
+        ['savings', 'Suggested', money(S2.daily, { cents: true }) + ' a day for ' + S2.days + ' days']
       ];
       var card = h('div', { class: 'ad-sum' });
       lines.forEach(function (l) { card.appendChild(h('div', { class: 'ad-line' }, icon(l[0]), h('div', {}, h('b', { text: l[1] }), h('span', { text: l[2] })))); });
       sec.appendChild(card);
-      sec.appendChild(h('p', { class: 'body-s', style: 'margin:8px 4px 0;color:var(--on-surface-variant)', text:
-        A.status === 'Running' ? 'It\u2019s running now.' : A.status === 'Finished' ? 'All done.' : A.status === 'Confirmed' ? 'Set to start ' + when(P.start) + '.' : adminName() + ' will check it and set it going.' }));
-      return sec;
+    } else {
+      var R = A.research || {};
+      sec.appendChild(h('div', { class: 'row', style: 'gap:14px;align-items:flex-start' }, K.ring(R.viability),
+        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: R.verdict + ' \u00b7 ' + R.viability + '/100' }), h('p', { class: 'body-m', style: 'margin:4px 0 0', text: R.summary }))));
+      var facts = h('dl', { class: 'ad-facts' }), au = R.audience || {}, bu = R.budget || {};
+      [['Focus', R.focus], ['Audience', au.who + ' (' + au.ageMin + '\u2013' + au.ageMax + ', ' + au.places + ')'], ['Interests', (au.interests || []).join(', ')],
+        ['Recommended', money(bu.daily, { cents: true }) + ' a day for ' + bu.days + ' days'], ['Why that budget', bu.reasoning], ['What to expect', R.expected], ['Watch for', (R.risks || []).join(' \u00b7 ')]]
+        .forEach(function (f) { if (f[1]) { facts.appendChild(h('dt', { text: f[0] })); facts.appendChild(h('dd', { text: f[1] })); } });
+      sec.appendChild(facts);
+      if ((R.sources || []).length) {
+        var src = h('details', { class: 'talk-past' }, h('summary', { text: 'Sources (' + R.sources.length + ')' }));
+        R.sources.forEach(function (x) { src.appendChild(h('div', { class: 'body-s', style: 'padding:3px 0' }, h('a', { href: x.url, target: '_blank', rel: 'noopener', text: x.title || x.url }))); });
+        sec.appendChild(src);
+      }
     }
-    // the admin: full research, then the plan to confirm or adjust
-    var R = A.research || {};
-    var head = h('div', { class: 'row', style: 'gap:14px;align-items:flex-start' }, K.ring(R.viability),
-      h('div', { class: 'grow' }, h('div', { class: 'title-m', text: R.verdict + ' \u00b7 ' + R.viability + '/100' }), h('p', { class: 'body-m', style: 'margin:4px 0 0', text: R.summary })));
-    sec.appendChild(head);
-    var facts = h('dl', { class: 'ad-facts' });
-    [['Focus', R.focus], ['Audience', (R.audience || {}).who + ' (' + (R.audience || {}).ageMin + '\u2013' + (R.audience || {}).ageMax + ', ' + (R.audience || {}).places + ')'],
-      ['Interests', ((R.audience || {}).interests || []).join(', ')], ['Recommended', money((R.budget || {}).daily, { cents: true }) + ' a day for ' + (R.budget || {}).days + ' days'],
-      ['Why that budget', (R.budget || {}).reasoning], ['What to expect', R.expected], ['Watch for', (R.risks || []).join(' \u00b7 ')]]
-      .forEach(function (f) { if (f[1]) { facts.appendChild(h('dt', { text: f[0] })); facts.appendChild(h('dd', { text: f[1] })); } });
-    sec.appendChild(facts);
-    if ((R.sources || []).length) {
-      var src = h('details', { class: 'talk-past' }, h('summary', { text: 'Sources (' + R.sources.length + ')' }));
-      R.sources.forEach(function (x) { src.appendChild(h('div', { class: 'body-s', style: 'padding:3px 0' }, h('a', { href: x.url, target: '_blank', rel: 'noopener', text: x.title || x.url }))); });
-      sec.appendChild(src);
-    }
+    // the plan: the same controls for both
     var pl = Object.assign({}, P || {}), editable = A.status === 'Ready' || A.status === '' || A.status === 'Researching';
-    var box = h('div', { class: 'ad-plan card pad' }, h('div', { class: 'title-m', text: editable ? 'The plan: adjust, then confirm' : 'The plan' }));
+    var box = h('div', { class: 'ad-plan card pad' }, h('div', { class: 'title-m', text: editable ? 'Your plan: change anything, then confirm' : 'The plan' }));
     var sumLine = h('div', { class: 'ad-total' });
-    function drawTotal() { sumLine.textContent = pl.daily > 0 && pl.days > 0 ? money(pl.daily, { cents: true }) + ' a day \u00d7 ' + pl.days + ' days = ' + total(pl) : 'Set a daily budget and days'; }
+    function drawTotal() { sumLine.textContent = pl.daily > 0 && pl.days > 0 ? money(pl.daily, { cents: true }) + ' a day \u00d7 ' + pl.days + ' days = ' + total(pl) : 'Set how much a day, and for how many days'; }
     if (editable) {
       box.appendChild(h('div', { class: 'cols' },
         K.textField({ label: 'Per day', prefix: '$', inputmode: 'decimal', compact: true, value: pl.daily || '', onInput: function (v) { pl.daily = K.num(v); drawTotal(); } }),
         K.textField({ label: 'Days', inputmode: 'numeric', compact: true, value: pl.days || '', onInput: function (v) { pl.days = Math.round(K.num(v)); drawTotal(); } })));
       var startIn = h('input', { type: 'date', class: 'ad-date', value: pl.start || '' }); startIn.addEventListener('input', function () { pl.start = startIn.value; });
       box.appendChild(h('label', { class: 'ad-date-row' }, h('span', { class: 'label-s', text: 'Starts' }), startIn));
-      box.appendChild(h('div', { class: 'cols' },
+      box.appendChild(K.textField({ label: 'What it focuses on', multiline: true, compact: true, value: pl.focus || '', maxlength: 400, onInput: function (v) { pl.focus = v; } }));
+      var who = h('details', { class: 'talk-past' }, h('summary', { text: 'Who sees it' }));
+      who.appendChild(h('div', { class: 'cols', style: 'margin-top:8px' },
         K.textField({ label: 'Youngest', inputmode: 'numeric', compact: true, value: pl.ageMin || '', onInput: function (v) { pl.ageMin = Math.round(K.num(v)); } }),
         K.textField({ label: 'Oldest', inputmode: 'numeric', compact: true, value: pl.ageMax || '', onInput: function (v) { pl.ageMax = Math.round(K.num(v)); } })));
-      box.appendChild(K.textField({ label: 'Where', compact: true, value: pl.places || '', maxlength: 200, onInput: function (v) { pl.places = v; } }));
-      box.appendChild(K.textField({ label: 'Interests (comma between)', compact: true, value: (pl.interests || []).join(', '), maxlength: 400, onInput: function (v) { pl.interests = v.split(',').map(function (x) { return x.trim(); }).filter(String); } }));
-      box.appendChild(K.textField({ label: 'Focus', multiline: true, compact: true, value: pl.focus || '', maxlength: 400, onInput: function (v) { pl.focus = v; } }));
+      who.appendChild(K.textField({ label: 'Where', compact: true, value: pl.places || '', maxlength: 200, onInput: function (v) { pl.places = v; } }));
+      who.appendChild(K.textField({ label: 'Interests (comma between)', compact: true, value: (pl.interests || []).join(', '), maxlength: 400, onInput: function (v) { pl.interests = v.split(',').map(function (x) { return x.trim(); }).filter(String); } }));
+      box.appendChild(who);
       drawTotal(); box.appendChild(sumLine);
-      box.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Confirm the plan', { icon: 'verified', block: true, onclick: function (e) {
+      if (!ADMIN) box.appendChild(h('p', { class: 'body-s', style: 'margin:0;color:var(--on-surface-variant)', text: 'Up to ' + money(A.limit) + ' in all is yours to start. Over that, ' + adminName() + ' gives it a quick OK first.' }));
+      box.appendChild(btn('filled', 'Confirm the plan', { icon: 'verified', block: true, onclick: function (e) {
         var b = e.currentTarget;
-        K.confirm({ title: 'Confirm ' + total(pl) + '?', text: money(pl.daily, { cents: true }) + ' a day for ' + pl.days + ' days, from ' + when(pl.start) + '. Nothing is spent until you start it.', confirmLabel: 'Confirm' }).then(function (yes) {
-          if (!yes) return; K.setBusy(b, true);
-          api('confirmAd', c.id, pl).then(refresh).then(function () { K.haptic('success'); toast('Confirmed. ' + cap(artist()) + ' has been told.'); reopen(); }).catch(function (err) { K.setBusy(b, false); fail(err); });
-        });
-      } })));
+        K.confirm({ title: 'Confirm ' + total(pl) + '?', text: money(pl.daily, { cents: true }) + ' a day for ' + pl.days + ' days, from ' + when(pl.start) + '. Nothing is spent until it starts.', confirmLabel: 'Confirm' })
+          .then(function (yes) { if (yes) act(b, 'confirmAd', [pl]); });
+      } }));
     } else {
       drawTotal();
       box.appendChild(h('p', { class: 'body-m', style: 'margin:6px 0', text: 'From ' + when(pl.start) + ' \u00b7 ages ' + pl.ageMin + '\u2013' + pl.ageMax + ' \u00b7 ' + (pl.places || 'Australia') }));
       box.appendChild(sumLine);
       var row = h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-top:10px' });
       if (A.status === 'Confirmed') {
-        var posting = S.data.posting || {}, fbUp = c.targets && c.targets.facebook && c.targets.facebook.status === 'ok';
-        if (A.meta && A.meta.dryRun) box.appendChild(note('Dry run: checked and ready. Nothing was spent. Switch off the dry run in Settings to start it for real.', 'science'));
-        if (posting.enabled && fbUp && A.account) row.appendChild(btn('filled', posting.dryRun ? 'Try it (dry run)' : 'Start the ad \u00b7 ' + total(pl), { icon: 'rocket_launch', onclick: function (e) {
-          var b = e.currentTarget;
-          K.confirm({ title: posting.dryRun ? 'Dry run?' : 'Start spending ' + total(pl) + '?', text: posting.dryRun ? 'It\u2019s checked with Facebook\u2019s rules but nothing is sent or spent.' : 'This starts the ad in Meta and money is spent from the ad account.', confirmLabel: posting.dryRun ? 'Try it' : 'Start it', danger: !posting.dryRun }).then(function (yes) {
-            if (!yes) return; K.setBusy(b, true);
-            api('startAd', c.id, false).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (err) { K.setBusy(b, false); fail(err); });
-          });
-        } }));
-        else box.appendChild(note(!posting.enabled ? 'Automatic posting is off, so start it in Ads Manager with this plan, then mark it started.' : !fbUp ? 'It starts once the post is up on Facebook: the ad promotes that post.' : 'Add the ad account number below to start it from here.', 'info'));
-        row.appendChild(btn('tonal', 'I started it in Ads Manager', { icon: 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('startAd', c.id, true).then(refresh).then(reopen).catch(fail); } }));
-        row.appendChild(btn('text', 'Change the plan', { icon: 'edit', onclick: function () { api('reopenAd', c.id).then(refresh).then(reopen).catch(fail); } }));
-        if (!A.account) {
+        if (A.needsOk) {
+          box.appendChild(note(ADMIN ? 'Over your ' + money(A.limit) + ' limit, so it waits for your OK.' : 'It\u2019s over ' + money(A.limit) + ', so ' + adminName() + ' gives it a quick OK first. You\u2019ll get a buzz.', 'hourglass_top', 'warn'));
+          if (ADMIN) row.appendChild(btn('filled', 'OK the spend \u00b7 ' + total(pl), { icon: 'verified', onclick: function (e) { act(e.currentTarget, 'okAdSpend', [], 'OK given.'); } }));
+        } else {
+          var posting = S.data.posting || {}, fbUp = c.targets && c.targets.facebook && c.targets.facebook.status === 'ok';
+          if (A.meta && A.meta.dryRun) box.appendChild(note('Practice run: checked and ready. Nothing was spent.', 'science'));
+          if (posting.enabled && fbUp && A.canStartHere) row.appendChild(btn('filled', posting.dryRun ? 'Try it (practice run)' : 'Start the ad \u00b7 ' + total(pl), { icon: 'rocket_launch', onclick: function (e) {
+            var b = e.currentTarget;
+            K.confirm({ title: posting.dryRun ? 'Practice run?' : 'Start spending ' + total(pl) + '?', text: posting.dryRun ? 'Everything is checked, but nothing is sent or spent.' : 'The ad starts now and the money is spent over ' + pl.days + ' days.', confirmLabel: posting.dryRun ? 'Try it' : 'Start it', danger: !posting.dryRun })
+              .then(function (yes) { if (yes) act(b, 'startAd', [false]); });
+          } }));
+          else box.appendChild(note(!fbUp ? 'It starts once the post is up: the ad shows that post to more people.' : ADMIN ? (!posting.enabled ? 'Automatic posting is off: start it in Ads Manager, then mark it started.' : 'Add the ad account number below to start it from here.') : 'Starting it from here isn\u2019t switched on yet. ' + adminName() + ' can do that.', 'info'));
+          if (ADMIN) row.appendChild(btn('tonal', 'I started it in Ads Manager', { icon: 'check', onclick: function (e) { act(e.currentTarget, 'startAd', [true]); } }));
+        }
+        row.appendChild(btn('text', 'Change the plan', { icon: 'edit', onclick: function (e) { act(e.currentTarget, 'reopenAd'); } }));
+        if (ADMIN && !A.canStartHere) {
           var acct = K.textField({ label: 'Ad account number', compact: true, inputmode: 'numeric', help: 'Ads Manager \u203a the account menu. Digits only.' });
           box.appendChild(h('div', { style: 'margin-top:10px' }, acct, btn('text', 'Save it', { icon: 'check', onclick: function () { api('saveAdAccount', acct.input.value).then(refresh).then(function () { toast('Saved.'); reopen(); }).catch(fail); } })));
         }
       } else if (A.status === 'Running') {
         box.appendChild(note('Running since ' + K.dateLabel(A.started) + '.', 'campaign', 'good'));
-        row.appendChild(btn('tonal', 'It\u2019s finished', { icon: 'flag', onclick: function (e) { K.setBusy(e.currentTarget, true); api('finishAd', c.id).then(refresh).then(reopen).catch(fail); } }));
+        row.appendChild(btn('tonal', 'It\u2019s finished', { icon: 'flag', onclick: function (e) { act(e.currentTarget, 'finishAd'); } }));
       } else if (A.status === 'Finished') box.appendChild(note('Finished.', 'check_circle', 'good'));
       box.appendChild(row);
     }
     sec.appendChild(box);
     return sec;
   }
-
   function openPost(id) {
     var c = byId(S.data.content, id);
     if (!c) return;
@@ -10859,20 +11201,13 @@ var Kit = (function () {
       K.setBusy(cancel, true);
       api('cancelSchedule', c.id).then(refresh).then(function () { K.haptic(); render(); toast('Cancelled. It’s back under Ready.'); }).catch(function (e) { K.setBusy(cancel, false); fail(e); });
     });
-    var now = btn('text', 'Post now', { sm: true, icon: 'send' });
-    if (now) now.addEventListener('click', function () {
-      K.confirm({ title: 'Post this now?', text: 'It goes out within a few minutes.', confirmLabel: 'Post now' }).then(function (yes) {
-        if (!yes) return;
-        K.setBusy(now, true);
-        api('schedulePost', c.id, 'now').then(refresh).then(function () { render(); toast('Going out in the next few minutes.'); }).catch(function (e) { K.setBusy(now, false); fail(e); });
-      });
-    });
+    var now = postNowBtn(c);
     var f = c.footageIds.length ? footage(c.footageIds[0]) : null;
     return h('div', { class: 'li going' },
       f && f.thumbIds.length ? thumbImg(f.thumbIds[0]) : h('div', { class: 'th-blank' }, icon(FORMAT_ICON[c.format] || 'image')),
       h('div', { class: 'grow' }, h('div', { class: 'li-head', text: c.title || c.format }),
         h('div', { class: 'li-sup', text: whenLabel(c.scheduledAt) + ' · ' + c.format + ' · ' + c.platform }),
-        preflightNotes(c), h('div', { class: 'row', style: 'gap:6px;margin-top:8px' }, cancel, now)));
+        preflightNotes(c), h('div', { class: 'row', style: 'gap:6px;margin-top:8px' }, now, cancel)));
   }
 
   function resultChips(c) {
@@ -10916,18 +11251,18 @@ var Kit = (function () {
     }
     var hand = d.ready.slice().sort(function (a, b) { return (a.remindAt || 'z') < (b.remindAt || 'z') ? -1 : 1; });
     if (hand.length) {
-      var hs = section(st.enabled ? 'Approved, to post by hand' : 'Approved, ready to post');
-      if (st.enabled) hs.appendChild(h('p', { class: 'body-m', style: 'margin:-4px 4px 10px', text: 'Stories and ads are posted by hand. Anything cancelled waits here too.' }));
+      var hs = section(st.enabled ? 'Approved, ready to go' : 'Approved, ready to post');
+      if (st.enabled) hs.appendChild(h('p', { class: 'body-m', style: 'margin:-4px 4px 10px', text: 'Post now, or let it take the next good time. Stories are posted by hand.' }));
       hand.forEach(function (c, i) {
         var card = postCard(c, 'ready');
-        if (st.enabled && ['Photo post', 'Carousel', 'Reel'].indexOf(c.format) >= 0) {
-          var sch = btn('filled', 'Schedule', { icon: 'schedule', sm: true });
+        if (st.enabled && ['Photo post', 'Carousel', 'Reel', 'Ad'].indexOf(c.format) >= 0) {
+          var sch = btn('tonal', 'Schedule', { icon: 'schedule', sm: true });
           sch.addEventListener('click', function () {
             K.setBusy(sch, true);
             api('schedulePost', c.id, 'next').then(function (r) { return refresh().then(function () { return r; }); })
               .then(function (r) { render(); toast('Scheduled for ' + whenLabel(r.at) + '.'); }).catch(function (e) { K.setBusy(sch, false); fail(e); });
           });
-          card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' }, sch, editPost(c), backToReview(c)));
+          card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' }, postNowBtn(c), sch, editPost(c), backToReview(c)));
         } else {
           var when = btn(c.remindAt ? 'outlined' : 'filled', c.remindAt ? 'Change time' : 'Pick a time', { icon: 'schedule', sm: true, onclick: function () { openPlanTime(c); } });
           card.querySelector('.post-body').appendChild(h('div', { class: 'row', style: 'margin-top:10px;gap:8px;flex-wrap:wrap' },
@@ -11467,9 +11802,24 @@ var Kit = (function () {
       K.setBusy(ptSave, true);
       api('savePosting', pf).then(refresh).then(function () { K.haptic('success'); render(); toast('Posting times saved.'); }).catch(function (e) { K.setBusy(ptSave, false); fail(e); });
     } });
-    pt.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
-      K.textField({ label: 'Good times to post', value: pf.slotTimes, help: 'For example 09:00, 18:30. Approved posts are pencilled in at these times.', onInput: function (v) { pf.slotTimes = v; } }),
-      K.textField({ label: 'Posts a day, at most', inputmode: 'numeric', value: pf.postsPerDay, onInput: function (v) { pf.postsPerDay = K.num(v); } }), ptSave));
+    var ptCard = h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' });
+    if (S.data.posting.direct && S.data.posting.connected) {
+      ptCard.appendChild(h('div', { class: 'switch-row', style: 'padding:0' }, h('div', {},
+        h('div', { class: 'title-m', text: 'Posts go out by themselves' }),
+        h('div', { class: 'body-m', text: S.data.posting.enabled ? 'On. Approved posts go out at the next good time, or straight away with Post now.' : 'Paused. Approved posts wait under Ready until you switch this back on.' })),
+        K.switchBtn({ checked: !!S.data.posting.enabled, label: 'Posts go out by themselves', onChange: function (v) {
+          api('savePosting', { postingEnabled: v }).then(refresh).then(function () { K.haptic('success'); render(); toast(v ? 'Back on. Posts go out by themselves.' : 'Paused. Nothing goes out until you switch it back on.'); }).catch(fail);
+        } })));
+    }
+    ptCard.append(K.textField({ label: 'Good times to post', value: pf.slotTimes, help: 'For example 09:00, 18:30. Approved posts are pencilled in at these times.', onInput: function (v) { pf.slotTimes = v; } }),
+      K.textField({ label: 'Posts a day, at most', inputmode: 'numeric', value: pf.postsPerDay, onInput: function (v) { pf.postsPerDay = K.num(v); } }), ptSave);
+    if (ADMIN) {
+      var lim = { v: S.data.posting.adLimit };
+      ptCard.appendChild(h('div', { class: 'row', style: 'gap:8px;align-items:flex-end' },
+        h('div', { class: 'grow' }, K.textField({ label: 'Ads she can start without you (total)', prefix: '$', inputmode: 'numeric', value: lim.v, help: 'Over this, her ad waits for your OK.', onInput: function (v) { lim.v = K.num(v); } })),
+        btn('text', 'Save', { icon: 'check', onclick: function () { api('saveAdLimit', lim.v).then(refresh).then(function () { toast('Ad limit saved.'); render(); }).catch(fail); } })));
+    }
+    pt.appendChild(ptCard);
     main.appendChild(rise(pt, 3));
     if (!ADMIN) {
       var stA = section('Online store');
