@@ -110,28 +110,26 @@ h1, h2, h3, p { margin: 0; }
 .press.soft.is-pressed { transform: scale(0.985); }
 .press.is-pressed:not(.flat) { filter: brightness(0.96); }
 
-/* ---------- app bar ---------- */
-.app-bar {
-  position: sticky; top: 0; z-index: 20; height: calc(var(--bar-h) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top);
-  background: rgba(252, 249, 244, 0.78); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
-  transition: box-shadow 0.25s var(--ease);
+/* ---------- no top bar: floating feedback bubble, and the "viewing as" pill ---------- */
+.fb-bubble {
+  position: fixed; top: calc(env(safe-area-inset-top) + 10px); right: 12px; z-index: 22; width: 40px; height: 40px; border: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; color: var(--on-surface-variant);
+  background: rgba(252, 249, 244, 0.82); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px);
+  box-shadow: 0 1px 3px rgba(6, 52, 94, 0.16); transition: opacity 0.2s var(--ease), transform 0.25s var(--ease);
 }
-.app-bar.scrolled { box-shadow: 0 1px 0 var(--hairline); }
-.app-bar-inner { max-width: 1120px; height: var(--bar-h); margin: 0 auto; padding: 0 16px; display: flex; align-items: center; gap: 12px; }
-.brand-mark {
-  width: 34px; height: 34px; border-radius: 10px; color: var(--on-primary);
-  background: radial-gradient(circle at 25% 20%, #6fd0dc, transparent 55%), radial-gradient(circle at 85% 90%, #e98aa6, transparent 45%), linear-gradient(140deg, #2b8fb0, #1B4F86);
-  display: flex; align-items: center; justify-content: center; flex: none; box-shadow: 0 1px 2px rgba(6, 52, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+.fb-bubble .ms { font-size: 20px; }
+.fb-bubble.away { opacity: 0; transform: translateY(-56px); pointer-events: none; }
+.view-pill {
+  position: fixed; top: calc(env(safe-area-inset-top) + 12px); left: 50%; transform: translateX(-50%); z-index: 23; max-width: calc(100% - 128px);
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px 0 10px; border: 0; border-radius: 999px;
+  background: var(--tertiary-container); color: var(--on-tertiary-container); font: 500 13px/18px var(--font); box-shadow: 0 1px 3px rgba(6, 52, 94, 0.16);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.brand-mark svg { width: 20px; height: 20px; }
-.bar-titles { position: relative; flex: 1; height: 28px; overflow: hidden; }
-.bar-titles > * { position: absolute; left: 0; top: 0; line-height: 28px; white-space: nowrap; transition: transform var(--spring-soft-d) var(--spring-soft), opacity 0.2s var(--ease); }
-.bar-word { font: 500 20px/28px var(--display); letter-spacing: 0; color: var(--on-surface); }
-.bar-title { font: 500 17px/28px var(--font); opacity: 0; transform: translateY(14px); }
-.app-bar.titled .bar-word { opacity: 0; transform: translateY(-14px); }
-.app-bar.titled .bar-title { opacity: 1; transform: none; }
-@media (max-width: 479px) { .bar-chip { display: none; } }
-.bar-chip { font: 500 11px/20px var(--font); white-space: nowrap; letter-spacing: 0.8px; text-transform: uppercase; color: var(--on-surface-variant); padding: 2px 10px; border-radius: var(--r-full); background: var(--surface-high); }
+.view-pill .ms { font-size: 18px; flex: none; }
+.view-pill .vc-t { overflow: hidden; text-overflow: ellipsis; }
+body.previewing main { padding-top: calc(env(safe-area-inset-top) + 56px); }
+.page-title { padding-right: 44px; }
+.home-gear { display: flex; justify-content: center; margin: 28px 0 4px; }
 
 /* ---------- navigation: bar on phones, rail on wide screens ---------- */
 .nav {
@@ -168,7 +166,7 @@ h1, h2, h3, p { margin: 0; }
 }
 
 /* ---------- page ---------- */
-main { max-width: 680px; margin: 0 auto; padding: 4px 16px 40px; outline: none; }
+main { max-width: 680px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 14px) 16px 40px; outline: none; }
 body.wide main { max-width: 1120px; }
 .page-title { font: 500 32px/40px var(--display); letter-spacing: -0.3px; margin: 8px 0 2px; }
 .page-sub { font: 400 16px/24px var(--font); color: var(--on-surface-variant); margin: 0 0 20px; }
@@ -744,11 +742,6 @@ button.acct-go { border: 0; background: none; text-align: left; font: inherit; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 img, video { max-width: 100%; }
 /* which view you're in, and the switch to the other one */
-.view-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px 0 10px; border: 0; border-radius: 999px;
-  background: var(--surface-high); color: var(--on-surface); font: 500 13px/1 var(--font); white-space: nowrap; cursor: pointer; flex: none; }
-.view-chip .ms { font-size: 18px; }
-.view-chip.playing { background: var(--tertiary-container); color: var(--on-tertiary-container); }
-@media (max-width: 420px) { .bar-chip { display: none; } .view-chip { padding: 0 10px 0 8px; font-size: 12px; } }
 /* Our direction: pinned at the top of Ideas */
 .card.direction { margin-bottom: 18px; background: var(--secondary-container); color: var(--on-secondary-container); box-shadow: none; }
 .direction .ic { width: 40px; height: 40px; border-radius: 12px; background: var(--secondary); color: var(--on-secondary); display: flex; align-items: center; justify-content: center; flex: none; }
@@ -5850,24 +5843,9 @@ function tideDirection(env, t) {
   </div>
 </div>
 
-  <header class="app-bar" id="app-bar">
-    <div class="app-bar-inner">
-      <div class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M3 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>
-          <path d="M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0" opacity="0.6"/>
-        </svg>
-      </div>
-      <div class="bar-titles">
-        <div class="bar-word">Tide Book</div>
-        <div class="bar-title" id="bar-title" aria-hidden="true"></div>
-      </div>
-      <span class="bar-chip">Denise Duffy &middot; Visual Artist</span>
-      <button class="view-chip press" id="view-btn" type="button" hidden><span class="ms" aria-hidden="true">swap_horiz</span><span class="vc-t"></span></button>
-      <button class="icon-btn press" id="report-btn" type="button" aria-label="Suggestions and problems" title="Suggestions and problems"><span class="ms" aria-hidden="true">feedback</span></button>
-      <button class="icon-btn press" id="settings-btn" type="button" aria-label="Admin" title="Admin" hidden><span class="ms" aria-hidden="true">settings</span></button>
-    </div>
-  </header>
+  <!-- No top bar: each page starts with its own title. Feedback floats top right; the pill shows only while viewing as someone else. -->
+  <button class="view-pill press" id="view-btn" type="button" hidden><span class="ms" aria-hidden="true">visibility</span><span class="vc-t"></span></button>
+  <button class="fb-bubble press" id="report-btn" type="button" aria-label="Suggestions and problems" title="Suggestions and problems"><span class="ms" aria-hidden="true">feedback</span></button>
 
   <main id="main" tabindex="-1">
     <div class="sk" style="height:40px;width:55%;margin:12px 0 20px"></div>
@@ -6749,7 +6727,11 @@ var Kit = (function () {
       S.money = d.money; S.fy = d.money.fy;
     });
   }
-  function fail(e) { toast(e.message || 'Something went wrong. Please try again.', 'error'); }
+  function fail(e) {
+    var msg = e.message || 'Something went wrong. Please try again.';
+    if (/^Not saved: you\u2019re viewing as/.test(msg)) return toast('Not saved: you\u2019re viewing as ' + cap(artist()) + '. Switch back in Settings to make changes.');
+    toast(msg, 'error');
+  }
 
   // ------------------------------------------------------------------ helpers
   function $(sel) { return document.querySelector(sel); }
@@ -6821,31 +6803,43 @@ var Kit = (function () {
     ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
     : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['money', 'Money', 'account_balance_wallet']];
-  // Settings lives behind the gear in the top bar, so the bar stays at five. The back-end parts are admin-only.
-  var gear = document.getElementById('settings-btn');
-  if (gear) { gear.hidden = false; gear.addEventListener('click', function () { K.haptic(); go('settings'); }); }
+  // Settings is a button at the bottom of Home, so the bottom bar stays at five. The back-end parts are admin-only.
+  function homeGear() {
+    return h('div', { class: 'home-gear' }, btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
+  }
 
-  // swapping views: shows which view you're in; a tap flips to the other one
+  // Swapping views. The switch lives in Settings; while you're in someone else's view a pill at the top says so,
+  // and a tap on it takes you back. An admin viewing as the artist is only looking: nothing they do is saved.
+  function viewing() { var me = S.data && S.data.me; return me && me.canSwap && me.role !== me.real ? me : null; }
+  function previewing() { var me = viewing(); return !!(me && me.real === 'admin' && me.role === 'artist'); }
+  function setView(to) { document.cookie = 'tb_view=' + to + '; path=/; max-age=31536000; SameSite=Lax'; location.reload(); }
   function viewSwitch() {
-    var b = document.getElementById('view-btn'), me = S.data && S.data.me;
-    if (!b || !me || !me.canSwap) { if (b) b.hidden = true; return; }
-    var other = ADMIN ? 'artist' : 'admin', mine = ADMIN ? 'Admin view' : cap(artist()) + '’s view';
-    b.hidden = false; b.classList.toggle('playing', me.role !== me.real);
-    b.querySelector('.vc-t').textContent = ADMIN ? 'Admin' : cap(artist());
-    b.title = 'You’re in the ' + mine.toLowerCase() + '. Tap to switch.';
-    b.setAttribute('aria-label', 'You’re in the ' + mine.toLowerCase() + '. Switch to the ' + (other === 'admin' ? 'admin view' : cap(artist()) + '’s view'));
+    var b = document.getElementById('view-btn'), me = viewing();
+    document.body.classList.toggle('previewing', !!me);
+    if (!b) return;
+    if (!me) { b.hidden = true; return; }
+    var who = me.role === 'artist' ? cap(artist()) : 'admin';
+    b.hidden = false;
+    b.querySelector('.vc-t').textContent = 'Viewing as ' + who + (previewing() ? ' \u00b7 nothing saves' : '');
+    b.setAttribute('aria-label', 'Viewing as ' + who + '. Tap to go back to your own view.');
     if (b.wired) return;
     b.wired = true;
-    b.addEventListener('click', function () {
-      K.haptic();
-      K.confirm({ title: 'Switch to the ' + (other === 'admin' ? 'admin view' : cap(artist()) + '’s view') + '?',
-        text: other === 'admin' ? 'You’ll see and can do everything the admin can: money, settings and publishing.' : 'You’ll see Tide Book exactly as ' + cap(artist()) + ' does, and can do what she can.',
-        confirmLabel: 'Switch' }).then(function (yes) {
-        if (!yes) return;
-        document.cookie = 'tb_view=' + other + '; path=/; max-age=31536000; SameSite=Lax';
-        location.reload();
-      });
-    });
+    b.addEventListener('click', function () { K.haptic(); setView(me.real); });
+  }
+  /** Settings: the switch between views, for whoever may swap. */
+  function viewSwapSection() {
+    var me = S.data.me;
+    if (!me || !me.canSwap) return null;
+    var other = me.role === 'artist' ? 'admin' : 'artist';
+    var name = other === 'artist' ? cap(artist()) + '\u2019s view' : 'the admin view';
+    var back = other === me.real;
+    var sec = h('div', {}, h('div', { class: 'label-s', style: 'margin-bottom:6px', text: 'View' }));
+    sec.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: back
+      ? (me.real === 'admin' ? 'Go back to your own view to make changes again.' : 'Go back to your own view.')
+      : me.real === 'admin' ? 'See Tide Book exactly as ' + cap(artist()) + ' does, to check how it works. Nothing you do there is saved.'
+      : 'Money, settings and publishing.' }));
+    sec.appendChild(btn('tonal', back ? 'Back to your own view' : 'Switch to ' + name, { icon: 'swap_horiz', onclick: function () { K.haptic(); setView(other); } }));
+    return sec;
   }
 
   function renderNav() {
@@ -6875,28 +6869,23 @@ var Kit = (function () {
     }
   }
 
-  var titleWatch = null;
   function render() {
     renderNav();
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
     ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, settings: viewAdmin }[S.view] || viewHome)(main);
-    if (gear) gear.classList.toggle('on', S.view === 'settings');
+    if (S.view === 'home' || !S.view) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
-    // The big page title hands over to the app bar as it scrolls away.
-    var big = main.querySelector('.page-title'), bar = $('#app-bar');
-    if (titleWatch) titleWatch.disconnect();
-    bar.classList.remove('titled');
-    if (big && window.IntersectionObserver) {
-      $('#bar-title').textContent = big.textContent;
-      titleWatch = new IntersectionObserver(function (entries) { bar.classList.toggle('titled', !entries[0].isIntersecting); },
-        { rootMargin: '-' + (bar.offsetHeight || 56) + 'px 0px 0px 0px' });
-      titleWatch.observe(big);
-    }
   }
-  window.addEventListener('scroll', function () { $('#app-bar').classList.toggle('scrolled', window.scrollY > 2); }, { passive: true });
+  // the feedback bubble steps aside while scrolling down, and comes back on the way up
+  var lastY = 0;
+  window.addEventListener('scroll', function () {
+    var y = window.scrollY, fb = document.getElementById('report-btn');
+    if (fb) fb.classList.toggle('away', y > 80 && y > lastY);
+    lastY = y;
+  }, { passive: true });
 
   function pageTitle(main, title, sub) {
     main.appendChild(rise(h('h1', { class: 'page-title', text: title }), 0));
@@ -10438,6 +10427,8 @@ var Kit = (function () {
 
   function viewAdmin(main) {
     pageTitle(main, ADMIN ? 'Admin' : 'Settings', ADMIN ? 'Contacts, email lists, accounts and settings.' : 'Your contacts, lists, accounts and business settings.');
+    var swap = viewSwapSection();
+    if (swap) main.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:16px' }, swap));
     if (!ADMIN && S.adminTab === 'reports') S.adminTab = 'settings';
     var tabs = [{ value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'consent', label: 'Consent' }, { value: 'settings', label: 'Settings' }];
     if (ADMIN) tabs.unshift({ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined });
