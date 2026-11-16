@@ -452,6 +452,16 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .comp + .comp { box-shadow: inset 0 1px 0 var(--hairline); }
 .comp b { font-weight: 500; white-space: nowrap; }
 .bullets { margin: 0; padding-left: 18px; font: 400 14px/20px var(--font); }
+/* the recommended next step */
+.next-card { background: var(--primary-container, #d6e3ff); color: var(--on-primary-container, #001b3e); border: 0; }
+.next-card .label-s { opacity: .75; }
+.next-card.wait { background: var(--surface-high); color: inherit; }
+.next-card.done { background: var(--tertiary-container, #cdeccf); color: var(--on-tertiary-container, #0f3d14); }
+.next-card.done .ic { background: rgba(255,255,255,.55); }
+.li-sup.next-line { color: var(--primary); font-weight: 500; }
+.research-row.rec { background: color-mix(in srgb, var(--primary) 7%, transparent); border-radius: 12px; padding-left: 10px; padding-right: 10px; }
+.rec-tag { display: inline-flex; align-items: center; gap: 4px; font: 600 12px/16px var(--font); color: var(--primary); margin-bottom: 2px; }
+.rec-tag .icon, .rec-tag .ms { font-size: 16px; }
 .bullets li + li { margin-top: 4px; }
 .scope-item { display: flex; align-items: center; gap: 4px; min-height: 48px; }
 .scope-item + .scope-item { box-shadow: inset 0 1px 0 var(--hairline); }
@@ -4541,9 +4551,18 @@ function tideTalk(env, t) {
   function clean(x, n) { return t.text(x, n); }
   function openText(a) { return t.list(a).slice(0, 10).map(function (x) { return clean(typeof x === 'string' ? x : (x && x.question), 300); }).filter(String); }
   function openOpts(a) { return t.list(a).slice(0, 10).filter(function (x) { return typeof x === 'string' ? clean(x, 300) : x && clean(x.question, 300); }).map(function (x) { return typeof x === 'string' ? [] : cleanList(x.options, 4, 120); }); }
+  function openSugg(a) {
+    return t.list(a).slice(0, 10).filter(function (x) { return typeof x === 'string' ? clean(x, 300) : x && clean(x.question, 300); }).map(function (x) {
+      var n = x && typeof x === 'object' ? Number(x.suggest) : -1, o = x && typeof x === 'object' ? t.list(x.options).length : 0;
+      return { i: isFinite(n) && n >= 0 && n < o ? Math.round(n) : -1, why: x && typeof x === 'object' ? clean(x.suggest_why, 120) : '' };
+    });
+  }
   var OPEN_FALLBACK = ['Not sure yet', 'Let’s find out'];
   function cleanOpen(list) {
-    return t.list(list).slice(0, 20).map(function (o) { return { q: t.text(o && o.q, 300), a: t.text(o && o.a, 1000), options: t.list(o && o.options).slice(0, 4).map(function (x) { return t.text(x, 120); }).filter(String) }; }).filter(function (o) { return o.q; });
+    return t.list(list).slice(0, 20).map(function (o) {
+      var opts = t.list(o && o.options).slice(0, 4).map(function (x) { return t.text(x, 120); }).filter(String), sg = Number(o && o.suggest);
+      return { q: t.text(o && o.q, 300), a: t.text(o && o.a, 1000), options: opts, suggest: isFinite(sg) && sg >= 0 && sg < opts.length ? Math.round(sg) : -1, suggestWhy: t.text(o && o.suggestWhy, 120) };
+    }).filter(function (o) { return o.q; });
   }
   function cleanList(a, max, n) { return t.list(a).slice(0, max).map(function (x) { return t.text(x, n); }).filter(String); }
 
@@ -4559,7 +4578,9 @@ function tideTalk(env, t) {
         var qs = t.list(res.questions).slice(0, K.PER_ROUND).map(function (q) {
           q = q || {};
           var opts = cleanList(q.options, 4, 120);
-          return { question: clean(q.question, 300), why: clean(q.why, 200), options: opts, multi: q.multi === true };
+          var sg = Number(q.suggest);
+          return { question: clean(q.question, 300), why: clean(q.why, 200), options: opts, multi: q.multi === true,
+            suggest: isFinite(sg) && sg >= 0 && sg < opts.length ? Math.round(sg) : -1, suggestWhy: clean(q.suggest_why, 120) };
         }).filter(function (q) { return q.question; });
         if (!qs.length) { wrapNow(r, 'No more questions'); return; }
         var rounds = t.list(r.rounds).concat([{ questions: qs, readyToWrap: res.ready_to_wrap === true, by: by2, at: now }]);
@@ -4570,6 +4591,7 @@ function tideTalk(env, t) {
         var out = {
           title: clean(res.title, 120) || r.title, summary: clean(res.summary, 1500), kind: kind,
           decisions: cleanList(res.decisions, 20, 300), open: openText(res.open_questions || res.open), openOptions: openOpts(res.open_questions || res.open),
+          openSuggest: openSugg(res.open_questions || res.open),
           nextStep: clean(res.next_step || res.nextStep, 400), by: by2, at: now
         };
         var fa = res.for_admin || {};
@@ -4898,7 +4920,7 @@ function tideTalk(env, t) {
     if (tp.private && !sent) { filed.kind = o.kind; env.lock(function () { env.table('topics').update(id, { filed: filed }); }); return filed; }
     var src = sent ? { title: sent.title, summary: sent.summary, decisions: t.list(sent.decisions), open: [], openOptions: [] } : o;
     if (o.kind === 'Product' && !filed.pipelineId) {
-      filed.pipelineId = env.lock(function () { return addItem({ title: src.title || tp.title, summary: src.summary, stage: 'Decisions', fromTopic: id, decisions: src.decisions, open: t.list(src.open).map(function (q, i) { return { q: q, a: '', options: t.list((src.openOptions || [])[i]) }; }) }); });
+      filed.pipelineId = env.lock(function () { return addItem({ title: src.title || tp.title, summary: src.summary, stage: 'Decisions', fromTopic: id, decisions: src.decisions, open: t.list(src.open).map(function (q, i) { var sg = (src.openSuggest || [])[i] || {}; return { q: q, a: '', options: t.list((src.openOptions || [])[i]), suggest: sg.i, suggestWhy: sg.why }; }) }); });
     }
     if (o.kind === 'Idea' && !filed.ideaId) {
       try { filed.ideaId = t.createIdea({ kind: 'Other', title: src.title || tp.title, note: (src.summary || '') + (t.list(src.decisions).length ? '\n\nDecided: ' + t.list(src.decisions).join('; ') : ''), scope: [] }).id; } catch (e) { filed.ideaError = String(e.message || e); }
@@ -5094,6 +5116,154 @@ function tideTalk(env, t) {
     return res;
   }
 
+
+  // ---------------------------------------------------------------- the recommended next step
+  // Every stage has one clear step that makes the most sense, from the research and the checks. Taking it is one tap;
+  // everything else on the screen stays hers to change. Outside the first idea, a product can go all the way to on sale
+  // by taking these steps, and each sign-off is still hers.
+  var JOB_WAIT = { checks: 'Drafting the parts and checks…', clear: 'Checking the rules for selling it…', copy: 'Writing the listing and launch posts…' };
+  function planOf(r) { return (r.research && r.research.plan) || null; }
+  function money2(n) { n = Number(n) || 0; return '$' + (n % 1 ? n.toFixed(2) : String(n)); }
+  function unitCost(r) { return t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0); }
+  function nextOf(r, role) {
+    if (r.parked) return null;
+    var pl = planOf(r), name = env.brand.artistName, admin = env.brand.adminName || 'admin';
+    // wait only when the job running is the one this stage needs; a rules check started early runs in the background
+    var busy = r.aiStatus === 'Queued' || r.aiStatus === 'Working';
+    var needsSetup = !!(r.research && r.research.plan) && (!t.list(r.parts).length || !(unitCost(r) > 0));
+    var blocksHere = busy && (r.aiJob === 'copy' ? r.stage === 'Listing & launch' : r.aiJob === 'clear' || r.aiJob === 'checks' ? r.stage === 'Checks & costing' && !needsSetup : true);
+    if (blocksHere) return { wait: true, label: JOB_WAIT[r.aiJob] || 'Working on it…' };
+    if (r.stage === 'Live') return { kind: 'done', done: true, label: r.retired ? 'Retired' : 'On sale', why: 'Set up, checked and live.' };
+    if (r.researchStatus === 'Queued' || r.researchStatus === 'Researching') return { wait: true, label: 'Researching whether it’s worth making, who makes it and what to charge…' };
+    if (pl && pl.go === 'No go' && !r.goAnyway && r.stage !== 'Live') return { kind: 'park', label: 'Park it for now', why: pl.goWhy + (pl.fix ? ' What would make it a go: ' + pl.fix : ''),
+      alt: { kind: 'goanyway', label: 'Go ahead anyway' } };
+    var gate = gateFor(r), ap = (r.approvals || {})[r.stage] || {}, mineToOk = gate.indexOf(role) >= 0 && !ap[role];
+    var othersOk = gate.filter(function (g) { return g !== role && !ap[g]; });
+    function signOff(label, why) {
+      if (mineToOk) return { kind: 'approve', label: label, why: why };
+      if (othersOk.length) return { wait: true, label: 'Waiting for ' + othersOk.map(who).join(' and ') + '’s OK' + (r.clash ? ': ' + r.clash : '') };
+      return { kind: 'approve', label: label, why: why };
+    }
+    // a check that came back no go comes with its fix: agreeing it comes first, whatever the stage, so nothing needs a second OK
+    var fixesAll = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action; });
+    if (fixesAll.length) return { kind: 'fix', label: fixesAll.length === 1 ? 'Agree the fix: ' + fixesAll[0].action : 'Agree the ' + fixesAll.length + ' fixes', why: fixesAll.map(function (c) { return c.item + ': ' + c.action; }).join(' · ') };
+    if (r.stage === 'Idea') return { kind: 'advance', label: 'Start shaping it', why: 'Next: the questions that decide what it is.' };
+    if (r.stage === 'Questions') return { kind: 'advance', label: 'Move on to the decisions', why: 'What it is, who it’s for and how it’s made.' };
+    if (r.stage === 'Decisions') {
+      var open = t.list(r.open).filter(function (o) { return !o.a; });
+      var canAnswer = open.length && open.every(function (o) { return o.suggest >= 0 && o.options[o.suggest]; });
+      if (open.length && !canAnswer) return { kind: '', label: 'Answer the ' + open.length + ' open question' + (open.length === 1 ? '' : 's'), why: 'There’s no clear pick for ' + (open.length === 1 ? 'it' : 'them') + ' yet: your call.' };
+      if (open.length) return Object.assign(signOff('Use the suggested answers and move on to checks', open.map(function (o) { return o.q + ' ' + o.options[o.suggest] + (o.suggestWhy ? ' (' + o.suggestWhy + ')' : ''); }).join(' · ')), { kind: mineToOk || !othersOk.length ? 'answer' : '' });
+      return signOff('OK the decisions and move on to checks', pl ? 'Research says go: ' + pl.goWhy : 'Next: suppliers, costs and the rules.');
+    }
+    if (r.stage === 'Checks & costing') {
+      if (pl && (!t.list(r.parts).length || !(unitCost(r) > 0))) {
+        var sup = (r.research.suppliers || [])[pl.supplier];
+        return { kind: 'plan', label: 'Use the recommended setup: ' + (sup ? sup.name + ', ' : '') + money2(pl.price), why: (pl.supplierWhy ? pl.supplierWhy + '. ' : '') + pl.parts.length + ' part' + (pl.parts.length === 1 ? '' : 's') + ', ' + money2(pl.parts.reduce(function (n, p) { return n + p.cost * p.qty; }, 0)) + ' to make, sold at ' + money2(pl.price) + '.' };
+      }
+      if (!t.list(r.parts).length) return { kind: 'checks', label: 'Draft the parts list', why: 'What one needs, so it can be costed.' };
+      if (t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return { kind: 'clear', label: 'Check the rules for selling it', why: t.list(r.checks).filter(function (c) { return c.status === 'To check'; }).length + ' checks, each settled as a go or with one fix.' };
+      var fixes = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action; });
+      if (fixes.length) return { kind: 'fix', label: fixes.length === 1 ? 'Agree the fix: ' + fixes[0].action : 'Agree the ' + fixes.length + ' fixes', why: fixes.map(function (c) { return c.item + ': ' + c.action; }).join(' · ') };
+      var price = Number((r.pricing || {}).price) || 0, unit = unitCost(r);
+      if (!(price > unit)) { var want = pl && pl.price > unit ? pl.price : Math.ceil(unit * 2.5); return { kind: 'price', label: 'Set the price to ' + money2(want), why: 'It costs ' + money2(unit) + ' to make, so ' + money2(price) + ' doesn’t cover it.', price: want }; }
+      return signOff('OK the costing and move on to the sample', 'Costs ' + money2(Math.round(unit * 100) / 100) + ', sells at ' + money2(price) + ', every check is a go.');
+    }
+    if (r.stage === 'Sample') {
+      var sm = (r.sample || {}).status || 'Not ordered';
+      if (pl && pl.sampleNeeded === false && sm === 'Not ordered') return Object.assign(signOff('No sample needed: move on to the listing', pl.sampleHow), { kind: 'nosample' });
+      if (sm === 'Not ordered' || sm === 'Needs changes') return { kind: 'order', label: sm === 'Needs changes' ? 'Order a new sample' : 'Order the sample', why: (pl && pl.sampleHow) || 'One, to check it before selling.' };
+      if (sm === 'Ordered') return { kind: 'arrived', label: 'It’s arrived', why: 'Tap when it’s here, then have a look.' };
+      if (sm === 'Here') return Object.assign(signOff('It looks right: approve it and move on to the listing', 'Or tap Needs changes below.'), { kind: mineToOk || !othersOk.length ? 'approvesample' : '' });
+      return signOff('OK the sample and move on to the listing', 'The sample is approved.');
+    }
+    if (r.stage === 'Listing & launch') {
+      if (!String((r.listing || {}).copy || '').trim()) return { kind: 'copy', label: 'Write the listing and launch posts', why: 'In your voice, from everything decided so far.' };
+      return signOff('OK the words and put it on sale', 'The listing, the price and every check are ready.');
+    }
+    return null;
+  }
+  /** Is it ready to sell: the go, the checks, the money and the words, all settled. */
+  function readyOf(r) {
+    var pl = planOf(r), price = Number((r.pricing || {}).price) || 0, unit = unitCost(r);
+    return { live: r.stage === 'Live', go: pl ? (pl.go === 'Go' || r.goAnyway === true) : false, viability: r.research ? r.research.viability : null,
+      checks: t.list(r.checks).length > 0 && t.list(r.checks).every(function (c) { return c.status === 'OK'; }),
+      legal: t.list(r.checks).filter(function (c) { return c.from === 'research'; }).length,
+      priced: price > unit && unit > 0, sample: (r.sample || {}).status === 'Approved', words: !!String((r.listing || {}).copy || '').trim() };
+  }
+  function signAndMove(id) {
+    var role = env.user.role, r = item(id);
+    if (gateFor(r).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role])) approve(id);
+    r = item(id);
+    if (!blockers(r).length) return advance(id);
+    return { ok: true, waiting: blockers(r) };
+  }
+  function takeNext(id, kind) {
+    var role = t.need(['admin', 'artist']);
+    var r = item(id), n = nextOf(r, role);
+    if (!n || n.wait) t.fail(n ? n.label : 'Nothing to do here right now.');
+    var want = String(kind || n.kind);
+    if (want !== n.kind && !(n.alt && n.alt.kind === want)) t.fail('That step has changed. Have another look.');
+    var pl = planOf(r);
+    if (want === 'advance') return advance(id);
+    if (want === 'approve') return signAndMove(id);
+    if (want === 'answer') {
+      updateItem(id, { open: t.list(r.open).map(function (o) { return o.a || !(o.suggest >= 0) ? o : Object.assign({}, o, { a: o.options[o.suggest] }); }) });
+      return signAndMove(id);
+    }
+    if (want === 'plan') {
+      updateItem(id, { parts: pl.parts.map(function (p) { return { part: p.part, supplier: p.supplier, cost: p.cost, qty: p.qty }; }), price: pl.price });
+      return { ok: true };
+    }
+    if (want === 'checks' || want === 'clear' || want === 'copy') return draftItem(id, want);
+    if (want === 'fix') {
+      var agreed = [];
+      updateItem(id, { checks: t.list(r.checks).map(function (c) {
+        if (!(c.status === 'Problem' && c.action)) return c;
+        agreed.push(c.action);
+        return Object.assign({}, c, { status: 'OK', verdict: 'Go', note: 'Fix agreed: ' + c.action, why: (c.why ? c.why + ' ' : '') + 'Fixed by: ' + c.action });
+      }), decisions: t.list(r.decisions).concat(agreed.map(function (a) { return 'Before selling: ' + a; })) });
+      return { ok: true, agreed: agreed.length };
+    }
+    if (want === 'price') { updateItem(id, { price: n.price }); return { ok: true }; }
+    if (want === 'order') { updateItem(id, { sample: { status: 'Ordered', notes: t.text(((r.sample || {}).notes ? r.sample.notes + '\n' : '') + 'Ordered: ' + ((pl && pl.sampleHow) || 'one sample'), 2000) } }); return { ok: true }; }
+    if (want === 'arrived') { updateItem(id, { sample: { status: 'Here', notes: (r.sample || {}).notes || '' } }); return { ok: true }; }
+    if (want === 'approvesample' || want === 'nosample') {
+      updateItem(id, { sample: { status: 'Approved', notes: t.text(((r.sample || {}).notes ? r.sample.notes + '\n' : '') + (want === 'nosample' ? 'No sample needed: ' + ((pl && pl.sampleHow) || '') : 'Approved'), 2000) } });
+      return signAndMove(id);
+    }
+    if (want === 'park') return setParked(id, true);
+    if (want === 'goanyway') { env.lock(function () { env.table('pipeline').update(id, { goAnyway: true, updated: t.nowIso(), log: logAdd(item(id), who(role) + ' went ahead despite the research') }); }); return { ok: true }; }
+    t.fail('That step can’t be done from here.');
+  }
+
+  /** The same for a conversation: take the suggested answers, or send the business side once it's written up. */
+  function topicNext(x, role) {
+    var hers = env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist';
+    if (x.aiStatus === 'Queued' || x.aiStatus === 'Working' || x.status === 'Thinking' || x.status === 'Wrapping') return { wait: true, label: x.status === 'Wrapping' ? 'Writing it up…' : 'Thinking of the next questions…' };
+    var rd = openRound(x);
+    if (rd && x.status === 'Your turn') {
+      var all = t.list(rd.questions).every(function (q) { return q.suggest >= 0; });
+      return all ? { kind: 'answers', label: 'Use the suggested answers', why: 'Each one is picked for you below. Change any first, or just send them.' } : { kind: '', label: 'Answer when you’re ready' };
+    }
+    var o = x.outcome || {};
+    if (x.private && o.shareState === 'Waiting' && hers) return { kind: 'share', label: 'Send ' + (env.brand.adminName || 'admin') + ' the business side', why: (o.forAdmin && o.forAdmin.decisions.length ? o.forAdmin.decisions.length + ' business decisions' : 'The business summary') + '. Nothing personal goes.' };
+    if (x.filed && x.filed.pipelineId) return { kind: 'product', label: 'Open the product', id: x.filed.pipelineId };
+    return null;
+  }
+  function takeTopicNext(id, kind) {
+    t.need(['admin', 'artist']);
+    var x = topic(id), n = topicNext(x, env.user.role);
+    if (!n || n.wait || !n.kind) t.fail(n ? n.label : 'Nothing to do here right now.');
+    if (kind && kind !== n.kind) t.fail('That step has changed. Have another look.');
+    if (n.kind === 'answers') {
+      var rd = openRound(x);
+      return answerRound(id, t.list(rd.questions).map(function (q) { return { picked: [q.suggest] }; }), {});
+    }
+    if (n.kind === 'share') { var fa = (x.outcome || {}).forAdmin || {}; return shareTopic(id, { title: fa.title, summary: fa.summary, decisions: fa.decisions }); }
+    return { ok: true, product: n.id };
+  }
+
   /** The saved product ideas, entered once at their current stage (safe to run again: skips titles already there). */
   function loadBacklog() {
     t.need(['admin']);
@@ -5120,7 +5290,8 @@ function tideTalk(env, t) {
       return { id: x.id, title: x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status,
         rounds: t.list(x.rounds), answered: asked(x), max: Number(x.maxQ) || K.MAX_Q, min: K.MIN_Q,
         outcome: x.outcome || null, filed: x.filed || null, aiStatus: x.aiStatus || '', aiRoute: x.aiRoute || '', aiNote: x.aiNote || '', aiWhy: x.aiWhy || '',
-        private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated };
+        private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated,
+        next: x.locked ? null : topicNext(x, role) };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
     var items = t.rows('pipeline').map(function (r) {
       var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
@@ -5133,6 +5304,7 @@ function tideTalk(env, t) {
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
         sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: gateFor(r), clash: clashOf(r), blockers: blockers(r),
         needsMe: gateFor(r).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked,
+        next: nextOf(Object.assign({}, r, { clash: clashOf(r) }), role), ready: readyOf(r), goAnyway: r.goAnyway === true,
         research: r.research || null, researchStatus: r.researchStatus || '', researchAt: r.researchAt || '', researchNote: r.researchNote || '',
         log: t.list(r.log).slice(-12).reverse(), aiStatus: r.aiStatus || '', aiJob: r.aiJob || '', aiNote: r.aiNote || '', aiBy: r.aiBy || '', updated: r.updated
       };
@@ -5162,6 +5334,14 @@ function tideTalk(env, t) {
         costing: { low: num(c.unit_cost_low), high: num(c.unit_cost_high), price: num(c.suggested_price), notes: t.text(c.notes, 400) },
         comparables: t.list(res.comparables).slice(0, 6).map(function (x) { x = x || {}; return { name: t.text(x.name, 120), price: num(x.price_aud), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.name; }),
         risks: cleanList(res.risks, 4, 240), advertising: tideAdvertising(res.advertising),
+        plan: (function (p) {
+          if (!p || typeof p !== 'object') return null;
+          var sn = Number(p.supplier), nSup = t.list(res.suppliers).slice(0, 5).length;
+          return { go: p.go === 'No go' ? 'No go' : 'Go', goWhy: t.text(p.go_why, 300), fix: p.go === 'No go' ? t.text(p.fix, 300) : '',
+            supplier: isFinite(sn) && sn >= 0 && sn < nSup ? Math.round(sn) : -1, supplierWhy: t.text(p.supplier_why, 200),
+            parts: t.list(p.parts).slice(0, 15).map(function (x) { x = x || {}; return { part: t.text(x.part, 120), supplier: t.text(x.supplier, 120), cost: num(x.unit_cost_aud), qty: Math.max(1, Math.round(Number(x.qty) || 1)) }; }).filter(function (x) { return x.part; }),
+            price: num(p.price), sampleNeeded: p.sample_needed !== false, sampleHow: t.text(p.sample_how, 300) };
+        })(res.plan),
         legal: t.list(res.legal_checks).slice(0, 8).map(function (c) { return typeof c === 'string' ? { check: t.text(c, 300) } : { check: t.text(c && c.check, 300), verdict: c && c.verdict, why: t.text(c && c.why, 300), action: t.text(c && c.action, 300) }; }).filter(function (c) { return c.check; }),
         sources: t.list(res.sources).slice(0, 10).map(function (x) { x = x || {}; return { title: t.text(x.title, 120), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.url; })
       };
@@ -5237,7 +5417,8 @@ function tideTalk(env, t) {
   return {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
-      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts }
+      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
+      takeNext: takeNext, takeTopicNext: takeTopicNext }
   };
 }
 
@@ -8767,14 +8948,16 @@ var Kit = (function () {
           if (!tp.mine && !ADMIN) ctl.body.appendChild(note('Waiting for ' + tp.by + ' to answer.', 'forum'));
           else {
             if (!tp.mine) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('These are ' + tp.by + '’s questions. You can answer for her if she asks you to.', 'info')));
-            var answers = round.questions.map(function () { return { picked: [], text: '' }; });
+            var answers = round.questions.map(function (q) { return { picked: q.suggest >= 0 ? [q.suggest] : [], text: '' }; });
+            var allPicked = round.questions.every(function (q) { return q.suggest >= 0; });
+            if (allPicked) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('A suggested answer is picked for each. Change any that aren’t right, then send.', 'auto_awesome')));
             round.questions.forEach(function (q, qi) {
               var card = h('div', { class: 'card pad talk-q', style: 'margin-bottom:12px' });
               card.appendChild(h('div', { class: 'title-m', text: q.question }));
               if (q.why) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:4px;color:var(--on-surface-variant)', text: q.why }));
               var chips = h('div', { class: 'choices', style: 'margin:12px 0 10px' });
               var btns = q.options.map(function (o, oi) {
-                var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': 'false' }, o);
+                var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(answers[qi].picked.indexOf(oi) >= 0) }, o);
                 b.addEventListener('click', function () {
                   var on = answers[qi].picked.indexOf(oi) >= 0;
                   if (q.multi) answers[qi].picked = on ? answers[qi].picked.filter(function (x) { return x !== oi; }) : answers[qi].picked.concat([oi]);
@@ -8786,11 +8969,12 @@ var Kit = (function () {
                 return b;
               });
               if (q.multi) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Pick any that fit.' }));
+              if (q.suggest >= 0 && q.suggestWhy) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Suggested: ' + q.options[q.suggest] + ' (' + q.suggestWhy + ')' }));
               card.append(chips, K.textField({ label: 'In my own words', multiline: true, compact: true, maxlength: 2000, onInput: function (v) { answers[qi].text = v; } }));
               ctl.body.appendChild(card);
             });
             ctl.body.appendChild(h('p', { class: 'tf-help', style: 'margin:0 4px 8px', text: 'Leave any you’d rather skip.' }));
-            var send = btn('filled', 'Send answers', { icon: 'send', lg: true, block: true });
+            var send = btn('filled', allPicked ? 'Send these answers' : 'Send answers', { icon: 'send', lg: true, block: true });
             send.addEventListener('click', function () {
               K.setBusy(send, true);
               api('answerRound', id, answers).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (e) { K.setBusy(send, false); fail(e); });
@@ -8891,7 +9075,8 @@ var Kit = (function () {
           h('div', { class: 'th-blank' }, icon('sell')),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
             h('div', { class: 'li-sup', style: 'white-space:normal;-webkit-line-clamp:2', text: p.summary || ' ' }),
-            p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null),
+            p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null,
+            p.next && !p.next.done ? h('div', { class: 'li-sup next-line', text: (p.next.wait ? '' : 'Next: ') + p.next.label }) : null),
           h('div', { class: 'li-trail' }, dayChip(p.day), itemChip(p))));
       });
       sec.appendChild(l);
@@ -8944,6 +9129,43 @@ var Kit = (function () {
       }
     });
   }
+  /** The one step that makes the most sense now, from the research and the checks. One tap does it; everything
+   *  below stays hers to change first. While the AI works, it waits here and moves on by itself. */
+  function nextCard(p, saveFirst, reopen) {
+    var n = p.next;
+    if (!n) return null;
+    if (n.done) return h('div', { class: 'card pad next-card done', style: 'margin:10px 0 14px' },
+      h('div', { class: 'row', style: 'gap:12px;align-items:center' }, h('span', { class: 'ic' }, icon('rocket_launch')),
+        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: n.label }), h('div', { class: 'body-m', text: readyLine(p.ready) }))));
+    var card = h('div', { class: 'card pad next-card' + (n.wait ? ' wait' : ''), style: 'margin:10px 0 14px' },
+      h('div', { class: 'label-s', text: n.wait ? 'Working on it' : 'Recommended next' }),
+      h('div', { class: 'title-m', style: 'margin-top:2px', text: n.label }),
+      n.why ? h('p', { class: 'body-m', style: 'margin:6px 0 0;color:var(--on-surface-variant)', text: n.why }) : null);
+    if (n.wait) {
+      var poll = setInterval(function () {
+        if (!document.body.contains(card)) { clearInterval(poll); return; }
+        refresh().then(function () { var now = byId(talkData().pipeline, p.id); if (now && JSON.stringify(now.next) !== JSON.stringify(n)) { clearInterval(poll); reopen(); } }).catch(function () {});
+      }, 5000);
+      return card;
+    }
+    if (!n.kind) return card;
+    function take(kind, b) {
+      K.setBusy(b, true);
+      saveFirst().then(function () { return api('takeNext', p.id, kind); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
+        .catch(function (e) { K.setBusy(b, false); fail(e); });
+    }
+    card.appendChild(h('div', { class: 'btn-row', style: 'margin-top:12px' },
+      btn('filled', 'Do this', { icon: 'arrow_forward', onclick: function (e) { take(n.kind, e.currentTarget); } }),
+      n.alt ? btn('text', n.alt.label, { onclick: function (e) { take(n.alt.kind, e.currentTarget); } }) : null));
+    card.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 0 0', text: 'Or change anything below first. Your OK is still yours at every stage.' }));
+    return card;
+  }
+  function readyLine(r) {
+    if (!r) return '';
+    return [r.go ? 'Research says go' + (r.viability != null ? ' (' + r.viability + '/100)' : '') : '', r.checks ? 'every check a go' + (r.legal ? ', including ' + r.legal + ' of its own rules' : '') : '',
+      r.priced ? 'priced above cost' : '', r.sample ? 'sample approved' : '', r.words ? 'listing written' : ''].filter(String).join(' · ') + '.';
+  }
+
   function researchCard(p, f, reopen, saveFirst, touch) {
     var R = p.research, sec = sheetSection('Market research');
     function link(text, url) { return url ? h('a', { href: url, target: '_blank', rel: 'noopener', text: text }) : h('span', { text: text }); }
@@ -8962,6 +9184,9 @@ var Kit = (function () {
     var head = h('div', { class: 'row', style: 'gap:14px;align-items:center;margin-bottom:10px' }, K.ring(R.viability),
       h('div', { class: 'grow' }, h('div', { class: 'title-m', text: R.verdict + ' · ' + R.viability + '/100' }), h('p', { class: 'body-m', text: R.summary })));
     sec.appendChild(head);
+    if (R.plan) sec.appendChild(h('div', { class: 'adv ' + (R.plan.go === 'Go' ? 'go' : 'nogo'), style: 'margin-bottom:10px' },
+      h('div', { class: 'adv-head' }, icon(R.plan.go === 'Go' ? 'check_circle' : 'block'), h('b', { text: R.plan.go === 'Go' ? 'Go: worth making' : 'No go as it stands' })),
+      h('p', { text: R.plan.goWhy + (R.plan.fix ? ' What would make it a go: ' + R.plan.fix : '') })));
     var d = R.demand || {}, c = R.costing || {};
     sec.appendChild(h('dl', { class: 'kv research-kv' },
       h('dt', { text: 'Projected demand' }), h('dd', {}, h('b', { text: d.level + ' · about ' + d.low + (d.high > d.low ? '–' + d.high : '') + ' a month' }), d.reasoning ? h('div', { class: 'body-s', text: d.reasoning }) : null),
@@ -8969,9 +9194,13 @@ var Kit = (function () {
       h('dt', { text: 'Suggested price' }), h('dd', {}, h('b', { text: money2(c.price) }))));
     if (R.suppliers.length) {
       var sl = h('div', { class: 'research-list' }, h('div', { class: 'label-s', text: 'Suppliers' }));
-      R.suppliers.forEach(function (s) {
-        sl.appendChild(h('div', { class: 'research-row' },
-          h('div', { class: 'grow' }, h('div', { class: 'body-m', style: 'font-weight:500' }, link(s.name, s.url)),
+      var pick = R.plan ? R.plan.supplier : -1;
+      // the recommended one first, marked, with why
+      R.suppliers.map(function (s, i) { return { s: s, i: i }; }).sort(function (a, b) { return (b.i === pick) - (a.i === pick); }).forEach(function (x) {
+        var s = x.s, rec = x.i === pick;
+        sl.appendChild(h('div', { class: 'research-row' + (rec ? ' rec' : '') },
+          h('div', { class: 'grow' }, rec ? h('div', { class: 'rec-tag' }, icon('verified'), 'Recommended' + (R.plan.supplierWhy ? ': ' + R.plan.supplierWhy : '')) : null,
+            h('div', { class: 'body-m', style: 'font-weight:500' }, link(s.name, s.url)),
             h('div', { class: 'body-s', text: [s.what, s.unit ? money2(s.unit) + ' each' : '', s.minOrder ? 'min ' + s.minOrder : '', s.where].filter(Boolean).join(' · ') })),
           h('button', { type: 'button', class: 'choice press soft', onclick: function () {
             f.parts.push({ part: s.what || s.name, supplier: s.name, cost: s.unit || 0, qty: 1 }); touch();
@@ -9065,6 +9294,7 @@ var Kit = (function () {
         var si = T.stages.indexOf(p.stage);
         ctl.body.appendChild(tldrItem(p));
         ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
+        var nc = nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
         ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Parked. Bring it back when you’re ready.', 'pause_circle')));
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.aiJob === 'clear' ? 'Checking each one…' : 'Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
@@ -9083,7 +9313,8 @@ var Kit = (function () {
         var s3 = sheetSection('Open questions'), oq = h('div', { class: 'field-gap' });
         function drawOpen() {
           oq.textContent = '';
-          f.open.forEach(function (o, i) { oq.appendChild(K.textField({ suggest: (o.options || []).length >= 2 ? o.options : ['Not sure yet', 'Let’s find out'], suggestReplace: true, label: o.q, value: o.a, multiline: true, compact: true, maxlength: 1000, onInput: function (v) { o.a = v; touch(); } })); });
+          f.open.forEach(function (o, i) { var opts = (o.options || []).slice(), sg = o.suggest >= 0 ? opts[o.suggest] : ''; if (sg) opts = [sg].concat(opts.filter(function (x) { return x !== sg; }));
+            oq.appendChild(K.textField({ suggest: opts.length >= 2 ? opts : ['Not sure yet', 'Let’s find out'], help: sg && !o.a ? 'Suggested: ' + sg + (o.suggestWhy ? ' (' + o.suggestWhy + ')' : '') : '', suggestReplace: true, label: o.q, value: o.a, multiline: true, compact: true, maxlength: 1000, onInput: function (v) { o.a = v; touch(); } })); });
           if (!f.open.length) oq.appendChild(h('p', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: 'None open.' }));
         }
         drawOpen();
