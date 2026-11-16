@@ -1657,7 +1657,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
       var fg = hang(R, framed(env.C.IMG[p.a.img], w, h, room.frame, R.look.accent), wall, z, cy);
       hit(fg.userData.img, { type: 'piece', i: p.i });
       // its placard
-      var price = p.sold ? 'Sold' : env.C.money(p.og.options[0].price);
+      var price = p.sold ? 'Sold' : p.keep ? 'Her own collection' : env.C.money(p.og.options[0].price);
       var pl = plane(0.46, 0.3, basic({ map: wordsTex(460, 300, [{ t: 'No. ' + (p.no < 10 ? '0' : '') + p.no, font: '500 17px Roboto, Arial', color: '#8a8178', ls: 4, gap: 8 }, { t: p.a.title, font: '500 34px Lora, Georgia, serif', color: '#16130f', gap: 6 }, { t: 'The original · signed', font: '400 18px Roboto, Arial', color: '#6c645b', gap: 14 }, { t: price, font: '500 38px Lora, Georgia, serif', color: p.sold ? '#8a4a3a' : '#16130f' }], { bg: '#f8f4eb', align: 'left', pad: 28 }) }));
       put(fg, pl, fg.userData.ow / 2 + 0.36, -fg.userData.oh / 2 + 0.24, 0.012);
       M.pieceAt[p.i] = { R: R, fg: fg, wall: wall, s: z, cy: cy, p: p };
@@ -2028,14 +2028,14 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     var C = M.env.C, G = M.env.G, h = '';
     if (!n) return '';
     if (n.kind === 'piece') {
-      var p = G.pieces[n.piece], a = p.a, o = p.og.options[0], pr = printOf(a), isKept = kept().indexOf(a.id) >= 0, ed = C.edLine ? C.edLine(a, p.og) : '';
+      var p = G.pieces[n.piece], a = p.a, o = p.og ? p.og.options[0] : {}, pr = printOf(a), isKept = kept().indexOf(a.id) >= 0, ed = p.og && C.edLine ? C.edLine(a, p.og) : '';
       h = '<div class="og3-k">No. ' + (p.no < 10 ? '0' : '') + p.no + ' · ' + esc(p.room.title) + '</div><div class="og3-row"><b class="og3-t">' + esc(a.title) + '</b><button type="button" class="og3-heart' + (isKept ? ' on' : '') + '" data-og-keep="' + esc(a.id) + '" aria-pressed="' + isKept + '" aria-label="Keep this piece">♥</button></div>' +
-        (p.sold ? '<div class="og3-m"><i class="og-dot"></i>The original has found its home' + (pr ? ' · it lives on as prints' : '') + '</div>'
+        (p.nfs ? '<div class="og3-m">' + (p.sold ? '<i class="og-dot"></i>The original has found its home' : 'The original stays in Denise\u2019s own collection') + (pr ? ' · it lives on as prints' : '') + '</div>'
           : '<div class="og3-m">The original · one of a kind · signed by Denise</div><div class="og3-p">' + C.money(o.price) + (ed ? '<span>' + esc(ed) + '</span>' : '') + '</div>') +
         '<div class="og3-btns"><button type="button" class="og3-btn ghost" data-og-insp="' + n.piece + '">Look closer</button>' +
-        (p.sold ? (pr ? '<button type="button" class="og3-btn" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Prints from ' + C.money(pr.from) + '</button>' : '')
+        (p.nfs ? (pr ? '<button type="button" class="og3-btn" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Prints from ' + C.money(pr.from) + '</button>' : '')
           : '<button type="button" class="og3-btn" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(p.og.id) + '">Make it yours</button>') + '</div>' +
-        (!p.sold && pr ? '<button type="button" class="og3-alt" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Or take it home as a print, from ' + C.money(pr.from) + ' <i>→</i></button>' : '');
+        (!p.nfs && pr ? '<button type="button" class="og3-alt" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Or take it home as a print, from ' + C.money(pr.from) + ' <i>→</i></button>' : '');
     } else if (n.kind === 'print') {
       var it = M.prints[n.j];
       h = '<div class="og3-k">The print room</div><b class="og3-t">' + esc(it.a.title) + '</b><div class="og3-m">Art print · posted to you' + (it.a.sea ? ' · 20% supports Sea Shelter' : '') + '</div><div class="og3-p">from ' + C.money(it.from) + '</div>' +
@@ -2081,8 +2081,8 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     var C = M.env.C, G = M.env.G, k = kept(), el = $('.og3-walk'), rows = function (ids, empty) {
       var list = ids.map(function (id) { return G.pieces.filter(function (p) { return p.a.id === id; })[0]; }).filter(Boolean);
       if (!list.length) return '<p class="og3-walk-e">' + empty + '</p>';
-      return list.map(function (p) { var pr = printOf(p.a); return '<div class="og3-wrow"><img alt="" src="' + (C.IMG[p.a.img] || '') + '"><div><b>' + esc(p.a.title) + '</b><span>' + (p.sold ? 'Sold' : 'The original · ' + C.money(p.og.options[0].price)) + '</span>' +
-        '<div class="og3-wbtns">' + (p.sold ? '' : '<button type="button" class="og3-btn sm" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(p.og.id) + '">Make it yours</button>') + (pr ? '<button type="button" class="og3-btn sm ghost" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Print, from ' + C.money(pr.from) + '</button>' : '') +
+      return list.map(function (p) { var pr = printOf(p.a); return '<div class="og3-wrow"><img alt="" src="' + (C.IMG[p.a.img] || '') + '"><div><b>' + esc(p.a.title) + '</b><span>' + (p.sold ? 'Sold' : p.keep ? 'Denise\u2019s own collection' : 'The original · ' + C.money(p.og.options[0].price)) + '</span>' +
+        '<div class="og3-wbtns">' + (p.nfs ? '' : '<button type="button" class="og3-btn sm" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(p.og.id) + '">Make it yours</button>') + (pr ? '<button type="button" class="og3-btn sm ghost" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Print, from ' + C.money(pr.from) + '</button>' : '') +
         '<button type="button" class="og3-link" data-og-go="piece:' + p.i + '" data-og-close>Take me back to it</button></div></div></div>'; }).join('');
     };
     var seen = Object.keys(M.seen).filter(function (id) { return k.indexOf(id) < 0; });
@@ -2384,10 +2384,10 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
   function pieceBtns(p, wall) {
     var pr = printOf(p.a), h = '<div class="og3-btns">';
     if (wall) h += '<button type="button" class="og3-btn ghost" data-ob-wall="' + p.i + '">See it on the wall</button>';
-    h += p.sold ? (pr ? '<button type="button" class="og3-btn" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Prints from ' + money(pr.from) + '</button>' : '')
+    h += p.nfs ? (pr ? '<button type="button" class="og3-btn" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Prints from ' + money(pr.from) + '</button>' : '')
       : '<button type="button" class="og3-btn" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(p.og.id) + '">Make it yours</button>';
     h += '</div>';
-    if (!p.sold && pr) h += '<button type="button" class="og3-alt" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Or take it home as a print, from ' + money(pr.from) + ' <i>→</i></button>';
+    if (!p.nfs && pr) h += '<button type="button" class="og3-alt" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Or take it home as a print, from ' + money(pr.from) + ' <i>→</i></button>';
     return h;
   }
   function flowHTML() {
@@ -2413,9 +2413,9 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     var c = col(), x = items()[j], C = B.C; if (!x) return '';
     if (c.k === 'prints') return '<div class="ob-a-k">Art print · posted to you' + (x.a.sea ? ' · 20% supports Sea Shelter' : '') + '</div><b class="ob-a-t">' + esc(x.a.title) + '</b><div class="og3-p">from ' + money(x.from) + '</div>' +
       '<div class="og3-btns"><button type="button" class="og3-btn" data-qa="' + esc(x.a.id) + '" data-qa-p="' + esc(x.p.id) + '">Choose your size</button></div>';
-    var ed = C.edLine ? C.edLine(x.a, x.og) : '';
+    var ed = x.og && C.edLine ? C.edLine(x.a, x.og) : '';
     return '<div class="og3-row"><div><div class="ob-a-k">No. ' + (x.no < 10 ? '0' : '') + x.no + ' · ' + esc(c.title) + '</div><b class="ob-a-t">' + esc(x.a.title) + '</b></div>' + heart(x.a.id) + '</div>' +
-      (x.sold ? '<div class="og3-m"><i class="og-dot"></i>The original has found its home</div>' : '<div class="og3-m">The original · one of a kind · signed by Denise</div><div class="og3-p">' + money(x.og.options[0].price) + (ed ? '<span>' + esc(ed) + '</span>' : '') + '</div>') +
+      (x.nfs ? '<div class="og3-m">' + (x.sold ? '<i class="og-dot"></i>The original has found its home' : 'The original stays in Denise\u2019s own collection') + '</div>' : '<div class="og3-m">The original · one of a kind · signed by Denise</div><div class="og3-p">' + money(x.og.options[0].price) + (ed ? '<span>' + esc(ed) + '</span>' : '') + '</div>') +
       pieceBtns(x, true) + '<button type="button" class="ob-look" data-ob-look="' + x.i + '">Look closer →</button>';
   }
   function theme() { var k = col().k, sec = B.root.querySelector('.ob'); if (sec && sec.dataset.theme !== k) sec.dataset.theme = k; }
@@ -2539,7 +2539,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
       var p = o.p;
       return '<div class="ow-p" data-ow="' + j + '" style="left:' + Math.round(o.x - o.w / 2) + 'px;top:' + Math.round(o.y - o.h / 2) + 'px;width:' + Math.round(o.w) + 'px;height:' + Math.round(o.h) + 'px">' +
         '<i class="ow-glow" aria-hidden="true"></i><i class="ow-lamp" aria-hidden="true"></i><div class="ow-pi" style="--m:' + o.m + 'px;--pad:' + o.pad + 'px">' + env.frameHTML(p, o.w, o.h) + '</div>' +
-        '<div class="ow-tag"><b>' + esc(p.a.title) + '</b><span>' + (p.sold ? 'Sold · prints available' : money(p.og.options[0].price) + ' · the original') + '</span></div></div>';
+        '<div class="ow-tag"><b>' + esc(p.a.title) + '</b><span>' + (p.sold ? 'Sold · prints available' : p.keep ? 'From Denise\u2019s own collection' : money(p.og.options[0].price) + ' · the original') + '</span></div></div>';
     }).join('');
     var q = c.quote ? '<div class="ow-quote" style="left:' + Math.round(L.W / 2 - 700) + 'px"><p>“' + esc(c.quote.t) + '”</p><cite>Denise</cite></div>' : '';
     return '<div class="ow-wall" style="width:' + Math.round(L.W) + 'px;height:' + L.H + 'px"><i class="ow-rail" aria-hidden="true"></i>' + q + pieces + '<i class="ow-floor" style="top:' + FLOOR + 'px" aria-hidden="true"></i>' + props + '</div>';
@@ -2619,14 +2619,14 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     W.ps.forEach(function (el, i) { el.classList.toggle('focus', i === j); });
     W.ov.classList.toggle('focused', j >= 0);
     if (j < 0) { card.classList.remove('on'); card.hidden = true; return; }
-    var p = W.L.list[j].p, C = B.C, ed = C.edLine ? C.edLine(p.a, p.og) : '', n = W.L.list.length;
+    var p = W.L.list[j].p, C = B.C, ed = p.og && C.edLine ? C.edLine(p.a, p.og) : '', n = W.L.list.length;
     card.innerHTML = '<div class="og3-row"><div><div class="og3-k">No. ' + (p.no < 10 ? '0' : '') + p.no + ' · ' + esc(W.c.title) + '</div><b class="og3-t">' + esc(p.a.title) + '</b></div>' + heart(p.a.id) + '</div>' +
-      (p.sold ? '<div class="og3-m"><i class="og-dot"></i>The original has found its home</div>' : '<div class="og3-m">The original · one of a kind · signed by Denise</div><div class="og3-p">' + money(p.og.options[0].price) + (ed ? '<span>' + esc(ed) + '</span>' : '') + '</div>') +
+      (p.nfs ? '<div class="og3-m">' + (p.sold ? '<i class="og-dot"></i>The original has found its home' : 'The original stays in Denise\u2019s own collection') + '</div>' : '<div class="og3-m">The original · one of a kind · signed by Denise</div><div class="og3-p">' + money(p.og.options[0].price) + (ed ? '<span>' + esc(ed) + '</span>' : '') + '</div>') +
       (function () {
-        var pr = printOf(p.a), buyBtn = p.sold ? (pr ? '<button type="button" class="og3-btn" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Prints from ' + money(pr.from) + '</button>' : '')
+        var pr = printOf(p.a), buyBtn = p.nfs ? (pr ? '<button type="button" class="og3-btn" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Prints from ' + money(pr.from) + '</button>' : '')
           : '<button type="button" class="og3-btn" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(p.og.id) + '">Make it yours</button>';
         return '<div class="og3-btns"><button type="button" class="og3-btn ghost" data-ob-look="' + p.i + '">Look closer</button>' + buyBtn + '</div>' +
-          (!p.sold && pr ? '<button type="button" class="og3-alt" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Or take it home as a print, from ' + money(pr.from) + ' <i>→</i></button>' : '');
+          (!p.nfs && pr ? '<button type="button" class="og3-alt" data-qa="' + esc(p.a.id) + '" data-qa-p="' + esc(pr.p.id) + '">Or take it home as a print, from ' + money(pr.from) + ' <i>→</i></button>' : '');
       })() +
       (n > 1 ? '<div class="ow-nav"><button type="button" data-ow-go="-1" aria-label="The piece before">‹</button><span>' + (j + 1) + ' of ' + n + '</span><button type="button" data-ow-go="1" aria-label="The next piece">›</button></div>' : '');
     card.hidden = false; void card.offsetWidth; card.classList.add('on');
@@ -2794,16 +2794,18 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
   // ---------- the gallery's contents: every piece with an original, in its collection's room ----------
   function gather() {
     var rooms = ROOMS.map(function (r) { var c = C.COLS[r.k] || {}; return { k: r.k, n: r.n, short: r.short, frame: r.frame, title: c.title || r.short, line: r.line || c.sub || '', soon: c.soon || '', pieces: [] }; });
-    C.ARTWORKS.forEach(function (a) {
-      var og = (a.products || []).filter(function (p) { return p.type === 'Original' && p.options && p.options.length; })[0];
-      if (!og) return;
+    C.ARTWORKS.concat(C.KEPT || []).forEach(function (a) {
+      // an original is for sale only when it has a price; otherwise it's part of Denise's own collection
+      var og = (a.products || []).filter(function (p) { return p.type === 'Original' && p.options && p.options.length; })[0] || null;
       var room = rooms.filter(function (r) { return r.k === a.col; })[0] || rooms[1];
-      var print = a.products.filter(function (p) { return p.type === 'Print' && C.canBuy(a, p); })[0] || null;
-      room.pieces.push({ a: a, og: og, sold: C.soldOriginal(a, og), can: C.canBuy(a, og), print: print, room: room, ar: 0.8 });
+      var print = (a.products || []).filter(function (p) { return p.type === 'Print' && C.canBuy(a, p); })[0] || null;
+      var sold = og ? C.soldOriginal(a, og) : false, keep = !og;
+      room.pieces.push({ a: a, og: og, sold: sold, keep: keep, nfs: sold || keep, can: og ? C.canBuy(a, og) : false, print: print, room: room, ar: 0.8 });
     });
     var all = [];
     rooms.forEach(function (r) {
-      r.pieces.sort(function (x, y) { return x.sold - y.sold; });
+      // for sale first, then hers, then the ones that have found a home
+      r.pieces.sort(function (x, y) { return (x.sold ? 2 : x.keep ? 1 : 0) - (y.sold ? 2 : y.keep ? 1 : 0); });
       r.pieces.forEach(function (p) { p.i = all.length; p.no = all.length + 1; all.push(p); });
     });
     return { rooms: rooms, pieces: all };
@@ -2934,15 +2936,17 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     var a = p.a, st = w ? ' style="width:' + Math.round(w) + 'px;height:' + Math.round(h) + 'px"' : '';
     return '<div class="og-fr og-f-' + p.room.frame + '"' + st + '><div class="og-mat"><img alt="' + esc(a.title) + '" src="' + (C.IMG[a.img] || '') + '" draggable="false"></div><i class="og-glass"></i></div>';
   }
-  function priceLine(p) { return C.money(p.og.options[0].price); }
+  function priceLine(p) { return p.og ? C.money(p.og.options[0].price) : 'Not for sale'; }
+  function ogNote(p) { return p.keep ? 'The original stays in Denise\u2019s own collection' : 'The original has found its home'; }
   function placardHTML(p, attrs) {
     var a = p.a, med = [a.medium, a.dims].filter(Boolean).map(esc).join(' · ');
-    var status = p.sold ? '<div class="og-plc-s"><i class="og-dot" aria-hidden="true"></i>Sold' + (p.print ? ' · prints available' : ' · found its home') + '</div>'
+    var status = p.keep ? '<div class="og-plc-s">From Denise\u2019s own collection' + (p.print ? ' \u00b7 prints available' : '') + '</div>'
+      : p.sold ? '<div class="og-plc-s"><i class="og-dot" aria-hidden="true"></i>Sold' + (p.print ? ' · prints available' : ' · found its home') + '</div>'
       : '<div class="og-plc-p">' + priceLine(p) + '<span>One of a kind</span></div>';
     return '<div class="og-plc"' + (attrs || '') + '><div class="og-plc-no">No. ' + (p.no < 10 ? '0' : '') + p.no + ' · ' + esc(p.room.title) + '</div>' +
       '<b class="og-plc-t">' + esc(a.title) + '</b><div class="og-plc-m">The original' + (med ? ' · ' + med : '') + ' · signed</div>' + status +
       (a.sea ? '<div class="og-plc-sea">Made with the Irukandji Shark &amp; Ray Centre · 20% of every marine print supports Sea Shelter</div>' : '') +
-      '<span class="og-plc-cta">' + (p.sold ? 'See its story' : 'Look closer') + ' <i aria-hidden="true">→</i></span></div>';
+      '<span class="og-plc-cta">' + (p.nfs ? 'See its story' : 'Look closer') + ' <i aria-hidden="true">→</i></span></div>';
   }
   function quoteHTML(q, by) {
     return '<blockquote class="og-q' + (q.her ? '' : ' og-q-p') + '"><p>' + esc(q.t) + '</p><cite>' + esc(by || 'Denise') + '</cite></blockquote>';
@@ -3033,23 +3037,29 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
   // ================= a closer look =================
   function inspect(i, fromEl) {
     var p = G.pieces[i]; if (!p) return;
-    var a = p.a, og = p.og, o = og.options[0], k = p.room.k;
+    var a = p.a, og = p.og, o = og ? og.options[0] : {}, k = p.room.k;
     if (!M.insp) { M.insp = document.createElement('div'); M.insp.setAttribute('role', 'dialog'); M.insp.setAttribute('aria-modal', 'true'); document.body.appendChild(M.insp); bindInsp(M.insp); }
     var ov = M.insp, scan = a.scan, glb = '', usdz = '';
     if (scan) { if (typeof scan === 'string') { if (/\.usdz(\?|$)/i.test(scan)) usdz = scan; else glb = scan; } else { glb = scan.glb || ''; usdz = scan.usdz || ''; } }
     ov.className = 'og-insp og-t-' + k; ov.setAttribute('aria-label', a.title); ov.dataset.piece = i;
-    var ed = C.edLine(a, og), e = a.ed || {}, most = e.size ? (e.opened || 0) + (e.mode === 'headstart' ? (e.quickSize || e.size) : e.size) : 0;
+    var ed = og ? C.edLine(a, og) : '', e = a.ed || {}, most = e.size ? (e.opened || 0) + (e.mode === 'headstart' ? (e.quickSize || e.size) : e.size) : 0;
     var med = [a.medium, a.dims].filter(Boolean).map(esc).join(' · ');
     var viewer = glb ? '<model-viewer class="og-mv" src="' + esc(glb) + '"' + (usdz ? ' ios-src="' + esc(usdz) + '"' : '') + ' alt="' + esc(a.title) + ', in 3D" camera-controls auto-rotate auto-rotate-delay="800" rotation-per-second="14deg" ar ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05" interaction-prompt="auto" touch-action="pan-y"><button slot="ar-button" class="og-ar">See it on your wall</button></model-viewer>'
       : '<div class="og-iv"><div class="og-iv-tilt">' + frameHTML(p) + '<i class="og-iv-light"></i></div></div>';
     var gl = !glb && window.LivingGallery && window.LivingGallery.viewer && (function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl')); } catch (x) { return false; } })();
-    var buy = p.sold
+    var buy = p.keep
+      ? '<div class="og-i-sold og-i-keep"><div><b>From Denise\u2019s own collection</b><p>This original isn\u2019t for sale: it lives with her.' + (p.print ? ' You can take it home as a print.' : '') + '</p></div></div>' +
+        (p.print ? '<button class="og-i-buy" type="button" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(p.print.id) + '">See the prints</button>' : '')
+      : p.sold
       ? '<div class="og-i-sold"><i class="og-dot" aria-hidden="true"></i><div><b>Sold to a collector</b><p>' + (p.print ? 'It lives on as prints' + (e.left ? ', and ' + e.left + ' of ' + e.limit + ' are left' : '') + '.' : 'It has found its home.') + '</p></div></div>' +
         (p.print ? '<button class="og-i-buy" type="button" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(p.print.id) + '">See the prints</button>' : '')
       : '<div class="og-i-price">' + C.money(o.price) + '<span>The original · ' + esc(o.note || 'Signed') + '</span></div>' +
         '<button class="og-i-buy" type="button" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(og.id) + '">Make it yours</button>' +
         '<p class="og-i-pay">One tap with Link, Apple Pay or Google Pay, or pay in 4 <span class="prop">(provider to confirm)</span></p>';
-    var rows = [
+    var rows = p.keep ? [
+      ['Signed, and only ever one', 'The real paper, the real pigment, signed by Denise. There is no other, and it stays with her.'],
+      ['How it\u2019s made', (med ? 'This piece: ' + med + '. ' : '') + '\u201cFrom paper carving, sculpting, and assemblage to the alchemy of grinding site-sourced pigments, my work is a constant dialogue between hands, heart, and the natural world.\u201d Denise']
+    ] : [
       ['Signed, and only ever one', 'The real paper, the real pigment, signed by Denise. There is no other.'],
       ['How it’s made', (med ? 'This piece: ' + med + '. ' : '') + '“From paper carving, sculpting, and assemblage to the alchemy of grinding site-sourced pigments, my work is a constant dialogue between hands, heart, and the natural world.” Denise'],
       ['Certificate of authenticity', 'It comes with a certificate signed by Denise: the title, the year and the materials. <span class="prop">(Proposal: to confirm with Denise.)</span>'],
@@ -3067,7 +3077,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
       (a.sea ? '<div class="og-i-sea">From the ocean collection, made with the Irukandji Shark &amp; Ray Centre. 20% of every marine print supports Sea Shelter.</div>' : '') +
       (a.story ? '<p class="og-i-story">' + esc(a.story) + '</p>' : '') +
       '<dl class="og-i-prov">' + rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl>' +
-      '<a class="og-i-more" href="#/a/' + esc(a.id) + '/' + esc(og.id) + '">Everything about this piece <i aria-hidden="true">→</i></a></div></div>';
+      '<a class="og-i-more" href="#/a/' + esc(a.id) + (og ? '/' + esc(og.id) : '') + '">Everything about this piece <i aria-hidden="true">→</i></a></div></div>';
     if (glb) needMV();
     M.inspAt = { i: i, x: 0, y: 0, tx: 0, ty: 0, drag: null, t0: performance.now() };
     if (M.hall) M.hall.pause();
@@ -3207,7 +3217,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       story: 'A walk into the rainforest: ferns, falling water and light, layered in paint. (Title, story and prices to confirm with Denise.)',
       products: [PRINT(true), { id: 'pants', type: 'Apparel', name: 'Lounge pants', options: ['S', 'M', 'L', 'XL'].map(function (z) { return { id: z, label: 'Size ' + z, note: 'Printed to order · 7 to 10 days', price: 89 }; }) },
         { id: 'cards', type: 'Cards', name: 'Card pack', options: [{ id: 'p5', label: 'Pack of 5', note: 'From stock · 2 to 3 days', price: 25 }] },
-        { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }, { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 1800 }] }] },
+        { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }] },
     { id: 'whaleshark', title: 'Whale shark', col: 'ocean', img: 'whaleshark', card: 'whaleTall', alt: 'whaleSq', sea: true, isNew: true,
       ed: { mode: 'open', size: 50, days: 30, quickSize: 25, opened: 6 },
       story: 'A whale shark gliding through deep blue, with texture you can almost feel. From the ocean collection made with the Irukandji Shark & Ray Centre. (Title, story and prices to confirm with Denise.)',
@@ -3216,8 +3226,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     { id: 'roots', title: 'Blue roots', col: 'forest', img: 'roots', card: 'rootsTall', alt: 'rootsMacro', isNew: true,
       ed: { mode: 'headstart', daysLeft: 21, days: 30, size: 40, quickSize: 20, opened: 0 },
       story: 'Tree roots in deep indigo washes, with texture you can almost touch. (Sample text.)',
-      products: [PRINT(false), { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 1200 }] }] }
+      products: [PRINT(false)] }
   ];
+  var KEPT = [];
   var SETS = [
     { id: 'trio', title: 'Sea and forest pair', note: 'Two A4 prints, chosen to hang together.', img: 'sharkSq', price: 79, was: 90, items: ['shark', 'walkway'] },
     { id: 'gift', title: 'Gift card', note: 'Any amount, sent by email with a note. They choose.', img: 'flowersDetail', price: 50, was: 0, gift: true }
@@ -3227,13 +3238,16 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   var REAL = window.TIDE_SITE || null;
   if (REAL) {
     var SERIES_COL = { 'Ocean': 'ocean', 'Forest': 'forest', 'Skies & Waters': 'skies', 'Living in Gratitude': 'gratitude', 'Mind Garden': 'skies', 'Pockets of Magic': 'gratitude', 'Studio': 'forest' };
-    ARTWORKS = REAL.artworks.map(function (a, i) {
+    var fromTide = function (a, i) {
       var keys = a.photos.map(function (ph, j) { var k = 'tb' + i + '_' + j; IMG[k] = REAL.images[ph] || ''; return k; });
       return { id: a.id, title: a.title, col: SERIES_COL[a.series] || 'forest', img: keys[0], card: keys[0], alt: keys[1] || keys[0],
         sea: a.series === 'Ocean', isNew: i < 2, ed: a.ed, story: a.story, products: a.products,
         // optional, for the originals: a 3D scan (.glb, or { glb, usdz }), the medium and the size, when Tide Book has them
         scan: a.scan ? (REAL.images[a.scan] || (/[./]/.test(a.scan) ? a.scan : null)) : null, medium: a.medium || '', dims: a.size || a.dimensions || '' };
-    });
+    };
+    ARTWORKS = REAL.artworks.map(fromTide);
+    // Denise's own collection: in the originals gallery only, never in the shop
+    KEPT = (REAL.keeps || []).map(function (a, i) { var k = fromTide(a, 'k' + i); k.isNew = false; return k; });
     SETS = SETS.filter(function (x) { return !x.items || x.items.every(function (id) { return art(id); }); });
     var bar = document.querySelector('.mock');
     if (bar) bar.textContent = REAL.preview ? 'Preview from Tide Book · not published yet' : 'Published from Tide Book · test run · nothing is for sale yet';
@@ -3469,7 +3483,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     },
     originals: function () {
       // the walk through the gallery (site/originals.js); the older one-page room stays as a fallback
-      if (window.OriginalsHall) return window.OriginalsHall.html({ ARTWORKS: ARTWORKS, IMG: IMG, COLS: COLS, canBuy: canBuy, soldOriginal: soldOriginal, money: money, esc: esc, edLine: edLine, signup: signup, closing: closing, toast: toast });
+      if (window.OriginalsHall) return window.OriginalsHall.html({ ARTWORKS: ARTWORKS, KEPT: KEPT, IMG: IMG, COLS: COLS, canBuy: canBuy, soldOriginal: soldOriginal, money: money, esc: esc, edLine: edLine, signup: signup, closing: closing, toast: toast });
       var here = ARTWORKS.filter(function (a) { return a.products.some(function (p) { return p.type === 'Original' && canBuy(a, p); }); });
       var any = here[0] && here[0].ed || {}, days = any.days || 30, size = any.size || 50;
       var steps = [

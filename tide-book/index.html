@@ -1963,9 +1963,11 @@ function createTideLogic(env) {
       });
       return { id: slugOf(pr.title, pr.id), title: pr.title, story: pr.description || '', series: pr.series || 'Forest',
         photos: list(pr.photoIds).slice(0, 3), scan: pr.scanId || '', ed: ed, products: products, wentLive: pr.wentLive || '' };
-    }).filter(function (a) { return a.products.length; })
-      .sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
-    return { at: nowIso(), artworks: art };
+    }).sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
+    // an original is for sale only when "The original" has a price. Live pieces with nothing to buy are still shown in the
+    // gallery, as part of Denise's own collection; pieces with prints show there too, marked as hers.
+    return { at: nowIso(), artworks: art.filter(function (a) { return a.products.length; }),
+      keeps: art.filter(function (a) { return !a.products.length; }) };
   }
 
   // ---------- money
@@ -10043,6 +10045,11 @@ var Kit = (function () {
         function drawProducts() {
           plist.textContent = ''; drawEdition();
           f.products.forEach(function (pd, i) { plist.appendChild(productRow(pd, function () { openProduct(pd, f.products, i, function () { drawProducts(); touch(); }); })); });
+          // her originals are hers unless she chooses to sell one
+          var ogSale = f.products.some(function (pd) { return pd.type === 'Original' && pd.status === 'Live' && (pd.variants || []).some(function (v) { return v.price > 0; }); });
+          plist.appendChild(h('p', { class: 'tf-help', style: 'margin:4px 4px 10px', text: ogSale
+            ? 'The original is for sale on your website.'
+            : 'The original stays in your own collection. It still hangs in your website’s gallery, just without a price. Add “The original” with a price only if you’d like to sell it.' }));
           if (!f.products.length) plist.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 8px;color:var(--on-surface-variant)', text: 'Apparel, cards, homewares, a download, the original itself, or anything else. Each has its own options, prices and switch.' }));
         }
         s3b.append(plist, h('div', { style: 'margin-top:12px' }, btn('tonal', 'Make it into…', { icon: 'add', block: true, onclick: function () {
