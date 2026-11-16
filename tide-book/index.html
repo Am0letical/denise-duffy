@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,text_fields,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,text_fields,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -911,6 +911,11 @@ img, video { max-width: 100%; }
 .ed-theme.on canvas { outline: 3px solid var(--primary); outline-offset: 2px; }
 .ed-trim-info { font: 500 14px/20px var(--font); font-variant-numeric: tabular-nums; }
 .me-row button[aria-label="Edit"] { color: var(--primary); }
+
+/* ---------- the website's wish list ---------- */
+.wish-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.wish-photos img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; }
+.wish-photos.big img { width: 132px; height: 132px; }
 </style>
 
   <script>
@@ -1041,6 +1046,9 @@ var TIDE_SETTING_DEFAULTS = {
   editEnabled: false, editWeeklyCredits: 60, notifyArtist: '', notifyAdmin: '',
   // the artist's side: her cover artwork, and 'taking it easy' (ISO date, 'open', or blank)
   coverPrintId: '', restUntil: '',
+  adLimit: 100,             // ads she starts herself up to this total; over it, the admin OKs (LogicAds.gs)
+  adAccountId: '',           // the Meta ad account number, for starting ads from Tide Book
+  siteWishDone: '', siteWishLater: '',   // the website's wish list (LogicSite.gs), kept as JSON text
   lastBackupAt: '',         // set when the PC finishes a local backup (Backup.gs)
   // local models on the PC first, Claude when it escalates (LogicNotes.gs)
   localFirst: false, localFallbackMins: 60, localSeenAt: '', localModel: '',
@@ -1055,6 +1063,13 @@ var TIDE_SETTING_DEFAULTS = {
  * day (calendar date), list (comma separated), json.
  */
 var TIDE_SCHEMAS = {
+  sitecontent: {
+    sheet: 'Website Content',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['by', 'By', 'text'], ['key', 'For', 'text'], ['title', 'What', 'text'],
+      ['text', 'Her words', 'text'], ['fileIds', 'Photos', 'list'], ['thumbIds', 'Thumbnails', 'list'], ['status', 'Status', 'text'], ['used', 'Used', 'date']
+    ]
+  },
   ideas: {
     sheet: 'Ideas',
     columns: [
@@ -1078,7 +1093,7 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Created by', 'text'],
       ['title', 'Title', 'text'], ['description', 'Description', 'text'], ['status', 'Status', 'text'],
       ['variants', 'Sizes and prices', 'json'], ['products', 'Made into', 'json'], ['folderUrl', 'Photo folder', 'text'],
-      ['photoIds', 'Photo IDs', 'list'], ['thumbIds', 'Thumb IDs', 'list'],
+      ['photoIds', 'Photo IDs', 'list'], ['thumbIds', 'Thumb IDs', 'list'], ['scanId', '3D scan', 'text'],
       ['approvalRequest', 'Approval request', 'text'], ['approvalState', 'Approval state', 'text'],
       ['artistComment', 'Artist comment', 'text'], ['approvalAnswered', 'Approval answered', 'date'],
       ['adminNotes', 'Admin notes', 'text'], ['sourceIdea', 'From idea', 'text'],
@@ -1652,6 +1667,19 @@ function createTideLogic(env) {
     return gaps;
   }
 
+  /** A 3D scan of the real piece (.glb or .usdz), shown in the website's gallery. Sent straight to the PC, like videos. */
+  function startScanUpload(id) {
+    need(['admin', 'artist']);
+    var pr = find('prints', id);
+    return env.files.uploadTicket ? env.files.uploadTicket(pr.folderUrl || env.files.folder(['Artworks'])) : null;
+  }
+  function setPrintScan(id, fileId) {
+    need(['admin', 'artist']);
+    var clean = String(fileId || '');
+    if (clean && !/^[\w-]{10,}$/.test(clean)) fail('The scan didn’t finish uploading.');
+    return env.lock(function () { find('prints', id); env.table('prints').update(id, { scanId: clean, updated: nowIso() }); return { ok: true }; });
+  }
+
   function setPrintStatus(id, status) {
     need(['admin', 'artist']);
     oneOf(status, T.PRINT_STATUSES, 'a status');
@@ -1912,7 +1940,7 @@ function createTideLogic(env) {
           options: opts.map(function (v) { return { id: String(v.option).toLowerCase().replace(/[^a-z0-9]+/g, '') || 'one', label: v.option, note: FULFIL[pd.fulfilment] || '', price: v.price }; }) });
       });
       return { id: slugOf(pr.title, pr.id), title: pr.title, story: pr.description || '', series: pr.series || 'Forest',
-        photos: list(pr.photoIds).slice(0, 3), ed: ed, products: products, wentLive: pr.wentLive || '' };
+        photos: list(pr.photoIds).slice(0, 3), scan: pr.scanId || '', ed: ed, products: products, wentLive: pr.wentLive || '' };
     }).filter(function (a) { return a.products.length; })
       .sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
     return { at: nowIso(), artworks: art };
@@ -2281,7 +2309,7 @@ function createTideLogic(env) {
     var photoIds = list(pr.photoIds);
     var out = {
       id: pr.id, created: pr.created, updated: pr.updated, title: pr.title, description: pr.description || '', series: pr.series || 'Forest',
-      status: pr.status, thumbIds: list(pr.thumbIds),
+      status: pr.status, thumbIds: list(pr.thumbIds), scanUrl: pr.scanId ? env.files.viewUrl(pr.scanId) : '',
       variants: list(pr.variants).map(function (v) {
         return { sku: v.sku, size: v.size, cost: v.cost, markupPct: v.markupPct, price: v.price,
           keep: TidePricing.keep(v.price, v.cost, s.paymentFeePct, registered) };
@@ -2311,6 +2339,10 @@ function createTideLogic(env) {
     // each ad carries its research and plan (the artist sees the short version)
     var byIdC = {}; rows('content').forEach(function (c) { byIdC[c.id] = c; });
     studioData.content.forEach(function (c) { var raw = byIdC[c.id]; var v = raw ? ads.view(raw, role) : null; if (v) c.ad = v; });
+    // the website: her gentle asks (two at most), and what she's sent for the admin to put up
+    var sw = siteWishes.snapshot(role);
+    sw.wishes.forEach(function (w) { publishData.todo.push({ key: 'site-' + w.key, site: w.key, kind: w.kind, text: w.text, why: w.why, where: 'For your website' }); });
+    sw.sent.forEach(function (r) { publishData.todo.unshift({ key: 'sitein-' + r.id, sitein: r, text: 'For the website: ' + r.title, why: r.text ? r.text.slice(0, 140) : r.photos.length + ' photo' + (r.photos.length === 1 ? '' : 's') + ' from ' + env.brand.artistName, where: 'Website' }); });
     if (role === 'admin') ads.waiting().forEach(function (a) {
       publishData.todo.unshift({ key: 'ad-' + a.id, text: 'OK the spend on “' + a.title + '” ($' + a.total + ')', why: 'It’s over your ad limit, so it waits for you before it can start.', where: 'Content › the post' });
     });
@@ -2396,6 +2428,9 @@ function createTideLogic(env) {
     publish: publish, consentHit: consentHit
   });
 
+  // ---------- what the website needs from her (LogicSite.gs)
+  var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push });
+
   // ---------- ads (LogicAds.gs)
   var ads = tideAds(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: publish.push });
 
@@ -2429,7 +2464,7 @@ function createTideLogic(env) {
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar,
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
-      createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus,
+      createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
       getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, publishWebsite: publishWebsite, chatResult: chatResult,
       websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
@@ -2457,6 +2492,7 @@ function createTideLogic(env) {
   Object.keys(direction.api).forEach(function (k) { out.api[k] = direction.api[k]; });
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
+  Object.keys(siteWishes.api).forEach(function (k) { out.api[k] = siteWishes.api[k]; });
   return out;
 }
 
@@ -5631,6 +5667,91 @@ function tideAds(env, t) {
     research: research, view: view, waiting: waiting,
     api: { researchAd: researchAd, confirmAd: confirmAd, okAdSpend: okAdSpend, saveAdLimit: saveAdLimit, reopenAd: reopenAd, startAd: startAd, finishAd: finishAd, saveAdAccount: saveAdAccount }
   };
+}
+
+/**
+ * Tide Book: what the website still needs from the artist, asked gently. Shared by the app and the demo.
+ *
+ * A short, ordered wish list (better photos, a few words, things to confirm). She sees at most two at a time in
+ * her to-do; each one takes a photo or her words straight from the card, or "Not now" puts it away for two weeks.
+ * What she sends comes to the admin as a to-do, to put on the website (website changes stay the admin's job).
+ */
+
+var TIDE_SITE_WISHES = {
+  SHOWN: 2,
+  LATER_DAYS: 14,
+  // in order: the most useful first. kind: what she sends back ('photo' or 'words').
+  LIST: [
+    { key: 'shark', kind: 'photo', text: 'A clear photo of Shark in the shallows',
+      why: 'The website shows it from the photo taken at the centre. One straight on, in soft daylight, lets people see it properly.' },
+    { key: 'pieces', kind: 'photo', text: 'Clear photos of your pieces',
+      why: 'The website’s pictures are small copies from Instagram. Daylight, straight on, the whole piece in the frame. One or two at a time is plenty.' },
+    { key: 'names', kind: 'words', text: 'Names and prices for the rainforest walkway and the whale shark',
+      why: 'They’re on the website with names and prices that were guessed. Whatever feels right to you.' },
+    { key: 'collections', kind: 'photo', text: 'A photo of your collections',
+      why: 'Your bowls of rocks, shells, sticks and feathers. There’s a space waiting for them on the About page.' },
+    { key: 'ritual', kind: 'words', text: 'Your morning ritual, in your own words',
+      why: 'People who join your letters are promised it. A few lines is lovely.' },
+    { key: 'studio', kind: 'photo', text: 'A photo of you at work',
+      why: 'Hands, brushes, the table. It helps people feel they know who made the piece.' },
+    { key: 'returns', kind: 'words', text: 'How you’d like returns to work',
+      why: 'A simple promise for the website, in your words. For example: “If it isn’t right, send it back within 30 days.”' }
+  ]
+};
+
+function tideSiteWishes(env, t) {
+  var W = TIDE_SITE_WISHES;
+  // kept as JSON text, so it survives the settings sheet on Google too
+  function parse(v, d) { if (v && typeof v === 'object') return v; try { return JSON.parse(v) || d; } catch (e) { return d; } }
+  function state() { var s = env.settings.get(); return { done: t.list(parse(s.siteWishDone, [])), later: parse(s.siteWishLater, {}) }; }
+  function wish(key) { var w = W.LIST.filter(function (x) { return x.key === key; })[0]; if (!w) t.fail('That isn’t on the list.'); return w; }
+
+  /** The ones to show her now: not done, not put off, at most two. */
+  function current() {
+    var st = state(), now = env.now().getTime();
+    return W.LIST.filter(function (w) { return st.done.indexOf(w.key) < 0 && !(Date.parse(st.later[w.key] || '') > now); }).slice(0, W.SHOWN);
+  }
+  /** She sends a photo (data URL) and/or her words for a wish. */
+  function sendSiteContent(key, p) {
+    t.need(['admin', 'artist']);
+    var w = wish(key); p = p || {};
+    var words = t.text(p.text, 4000), photos = t.list(p.photos).slice(0, 6);
+    if (!words && !photos.length) t.fail(w.kind === 'photo' ? 'Add a photo first.' : 'Write a few words first.');
+    var ids = photos.map(function (d) { return env.files.save(env.files.folder(['Website']), 'Website ' + key, t.checkImage(d)); });
+    var thumbs = t.list(p.thumbs).slice(0, 6).map(function (d) { return env.files.save(env.files.folder(['Website']), 'Website ' + key + ' thumb', t.checkImage(d)); });
+    env.lock(function () {
+      var id = env.nextId('WS', 4);
+      env.table('sitecontent').append({ id: id, created: t.nowIso(), by: env.user.role, key: key, title: w.text, text: words, fileIds: ids, thumbIds: thumbs, status: 'New' });
+      var st = state(); if (st.done.indexOf(key) < 0 || key === 'pieces') env.settings.set({ siteWishDone: JSON.stringify(key === 'pieces' ? st.done : st.done.concat([key])) });
+    });
+    if (t.push) t.push('admin', 'For the website: ' + w.text, (words ? words.slice(0, 120) : '') + (ids.length ? (words ? ' · ' : '') + ids.length + ' photo' + (ids.length === 1 ? '' : 's') : ''));
+    return { ok: true };
+  }
+  function laterSiteWish(key) {
+    t.need(['admin', 'artist']); wish(key);
+    var st = state(), later = Object.assign({}, st.later);
+    later[key] = new Date(env.now().getTime() + W.LATER_DAYS * 86400000).toISOString();
+    env.settings.set({ siteWishLater: JSON.stringify(later) });
+    return { ok: true };
+  }
+  /** "Pieces" is ongoing: she says when she's sent them all. */
+  function doneSiteWish(key) {
+    t.need(['admin', 'artist']); wish(key);
+    var st = state(); if (st.done.indexOf(key) < 0) env.settings.set({ siteWishDone: JSON.stringify(st.done.concat([key])) });
+    return { ok: true };
+  }
+  function usedSiteContent(id) {
+    t.need(['admin']);
+    return env.lock(function () { t.find('sitecontent', id); env.table('sitecontent').update(id, { status: 'Used', used: t.nowIso() }); return { ok: true }; });
+  }
+  /** For the screens: her wishes (as to-dos), and for the admin what she's sent. */
+  function snapshot(role) {
+    var sent = t.rows('sitecontent').filter(function (r) { return r.status === 'New'; }).map(function (r) {
+      return { id: r.id, key: r.key, title: r.title, text: r.text || '', photos: t.list(r.fileIds).map(function (f) { return env.files.viewUrl(f); }), thumbIds: t.list(r.thumbIds), created: r.created };
+    });
+    return { wishes: role === 'artist' ? current() : [], sent: role === 'admin' ? sent : [] };
+  }
+  return { snapshot: snapshot, api: { sendSiteContent: sendSiteContent, laterSiteWish: laterSiteWish, doneSiteWish: doneSiteWish, usedSiteContent: usedSiteContent } };
 }
 
 </script>
@@ -9665,6 +9786,7 @@ var Kit = (function () {
         var s1 = sheetSection('Photos'); s1.style.marginTop = '4px';
         s1.appendChild(K.photoStrip({ thumbIds: p ? p.thumbIds : [], photoUrls: p ? p.photoUrls : [], files: f.files, onChange: touch, onDraw: function () { setTimeout(loadThumbs, 0); } }));
         s1.appendChild(h('p', { class: 'tf-help', style: 'margin-left:4px', text: 'A phone photo is fine for the listing. Prints and products are made from the proper scan.' }));
+        if (p) s1.appendChild(scanRow(p, function () { ctl.close(); setTimeout(function () { openPrint(p.id); }, 280); }));
 
         var s2 = sheetSection('Details');
         var title = K.textField({ label: 'Title', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } });
@@ -11289,16 +11411,89 @@ var Kit = (function () {
     }
   }
 
+
+  // ------------------------------------------------------------------ the website's wish list (LogicSite.gs)
+  /** One gentle ask: why it helps, then a photo or her words straight from here, or not now. */
+  function openSiteWish(t0) {
+    var photos = [], words = '';
+    K.sheet({ title: t0.text, build: function (ctl) {
+      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 14px', text: t0.why }));
+      var sendB = btn('filled', 'Send it', { icon: 'send', lg: true, block: true });
+      if (t0.kind === 'photo') {
+        var strip = h('div', { class: 'wish-photos' });
+        var pick = h('input', { type: 'file', accept: 'image/*', multiple: true, style: 'display:none' });
+        pick.addEventListener('change', function () {
+          [].slice.call(pick.files).slice(0, 6 - photos.length).forEach(function (file) {
+            K.prepareImage(file).then(function (img) { photos.push(img); strip.appendChild(h('img', { src: img.thumb, alt: '' })); });
+          });
+        });
+        ctl.body.append(pick, strip, btn('tonal', 'Choose photos', { icon: 'add_a_photo', block: true, onclick: function () { pick.click(); } }),
+          h('div', { style: 'margin-top:10px' }, K.textField({ label: 'Anything to add? (optional)', multiline: true, maxlength: 2000, onInput: function (v) { words = v; } })));
+      } else {
+        ctl.body.appendChild(K.textField({ label: 'In your words', multiline: true, maxlength: 4000, onInput: function (v) { words = v; } }));
+      }
+      sendB.addEventListener('click', function () {
+        K.setBusy(sendB, true);
+        api('sendSiteContent', t0.site, { text: words, photos: photos.map(function (p) { return p.full; }), thumbs: photos.map(function (p) { return p.thumb; }) })
+          .then(refresh).then(function () { K.haptic('success'); toast('Thank you. ' + adminName() + ' will put it on your website.'); ctl.close(); render(); })
+          .catch(function (e) { K.setBusy(sendB, false); fail(e); });
+      });
+      var row = h('div', { class: 'row', style: 'gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap' },
+        btn('text', 'Not now', { onclick: function () { api('laterSiteWish', t0.site).then(refresh).then(function () { ctl.close(); render(); toast('No rush. It\u2019ll come back in a couple of weeks.'); }).catch(fail); } }));
+      if (t0.site === 'pieces') row.appendChild(btn('text', 'I\u2019ve sent them all', { onclick: function () { api('doneSiteWish', t0.site).then(refresh).then(function () { ctl.close(); render(); }).catch(fail); } }));
+      ctl.foot.append(sendB, row);
+    } });
+  }
+  /** The admin's side: what she sent, to put on the website. */
+  function openSiteIn(r) {
+    K.sheet({ title: r.title, tall: true, build: function (ctl) {
+      if (r.text) ctl.body.appendChild(h('div', { class: 'card pad', style: 'white-space:pre-wrap;margin-bottom:12px', text: r.text }));
+      if (r.photos.length) {
+        var g = h('div', { class: 'wish-photos big' });
+        r.photos.forEach(function (u) { g.appendChild(h('a', { href: u, target: '_blank', rel: 'noopener' }, h('img', { src: u, alt: '' }))); });
+        ctl.body.appendChild(g);
+        ctl.body.appendChild(h('p', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'Full size: tap a photo. They\u2019re also in Tide Book\u2019s files, in the Website folder.' }));
+      }
+      ctl.foot.appendChild(btn('filled', 'It\u2019s on the website', { icon: 'check', lg: true, block: true, onclick: function (e) {
+        K.setBusy(e.currentTarget, true); api('usedSiteContent', r.id).then(refresh).then(function () { ctl.close(); render(); }).catch(fail);
+      } }));
+    } });
+  }
+
+  /** A 3D scan of the real piece: people can turn it around in the website's gallery. */
+  function scanRow(p, reopen) {
+    var pick = h('input', { type: 'file', accept: '.glb,.usdz,model/gltf-binary,model/vnd.usdz+zip', style: 'display:none' });
+    var status = h('span', { class: 'body-s', style: 'color:var(--on-surface-variant)' });
+    pick.addEventListener('change', function () {
+      var file = pick.files[0]; if (!file) return;
+      var ext = /\.usdz$/i.test(file.name) ? 'usdz' : /\.glb$/i.test(file.name) ? 'glb' : '';
+      if (!ext) { toast('That needs to be a .glb or .usdz 3D file.'); return; }
+      var typed = new File([file], file.name, { type: ext === 'glb' ? 'model/gltf-binary' : 'model/vnd.usdz+zip' });
+      status.textContent = 'Sending\u2026';
+      api('startScanUpload', p.id).then(function (ticket) {
+        if (!ticket) throw new Error('Scans can\u2019t be added in the demo.');
+        return K.driveUpload(ticket, typed, p.id + ' scan.' + ext, function (x) { status.textContent = 'Sending\u2026 ' + Math.round(x * 100) + '%'; });
+      }).then(function (fileId) { return api('setPrintScan', p.id, fileId); }).then(refresh).then(function () { K.haptic('success'); toast('3D scan added. It shows in the website\u2019s gallery.'); reopen(); })
+        .catch(function (e) { status.textContent = ''; fail(e); });
+    });
+    return h('div', { class: 'row', style: 'gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap' }, pick,
+      btn('tonal', p.scanUrl ? 'Replace the 3D scan' : 'Add a 3D scan', { icon: 'view_in_ar', sm: true, onclick: function () { pick.click(); } }),
+      p.scanUrl ? h('a', { href: p.scanUrl, class: 'body-s', target: '_blank', rel: 'noopener', text: 'The scan is in' }) : h('span', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'Optional: a .glb or .usdz file' }),
+      p.scanUrl ? btn('text', 'Remove', { sm: true, onclick: function () { api('setPrintScan', p.id, '').then(refresh).then(reopen).catch(fail); } }) : null, status);
+  }
+
   function todoCard() {
     var items = S.data.todo || [];
     if (!items.length) return null;
     var list = h('div', { class: 'list' });
     items.slice(0, 6).forEach(function (t) {
       list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () {
+        if (t.site) { openSiteWish(t); return; }
+        if (t.sitein) { openSiteIn(t.sitein); return; }
         if (/^Content/.test(t.where)) { S.contentTab = /Ready/.test(t.where) ? 'ready' : 'review'; go('content'); }
         else if (/Admin/.test(t.where)) { S.adminTab = 'settings'; go('settings'); }
         else K.confirm({ title: t.text, text: t.why + ' Where: ' + t.where + '.', single: true, confirmLabel: 'OK' });
-      } }, h('div', { class: 'th-blank todo-ic' }, icon('radio_button_unchecked')),
+      } }, h('div', { class: 'th-blank todo-ic' }, icon(t.site ? (t.kind === 'photo' ? 'photo_camera' : 'edit_note') : t.sitein ? 'language' : 'radio_button_unchecked')),
         h('div', { class: 'grow' }, h('div', { class: 'li-head', text: t.text }), h('div', { class: 'li-sup', style: 'white-space:normal', text: t.why })), icon('chevron_right')));
     });
     var sec = section('To do');
