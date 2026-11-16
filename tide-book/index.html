@@ -5146,7 +5146,8 @@ function tideTalk(env, t) {
     }
     // a check that came back no go comes with its fix: agreeing it comes first, whatever the stage, so nothing needs a second OK
     var fixesAll = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action; });
-    if (fixesAll.length) return { kind: 'fix', label: fixesAll.length === 1 ? 'Agree the fix: ' + fixesAll[0].action : 'Agree the ' + fixesAll.length + ' fixes', why: fixesAll.map(function (c) { return c.item + ': ' + c.action; }).join(' · ') };
+    if (fixesAll.length) return { kind: 'fix', label: fixesAll.length === 1 ? 'Agree the fix: ' + fixesAll[0].action : 'Agree the ' + fixesAll.length + ' fixes',
+      why: fixesAll.slice(0, 3).map(function (c) { return c.action; }).join(' · ') + (fixesAll.length > 3 ? ' · and ' + (fixesAll.length - 3) + ' more, each listed under Checks. They go on its to-do list before it sells.' : '') };
     if (r.stage === 'Idea') return { kind: 'advance', label: 'Start shaping it', why: 'Next: the questions that decide what it is.' };
     if (r.stage === 'Questions') return { kind: 'advance', label: 'Move on to the decisions', why: 'What it is, who it’s for and how it’s made.' };
     if (r.stage === 'Decisions') {
