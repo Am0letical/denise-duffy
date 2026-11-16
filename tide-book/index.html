@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,help,history,home,hourglass_top,image,info,language,light_mode,lightbulb,link,lock,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,travel_explore,trending_down,trending_flat,trending_up,undo,upload,verified,videocam,view_carousel,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -812,6 +812,28 @@ img, video { max-width: 100%; }
 .finish-card .fc-bar { height: 6px; border-radius: 3px; background: rgba(0,0,0,.12); margin: 10px 0 6px; overflow: hidden; }
 .finish-card .fc-bar span { display: block; height: 100%; background: currentColor; border-radius: 3px; }
 .finish-card .fc-next { margin: 8px 0 12px; font: 400 15px/21px var(--font); }
+
+/* ---------- an idea's day: sunrise to golden hour, sunset when retired, dusk and night while resting ---------- */
+.sky-sunrise { --sky-a: #f7b2a2; --sky-b: #ffd8a0; --sky-soft: #fde6dc; --sky-ink: #7a3b22; }
+.sky-morning { --sky-a: #ffe3a0; --sky-b: #a8d9f2; --sky-soft: #fdf2cf; --sky-ink: #5a4a12; }
+.sky-midday { --sky-a: #a6dcf7; --sky-b: #5aaee3; --sky-soft: #dbeefb; --sky-ink: #0d4a73; }
+.sky-afternoon { --sky-a: #8cc6ea; --sky-b: #ffd28a; --sky-soft: #fdebcb; --sky-ink: #6b4410; }
+.sky-golden { --sky-a: #ffc76e; --sky-b: #f39a5c; --sky-soft: #fddcb6; --sky-ink: #6e3a0c; }
+.sky-sunset { --sky-a: #f08b6d; --sky-b: #8d5b9d; --sky-soft: #f4d6df; --sky-ink: #6a2346; }
+.sky-dusk { --sky-a: #8a79b5; --sky-b: #40508a; --sky-soft: #e2def1; --sky-ink: #3b2f6b; }
+.sky-night { --sky-a: #34407a; --sky-b: #121a3a; --sky-soft: #283363; --sky-ink: #e8ecff; }
+.has-sky { position: relative; overflow: hidden; }
+.sky-strip { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(180deg, var(--sky-a), var(--sky-b)); }
+.day-chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px 0 6px; border-radius: 999px; white-space: nowrap;
+  font: 500 12px/16px var(--font); background: var(--sky-soft); color: var(--sky-ink); }
+.day-chip .ms { font-size: 16px; }
+.li-trail .day-chip { margin-bottom: 4px; }
+.day-card { position: relative; overflow: hidden; margin-top: 14px; padding: 18px 16px 14px; border-radius: 16px; background: var(--sky-soft); color: var(--sky-ink); }
+.day-card::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: linear-gradient(90deg, var(--sky-a), var(--sky-b)); }
+.day-head { display: flex; align-items: center; gap: 8px; font: 500 16px/22px var(--font); }
+.day-head .ms { font-size: 22px; }
+.day-say { margin: 4px 0 12px; font: 400 14px/20px var(--font); }
+.sky-night .btn.text, .sky-night .btn.tonal { color: var(--sky-ink); }
 </style>
 
   <script>
@@ -847,11 +869,11 @@ var TIDE = {
   KINDS: ['Product', 'Content', 'Wellness', 'Other'],
   TIMELINES: ['This month', 'Next 3 months', 'This year', 'No rush'],
   PRIORITIES: ['High', 'Medium', 'Low'],
-  STAGES: ['New', 'Reviewing', 'In progress', 'Awaiting artist', 'Ready', 'Live', 'Parked'],
+  STAGES: ['New', 'Reviewing', 'In progress', 'Awaiting artist', 'Ready', 'Live', 'Retired', 'Parked'],
   // What the artist sees for each stage.
   ARTIST_STATUS: {
     'New': 'Received', 'Reviewing': 'Received', 'In progress': 'In progress',
-    'Awaiting artist': 'Needs you', 'Ready': 'In progress', 'Live': 'Live', 'Parked': 'Parked'
+    'Awaiting artist': 'Needs you', 'Ready': 'In progress', 'Live': 'Live', 'Retired': 'Retired', 'Parked': 'Parked'
   },
   PRINT_STATUSES: ['Draft', 'Live', 'Parked'],
   SIZES: ['A4', 'A3', 'A2', 'A1', '30 x 30 cm', '50 x 50 cm'],
@@ -875,6 +897,47 @@ var TIDE = {
   MAX_PHOTOS: 12,
   MAX_PHOTO_BYTES: 8 * 1024 * 1024
 };
+
+/**
+ * An idea's day. Where an idea is up to reads as a time of day: it begins at sunrise, is planned in the morning,
+ * made at midday and finished in the afternoon; golden hour is when it's out in the world, and sunset is when it's
+ * retired. Parked ideas rest at dusk, and after two weeks they're asleep at night.
+ * The time of day also steers the helpers: early is for planning and growing, late is for acting and finishing.
+ */
+var TIDE_DAY = {
+  ASLEEP_DAYS: 14,
+  PARTS: {
+    sunrise: { word: 'Sunrise', icon: 'wb_twilight', hint: 'Just begun', mode: 'plan' },
+    morning: { word: 'Morning', icon: 'wb_sunny', hint: 'Planning time', mode: 'plan' },
+    midday: { word: 'Midday', icon: 'light_mode', hint: 'Being made', mode: 'shape' },
+    afternoon: { word: 'Afternoon', icon: 'wb_sunny', hint: 'Time to finish', mode: 'act' },
+    golden: { word: 'Golden hour', icon: 'light_mode', hint: 'Out in the world', mode: 'act' },
+    sunset: { word: 'Sunset', icon: 'wb_twilight', hint: 'Retired', mode: 'rest' },
+    dusk: { word: 'Dusk', icon: 'bedtime', hint: 'Resting for now', mode: 'rest' },
+    night: { word: 'Night', icon: 'dark_mode', hint: 'Asleep', mode: 'rest' }
+  },
+  IDEA: { 'New': 'sunrise', 'Reviewing': 'morning', 'In progress': 'midday', 'Awaiting artist': 'midday', 'Ready': 'afternoon', 'Live': 'golden', 'Retired': 'sunset' },
+  PRODUCT: { 'Idea': 'sunrise', 'Questions': 'morning', 'Decisions': 'morning', 'Checks & costing': 'midday', 'Sample': 'afternoon', 'Listing & launch': 'afternoon', 'Live': 'golden' },
+  // for the helpers only (never shown to her)
+  STEER: {
+    plan: 'It is early in this idea\'s day, so this is planning time: open it up with possibilities, fresh angles and good questions. Don\'t push for decisions or deadlines yet.',
+    shape: 'It is midday for this idea: it is being made. Offer a fresh angle or two, but mostly help settle what is already decided.',
+    act: 'It is late in this idea\'s day, so this is action time: favour one concrete next step, cutting it down to the smallest version she can put out, and setting a date. Don\'t open new directions.',
+    rest: 'This idea is resting. Keep it short, and offer at most one gentle way back in if it seems worth waking.'
+  }
+};
+/** o: { stage, parked, retired, since (when it was parked), product }. */
+function tideDay(o, nowMs) {
+  var key;
+  if (o.retired || o.stage === 'Retired') key = 'sunset';
+  else if (o.parked || o.stage === 'Parked') {
+    var since = Date.parse(o.since || '') || 0;
+    key = since && nowMs - since < TIDE_DAY.ASLEEP_DAYS * 86400000 ? 'dusk' : 'night';
+  } else key = (o.product ? TIDE_DAY.PRODUCT : TIDE_DAY.IDEA)[o.stage] || 'morning';
+  var p = TIDE_DAY.PARTS[key];
+  return { key: key, word: p.word, icon: p.icon, hint: p.hint, mode: p.mode };
+}
+function tideSteer(day) { return TIDE_DAY.STEER[day.mode] || ''; }
 
 var TIDE_SETTING_DEFAULTS = {
   gstRegisteredFrom: '',     // 'YYYY-MM-DD' from the day the business is registered for GST
@@ -1079,7 +1142,7 @@ var TIDE_SCHEMAS = {
     sheet: 'Product Pipeline',
     columns: [
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Created by', 'text'], ['title', 'Product', 'text'],
-      ['summary', 'Summary', 'text'], ['stage', 'Stage', 'text'], ['parked', 'Parked', 'bool'], ['fromTopic', 'From topic', 'text'],
+      ['summary', 'Summary', 'text'], ['stage', 'Stage', 'text'], ['parked', 'Parked', 'bool'], ['parkedAt', 'Parked on', 'date'], ['retired', 'Retired', 'bool'], ['fromTopic', 'From topic', 'text'],
       ['ideaId', 'Idea', 'text'], ['artworkId', 'Artwork', 'text'], ['decisions', 'Decisions', 'json'], ['open', 'Open questions', 'json'],
       ['checks', 'Checks', 'json'], ['parts', 'Parts and costs', 'json'], ['pricing', 'Pricing', 'json'], ['sample', 'Sample', 'json'],
       ['listing', 'Listing and posts', 'json'], ['approvals', 'Sign-offs', 'json'], ['risks', 'Risks', 'json'], ['log', 'History', 'json'],
@@ -2105,6 +2168,7 @@ function createTideLogic(env) {
       id: it.id, created: it.created, updated: it.updated, kind: it.kind, title: it.title, note: it.note || '',
       timeline: it.timeline, priority: it.priority, scope: list(it.scope), stage: it.stage,
       status: T.ARTIST_STATUS[it.stage] || 'Received', thumbIds: list(it.thumbIds),
+      day: tideDay({ stage: it.stage, since: it.stageChanged }, env.now().getTime()),
       photoUrls: photoIds.map(function (x) { return env.files.viewUrl(x); }),
       approvalRequest: it.approvalRequest || '', approvalState: it.approvalState || '',
       artistComment: it.artistComment || '', linkedTo: it.linkedTo || '',
@@ -3960,7 +4024,7 @@ function tideNotes(env, t) {
         note: { title: n.title, body: plain(n.body).slice(0, N.CONTEXT_CHARS), cut: plain(n.body).length > N.CONTEXT_CHARS },
         linked: picked.slice(1).map(function (x) { return { title: x.title, body: plain(x.body).slice(0, N.CONTEXT_CHARS), relation: linked.indexOf(x) >= 0 ? 'linked from this note' : 'links to this note' }; }),
         leftOut: left,
-        idea: idea ? { title: idea.title, kind: idea.kind, summary: idea.summary || '' } : null,
+        idea: idea ? { title: idea.title, kind: idea.kind, summary: idea.summary || '', steer: tideSteer(tideDay({ stage: idea.stage, since: idea.stageChanged }, env.now().getTime())) } : null,
         why: n.expandWhy || ''
       };
     },
@@ -4175,7 +4239,8 @@ function tideTalk(env, t) {
     return {
       kind: 'product', job: r.aiJob, title: r.title, summary: r.summary || '', stage: r.stage,
       decisions: t.list(r.decisions), open: t.list(r.open), parts: t.list(r.parts), checks: t.list(r.checks),
-      sample: r.sample || {}, price: (r.pricing || {}).price || 0
+      sample: r.sample || {}, price: (r.pricing || {}).price || 0,
+      steer: tideSteer(tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()))
     };
   }
 
@@ -4655,7 +4720,17 @@ function tideTalk(env, t) {
     var role = t.need(['admin', 'artist']);
     return env.lock(function () {
       var r = item(id);
-      env.table('pipeline').update(id, { parked: parked === true, updated: t.nowIso(), log: logAdd(r, who(role) + (parked ? ' parked it' : ' brought it back')) });
+      env.table('pipeline').update(id, { parked: parked === true, parkedAt: parked === true ? t.nowIso() : '', updated: t.nowIso(), log: logAdd(r, who(role) + (parked ? ' parked it' : ' brought it back')) });
+      return { ok: true };
+    });
+  }
+  /** Sunset: a live product she's stopped making. Bringing it back puts it out in the world again. */
+  function setRetired(id, retired) {
+    var role = t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var r = item(id);
+      if (retired === true && r.stage !== 'Live') t.fail('Only something that’s out in the world can be retired.');
+      env.table('pipeline').update(id, { retired: retired === true, updated: t.nowIso(), log: logAdd(r, who(role) + (retired ? ' retired it' : ' brought it back')) });
       return { ok: true };
     });
   }
@@ -4698,7 +4773,8 @@ function tideTalk(env, t) {
       var price = Number((r.pricing || {}).price) || 0;
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
-        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
+        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true,
+        day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
         sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: gateFor(r), clash: clashOf(r), blockers: blockers(r),
@@ -4784,7 +4860,7 @@ function tideTalk(env, t) {
   return {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic,
-      createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts }
+      createItem: createItem, updateItem: updateItem, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts }
   };
 }
 
@@ -6796,6 +6872,69 @@ var Kit = (function () {
     if (title) el.appendChild(h('h3', { text: title }));
     return el;
   }
+
+  // ------------------------------------------------------------------ an idea's day (TIDE_DAY in Logic.gs)
+  // Sunrise to golden hour as it's made and put out; sunset when it's retired; dusk, then night, while it rests.
+  function skyStrip(d) { return d ? h('span', { class: 'sky-strip sky-' + d.key, 'aria-hidden': 'true' }) : null; }
+  function dayChip(d) { return d ? h('span', { class: 'day-chip sky-' + d.key, title: d.hint }, icon(d.icon), d.word) : null; }
+  var DAY_SAY = {
+    sunrise: 'A brand new idea. Morning is for planning, so let it grow.',
+    morning: 'Planning time. Grow it, ask the big questions, see where it could go.',
+    midday: 'It’s being made. Settle the details and keep going.',
+    afternoon: 'Late in the day: time to finish it and put it out there.',
+    golden: 'It’s out in the world. Enjoy it.',
+    sunset: 'Retired. It had its day.',
+    dusk: 'Resting for now. Wake it whenever you like.',
+    night: 'Asleep. It’ll keep until you want it.'
+  };
+  /** The top of an idea: its time of day, a line about it, and the buttons that suit that time. */
+  function ideaDayCard(x, ctl) {
+    var d = x.day; if (!d) return null;
+    var next = (x.scope || []).filter(function (p) { return !p.done; })[0];
+    var card = h('div', { class: 'day-card sky-' + d.key },
+      h('div', { class: 'day-head' }, icon(d.icon, true), h('b', { text: d.word })),
+      h('p', { class: 'day-say', text: DAY_SAY[d.key] || '' }));
+    var row = h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' });
+    function act(label, ic, kind, fn) {
+      row.appendChild(btn(kind, label, { icon: ic, sm: true, onclick: function (e) {
+        var b = e.currentTarget; K.setBusy(b, true);
+        Promise.resolve().then(fn).catch(function (err) { K.setBusy(b, false); fail(err); });
+      } }));
+    }
+    function stage(to, msg) {
+      return api('updateIdea', x.id, { stage: to }).then(refresh).then(function () {
+        K.haptic('success'); render(); ctl.close();
+        undoCard(msg, function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Put back.');
+      });
+    }
+    function grow() { ctl.close(); setTimeout(function () { openNote(null, { ideaId: x.id }); }, 260); }
+    function talk() {
+      return api('startTopic', { title: x.title, detail: String(x.note || x.summary || '').slice(0, 1800) }).then(function (r) {
+        return refresh().then(function () { ctl.close(); render(); setTimeout(function () { openTopic(r.id); }, 280); });
+      });
+    }
+    function tick() {
+      var scope = x.scope.map(function (p) { return { id: p.id, text: p.text, done: p.done || p.id === next.id }; });
+      return api('updateIdea', x.id, { scope: scope }).then(refresh).then(function () {
+        K.haptic('success'); render(); ctl.close(); toast('Nice. One step closer.'); setTimeout(function () { openIdea(x.id); }, 280);
+      });
+    }
+    var short = next ? (next.text.length > 28 ? next.text.slice(0, 28).replace(/\s+\S*$/, '') + '…' : next.text) : '';
+    if (d.mode === 'plan') { act('Grow it with a note', 'edit_note', 'filled', grow); act('Talk it through', 'forum', 'tonal', talk); }
+    else if (d.key === 'midday') {
+      if (next) act('Done: ' + short, 'check', 'filled', tick);
+      act('On to finishing', 'arrow_forward', next ? 'tonal' : 'filled', function () { return stage('Ready', 'On to finishing: ' + x.title + '.'); });
+    } else if (d.key === 'afternoon') {
+      if (next) act('Done: ' + short, 'check', 'filled', tick);
+      act('It’s out there', 'rocket_launch', next ? 'tonal' : 'filled', function () { return stage('Live', 'Out in the world: ' + x.title + '.'); });
+    } else if (d.key === 'golden') act('Retire it', 'wb_twilight', 'tonal', function () { return stage('Retired', 'Retired: ' + x.title + '.'); });
+    else if (d.key === 'sunset') act('Bring it back', 'restore', 'tonal', function () { return stage('Live', 'Back out in the world: ' + x.title + '.'); });
+    else act('Wake it up', 'wb_twilight', 'filled', function () { return stage('Reviewing', 'Awake again: ' + x.title + '.'); });
+    if (d.mode !== 'rest' && d.key !== 'golden') act('Park it', 'bedtime', 'text', function () { return stage('Parked', 'Parked: ' + x.title + '.'); });
+    card.appendChild(row);
+    return card;
+  }
+
   function note(text, iconName, tone) { return h('div', { class: 'note' + (tone ? ' ' + tone : '') }, icon(iconName || 'info'), h('span', { text: text })); }
 
   // ------------------------------------------------------------------ navigation
@@ -6967,7 +7106,7 @@ var Kit = (function () {
     main.appendChild(rise(quick, n++));
 
     var m = S.data.money, live = S.data.prints.filter(function (p) { return p.status === 'Live'; }).length;
-    var moving = S.data.ideas.filter(function (x) { return x.stage !== 'Live' && x.stage !== 'Parked'; }).length;
+    var moving = S.data.ideas.filter(function (x) { return x.stage !== 'Live' && x.stage !== 'Parked' && x.stage !== 'Retired'; }).length;
     var delta = m.weekSales - m.prevWeekSales;
     var glance = section('At a glance');
     var stats = h('div', { class: 'stats' });
@@ -7010,17 +7149,34 @@ var Kit = (function () {
   }
 
   // ------------------------------------------------------------------ Home (the artist's)
-  var KIND_WORDS = ['Your studio, ready when you are.', 'Nothing urgent. Make something lovely.', 'Here’s what’s happening with your work.',
-    'Small steps count. One photo is plenty.', 'Your prints are out there doing the work.', 'Have a look when you have a minute.', 'All quiet. Enjoy the day.'];
   /** The artwork at the top of her Home: the one chosen by the admin, else a live print with a photo. */
   function coverPrint() {
     var withPhoto = S.data.prints.filter(function (p) { return p.thumbIds.length; });
     return byId(withPhoto, S.data.coverPrintId) || withPhoto.filter(function (p) { return p.status === 'Live'; })[0] || withPhoto[0] || null;
   }
+  /** The line under her greeting: what's actually waiting, gently, with the best place to start. */
+  function homeLine(needs, day) {
+    var T = talkData(), q = function (x) { return '“' + x + '”'; };
+    var oks = T.pipeline.filter(function (p) { return p.needsMe; });
+    var talks = T.topics.filter(function (tp) { return tp.status === 'Your turn'; });
+    var posts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, quick = S.data.questions.length;
+    var fin = closestToDone(), next = fin && (fin.x.scope || []).filter(function (p) { return !p.done; })[0];
+    var todo = [];
+    if (needs.length) todo.push(needs.length === 1 ? adminName() + ' has a question for you.' : adminName() + ' has ' + needs.length + ' questions for you.');
+    if (oks.length) todo.push(oks.length === 1 ? q(oks[0].title) + ' is waiting for your OK.' : oks.length + ' things are waiting for your OK. ' + q(oks[0].title) + ' is a nice one to start with.');
+    if (talks.length) todo.push('A few questions are ready about ' + q(talks[0].title) + '.');
+    if (posts) todo.push(posts === 1 ? 'A post is ready for a look.' : posts + ' posts are ready for a look.');
+    if (quick) todo.push(quick === 1 ? 'One quick question about your footage.' : quick + ' quick questions about your footage.');
+    if (fin && fin.x.day && fin.x.day.mode !== 'plan') todo.push(q(fin.x.title) + (next ? ' is close: next is ' + q(next.text) + '.' : ' is ready to go out.'));
+    if (todo.length) return todo[0] + (todo.length > 1 ? ' No rush on the rest.' : '');
+    var live = S.data.prints.filter(function (p) { return p.status === 'Live'; }).length;
+    if (live) return 'Nothing needs you today. ' + (live === 1 ? 'Your artwork is' : 'Your ' + live + ' artworks are') + ' out there doing the work.';
+    return ['Nothing needs you today. A lovely day to make something.', 'All quiet. One photo of your work would be plenty today.'][day % 2];
+  }
   function viewHomeArtist(main, hello) {
     var n = 1, rest = S.data.rest, needs = needsList();
     var day = Math.floor(Date.now() / 86400000);
-    pageTitle(main, hello + ', ' + artist(), rest ? 'Taking it easy. Nothing here needs you.' : KIND_WORDS[day % KIND_WORDS.length]);
+    pageTitle(main, hello + ', ' + artist(), rest ? 'Taking it easy. Nothing here needs you.' : homeLine(needs, day));
 
     var cover = coverPrint();
     if (cover) {
@@ -7092,7 +7248,7 @@ var Kit = (function () {
     stat('Sales this week', money(m.weekSales), 'prints');
     stat('Artworks on sale', String(live), 'prints');
     stat('Posts out this month', String(out), 'content', 'ready');
-    stat('Ideas on the go', String(S.data.ideas.filter(function (x) { return x.stage !== 'Live' && x.stage !== 'Parked'; }).length), 'ideas');
+    stat('Ideas on the go', String(S.data.ideas.filter(function (x) { return x.stage !== 'Live' && x.stage !== 'Parked' && x.stage !== 'Retired'; }).length), 'ideas');
     glance.appendChild(stats);
     main.appendChild(rise(glance, n++));
 
@@ -7132,16 +7288,18 @@ var Kit = (function () {
     });
   }
   function ideaRowAdmin(x, rank) {
-    return h('button', { class: 'idea press', type: 'button', onclick: function () { openIdea(x.id); } },
+    return h('button', { class: 'idea press has-sky', type: 'button', onclick: function () { openIdea(x.id); } },
+      skyStrip(x.day),
       h('span', { class: 'rank', text: String(rank) }),
       K.ring(x.viability),
       h('div', { class: 'grow' },
         h('div', { class: 't', text: x.title }),
         h('div', { class: 'sum', text: x.summary || x.note || 'No description yet.' }),
         h('div', { class: 'tags' },
+          dayChip(x.day),
           chip(x.priority + ' priority', x.priority === 'High' ? 'high' : 'outline', x.priority === 'High' ? 'flag' : null),
           chip(x.timeline, 'outline', 'schedule'),
-          chip(stageLabel(x.stage), K.slug(x.stage)),
+          ADMIN ? chip(stageLabel(x.stage), K.slug(x.stage)) : null,
           x.approvalState === 'Change requested' ? chip('Changes asked', 'change-requested') : null,
           x.health ? chip('Sensitive', 'high') : null)));
   }
@@ -7217,7 +7375,7 @@ var Kit = (function () {
       main.appendChild(rise(K.choices({
         row: true, label: 'Show', value: S.ideaFilter,
         options: [{ value: 'all', label: 'All' }, { value: 'review', label: 'To review' }, { value: 'progress', label: 'In progress' },
-          { value: 'needs', label: ADMIN ? 'Needs ' + artist() : 'Waiting on you' }, { value: 'live', label: 'Live' }, { value: 'parked', label: 'Parked' }],
+          { value: 'needs', label: ADMIN ? 'Needs ' + artist() : 'Waiting on you' }, { value: 'live', label: 'Live' }, { value: 'parked', label: 'Resting' }],
         onChange: function (v) { S.ideaFilter = v; render(); }
       }), 1));
       var waiting = ideas.filter(researching);
@@ -7226,10 +7384,10 @@ var Kit = (function () {
           (waiting.length === 1 ? '1 idea is' : waiting.length + ' ideas are') + ' being researched and will appear here when ready: ' +
           waiting.map(function (x) { return x.title; }).join(', ') + '.', 'travel_explore')), 1));
       }
-      var groups = { review: ['New', 'Reviewing'], progress: ['In progress', 'Ready'], needs: ['Awaiting artist'], live: ['Live'], parked: ['Parked'] };
+      var groups = { review: ['New', 'Reviewing'], progress: ['In progress', 'Ready'], needs: ['Awaiting artist'], live: ['Live'], parked: ['Parked', 'Retired'] };
       var shown = rankedIdeas(ideas.filter(function (x) {
         if (researching(x) && !x.summary) return false;          // not handed over yet
-        return S.ideaFilter === 'all' ? x.stage !== 'Parked' : groups[S.ideaFilter].indexOf(x.stage) >= 0;
+        return S.ideaFilter === 'all' ? x.stage !== 'Parked' && x.stage !== 'Retired' : groups[S.ideaFilter].indexOf(x.stage) >= 0;
       }));
       if (!shown.length) main.appendChild(rise(emptyState('lightbulb', 'Nothing here', 'Ideas appear here once they’ve been researched.'), 2));
       else {
@@ -7832,22 +7990,24 @@ var Kit = (function () {
   }
   function viewProducts(main) {
     var T = talkData(), showParked = S.pipeFilter === 'parked';
+    function resting(p) { return p.parked || p.retired; }
     main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('From idea to live. ' + (ADMIN ? cap(artist()) + '’s' : 'Your') + ' OK moves each stage on; ' + adminName() + ' is asked too only if a check finds a problem or the price doesn’t cover the costs. First goal: ' + money(T.goal) + ' a week.', 'sell')), 2));
     main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({ row: true, label: 'Show', value: showParked ? 'parked' : 'active',
-      options: [{ value: 'active', label: 'Active' }, { value: 'parked', label: 'Parked' }], onChange: function (v) { S.pipeFilter = v; render(); } })), 2));
-    var items = T.pipeline.filter(function (p) { return showParked ? p.parked : !p.parked; }), i = 3;
+      options: [{ value: 'active', label: 'Active' }, { value: 'parked', label: 'Resting' }], onChange: function (v) { S.pipeFilter = v; render(); } })), 2));
+    var items = T.pipeline.filter(function (p) { return showParked ? resting(p) : !resting(p); }), i = 3;
     if (!items.length) main.appendChild(rise(emptyState('sell', 'Nothing here', ADMIN ? 'Add a product, or load the saved ideas.' : 'Products appear here as they’re planned.'), 3));
     T.stages.forEach(function (stage) {
       var here = items.filter(function (p) { return p.stage === stage; });
       if (!here.length) return;
       var sec = section(stage), l = h('div', { class: 'list' });
       here.forEach(function (p) {
-        l.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { openItem(p.id); } },
+        l.appendChild(h('button', { class: 'li press has-sky', type: 'button', onclick: function () { openItem(p.id); } },
+          skyStrip(p.day),
           h('div', { class: 'th-blank' }, icon('sell')),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
             h('div', { class: 'li-sup', style: 'white-space:normal;-webkit-line-clamp:2', text: p.summary || ' ' }),
             p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null),
-          h('div', { class: 'li-trail' }, itemChip(p))));
+          h('div', { class: 'li-trail' }, dayChip(p.day), itemChip(p))));
       });
       sec.appendChild(l);
       main.appendChild(rise(sec, i++));
@@ -8065,7 +8225,8 @@ var Kit = (function () {
             c2.foot.appendChild(send);
           } });
         } }));
-        row.appendChild(btn('text', p.parked ? 'Bring it back' : 'Park it', { icon: p.parked ? 'restore' : 'pause_circle', onclick: function () { saveFirst().then(function () { return api('parkItem', id, !p.parked); }).then(refresh).then(reopen).catch(fail); } }));
+        if (p.stage === 'Live' || p.retired) row.appendChild(btn('text', p.retired ? 'Bring it back' : 'Retire it', { icon: p.retired ? 'restore' : 'wb_twilight', onclick: function () { saveFirst().then(function () { return api('retireItem', id, !p.retired); }).then(refresh).then(reopen).catch(fail); } }));
+        else row.appendChild(btn('text', p.parked ? 'Wake it up' : 'Park it', { icon: p.parked ? 'wb_twilight' : 'bedtime', onclick: function () { saveFirst().then(function () { return api('parkItem', id, !p.parked); }).then(refresh).then(reopen).catch(fail); } }));
         s8.appendChild(row);
         if (p.log.length) {
           var lg = h('details', { class: 'talk-past', style: 'margin-top:12px' }, h('summary', { text: 'History' }));
@@ -8610,6 +8771,7 @@ var Kit = (function () {
           x.website ? 'Website change · ' + x.website.status.toLowerCase() : x.viability != null ? (x.research && x.research.verdict ? x.research.verdict + ' · ' : '') + x.viability + '/100 viability' : '',
           firstBit(x.summary || x.note)
         ]));
+        var dc = ideaDayCard(x, ctl); if (dc) ctl.body.appendChild(dc);
         ctl.body.appendChild(h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' },
           chip(stageLabel(x.stage), K.slug(x.stage)),
           chip(x.kind, 'outline', KIND_ICON[x.kind]),
