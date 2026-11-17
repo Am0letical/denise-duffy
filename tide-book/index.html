@@ -3992,7 +3992,7 @@ function tidePublish(env, t) {
     if (role === 'admin') {
       if (!env.features.studio) items.push({ key: 'key', text: 'Add the Anthropic API key', why: 'Turns on idea research and drafting from footage.', where: 'Setup guide, step 8' });
       if (!P.DIRECT_POSTING) { /* posting by hand for now: nothing to connect */ }
-      else if (!env.publisher.connected() && !canSignIn()) items.push({ key: 'meta-app', text: 'Set up the Meta app (once)', why: 'Then ' + env.brand.artistName + ' links Facebook and Instagram herself, by signing in.', where: 'Admin › Settings › Posting', link: true });
+      else if (!env.publisher.connected() && !canSignIn()) items.push({ key: 'meta-app', text: 'Set up the Meta app (once)', why: 'Then ' + env.brand.artistName + ' links Facebook and Instagram herself, by signing in. It also lets saved Instagram posts in her inspo show their picture and caption, with a short summary.', where: 'Admin › Settings › Posting', link: true });
       else if (!env.publisher.connected()) items.push({ key: 'meta', text: 'Waiting for ' + env.brand.artistName + ' to link Facebook and Instagram', why: 'It’s on her to-do list. Or link them here with her login.', where: 'Admin › Settings › Posting', link: true });
       else if (!on('postingEnabled')) items.push({ key: 'posting', text: 'Switch on posting (start with the dry run)', why: 'Approved posts then take a posting time.', where: 'Admin › Settings › Posting' });
       if (!on('editEnabled')) items.push({ key: 'edit', text: 'Set up the Everygen edit task', why: 'So reels arrive edited instead of as a plan.', where: 'Setup guide, Everygen edits' });
@@ -5317,7 +5317,10 @@ function tideTalk(env, t) {
     if (fixesAll.length) return { kind: 'fix', who: 'auto', no: 'fixno', noLabel: 'No go: I’ll do it my way', target: fixesAll[0].item,
       label: (function (r) { r = r.charAt(0).toUpperCase() + r.slice(1); return fixesAll.length > 1 ? 'First fix of ' + fixesAll.length + ': ' + r : 'One fix: ' + r; })(shortRule(fixesAll[0].item)),
       why: fixesAll[0].action,
-      alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length } : null,
+      alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length, why: (function (names) {
+        names = names.map(function (x) { x = shortRule(x.item); return x.charAt(0).toUpperCase() + x.slice(1); });
+        return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] + ', all in one go.';
+      })(fixesAll) } : null,
       more: [{ kind: 'fixfine', label: 'It’s fine as it is', why: 'Nothing to change. It’s marked settled.' }],
       own: 'fixown', ownLabel: 'Your own fix', ownHint: 'How you’d like it fixed. Tide Book notes it as the fix.' };
     if (r.stage === 'Idea') return { kind: 'advance', label: 'Start shaping it', why: 'Next: the questions that decide what it is.' };
@@ -9550,8 +9553,8 @@ var Kit = (function () {
     if (n.kind) opts.push({ kind: n.kind, main: true, ic: 'check', label: hers ? (n.kind === 'approvesample' ? 'Yes, it’s right' : 'Done') : 'Go',
       why: hers ? '' : n.kind === 'fix' ? 'Tide Book makes this change now.' : 'Tide Book does it now.' });
     if (n.alt) opts.push({ kind: n.alt.kind, ic: n.alt.kind === 'fixall' ? 'done_all' : n.alt.kind === 'redo' ? 'auto_awesome' : 'arrow_forward', label: n.alt.label,
-      why: n.alt.kind === 'fixall' ? 'Every fix Tide Book can make, in one go.' : '' });
-    (n.more || []).forEach(function (m) { opts.push({ kind: m.kind, ic: 'thumb_up', label: m.label, why: m.why || '' }); });
+      why: n.alt.why || (n.alt.kind === 'fixall' ? 'Every fix Tide Book can make, in one go.' : '') });
+    (n.more || []).forEach(function (m) { opts.push({ kind: m.kind, ic: 'verified', label: m.label, why: m.why || '' }); });
     if (n.no) opts.push({ kind: n.no, ic: n.no === 'fixno' || n.no === 'decline' ? 'front_hand' : 'close', label: n.noLabel || 'No go: I’ll do it myself', why: NO_WHY[n.no] || '' });
     var canOpen = opts.length > 0 || !!n.own || !!n.why;
     var open = !!NEXT_OPEN[p.id];
