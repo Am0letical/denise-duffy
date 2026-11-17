@@ -8482,7 +8482,6 @@ var Kit = (function () {
         h('span', { class: 'ic' }, icon('language')),
         h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'Have a wander. It shows the latest every time you open it.' })), icon('open_in_new')), n++));
     }
-    if (false) main.appendChild(rise(h('div', { style: 'margin:4px 0 14px' }, btn('outlined', 'Save something that inspired you', { icon: 'favorite', block: true, onclick: function () { openInspo(null); } })), n++));
 
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = rest ? 0 : S.data.questions.length;
     if (nPosts || nQs) {
