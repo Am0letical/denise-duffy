@@ -2974,7 +2974,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
   var AFTER = '', WALK = '';
   function html(ctx) {
     C = ctx; G = gather();
-    AFTER = C.closing('The same moments, on paper', 'Or begin with <span class="it">a print</span>', 'Each original also lives as prints, posted to you, for as long as its run lasts.', function (a) { return a.products.some(function (p) { return p.type === 'Print' && C.canBuy(a, p); }); });
+    AFTER = C.closing('The same moments, on paper', 'Or begin with <span class="it">a print</span>', 'Each original also lives as prints, posted to you.', function (a) { return a.products.some(function (p) { return p.type === 'Print' && C.canBuy(a, p); }); });
     // the way in is the collections and the wall (browse.js); a room's 3D walk is there to step into (#/originals/walk/<room>)
     var walk = /^#\/originals\/walk\/(\w+)/.exec(location.hash), can3d = !REDUCED && !!window.Hall3D && window.Hall3D.canGL();
     WALK = walk && can3d ? walk[1] : '';
@@ -3059,7 +3059,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     var ov = M.insp, scan = a.scan, glb = '', usdz = '';
     if (scan) { if (typeof scan === 'string') { if (/\.usdz(\?|$)/i.test(scan)) usdz = scan; else glb = scan; } else { glb = scan.glb || ''; usdz = scan.usdz || ''; } }
     ov.className = 'og-insp og-t-' + k; ov.setAttribute('aria-label', a.title); ov.dataset.piece = i;
-    var ed = og ? C.edLine(a, og) : '', e = a.ed || {}, most = e.size ? (e.opened || 0) + (e.mode === 'headstart' ? (e.quickSize || e.size) : e.size) : 0;
+    var ed = og ? C.edLine(a, og) : '', e = {}, most = 0;
     var med = [a.medium, a.dims].filter(Boolean).map(esc).join(' · ');
     var viewer = glb ? '<model-viewer class="og-mv" src="' + esc(glb) + '"' + (usdz ? ' ios-src="' + esc(usdz) + '"' : '') + ' alt="' + esc(a.title) + ', in 3D" camera-controls auto-rotate auto-rotate-delay="800" rotation-per-second="14deg" ar ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05" interaction-prompt="auto" touch-action="pan-y"><button slot="ar-button" class="og-ar">See it on your wall</button></model-viewer>'
       : '<div class="og-iv"><div class="og-iv-tilt">' + frameHTML(p) + '<i class="og-iv-light"></i></div></div>';
@@ -3068,7 +3068,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
       ? '<div class="og-i-sold og-i-keep"><div><b>From Denise\u2019s own collection</b><p>This original isn\u2019t for sale: it lives with her.' + (p.print ? ' You can take it home as a print.' : '') + '</p></div></div>' +
         (p.print ? '<button class="og-i-buy" type="button" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(p.print.id) + '">See the prints</button>' : '')
       : p.sold
-      ? '<div class="og-i-sold"><i class="og-dot" aria-hidden="true"></i><div><b>Sold to a collector</b><p>' + (p.print ? 'It lives on as prints' + (e.left ? ', and ' + e.left + ' of ' + e.limit + ' are left' : '') + '.' : 'It has found its home.') + '</p></div></div>' +
+      ? '<div class="og-i-sold"><i class="og-dot" aria-hidden="true"></i><div><b>Sold to a collector</b><p>' + (p.print ? 'It lives on as prints.' : 'It has found its home.') + '</p></div></div>' +
         (p.print ? '<button class="og-i-buy" type="button" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(p.print.id) + '">See the prints</button>' : '')
       : '<div class="og-i-price">' + C.money(o.price) + '<span>The original · ' + esc(o.note || 'Signed') + '</span></div>' +
         '<button class="og-i-buy" type="button" data-qa="' + esc(a.id) + '" data-qa-p="' + esc(og.id) + '">Make it yours</button>' +
@@ -3225,23 +3225,20 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   }
   var ARTWORKS = [
     { id: 'shark', title: 'Shark in the shallows', col: 'ocean', img: 'shark', card: 'sharkTall', alt: 'oceanTall', contain: true, sea: true,
-      ed: { mode: 'limited', left: 11, limit: 15, size: 30, quick: true },
+      ogSold: true,
       story: 'A shark gliding over pink coral, from the ocean collection made with the Irukandji Shark & Ray Centre. (Sample text.)',
       products: [PRINT(false), { id: 'tote', type: 'Apparel', name: 'Tote bag', options: [{ id: 'one', label: 'One size', note: 'Printed to order · 5 to 7 days', price: 45 }] },
         { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }, { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 950 }] }] },
     { id: 'walkway', title: 'Into the rainforest', col: 'forest', img: 'walkway', card: 'flowersTall', alt: 'flowersMacro', isNew: true,
-      ed: { mode: 'open', size: 50, days: 30, quickSize: 25, opened: 4 },
       story: 'A walk into the rainforest: ferns, falling water and light, layered in paint. (Title, story and prices to confirm with Denise.)',
       products: [PRINT(true), { id: 'pants', type: 'Apparel', name: 'Lounge pants', options: ['S', 'M', 'L', 'XL'].map(function (z) { return { id: z, label: 'Size ' + z, note: 'Printed to order · 7 to 10 days', price: 89 }; }) },
         { id: 'cards', type: 'Cards', name: 'Card pack', options: [{ id: 'p5', label: 'Pack of 5', note: 'From stock · 2 to 3 days', price: 25 }] },
         { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] }] },
     { id: 'whaleshark', title: 'Whale shark', col: 'ocean', img: 'whaleshark', card: 'whaleTall', alt: 'whaleSq', sea: true, isNew: true,
-      ed: { mode: 'open', size: 50, days: 30, quickSize: 25, opened: 6 },
       story: 'A whale shark gliding through deep blue, with texture you can almost feel. From the ocean collection made with the Irukandji Shark & Ray Centre. (Title, story and prices to confirm with Denise.)',
       products: [PRINT(false), { id: 'wall', type: 'Download', name: 'Phone wallpaper', options: [{ id: 'dl', label: 'Digital file', note: 'Instant download', price: 6 }] },
         { id: 'original', type: 'Original', name: 'The original', options: [{ id: 'one', label: 'One of a kind', note: 'Signed · ships insured in 3 to 5 days', price: 1400 }] }] },
     { id: 'roots', title: 'Blue roots', col: 'forest', img: 'roots', card: 'rootsTall', alt: 'rootsMacro', isNew: true,
-      ed: { mode: 'headstart', daysLeft: 21, days: 30, size: 40, quickSize: 20, opened: 0 },
       story: 'Tree roots in deep indigo washes, with texture you can almost touch. (Sample text.)',
       products: [PRINT(false)] }
   ];
@@ -3296,10 +3293,16 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   function from(p) { return Math.min.apply(null, p.options.map(function (o) { return o.price; })); }
   // originals first: what each piece's edition means for a buyer right now
   function opensOn(ed) { if (ed.daysLeft == null) return 'soon'; var d = new Date(); d.setDate(d.getDate() + ed.daysLeft); return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }); }
-  function printable(a) { return !a.ed || a.ed.mode !== 'headstart'; }
-  function heldPrint(a, p) { return a.ed && a.ed.mode === 'headstart' && p.type !== 'Original'; }
-  function soldOriginal(a, p) { return p.type === 'Original' && a.ed && (a.ed.mode === 'limited' || a.ed.mode === 'soldout'); }
+  // Denise doesn't do limited runs: each original is one of a kind, and its prints stay available
+  function printable(a) { return true; }
+  function heldPrint(a, p) { return false; }
+  function soldOriginal(a, p) { return p.type === 'Original' && !!a.ogSold; }
   function edition(a, p) {
+    if (p.type !== 'Original') return '';
+    if (soldOriginal(a, p)) return '<div class="edn sold"><b>Sold to a collector</b><p>The original has found its home. Prints of it are still available. <a href="#/a/' + a.id + '">See the prints</a>.</p></div>';
+    return '<div class="edn"><b>One of a kind</b><p>There is only one original. Prints of it stay available.</p></div>';
+  }
+  function editionOld(a, p) {
     var e = a.ed; if (!e) return '';
     if (p.type === 'Original') {
       if (soldOriginal(a, p)) return '<div class="edn sold"><b>Sold to a collector</b><p>' + (e.left ? 'A limited run of ' + e.limit + ' prints follows it, and ' + e.left + ' are left. <a href="#/a/' + a.id + '">See the prints</a>.' : 'Its print run has sold out too.') + '</p></div>';
@@ -3339,7 +3342,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     var o = p.options[0], isPrint = p === a.products[0];
     var badges = (a.isNew ? '<span>New in</span>' : '') + (a.sale && isPrint ? '<span class="off">−20%</span>' : '') + (a.sea && isPrint ? '<span class="sea">Sea Shelter</span>' : '') +
       (p.type === 'Download' ? '<span>Instant</span>' : soldOriginal(a, p) ? '<span>Sold</span>' : p.type === 'Original' ? '<span>One of a kind</span>' : '') +
-      (isPrint && a.ed ? (a.ed.mode === 'limited' ? '<span class="off">' + a.ed.left + ' left</span>' : a.ed.mode === 'headstart' ? '<span>Original only</span>' : '') : '');
+      '';
     return '<div class="pcw"><a class="pc reveal" href="#/a/' + a.id + (isPrint ? '' : '/' + p.id) + '"><div class="ph"><img alt="' + esc(a.title) + '" src="' + IMG[a.card] + '"><img class="alt" alt="" src="' + IMG[a.alt] + '"><div class="badge">' + badges + '</div></div>' +
       '<div class="meta"><div><h3>' + esc(isPrint ? a.title : p.name) + '</h3><div class="sub">' + (isPrint ? (a.products.length > 1 ? 'Also as ' + a.products.slice(1).map(function (x) { return x.name.toLowerCase(); }).join(', ') : 'Art print') : esc(a.title)) + '</div></div>' +
       '<div class="pr">' + (o.was ? '<s>' + money(o.was) + '</s>' : '') + (isPrint || p.options.length > 1 ? 'from ' : '') + money(from(p)) + '</div></div></a>' + tag(null, a, canBuy(a, p) ? p : null) + '</div>';
@@ -3532,8 +3535,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       return '<div class="room"><header class="room-hd wrap"><div class="crumbs"><a href="#/">Home</a> · The originals</div>' +
         '<div class="lbl reveal">The originals · ' + here.length + ' still here</div>' +
         '<h1 class="reveal">One of each. <span class="it">Only ever one.</span></h1>' +
-        '<p class="plede reveal">Each piece here is the real thing: the paper I painted on, the pigment I ground, the stitches I sewed. Owning an original also shapes its story, because the day it finds a home, its prints become limited.</p>' +
-        rules + '</header><div class="wrap">' + pieces + '</div>' +
+        '<p class="plede reveal">Each piece here is the real thing: the paper I painted on, the pigment I ground, the stitches I sewed. Prints of every piece stay available, so an original is the one way to own the real thing.</p>' +
+        '</header><div class="wrap">' + pieces + '</div>' +
         '<div class="wrap">' + closing('The same moments, on paper', 'Or begin with <span class="it">a print</span>', 'Each original also lives as prints, posted to you, for as long as its run lasts.', function (a) { return a.products.some(function (p) { return p.type === 'Print' && canBuy(a, p); }); }) + '</div></div>';
     },
     'sea-shelter': function () {
@@ -3705,6 +3708,10 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   // ---------- quick buy: the panel a + tag opens ----------
   var qs = {}, qsFrom = null;
   function edLine(a, p) {
+    if (p.type === 'Original') return soldOriginal(a, p) ? '' : 'One of a kind. Prints of it stay available.';
+    return '';
+  }
+  function edLineOld(a, p) {
     var e = a.ed; if (!e) return '';
     if (p.type === 'Original') return e.mode === 'headstart' ? 'Its head start: buy before ' + opensOn(e) + ' and only ' + e.quickSize + ' prints will ever follow it.' : soldOriginal(a, p) ? '' : 'When it sells, prints become a limited run of ' + e.size + '.';
     if (p.type !== 'Print') return '';
