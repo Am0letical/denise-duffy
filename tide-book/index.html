@@ -9011,6 +9011,7 @@ var Kit = (function () {
     var n = String(i.note || '').replace(/\s+/g, ' ').trim();
     if (n) { var first = (n.match(/^.*?[.!?](\s|$)/) || [n])[0].trim(); return first.length > 90 ? first.slice(0, 88).replace(/\s+\S*$/, '') + '…' : first; }
     if (i.tags.length) return i.tags.join(' · ');
+    if (i.private && (ADMIN || previewing())) return 'Her note on it is private';
     return 'Tap to add what caught your eye';
   }
   function viewInspo(main) {
