@@ -2643,8 +2643,8 @@ function createTideLogic(env) {
       return { ok: true, resumeOn: day, was: it.stage };
     });
   }
-  function wakePaused() {
-    var today = env.today(), tomorrow = shiftDay(today, 1), woke = [];
+  function wakePaused(asOf) {
+    var today = /^\d{4}-\d{2}-\d{2}$/.test(String(asOf || '')) ? asOf : env.today(), tomorrow = shiftDay(today, 1), woke = [];
     env.lock(function () {
       rows('ideas').forEach(function (it) {
         if (it.deleted || it.stage !== 'Parked' || !it.resumeOn) return;
@@ -2692,7 +2692,7 @@ function createTideLogic(env) {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, wakePausedNow: function () { need(['admin']); return wakePaused(); },
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
