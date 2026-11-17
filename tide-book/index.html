@@ -470,6 +470,7 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .next-chev { padding-top: 14px; transition: transform .2s var(--ease, ease); }
 .next-card.open .next-chev { transform: rotate(180deg); }
 .next-peek { margin-top: 4px; opacity: .75; }
+.next-card.open .next-peek { display: none; }
 .next-body { display: none; }
 .next-card.open .next-body { display: block; }
 .next-opts { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
@@ -5319,7 +5320,7 @@ function tideTalk(env, t) {
       var r = item(id);
       if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') t.fail(r.aiJob === 'help' ? 'Still thinking about the last one.' : 'Tide Book is busy on this product. Try again in a minute.');
       env.table('pipeline').update(id, { aiTarget: cid });
-      queue(id, 'help');
+      queue(id, 'help', { claude: true, why: 'A conversation, so it answers straight away' });
     });
     if (env.talkNow) env.talkNow(id);
     return { ok: true };
