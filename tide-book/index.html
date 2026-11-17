@@ -482,6 +482,18 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .next-opt.own { cursor: default; }
 .next-opt.own textarea { display: block; width: 100%; margin-top: 8px; min-height: 64px; padding: 10px 12px; border: 0; border-radius: 12px; resize: vertical;
   background: var(--surface, #fff); color: var(--on-surface, #1a1c1e); font: 400 16px/22px var(--font); box-shadow: inset 0 0 0 1px var(--outline-variant); }
+/* help with one checklist item: a short conversation */
+.help-box { margin: 0 0 12px 34px; padding: 12px; border-radius: 16px; background: var(--surface-high, #efe9e1); display: flex; flex-direction: column; gap: 8px; }
+.help-msg { max-width: 92%; padding: 10px 12px; border-radius: 14px; font-size: 15px; line-height: 21px; white-space: pre-wrap; }
+.help-msg.tb { align-self: flex-start; background: var(--primary-container, #d6e3ff); color: var(--on-primary-container, #001b3e); border-top-left-radius: 4px; }
+.help-msg.her { align-self: flex-end; background: var(--secondary-container, #f3e1c7); color: var(--on-secondary-container, #2b1d07); border-top-right-radius: 4px; }
+.help-msg.thinking { opacity: .75; display: flex; align-items: center; gap: 6px; }
+.help-box .next-opts { margin-top: 2px; }
+.help-box .next-opt { background: var(--surface, #fff); }
+.help-box .next-opt.main { background: var(--primary, #1c4e86); color: var(--on-primary, #fff); }
+.help-own { display: flex; gap: 8px; align-items: flex-end; }
+.help-own textarea { flex: 1; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 12px; resize: vertical; background: var(--surface, #fff);
+  color: var(--on-surface, #1a1c1e); font: 400 16px/22px var(--font); box-shadow: inset 0 0 0 1px var(--outline-variant); }
 /* the recommended next step */
 .next-card { background: var(--primary-container, #d6e3ff); color: var(--on-primary-container, #001b3e); border: 0; }
 .next-card .label-s { opacity: .75; }
@@ -4577,7 +4589,7 @@ function tideTalk(env, t) {
       };
     }
     return {
-      kind: 'product', job: r.aiJob, title: r.title, summary: r.summary || '', stage: r.stage,
+      kind: 'product', job: r.aiJob, title: r.title, summary: r.summary || '', stage: r.stage, help: r.aiJob === 'help' ? helpCtx(r) : null,
       decisions: t.list(r.decisions), open: t.list(r.open), parts: t.list(r.parts), checks: t.list(r.checks),
       sample: r.sample || {}, price: (r.pricing || {}).price || 0,
       toClear: t.list(r.checks).filter(function (c) { return c.status === 'To check' || (c.status === 'Problem' && !c.verdict); }).map(function (c) { return { id: c.id, item: c.item }; }),
@@ -4677,6 +4689,14 @@ function tideTalk(env, t) {
         };
         env.table('reports').update(id, { triage: tri, status: r.status === 'New' ? 'Triaged' : r.status, aiStatus: '', aiNote: '', updated: now });
         pushOut = ['admin', (tri.severity === 'Blocking' ? 'Blocking: ' : '') + tri.summary.slice(0, 80), 'From ' + who(r.createdBy) + '. ' + (tri.steps[0] || '')];
+      } else if (tb === 'pipeline' && r.aiJob === 'help') {
+        var cid = r.aiTarget, H = Object.assign({}, r.help || {}), cur = H[cid] || { turns: [] };
+        var hopts = t.list(res.options).slice(0, 4).map(function (o) {
+          o = o || {};
+          return { label: clean(o.label, 120), why: clean(o.why, 200), act: HELP_ACTS.indexOf(o.act) >= 0 ? o.act : 'reply', text: clean(o.text, 1200), find: clean(o.find, 300) };
+        }).filter(function (o) { return o.label; });
+        H[cid] = { turns: t.list(cur.turns).concat([{ from: 'tb', text: clean(res.say, 800) || 'Here’s what I can do.', options: hopts, at: now }]).slice(-30) };
+        env.table('pipeline').update(id, { help: H, aiStatus: '', aiNote: '', aiBy: by2, updated: now });
       } else if (tb === 'pipeline' && r.aiJob === 'copy') {
         var listing = { copy: clean(res.listing, 3000), posts: cleanList(res.posts, 5, 1200), by: by2 };
         env.table('pipeline').update(id, { listing: listing, aiStatus: '', aiNote: '', aiBy: by2, updated: now, log: logAdd(r, by2 + ' drafted the listing and launch posts') });
@@ -5197,7 +5217,7 @@ function tideTalk(env, t) {
     // wait only when the job running is the one this stage needs; a rules check started early runs in the background
     var busy = r.aiStatus === 'Queued' || r.aiStatus === 'Working';
     var needsSetup = !!(r.research && r.research.plan) && (!t.list(r.parts).length || !(unitCost(r) > 0));
-    var blocksHere = busy && (r.aiJob === 'copy' ? r.stage === 'Listing & launch' : r.aiJob === 'clear' || r.aiJob === 'checks' ? r.stage === 'Checks & costing' && !needsSetup : true);
+    var blocksHere = busy && r.aiJob !== 'help' && (r.aiJob === 'copy' ? r.stage === 'Listing & launch' : r.aiJob === 'clear' || r.aiJob === 'checks' ? r.stage === 'Checks & costing' && !needsSetup : true);
     if (blocksHere) return { wait: true, label: JOB_WAIT[r.aiJob] || 'Working on it…' };
     if (r.stage === 'Live') return { kind: 'done', done: true, label: r.retired ? 'Retired' : 'On sale', why: 'Set up, checked and live.' };
     if (r.researchStatus === 'Queued' || r.researchStatus === 'Researching') return { wait: true, label: 'Researching whether it’s worth making, who makes it and what to charge…' };
@@ -5264,7 +5284,7 @@ function tideTalk(env, t) {
       price: !(((r.pricing || {}).price || 0) > unitCost(r)), answer: t.list(r.open).some(function (o) { return !o.a; }) };
     Object.keys(DIY).forEach(function (k) { if (dec[k] && open[k]) out.push({ key: 'diy:' + k, text: DIY[k], why: 'You chose to do this one yourself.', state: 'now' }); });
     t.list(r.checks).forEach(function (c) {
-      if (c.status === 'Problem' && c.action && fixWho(c) === 'artist') out.push({ key: 'fix:' + c.id, text: c.action, why: shortRule(c.item), state: 'now', tick: true });
+      if (c.status === 'Problem' && c.action && fixWho(c) === 'artist') out.push({ key: 'fix:' + c.id, cid: c.id, text: c.action, why: shortRule(c.item), state: 'now', tick: true, help: helpView(r, c.id) });
       else if (c.status === 'OK' && c.doneBy) out.push({ key: 'fix:' + c.id, text: c.action || c.item, why: shortRule(c.item), state: 'done' });
     });
     var noSample = pl && pl.sampleNeeded === false && !(r.declined || {}).nosample;
@@ -5276,6 +5296,97 @@ function tideTalk(env, t) {
     }
     var rank = { now: 0, later: 1, done: 2 };
     return out.sort(function (a, b) { return rank[a.state] - rank[b.state]; });
+  }
+  // ---------------------------------------------------------------- help with one checklist item
+  // A short conversation on one job from her checklist: only the steps to get it done, with Tide Book doing
+  // every part it can (the listing words, a note for the records) and her hands only for the real-world bits.
+  var HELP_ACTS = ['listing_add', 'listing_swap', 'note', 'done', 'reply'];
+  function helpCheck(r, cid) { return t.list(r.checks).filter(function (c) { return c.id === cid; })[0]; }
+  function helpCtx(r) {
+    var c = helpCheck(r, r.aiTarget) || {};
+    return { item: c.item || '', why: c.why || '', action: c.action || '', listing: String((r.listing || {}).copy || ''),
+      turns: t.list(((r.help || {})[r.aiTarget] || {}).turns).map(function (x) {
+        return { from: x.from, text: x.text, options: t.list(x.options).map(function (o) { return o.label; }) };
+      }) };
+  }
+  function helpView(r, cid) {
+    var mine = r.aiJob === 'help' && r.aiTarget === cid;
+    return { turns: t.list(((r.help || {})[cid] || {}).turns).slice(-16),
+      state: mine && (r.aiStatus === 'Queued' || r.aiStatus === 'Working') ? 'thinking' : mine && r.aiStatus === 'Failed' ? 'failed' : '' };
+  }
+  function helpAsk(id, cid) {
+    env.lock(function () {
+      var r = item(id);
+      if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') t.fail(r.aiJob === 'help' ? 'Still thinking about the last one.' : 'Tide Book is busy on this product. Try again in a minute.');
+      env.table('pipeline').update(id, { aiTarget: cid });
+      queue(id, 'help');
+    });
+    if (env.talkNow) env.talkNow(id);
+    return { ok: true };
+  }
+  function helpTurn(r, cid, turn) {
+    var H = Object.assign({}, r.help || {}), cur = H[cid] || { turns: [] };
+    H[cid] = { turns: t.list(cur.turns).concat([Object.assign({ at: t.nowIso() }, turn)]).slice(-30) };
+    env.lock(function () { env.table('pipeline').update(r.id, { help: H }); });
+  }
+  /** Opens the conversation on a checklist item: Tide Book's first suggestion, unless it's already there. */
+  function helpStart(id, cid) {
+    t.need(['admin', 'artist']);
+    var r = item(id), c = helpCheck(r, cid);
+    if (!c || c.status !== 'Problem') t.fail('That one’s already done.');
+    var v = helpView(r, cid);
+    if (v.state === 'thinking' || (v.turns.length && v.turns[v.turns.length - 1].from === 'tb')) return { ok: true };
+    return helpAsk(id, cid);
+  }
+  function helpDone(id, cid, how) {
+    var role = env.user.role, r = item(id);
+    updateItem(id, { checks: t.list(r.checks).map(function (c) {
+      if (c.id !== cid || c.status !== 'Problem') return c;
+      return Object.assign({}, c, { status: 'OK', verdict: 'Go', doneBy: role, note: t.text('Done: ' + how, 300), why: t.text((c.why ? c.why + ' ' : '') + 'Done: ' + how, 300) });
+    }) });
+  }
+  /** Her answer: one of Tide Book's choices (i), or her own words (i = -1). Choices that change things are carried out here. */
+  function helpPick(id, cid, i, text) {
+    t.need(['admin', 'artist']);
+    var r = item(id), c = helpCheck(r, cid);
+    if (!c || c.status !== 'Problem') t.fail('That one’s already done.');
+    var turns = t.list(((r.help || {})[cid] || {}).turns), last = turns[turns.length - 1];
+    if (Number(i) === -1) {
+      var own = t.text(String(text || '').trim(), 800);
+      if (!own) t.fail('Write something first.');
+      helpTurn(r, cid, { from: 'her', text: own });
+      return helpAsk(id, cid);
+    }
+    if (!last || last.from !== 'tb') t.fail('That’s changed. Have another look.');
+    var o = t.list(last.options)[Number(i)];
+    if (!o) t.fail('That’s changed. Have another look.');
+    helpTurn(r, cid, { from: 'her', text: o.label });
+    r = item(id);
+    var copy = String((r.listing || {}).copy || ''), said = '';
+    if (o.act === 'reply') return helpAsk(id, cid);
+    if (o.act === 'listing_add' || o.act === 'listing_swap') {
+      var words = o.text || o.label;
+      if (!copy.trim()) {
+        updateItem(id, { decisions: t.list(r.decisions).concat(['The listing must say: ' + words]) });
+        said = 'Noted for the listing. When it’s written, this goes in.';
+      } else if (o.act === 'listing_swap' && o.find && copy.indexOf(o.find) >= 0) {
+        updateItem(id, { listing: { copy: copy.split(o.find).join(words), posts: t.list((r.listing || {}).posts) } });
+        said = 'Changed in the listing.';
+      } else {
+        updateItem(id, { listing: { copy: copy.replace(/\s+$/, '') + '\n\n' + words, posts: t.list((r.listing || {}).posts) } });
+        said = 'Added to the listing.';
+      }
+      helpDone(id, cid, said + ' ' + words);
+    } else if (o.act === 'note') {
+      updateItem(id, { decisions: t.list(r.decisions).concat([o.text || o.label]) });
+      said = 'Noted: ' + (o.text || o.label);
+      helpDone(id, cid, said);
+    } else {
+      said = 'Ticked off.';
+      helpDone(id, cid, o.text || o.label);
+    }
+    helpTurn(item(id), cid, { from: 'tb', text: said + ' That one’s done.', options: [] });
+    return { ok: true, done: true };
   }
   /** Ticks off one of her jobs. */
   function tickHand(id, key) {
@@ -5557,7 +5668,7 @@ function tideTalk(env, t) {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
       createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
-      takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand }
+      takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, helpStart: helpStart, helpPick: helpPick }
   };
 }
 
@@ -9351,6 +9462,14 @@ var Kit = (function () {
     var rest = h('div', { hidden: true }), nLater = 0, nDone = 0;
     L.forEach(function (x) {
       if (x.state === 'later') nLater++; if (x.state === 'done') nDone++;
+      var hk = p.id + ':' + x.cid, hv = x.help || { turns: [], state: '' };
+      var helpBtn = x.state === 'now' && x.cid ? btn('tonal', HELP_OPEN[hk] ? 'Close' : 'Help me', { sm: true, icon: HELP_OPEN[hk] ? 'expand_less' : 'auto_awesome', onclick: function (e) {
+        HELP_OPEN[hk] = !HELP_OPEN[hk];
+        if (HELP_OPEN[hk] && !hv.turns.length && hv.state !== 'thinking') {
+          var b = e.currentTarget; K.setBusy(b, true);
+          saveFirst().then(function () { return api('helpStart', p.id, x.cid); }).then(refresh).then(reopen).catch(function (er) { K.setBusy(b, false); HELP_OPEN[hk] = false; fail(er); });
+        } else reopen();
+      } }) : null;
       var row = h('div', { class: 'hand-row ' + x.state },
         h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'hourglass_top' : 'radio_button_unchecked')),
         h('div', { class: 'grow' }, h('div', { class: 'hand-text', text: x.text }),
@@ -9360,7 +9479,9 @@ var Kit = (function () {
           saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
             .catch(function (er) { K.setBusy(b, false); fail(er); });
         } }) : null);
+      if (helpBtn) row.querySelector('.grow').appendChild(h('div', { style: 'margin-top:8px' }, helpBtn));
       (x.state === 'now' ? sec : rest).appendChild(row);
+      if (helpBtn && HELP_OPEN[hk]) sec.appendChild(helpBox(p, x, hv, saveFirst, reopen));
     });
     if (nLater || nDone) {
       var more = btn('text', [nLater ? nLater + ' for later' : '', nDone ? nDone + ' done' : ''].filter(String).join(' · '), { sm: true, onclick: function () {
@@ -9369,6 +9490,47 @@ var Kit = (function () {
       sec.appendChild(h('div', { style: 'margin-top:6px' }, more)); sec.appendChild(rest);
     }
     return sec;
+  }
+  /** The conversation on one checklist item: just the steps to get it done, with Tide Book doing what it can. */
+  var HELP_OPEN = {};
+  function helpBox(p, x, hv, saveFirst, reopen) {
+    var box = h('div', { class: 'help-box' });
+    hv.turns.forEach(function (tn) { box.appendChild(h('div', { class: 'help-msg ' + (tn.from === 'tb' ? 'tb' : 'her'), text: tn.text })); });
+    function send(i, text, b) {
+      K.setBusy(b, true);
+      saveFirst().then(function () { return api('helpPick', p.id, x.cid, i, text || ''); }).then(refresh).then(function (r) { K.haptic('success'); reopen(); })
+        .catch(function (er) { K.setBusy(b, false); fail(er); });
+    }
+    if (hv.state === 'thinking') {
+      box.appendChild(h('div', { class: 'help-msg tb thinking' }, icon('hourglass_top'), ' Thinking…'));
+      var was = JSON.stringify(hv.turns.length);
+      var poll = setInterval(function () {
+        if (!document.body.contains(box)) { clearInterval(poll); return; }
+        refresh().then(function () {
+          var now = byId(talkData().pipeline, p.id), it = now && (now.hands || []).filter(function (y) { return y.cid === x.cid; })[0];
+          if (!it || !it.help || it.help.state !== 'thinking') { clearInterval(poll); reopen(); }
+        }).catch(function () {});
+      }, 4000);
+      return box;
+    }
+    if (hv.state === 'failed') box.appendChild(h('div', { class: 'help-msg tb', text: 'That didn’t come through. Say something below to try again.' }));
+    var last = hv.turns[hv.turns.length - 1];
+    if (last && last.from === 'tb' && (last.options || []).length) {
+      var list = h('div', { class: 'next-opts' });
+      last.options.forEach(function (o, i) {
+        var auto = o.act === 'listing_add' || o.act === 'listing_swap' || o.act === 'note';
+        list.appendChild(h('button', { class: 'next-opt' + (i === 0 ? ' main' : ''), type: 'button', onclick: function (e) { send(i, '', e.currentTarget); } },
+          h('span', { class: 'next-opt-ic' }, icon(auto ? 'auto_awesome' : o.act === 'done' ? 'check' : 'chat')),
+          h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: o.label }), o.why ? h('span', { class: 'next-opt-why', text: o.why }) : null)));
+      });
+      box.appendChild(list);
+    }
+    var ta = h('textarea', { rows: 2, placeholder: 'Or say it your own way' });
+    box.appendChild(h('div', { class: 'help-own' }, ta, btn('tonal', 'Send', { sm: true, icon: 'send', onclick: function (e) {
+      if (!ta.value.trim()) { ta.focus(); return; }
+      send(-1, ta.value.trim(), e.currentTarget);
+    } })));
+    return box;
   }
   function readyLine(r) {
     if (!r) return '';
