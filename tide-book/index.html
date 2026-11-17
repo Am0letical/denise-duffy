@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_forward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,table_rows,table_view,text_fields,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,text_fields,thumb_up,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -2379,6 +2379,15 @@ function createTideLogic(env) {
   }
 
   // ---------- settings
+  /** The order of the sections on her home page: hers to arrange. */
+  var HOME_KEYS = ['cover', 'inspo', 'needs', 'waiting', 'todo', 'website', 'review', 'actions', 'glance'];
+  function saveHomeOrder(order) {
+    need(['admin', 'artist']);
+    var clean = list(order).map(String).filter(function (k, i, a) { return HOME_KEYS.indexOf(k) >= 0 && a.indexOf(k) === i; });
+    HOME_KEYS.forEach(function (k) { if (clean.indexOf(k) < 0) clean.push(k); });
+    env.settings.set({ homeOrder: clean });
+    return { ok: true, order: clean };
+  }
   function saveSettings(ch) {
     need(['admin', 'artist']);
     ch = ch || {};
@@ -2496,7 +2505,7 @@ function createTideLogic(env) {
         productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: T.SERIES,
         saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES
       },
-      settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true,
+      settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -2645,7 +2654,7 @@ function createTideLogic(env) {
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, publishWebsite: publishWebsite, chatResult: chatResult,
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, publishWebsite: publishWebsite, chatResult: chatResult,
       websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
     },
     research: research,
