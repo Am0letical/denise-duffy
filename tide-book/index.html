@@ -452,6 +452,16 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .comp + .comp { box-shadow: inset 0 1px 0 var(--hairline); }
 .comp b { font-weight: 500; white-space: nowrap; }
 .bullets { margin: 0; padding-left: 18px; font: 400 14px/20px var(--font); }
+/* who does it: her hands, or Tide Book with her go */
+.next-who { display: flex; align-items: center; gap: 6px; }
+.next-who .icon, .next-who .ms { font-size: 16px; }
+.next-card.hers { background: var(--secondary-container, #f3e1c7); color: var(--on-secondary-container, #2b1d07); }
+.li-sup.next-line.hers { color: var(--secondary, #7a5a26); }
+.hand-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--outline-variant, rgba(0,0,0,.08)); }
+.hand-row .hand-ic { padding-top: 2px; color: var(--primary); }
+.hand-row.later { opacity: .6; }
+.hand-row.done .body-m { text-decoration: line-through; color: var(--on-surface-variant); }
+.hand-row.done .hand-ic { color: var(--tertiary, #2e7d32); }
 /* the recommended next step */
 .next-card { background: var(--primary-container, #d6e3ff); color: var(--on-primary-container, #001b3e); border: 0; }
 .next-card .label-s { opacity: .75; }
@@ -9167,7 +9177,7 @@ var Kit = (function () {
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
             h('div', { class: 'li-sup', style: 'white-space:normal;-webkit-line-clamp:2', text: p.summary || ' ' }),
             p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null,
-            p.next && !p.next.done ? h('div', { class: 'li-sup next-line', text: (p.next.wait ? '' : 'Next: ') + p.next.label }) : null),
+            p.next && !p.next.done ? h('div', { class: 'li-sup next-line' + (p.next.who === 'hers' ? ' hers' : ''), text: (p.next.wait ? '' : p.next.who === 'hers' ? 'You: ' : 'Go? ') + p.next.label }) : null),
           h('div', { class: 'li-trail' }, dayChip(p.day), itemChip(p))));
       });
       sec.appendChild(l);
@@ -9228,8 +9238,9 @@ var Kit = (function () {
     if (n.done) return h('div', { class: 'card pad next-card done', style: 'margin:10px 0 14px' },
       h('div', { class: 'row', style: 'gap:12px;align-items:center' }, h('span', { class: 'ic' }, icon('rocket_launch')),
         h('div', { class: 'grow' }, h('div', { class: 'title-m', text: n.label }), h('div', { class: 'body-m', text: readyLine(p.ready) }))));
-    var card = h('div', { class: 'card pad next-card' + (n.wait ? ' wait' : ''), style: 'margin:10px 0 14px' },
-      h('div', { class: 'label-s', text: n.wait ? 'Working on it' : 'Recommended next' }),
+    var hers = n.who === 'hers';
+    var card = h('div', { class: 'card pad next-card' + (n.wait ? ' wait' : hers ? ' hers' : ''), style: 'margin:10px 0 14px' },
+      h('div', { class: 'label-s next-who' }, icon(n.wait ? 'hourglass_top' : hers ? 'front_hand' : 'auto_awesome'), n.wait ? 'Working on it' : hers ? 'Your turn' : 'Tide Book can do this'),
       h('div', { class: 'title-m', style: 'margin-top:2px', text: n.label }),
       n.why ? h('p', { class: 'body-m', style: 'margin:6px 0 0;color:var(--on-surface-variant)', text: n.why }) : null);
     if (n.wait) {
@@ -9239,17 +9250,43 @@ var Kit = (function () {
       }, 5000);
       return card;
     }
-    if (!n.kind) return card;
     function take(kind, b) {
       K.setBusy(b, true);
       saveFirst().then(function () { return api('takeNext', p.id, kind); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
         .catch(function (e) { K.setBusy(b, false); fail(e); });
     }
-    card.appendChild(h('div', { class: 'btn-row', style: 'margin-top:12px' },
-      btn('filled', 'Do this', { icon: 'arrow_forward', onclick: function (e) { take(n.kind, e.currentTarget); } }),
-      n.alt ? btn('text', n.alt.label, { onclick: function (e) { take(n.alt.kind, e.currentTarget); } }) : null));
-    card.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 0 0', text: 'Or change anything below first. Your OK is still yours at every stage.' }));
+    var yes = n.kind ? btn('filled', hers ? (n.kind === 'approvesample' ? 'Yes, it’s right' : 'Done') : 'Go', { icon: 'check', onclick: function (e) { take(n.kind, e.currentTarget); } }) : null;
+    var no = n.no ? btn('outlined', n.noLabel || 'No go: I’ll do it myself', { onclick: function (e) { take(n.no, e.currentTarget); } }) : null;
+    var alt = n.alt ? btn('text', n.alt.label, { onclick: function (e) { take(n.alt.kind, e.currentTarget); } }) : null;
+    if (yes || no || alt) card.appendChild(h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, yes, no, alt));
+    var help = hers ? (n.kind ? '' : 'It’s on your checklist below.')
+      : n.no === 'decline' || n.no === 'fixno' ? 'Go and Tide Book does it now. No go and it goes on your checklist to do your way.'
+      : 'Or change anything below first. Your OK is still yours at every stage.';
+    if (help) card.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 0 0', text: help }));
     return card;
+  }
+  /** Her checklist on a product: only what needs her own hands. Everything else is Tide Book's, with her go. */
+  function handList(p, saveFirst, reopen) {
+    var L = p.hands || [];
+    if (!L.length) return null;
+    var left = L.filter(function (x) { return x.state === 'now'; }).length;
+    var sec = h('div', { class: 'card pad hand-list', style: 'margin:0 0 14px' },
+      h('div', { class: 'row', style: 'gap:8px;align-items:center' }, icon('front_hand'), h('div', { class: 'title-s grow', text: 'Your checklist' }),
+        h('span', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: left ? left + ' to do now' : 'Nothing for now' })),
+      h('p', { class: 'body-s', style: 'margin:4px 0 8px;color:var(--on-surface-variant)', text: 'Only the things that need you. Everything else Tide Book does, with your go.' }));
+    L.forEach(function (x) {
+      var row = h('div', { class: 'hand-row ' + x.state },
+        h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'hourglass_top' : 'radio_button_unchecked')),
+        h('div', { class: 'grow' }, h('div', { class: 'body-m', text: x.text }),
+          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: x.state === 'later' ? 'Later. ' + (x.why || '') : x.why || '' })),
+        x.state === 'now' && x.tick ? btn('tonal', 'Done', { sm: true, icon: 'check', onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
+            .catch(function (er) { K.setBusy(b, false); fail(er); });
+        } }) : null);
+      sec.appendChild(row);
+    });
+    return sec;
   }
   function readyLine(r) {
     if (!r) return '';
@@ -9386,6 +9423,7 @@ var Kit = (function () {
         ctl.body.appendChild(tldrItem(p));
         ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
         var nc = nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
+        var hl = handList(p, saveFirst, reopen); if (hl) ctl.body.appendChild(hl);
         ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Parked. Bring it back when you’re ready.', 'pause_circle')));
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.aiJob === 'clear' ? 'Checking each one…' : 'Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
@@ -12175,10 +12213,11 @@ var Kit = (function () {
         if (t.link) { openLinkAccounts(); return; }
         if (t.site) { openSiteWish(t); return; }
         if (t.sitein) { openSiteIn(t.sitein); return; }
+        if (t.productId) { openItem(t.productId); return; }
         if (/^Content/.test(t.where)) { S.contentTab = /Ready/.test(t.where) ? 'ready' : 'review'; go('content'); }
         else if (/Admin/.test(t.where)) { S.adminTab = 'settings'; go('settings'); }
         else K.confirm({ title: t.text, text: t.why + ' Where: ' + t.where + '.', single: true, confirmLabel: 'OK' });
-      } }, h('div', { class: 'th-blank todo-ic' }, icon(t.site ? (t.kind === 'photo' ? 'photo_camera' : 'edit_note') : t.sitein ? 'language' : 'radio_button_unchecked')),
+      } }, h('div', { class: 'th-blank todo-ic' }, icon(t.site ? (t.kind === 'photo' ? 'photo_camera' : 'edit_note') : t.sitein ? 'language' : t.productId ? 'front_hand' : 'radio_button_unchecked')),
         h('div', { class: 'grow' }, h('div', { class: 'li-head', text: t.text }), h('div', { class: 'li-sup', style: 'white-space:normal', text: t.why })), icon('chevron_right')));
     });
     var sec = section('To do');
