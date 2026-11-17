@@ -5271,7 +5271,7 @@ function tideTalk(env, t) {
     // one at a time: the first fix Tide Book can make, with how many are left. Fixes that need her hands go on her checklist.
     var fixesAll = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action && fixWho(c) === 'auto'; });
     if (fixesAll.length) return { kind: 'fix', who: 'auto', no: 'fixno', noLabel: 'No go: I’ll do it my way', target: fixesAll[0].item,
-      label: (fixesAll.length > 1 ? 'Fix 1 of ' + fixesAll.length + ': ' : 'Fix: ') + shortRule(fixesAll[0].item),
+      label: (function (r) { r = r.charAt(0).toUpperCase() + r.slice(1); return fixesAll.length > 1 ? 'First fix of ' + fixesAll.length + ': ' + r : 'One fix: ' + r; })(shortRule(fixesAll[0].item)),
       why: fixesAll[0].action,
       alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length } : null,
       more: [{ kind: 'fixfine', label: 'It’s fine as it is', why: 'Nothing to change. It’s marked settled.' }],
@@ -8440,6 +8440,25 @@ var Kit = (function () {
         h('span', { class: 'cover-cap' }, h('b', { text: cover.title }), h('span', { text: cover.status === 'Live' ? 'Your artwork, on sale now' : 'Your artwork' }))), n++));
     }
 
+    // inspiration, right on the home page: save it, and see the last few
+    var ins = (S.data.inspiration || []).slice(0, 3);
+    var insCard = h('div', { class: 'card pad', style: 'margin-bottom:14px' },
+      h('div', { class: 'row', style: 'gap:12px;align-items:center' }, h('span', { class: 'ic' }, icon('favorite')),
+        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: 'Saw something that inspired you?' }),
+          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'A screenshot, a link, or a word on what caught your eye.' }))),
+      h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' },
+        btn('filled', 'Save inspiration', { icon: 'add', onclick: function () { openInspo(null); } }),
+        ins.length ? btn('text', 'See your inspo', { onclick: function () { S.ideasTab = 'inspo'; go('ideas'); } }) : null));
+    if (ins.length) {
+      var strip = h('div', { class: 'inspo-grid', style: 'grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px' });
+      ins.forEach(function (i) {
+        strip.appendChild(h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
+          i.thumbIds.length ? thumbImg(i.thumbIds[0], 'inspo-img') : h('div', { class: 'inspo-img blank' }, icon('link'), h('span', { text: i.source || 'Link' }))));
+      });
+      insCard.appendChild(strip);
+    }
+    main.appendChild(rise(insCard, n++));
+
     if (rest) {
       main.appendChild(rise(h('div', { class: 'card pad rest-card' },
         h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' }, h('span', { class: 'ic' }, icon('spa')),
@@ -8463,7 +8482,7 @@ var Kit = (function () {
         h('span', { class: 'ic' }, icon('language')),
         h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'Have a wander. It shows the latest every time you open it.' })), icon('open_in_new')), n++));
     }
-    main.appendChild(rise(h('div', { style: 'margin:4px 0 14px' }, btn('outlined', 'Save something that inspired you', { icon: 'favorite', block: true, onclick: function () { openInspo(null); } })), n++));
+    if (false) main.appendChild(rise(h('div', { style: 'margin:4px 0 14px' }, btn('outlined', 'Save something that inspired you', { icon: 'favorite', block: true, onclick: function () { openInspo(null); } })), n++));
 
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = rest ? 0 : S.data.questions.length;
     if (nPosts || nQs) {
@@ -9517,7 +9536,7 @@ var Kit = (function () {
     L.forEach(function (x) {
       if (x.state === 'later') nLater++; if (x.state === 'done') nDone++;
       var hk = p.id + ':' + x.cid, hv = x.help || { turns: [], state: '' };
-      var helpBtn = x.state === 'now' && x.cid ? btn('tonal', HELP_OPEN[hk] ? 'Close' : 'Help me', { sm: true, icon: HELP_OPEN[hk] ? 'close' : 'auto_awesome', onclick: function (e) {
+      var helpBtn = x.state === 'now' && x.cid ? btn('tonal', HELP_OPEN[hk] ? 'Close' : 'Walk me through it', { sm: true, icon: HELP_OPEN[hk] ? 'close' : 'auto_awesome', onclick: function (e) {
         HELP_OPEN[hk] = !HELP_OPEN[hk];
         if (HELP_OPEN[hk] && !hv.turns.length && hv.state !== 'thinking') {
           var b = e.currentTarget; K.setBusy(b, true);
@@ -9549,6 +9568,7 @@ var Kit = (function () {
   var HELP_OPEN = {};
   function helpBox(p, x, hv, saveFirst, reopen) {
     var box = h('div', { class: 'help-box' });
+    box.appendChild(h('div', { class: 'body-s', style: 'margin-bottom:8px;color:var(--on-surface-variant)', text: 'Tide Book takes you through this one step at a time, and does any of it it can for you.' }));
     hv.turns.forEach(function (tn) { box.appendChild(h('div', { class: 'help-msg ' + (tn.from === 'tb' ? 'tb' : 'her'), text: tn.text })); });
     function send(i, text, b) {
       K.setBusy(b, true);
