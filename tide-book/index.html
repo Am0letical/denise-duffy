@@ -11177,8 +11177,8 @@ var Kit = (function () {
               if (ed && (ed.mode === 'waiting' || ed.mode === 'headstart')) stack.appendChild(note('Prints of this piece aren’t on sale yet: ' + ed.line.toLowerCase() + '.', 'hourglass_top', 'warn'));
               if (ed && (ed.mode === 'limited' || ed.mode === 'soldout')) stack.appendChild(note(ed.mode === 'soldout' ? 'This edition has sold out.' : ed.left + ' left in the edition.', ed.mode === 'soldout' ? 'block' : 'verified', ed.mode === 'soldout' ? 'warn' : ''));
             }
-            if (art && f.category === 'Originals') stack.appendChild(note(ed && ed.sold ? 'Its original is already recorded as sold.' : 'Saving this starts its limited run of prints.', 'verified'));
-            if (!t) stack.appendChild(h('p', { class: 'tf-help', style: 'margin:0 4px', text: 'Limited pieces need their own entry, so the count stays right.' }));
+            if (art && f.category === 'Originals') stack.appendChild(note(ed && ed.sold ? 'Its original is already recorded as sold.' : (S.data.limitedRuns ? 'Saving this starts its limited run of prints.' : 'Saving this marks the original as sold. Its prints stay on sale.'), 'verified'));
+            if (!t && S.data.limitedRuns) stack.appendChild(h('p', { class: 'tf-help', style: 'margin:0 4px', text: 'Limited pieces need their own entry, so the count stays right.' }));
             artWrap.appendChild(stack);
           }
           s2.appendChild(artWrap); drawArt();
