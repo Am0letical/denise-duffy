@@ -2389,9 +2389,10 @@ function createTideLogic(env) {
     // the website: her gentle asks (two at most), and what she's sent for the admin to put up
     var talkData = talk.snapshot(role);
     if (role === 'artist') talkData.pipeline.forEach(function (p) {
-      (p.hands || []).filter(function (x) { return x.state === 'now'; }).forEach(function (x) {
-        publishData.todo.push({ key: 'pp-' + p.id + '-' + x.key, productId: p.id, text: x.text, why: p.title + (x.why && x.why !== x.text ? ': ' + x.why : ''), where: 'Products' });
-      });
+      // one line per product, so the list stays short: the first job, and how many more
+      var now = (p.hands || []).filter(function (x) { return x.state === 'now'; });
+      if (now.length) publishData.todo.push({ key: 'pp-' + p.id, productId: p.id, text: p.title + ': ' + (now.length === 1 ? 'one thing for you' : now.length + ' things for you'),
+        why: 'First: ' + now[0].text, where: 'Products' });
     });
     var sw = siteWishes.snapshot(role);
     sw.wishes.forEach(function (w) { publishData.todo.push({ key: 'site-' + w.key, site: w.key, kind: w.kind, text: w.text, why: w.why, where: 'For your website' }); });
