@@ -469,6 +469,14 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .hand-more { display: inline-flex; align-items: center; gap: 2px; margin-top: 6px; font-size: 14px; font-weight: 600; color: var(--primary); }
 .hand-more .material-symbols-rounded, .hand-more i, .hand-more svg { transition: transform .2s; }
 .hand-more.open > :last-child { transform: rotate(180deg); }
+/* inspo: the Instagram post itself as the picture, scaled to the card, with the profile bar trimmed off */
+.inspo-embed { position: relative; overflow: hidden; pointer-events: none; }
+.inspo-embed iframe { position: absolute; left: 0; top: 0; width: 326px; height: 1000px; border: 0; transform-origin: 0 0;
+  transform: translateY(calc(-56px * var(--s, .5))) scale(var(--s, .5)); }
+.inspo-tldr { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.inspo-tldr.empty { opacity: .65; font-style: italic; }
+.inspo-full { margin-top: 10px; border-radius: 16px; overflow: hidden; background: var(--surface-highest); }
+.inspo-full iframe { display: block; width: 100%; height: 640px; border: 0; }
 /* inspo: a delete button on each card */
 .inspo-wrap { position: relative; }
 .inspo-wrap > .inspo-card { width: 100%; height: 100%; }
@@ -8489,7 +8497,7 @@ var Kit = (function () {
       var strip = h('div', { class: 'inspo-grid', style: 'grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px' });
       ins.forEach(function (i) {
         strip.appendChild(h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
-          i.thumbIds.length ? thumbImg(i.thumbIds[0], 'inspo-img') : h('div', { class: 'inspo-img blank' }, icon('link'), h('span', { text: i.source || 'Link' }))));
+          inspoPreview(i, 'inspo-img')));
       });
       insCard.appendChild(strip);
     }
@@ -8986,6 +8994,25 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ Inspiration (LogicInspo.gs)
   function inspoList() { return S.data.inspiration || []; }
+  /** An Instagram post or reel, from its link: Instagram's own embed shows the picture (her phone loads it, nothing is copied). */
+  function igPost(url) { var m = /instagram\.com\/(?:[^\/?#]+\/)?(p|reel|reels|tv)\/([A-Za-z0-9_-]+)/i.exec(url || ''); return m ? { kind: /^reel/i.test(m[1]) ? 'reel' : 'p', code: m[2] } : null; }
+  /** The picture on an inspo card: her screenshot, else the post itself, else a plain link tile. */
+  function inspoPreview(i, cls) {
+    if (i.thumbIds.length) return thumbImg(i.thumbIds[0], cls);
+    var ig = igPost(i.url);
+    if (!ig) return h('div', { class: cls + ' blank' }, icon('link'), h('span', { text: i.source || 'Link' }));
+    var box = h('div', { class: cls + ' inspo-embed' });
+    box.appendChild(h('iframe', { src: 'https://www.instagram.com/' + ig.kind + '/' + ig.code + '/embed/', loading: 'lazy', tabindex: '-1', 'aria-hidden': 'true', scrolling: 'no', title: 'Instagram post' }));
+    (function fit(n) { var w = box.clientWidth; if (w) box.style.setProperty('--s', String(w / 326)); else if (n < 40) setTimeout(function () { fit(n + 1); }, 150); })(0);
+    return box;
+  }
+  /** The short version of what she saved: her own words first, then the tags. */
+  function inspoTldr(i) {
+    var n = String(i.note || '').replace(/\s+/g, ' ').trim();
+    if (n) { var first = (n.match(/^.*?[.!?](\s|$)/) || [n])[0].trim(); return first.length > 90 ? first.slice(0, 88).replace(/\s+\S*$/, '') + '…' : first; }
+    if (i.tags.length) return i.tags.join(' · ');
+    return 'Tap to add what caught your eye';
+  }
   function viewInspo(main) {
     var all = inspoList(), tag = S.inspoTag || '', pbi = privacyBar();
     if (pbi) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pbi), 1));
@@ -9001,8 +9028,8 @@ var Kit = (function () {
     var grid = h('div', { class: 'inspo-grid' });
     shown.forEach(function (i, n) {
       var card = h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
-        i.thumbIds.length ? thumbImg(i.thumbIds[0], 'inspo-img') : h('div', { class: 'inspo-img blank' }, icon('link'), h('span', { text: i.source || 'Link' })),
-        h('div', { class: 'inspo-cap' }, i.note ? h('div', { class: 'body-s', text: i.note.length > 70 ? i.note.slice(0, 68) + '…' : i.note }) : null,
+        inspoPreview(i, 'inspo-img'),
+        h('div', { class: 'inspo-cap' }, h('div', { class: 'body-s inspo-tldr' + (i.note || i.tags.length ? '' : ' empty'), text: inspoTldr(i) }),
           h('div', { class: 'label-s', text: [i.source, i.tags[0]].filter(Boolean).join(' · ') || ago(i.created) })));
       var del = h('button', { class: 'inspo-del press', type: 'button', 'aria-label': 'Delete', title: 'Delete', onclick: function (e) {
         e.stopPropagation(); del.disabled = true;
@@ -9026,6 +9053,8 @@ var Kit = (function () {
         s1.appendChild(K.photoStrip({ thumbIds: it ? it.thumbIds : [], photoUrls: it ? it.photoUrls : [], files: f.files, max: 4, onChange: function () { dirty = true; }, onDraw: function () { setTimeout(loadThumbs, 0); } }));
         var s2 = sheetSection('Link to the post');
         s2.appendChild(K.textField({ label: 'Paste the link', value: f.url, maxlength: 1000, onInput: function (v) { f.url = v; dirty = true; }, help: 'In Instagram: ⋯ → Copy link. Then paste it here.' }));
+        var igIt = it && igPost(it.url);
+        if (igIt) s2.appendChild(h('div', { class: 'inspo-full' }, h('iframe', { src: 'https://www.instagram.com/' + igIt.kind + '/' + igIt.code + '/embed/captioned/', loading: 'lazy', title: 'The Instagram post', scrolling: 'no' })));
         if (it && it.url) s2.appendChild(h('a', { class: 'btn text press', href: it.url, target: '_blank', rel: 'noopener', style: 'margin-top:6px' }, icon('open_in_new'), h('span', { text: 'Open the post' })));
         var s3 = sheetSection('What caught your eye?');
         s3.appendChild(K.textField({ suggest: ['The colours', 'The texture', 'The composition', 'The packaging', 'How it feels'], label: 'A few words (optional)', value: f.note, multiline: true, maxlength: 2000, onInput: function (v) { f.note = v; dirty = true; } }));
