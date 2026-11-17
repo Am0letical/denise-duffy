@@ -2889,6 +2889,16 @@ function tideContent(env, t) {
   }
 
   // ------------------------------------------------------------------ verify: review, changes, discard
+  /** Undo "don't post it": back in review, as it was. */
+  function undoReject(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var c = t.find('content', id);
+      if (c.status !== 'Rejected') t.fail('This one isn\u2019t set aside.');
+      env.table('content').update(id, { status: 'Suggested', artistDecision: '', adminDecision: '', rejectedBy: '', rejectReason: '', decided: '', updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
   function decideContent(id, decision, reason) {
     var role = t.need(['admin', 'artist']);
     if (decision !== 'approve' && decision !== 'reject') t.fail('Unknown answer.');
@@ -3397,7 +3407,7 @@ function tideContent(env, t) {
       startRound: startRound, finishRound: finishRound, addFootage: addFootage, uploadFootagePhoto: uploadFootagePhoto,
       uploadFootageFrame: uploadFootageFrame, addEditedFootage: addEditedFootage, startVideoUpload: startVideoUpload, finishVideoUpload: finishVideoUpload,
       updateFootage: updateFootage, answerQuestion: answerQuestion,
-      decideContent: decideContent, undoApproval: undoApproval, steerContent: steerContent, requestRevision: requestRevision, updateContent: updateContent, markContent: markContent,
+      decideContent: decideContent, undoApproval: undoApproval, undoReject: undoReject, steerContent: steerContent, requestRevision: requestRevision, updateContent: updateContent, markContent: markContent,
       requestSuggestions: requestSuggestions, saveBrief: saveBrief, addNote: addNote, removeNote: removeNote,
       saveCampaign: saveCampaign, completeCampaign: completeCampaign, makePost: makePost
     },
@@ -11429,7 +11439,7 @@ var Kit = (function () {
       buttons.forEach(function (b) { b.disabled = true; });
       api('decideContent', c.id, decision, reason || '').then(function (res) {
         K.haptic('success');
-        if (decision === 'reject') toast(c.type === 'Shot' ? 'Left off the list.' : 'Discarded. That’s been noted for next time.');
+        if (decision === 'reject') { if (c.type === 'Shot') toast('Left off the list.'); else undoCard('Not posting “' + (c.title || 'it') + '”. Noted for next time.', function () { return api('undoReject', c.id); }, 'Back in review.', 12); }
         else if (c.type === 'Shot') toast('Added to the list.');
         else undoCard(res.status === 'Approved' || res.status === 'Scheduled' ? 'Approved. It’s under Ready.' : 'Approved. Waiting for ' + otherName() + '.', function () { return api('undoApproval', c.id); }, 'Back in review.');
         return refresh();
@@ -11438,8 +11448,8 @@ var Kit = (function () {
     }
     if (decision === 'approve') { send(''); return; }
     K.ask({ title: c.type === 'Shot' ? 'Why not this one?' : 'Discard this post?', text: c.type === 'Shot' ? 'A short reason helps the next suggestions fit better.' : 'It won’t be redrafted. A short reason helps the next ones fit better.',
-      label: 'Reason', options: c.type === 'Shot' ? ['Not my style', 'Posted something like it', 'Not this season'] : ['Doesn’t sound like me', 'Wrong time for it', 'Already said this'],
-      confirmLabel: c.type === 'Shot' ? 'Not this' : 'Discard', danger: true }).then(function (why) { if (why) send(why); });
+      label: 'Reason', options: c.type === 'Shot' ? ['Not my style', 'Posted something like it', 'Not this season'] : ['It’s an older photo', 'Doesn’t sound like me', 'Wrong time for it', 'Already said this'],
+      confirmLabel: c.type === 'Shot' ? 'Not this' : 'Don’t post it', danger: true }).then(function (why) { if (why) send(why); });
   }
 
   /** Verify: tick the checks it fails, add a note, and it goes back to be redrafted. */
@@ -11496,12 +11506,21 @@ var Kit = (function () {
   }
   var note_ = function (text, iconName, tone) { return note(text, iconName, tone); };
 
+  /** True when the post itself, or the rule it clashes with, says to hold it back. */
+  function setAsideHint(c) { return /set aside|disregard|hold (it )?back|older photo|don.t post/i.test([c.clash, c.why].join(' ')); }
   function reviewButtons(c, after) {
-    var yes = btn('filled', 'Approve', { icon: 'check' });
+    var aside = c.type === 'Post' && setAsideHint(c);
+    var yes = btn(aside ? 'outlined' : 'filled', aside ? 'Post it anyway' : 'Approve', { icon: 'check' });
     var fix = btn('outlined', 'Needs changes', { icon: 'edit' });
-    yes.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'approve', [yes, fix], after); });
+    var no = btn(aside ? 'filled' : 'text', 'Don’t post it', { icon: 'block' });
+    var all = [yes, fix, no];
+    yes.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'approve', all, after); });
     fix.addEventListener('click', function (e) { e.stopPropagation(); openChanges(c, after); });
-    return h('div', { class: 'btn-row' }, yes, fix);
+    no.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'reject', all, after); });
+    var ask = aside
+      ? note('Suggested: don’t post this one. It was marked to be set aside. Tap “Don’t post it”, or “Post it anyway” if that’s changed.', 'lightbulb')
+      : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Your call: Approve posts it. Needs changes has it redone. Don’t post it sets it aside.' });
+    return h('div', {}, ask, h('div', { class: 'btn-row', style: 'flex-wrap:wrap;margin-top:8px' }, aside ? no : yes, aside ? yes : fix, aside ? fix : no));
   }
   function shotButtons(c) {
     var yes = btn('filled', 'Add to the list', { icon: 'check' }), no = btn('outlined', 'Not this', { icon: 'close' });
@@ -11547,7 +11566,7 @@ var Kit = (function () {
         body.appendChild(h('div', { class: 'plan' }, h('b', { text: 'Fixed since last time' }),
           h('p', { text: (last.failed.length ? last.failed.join('; ') : '') + (last.failed.length && last.note ? '. ' : '') + (last.note || '') })));
       }
-      if (c.clash) body.appendChild(h('div', { style: 'margin-top:10px' }, note((ADMIN ? 'Needs your OK too: ' : 'Needs ' + adminName() + '’s OK too: ') + c.clash, 'gavel', 'warn')));
+      if (c.clash) body.appendChild(h('div', { style: 'margin-top:10px' }, note((ADMIN ? 'Why you’re asked as well: ' : 'Why ' + adminName() + ' is asked as well: ') + c.clash, 'info', 'warn')));
       if (otherDecision(c) === 'Approved' && (c.needs || []).length > 1) body.appendChild(h('div', { style: 'margin-top:10px' }, chip(cap(otherName()) + ' approved', 'approved', 'check')));
       body.appendChild(h('div', { style: 'margin-top:14px' }, reviewButtons(c)));
       card.addEventListener('click', function (e) { if (!e.target.closest('button, a')) openPost(c.id); });
