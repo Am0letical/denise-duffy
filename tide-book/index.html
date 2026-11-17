@@ -5352,6 +5352,13 @@ function tideTalk(env, t) {
     var r = item(id), c = helpCheck(r, cid);
     if (!c || c.status !== 'Problem') t.fail('That one’s already done.');
     var turns = t.list(((r.help || {})[cid] || {}).turns), last = turns[turns.length - 1];
+    if (Number(i) === -2) {
+      // that's enough: stop here and leave it as it is
+      helpTurn(r, cid, { from: 'her', text: 'That’s enough' });
+      helpDone(id, cid, 'That’s enough. Left as it is.');
+      helpTurn(item(id), cid, { from: 'tb', text: 'Left there. That one’s done.', options: [] });
+      return { ok: true, done: true };
+    }
     if (Number(i) === -1) {
       var own = t.text(String(text || '').trim(), 800);
       if (!own) t.fail('Write something first.');
@@ -9231,7 +9238,7 @@ var Kit = (function () {
               api('answerRound', id, answers).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (e) { K.setBusy(send, false); fail(e); });
             });
             ctl.foot.appendChild(send);
-            if (tp.answered >= 3) ctl.body.appendChild(h('div', { style: 'text-align:center;margin:6px 0 10px' }, btn('text', 'That’s enough for now. Write it up.', { onclick: function (e) {
+            ctl.body.appendChild(h('div', { style: 'text-align:center;margin:6px 0 10px' }, btn('tonal', 'That’s enough. Write it up.', { icon: 'done_all', onclick: function (e) {
               K.setBusy(e.currentTarget, true);
               api('answerRound', id, answers, { wrap: true }).then(refresh).then(reopen).catch(fail);
             } })));
@@ -9512,6 +9519,7 @@ var Kit = (function () {
           if (!it || !it.help || it.help.state !== 'thinking') { clearInterval(poll); reopen(); }
         }).catch(function () {});
       }, 4000);
+      box.appendChild(h('div', { style: 'margin-top:8px' }, btn('text', 'That’s enough. Leave it as it is.', { icon: 'done_all', onclick: function (e) { clearInterval(poll); send(-2, '', e.currentTarget); } })));
       return box;
     }
     if (hv.state === 'failed') box.appendChild(h('div', { class: 'help-msg tb', text: 'That didn’t come through. Say something below to try again.' }));
@@ -9531,6 +9539,7 @@ var Kit = (function () {
       if (!ta.value.trim()) { ta.focus(); return; }
       send(-1, ta.value.trim(), e.currentTarget);
     } })));
+    box.appendChild(h('div', { style: 'margin-top:8px' }, btn('text', 'That’s enough. Leave it as it is.', { icon: 'done_all', onclick: function (e) { send(-2, '', e.currentTarget); } })));
     return box;
   }
   function readyLine(r) {
