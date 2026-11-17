@@ -3255,7 +3255,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     var fromTide = function (a, i) {
       var keys = a.photos.map(function (ph, j) { var k = 'tb' + i + '_' + j; IMG[k] = REAL.images[ph] || ''; return k; });
       return { id: a.id, title: a.title, col: SERIES_COL[a.series] || 'forest', img: keys[0], card: keys[0], alt: keys[1] || keys[0],
-        sea: a.series === 'Ocean', isNew: i < 2, ed: a.ed, story: a.story, products: a.products,
+        sea: a.series === 'Ocean', isNew: i < 2, ogSold: !!a.ogSold, story: a.story, products: a.products,
         // optional, for the originals: a 3D scan (.glb, or { glb, usdz }), the medium and the size, when Tide Book has them
         scan: a.scan ? (REAL.images[a.scan] || (/[./]/.test(a.scan) ? a.scan : null)) : null, medium: a.medium || '', dims: a.size || a.dimensions || '' };
     };
@@ -3301,19 +3301,6 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (p.type !== 'Original') return '';
     if (soldOriginal(a, p)) return '<div class="edn sold"><b>Sold to a collector</b><p>The original has found its home. Prints of it are still available. <a href="#/a/' + a.id + '">See the prints</a>.</p></div>';
     return '<div class="edn"><b>One of a kind</b><p>There is only one original. Prints of it stay available.</p></div>';
-  }
-  function editionOld(a, p) {
-    var e = a.ed; if (!e) return '';
-    if (p.type === 'Original') {
-      if (soldOriginal(a, p)) return '<div class="edn sold"><b>Sold to a collector</b><p>' + (e.left ? 'A limited run of ' + e.limit + ' prints follows it, and ' + e.left + ' are left. <a href="#/a/' + a.id + '">See the prints</a>.' : 'Its print run has sold out too.') + '</p></div>';
-      if (e.mode === 'headstart') return '<div class="edn hold"><b>Its head start: ' + e.daysLeft + ' days left</b><p>Right now this original is the only way to own the piece. Buy it before ' + opensOn(e) + ' and only ' + e.quickSize + ' prints will ever follow it, instead of ' + e.size + '.</p></div>';
-      return '<div class="edn"><b>Once it’s gone, prints are limited</b><p>The day the original sells, the prints become a limited run of ' + e.size + '.</p></div>';
-    }
-    if (p.type !== 'Print') return '';
-    if (e.mode === 'headstart') return '<div class="edn hold"><b>Prints open ' + opensOn(e) + '</b><p>A new piece gets a head start: for its first ' + e.days + ' days, the <a href="#/a/' + a.id + '/original">original</a> is the only way to own it.</p>' + signup() + '<p class="tiny">We’ll email you the day prints open.</p></div>';
-    if (e.mode === 'open') return '<div class="edn"><b>Open for now</b><p>When the original sells, only ' + e.size + ' more prints will ever be made. <a href="#/a/' + a.id + '/original">The original</a> is still available.</p></div>';
-    if (e.mode === 'limited') return '<div class="edn lim"><b>Limited edition · ' + e.left + ' of ' + e.limit + ' left</b><div class="meter"><i style="width:' + Math.round(e.left / e.limit * 100) + '%"></i></div><p>The original has sold' + (e.quick ? ' (in its first days, so this run is smaller)' : '') + '. When these are gone, there are no more.</p></div>';
-    return '<div class="edn sold"><b>Edition sold out</b><p>All ' + e.limit + ' prints have found homes.</p></div>';
   }
   function canBuy(a, p) { return !heldPrint(a, p) && !soldOriginal(a, p); }
   function buyable(a) { return !!a && a.products.some(function (p) { return canBuy(a, p); }); }
@@ -3505,30 +3492,12 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       // the walk through the gallery (site/originals.js); the older one-page room stays as a fallback
       if (window.OriginalsHall) return window.OriginalsHall.html({ ARTWORKS: ARTWORKS, KEPT: KEPT, IMG: IMG, COLS: COLS, canBuy: canBuy, soldOriginal: soldOriginal, money: money, esc: esc, edLine: edLine, signup: signup, closing: closing, toast: toast });
       var here = ARTWORKS.filter(function (a) { return a.products.some(function (p) { return p.type === 'Original' && canBuy(a, p); }); });
-      var any = here[0] && here[0].ed || {}, days = any.days || 30, size = any.size || 50;
-      var steps = [
-        ['A head start', 'For its first ' + days + ' days, a new original is the only way to own the piece. No prints at all.'],
-        ['Prints open', 'After that, prints are available while the original is still here.'],
-        ['The original finds its home', 'The day it sells, the prints become a limited run. Only a set number more will ever be made. If it sells during its head start, that run is smaller still.'],
-        ['Then, no more', 'When the last print of the run goes, the piece is complete. It will never be printed again.']];
-      var rules = '<ol class="room-rules">' + steps.map(function (r, i) { return '<li class="reveal"><span class="n">0' + (i + 1) + '</span><b>' + r[0] + '</b><p>' + r[1] + '</p></li>'; }).join('') + '</ol>';
       var pieces = here.map(function (a, i) {
-        var og = a.products.filter(function (p) { return p.type === 'Original'; })[0], e = a.ed || {}, head = e.mode === 'headstart';
-        var opened = e.opened || 0, after = head ? (e.quickSize || Math.ceil((e.size || size) / 2)) : (e.size || size);
-        var dots = '';
-        for (var d = 0; d < opened; d++) dots += '<i class="s"></i>';
-        for (d = 0; d < after; d++) dots += '<i></i>';
-        var ledger = '<dl class="ledger">' +
-          '<div><dt>Now</dt><dd>' + (head ? (e.waiting ? 'Original only, for now' : 'Its head start · ' + e.daysLeft + ' day' + (e.daysLeft === 1 ? '' : 's') + ' left') : 'Prints are open') + '</dd></div>' +
-          '<div><dt>Prints sold so far</dt><dd>' + (head ? 'None. Prints open ' + opensOn(e) : opened ? opened + '' : 'None yet') + '</dd></div>' +
-          '<div><dt>If it finds its home today</dt><dd>' + after + ' more prints, then no more</dd></div>' +
-          '<div><dt>The most there will ever be</dt><dd>' + (opened + after) + ' prints, and this one original</dd></div></dl>';
+        var og = a.products.filter(function (p) { return p.type === 'Original'; })[0], ledger = '';
         return '<section class="room-piece' + (i % 2 ? ' flip' : '') + '"><div class="room-frame wipe"><div class="mat"><img alt="' + esc(a.title) + '" src="' + IMG[a.img] + '"></div>' + tag(null, a, og) + '</div>' +
           '<div class="placard"><div class="lbl">No. ' + (i < 9 ? '0' : '') + (i + 1) + ' · ' + esc((COLS[a.col] || {}).title || 'Studio') + '</div>' +
           '<h2 class="reveal">' + esc(a.title) + '</h2><p class="room-story reveal">' + esc(a.story) + '</p>' +
           '<div class="room-price reveal">' + money(og.options[0].price) + '<span>the original · ' + esc(og.options[0].note) + '</span></div>' + ledger +
-          '<div class="run reveal" aria-label="' + opened + ' prints sold so far, ' + after + ' more to follow if the original sells today"><div class="dots">' + dots + '</div>' +
-          '<div class="key"><span><i class="s"></i>Sold so far</span><span><i></i>Still to come, once it finds its home</span></div></div>' +
           '<p class="room-cta reveal"><button class="btn" type="button" data-qa="' + a.id + '" data-qa-p="' + og.id + '">Buy the original</button><a href="#/a/' + a.id + '/' + og.id + '">More about it →</a></p></div></section>';
       }).join('');
       if (!here.length) pieces = '<div class="edn hold" style="max-width:640px;margin:40px auto"><b>Every original has found a home, for now</b><p>New pieces are on the easel. Join my letters from the studio and you’ll see them first.</p>' + signup() + '</div>';
@@ -3710,12 +3679,6 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   function edLine(a, p) {
     if (p.type === 'Original') return soldOriginal(a, p) ? '' : 'One of a kind. Prints of it stay available.';
     return '';
-  }
-  function edLineOld(a, p) {
-    var e = a.ed; if (!e) return '';
-    if (p.type === 'Original') return e.mode === 'headstart' ? 'Its head start: buy before ' + opensOn(e) + ' and only ' + e.quickSize + ' prints will ever follow it.' : soldOriginal(a, p) ? '' : 'When it sells, prints become a limited run of ' + e.size + '.';
-    if (p.type !== 'Print') return '';
-    return e.mode === 'limited' ? 'Limited edition · ' + e.left + ' of ' + e.limit + ' left.' : e.mode === 'open' ? 'Open for now. Once the original sells, only ' + e.size + ' more prints.' : '';
   }
   function drawQuick() {
     var a = qs.a, p = qs.p, o = qs.o, ok = canBuy(a, p), ed = edLine(a, p);

@@ -1033,6 +1033,9 @@ window.TIDE_DEMO = { anonymise: false }; window.TIDE_ART = {"footage-ocean": "da
 
 // ----------------------------------------------------------------------------- options
 var TIDE = {
+  // Denise doesn't do limited print runs: an original is one of a kind, and its prints stay on sale. No head start,
+  // no countdown. The edition machinery below stays in place, switched off, in case that ever changes.
+  LIMITED_RUNS: false,
   KINDS: ['Product', 'Content', 'Wellness', 'Other'],
   TIMELINES: ['This month', 'Next 3 months', 'This year', 'No rush'],
   PRIORITIES: ['High', 'Medium', 'Low'],
@@ -1834,6 +1837,7 @@ function createTideLogic(env) {
     var og = originalOf(pr);
     if (!og) return { mode: 'none' };
     var e = pr.edition || {}, a = sales[pr.id] || { original: '', prints: [] };
+    if (!TIDE.LIMITED_RUNS) return { mode: 'none', sold: a.original };
     var size = Number(e.size) || s.editionSize, days = Number(e.bufferDays) || s.editionBufferDays;
     var out = { mode: '', size: size, listed: e.listed || '', bufferDays: days, opensOn: e.listed ? shiftDay(e.listed, days) : '',
       sold: a.original, quickSize: Math.max(1, Math.ceil(size * s.quickEditionPct / 100)),
@@ -2053,7 +2057,7 @@ function createTideLogic(env) {
           options: opts.map(function (v) { return { id: String(v.option).toLowerCase().replace(/[^a-z0-9]+/g, '') || 'one', label: v.option, note: FULFIL[pd.fulfilment] || '', price: v.price }; }) });
       });
       return { id: slugOf(pr.title, pr.id), title: pr.title, story: pr.description || '', series: pr.series || 'Forest',
-        photos: list(pr.photoIds).slice(0, 3), scan: pr.scanId || '', ed: ed, products: products, wentLive: pr.wentLive || '' };
+        photos: list(pr.photoIds).slice(0, 3), scan: pr.scanId || '', ed: ed, ogSold: !!st.sold, products: products, wentLive: pr.wentLive || '' };
     }).sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
     // an original is for sale only when "The original" has a price. Live pieces with nothing to buy are still shown in the
     // gallery, as part of Denise's own collection; pieces with prints show there too, marked as hers.
@@ -2484,7 +2488,7 @@ function createTideLogic(env) {
         productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: T.SERIES,
         saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES
       },
-      settings: s, gstRegistered: registered,
+      settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true,
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -10914,7 +10918,7 @@ var Kit = (function () {
         var s3b = sheetSection('Made into');
         var plist = h('div', { class: 'list' });
         var edWrap = h('div');
-        function drawEdition() { edWrap.textContent = ''; if (f.products.some(function (pd) { return pd.type === 'Original'; })) edWrap.appendChild(editionSection(p, f, touch)); }
+        function drawEdition() { edWrap.textContent = ''; if (S.data.limitedRuns && f.products.some(function (pd) { return pd.type === 'Original'; })) edWrap.appendChild(editionSection(p, f, touch)); }
         function drawProducts() {
           plist.textContent = ''; drawEdition();
           f.products.forEach(function (pd, i) { plist.appendChild(productRow(pd, function () { openProduct(pd, f.products, i, function () { drawProducts(); touch(); }); })); });
@@ -11160,7 +11164,9 @@ var Kit = (function () {
           function drawArt() {
             artWrap.textContent = '';
             if (f.category !== 'Prints' && f.category !== 'Originals') return;
-            var limited = S.data.prints.filter(function (p) { return p.edition && p.edition.mode !== 'none'; });
+            // with no limited runs, only an original is filed against its artwork (so it shows as sold)
+            var limited = S.data.prints.filter(function (p) { return S.data.limitedRuns ? p.edition && p.edition.mode !== 'none'
+              : f.category === 'Originals' && (p.products || []).some(function (pd) { return pd.type === 'Original'; }); });
             if (!limited.length && !f.printId) return;
             var opts = [{ value: '', label: f.category === 'Prints' ? 'Several, or none of these' : 'Not one of these' }].concat(limited.map(function (p) { return { value: p.id, label: p.title + (p.edition.line ? ' · ' + p.edition.line : '') }; }));
             var stack = h('div', { class: 'field-gap' }, K.pickField({ label: f.category === 'Prints' ? 'Prints of which artwork?' : 'Which original?', value: f.printId, options: opts, empty: opts[0].label,
@@ -13208,7 +13214,7 @@ var Kit = (function () {
         help: 'Filled in for each new piece. Change it per artwork.' }),
       K.textField({ label: 'Run if it sells in the head start', suffix: '%', inputmode: 'numeric', value: f.quickEditionPct, onInput: function (v) { f.quickEditionPct = K.num(v); },
         help: 'A quick buyer gets more exclusivity: 50% halves the run.' })));
-    main.appendChild(rise(ed, 1));
+    if (S.data.limitedRuns) main.appendChild(rise(ed, 1));
 
     var t = section('Tax');
     var dateField = K.textField({ label: 'Registered from', type: 'date', value: f.gstRegisteredFrom, onInput: function (v) { f.gstRegisteredFrom = v; } });
