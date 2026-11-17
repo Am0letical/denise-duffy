@@ -464,6 +464,11 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .hand-why { font: 400 13px/18px var(--font); color: var(--on-surface-variant); margin-top: 2px; }
 .hand-row.done .hand-text { text-decoration: line-through; color: var(--on-surface-variant); }
 .hand-row.done .hand-ic { color: var(--tertiary, #2e7d32); }
+/* a checklist item expands: tap it for a one-sentence answer and choices */
+.hand-tap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.hand-more { display: inline-flex; align-items: center; gap: 2px; margin-top: 6px; font-size: 14px; font-weight: 600; color: var(--primary); }
+.hand-more .material-symbols-rounded, .hand-more i, .hand-more svg { transition: transform .2s; }
+.hand-more.open > :last-child { transform: rotate(180deg); }
 /* inspo: a delete button on each card */
 .inspo-wrap { position: relative; }
 .inspo-wrap > .inspo-card { width: 100%; height: 100%; }
@@ -9535,13 +9540,15 @@ var Kit = (function () {
     L.forEach(function (x) {
       if (x.state === 'later') nLater++; if (x.state === 'done') nDone++;
       var hk = p.id + ':' + x.cid, hv = x.help || { turns: [], state: '' };
-      var helpBtn = x.state === 'now' && x.cid ? btn('tonal', HELP_OPEN[hk] ? 'Close' : 'Walk me through it', { sm: true, icon: HELP_OPEN[hk] ? 'close' : 'auto_awesome', onclick: function (e) {
+      // tap the item to expand it: a one-sentence answer, then choices
+      var helpBtn = x.state === 'now' && x.cid ? h('div', { class: 'hand-more' + (HELP_OPEN[hk] ? ' open' : '') }, h('span', { text: HELP_OPEN[hk] ? 'Less' : 'How do I do this?' }), icon('expand_more')) : null;
+      function toggleHelp() {
         HELP_OPEN[hk] = !HELP_OPEN[hk];
         if (HELP_OPEN[hk] && !hv.turns.length && hv.state !== 'thinking') {
-          var b = e.currentTarget; K.setBusy(b, true);
-          saveFirst().then(function () { return api('helpStart', p.id, x.cid); }).then(refresh).then(reopen).catch(function (er) { K.setBusy(b, false); HELP_OPEN[hk] = false; fail(er); });
+          helpBtn.firstChild.textContent = 'Opening…';
+          saveFirst().then(function () { return api('helpStart', p.id, x.cid); }).then(refresh).then(reopen).catch(function (er) { HELP_OPEN[hk] = false; reopen(); fail(er); });
         } else reopen();
-      } }) : null;
+      }
       var row = h('div', { class: 'hand-row ' + x.state },
         h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'hourglass_top' : 'radio_button_unchecked')),
         h('div', { class: 'grow' }, h('div', { class: 'hand-text', text: x.text }),
@@ -9551,7 +9558,13 @@ var Kit = (function () {
           saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
             .catch(function (er) { K.setBusy(b, false); fail(er); });
         } }) : null);
-      if (helpBtn) row.querySelector('.grow').appendChild(h('div', { style: 'margin-top:8px' }, helpBtn));
+      if (helpBtn) {
+        var g = row.querySelector('.grow');
+        g.appendChild(helpBtn); g.classList.add('hand-tap');
+        g.setAttribute('role', 'button'); g.setAttribute('tabindex', '0'); g.setAttribute('aria-expanded', String(!!HELP_OPEN[hk]));
+        g.addEventListener('click', toggleHelp);
+        g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleHelp(); } });
+      }
       (x.state === 'now' ? sec : rest).appendChild(row);
       if (helpBtn && HELP_OPEN[hk]) sec.appendChild(helpBox(p, x, hv, saveFirst, reopen));
     });
@@ -9567,7 +9580,6 @@ var Kit = (function () {
   var HELP_OPEN = {};
   function helpBox(p, x, hv, saveFirst, reopen) {
     var box = h('div', { class: 'help-box' });
-    box.appendChild(h('div', { class: 'body-s', style: 'margin-bottom:8px;color:var(--on-surface-variant)', text: 'Tide Book takes you through this one step at a time, and does any of it it can for you.' }));
     hv.turns.forEach(function (tn) { box.appendChild(h('div', { class: 'help-msg ' + (tn.from === 'tb' ? 'tb' : 'her'), text: tn.text })); });
     function send(i, text, b) {
       K.setBusy(b, true);
