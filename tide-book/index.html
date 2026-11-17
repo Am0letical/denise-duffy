@@ -2692,7 +2692,7 @@ function createTideLogic(env) {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea,
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, wakePausedNow: function () { need(['admin']); return wakePaused(); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
