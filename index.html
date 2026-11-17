@@ -192,6 +192,18 @@ footer .legal { max-width: 1320px; margin: 18px auto 0; display: flex; justify-c
 
 /* ---------- inner pages (shop, artwork, sets, about) ---------- */
 .page { padding-top: 96px; min-height: 70vh; }
+/* back to home, on every page but home */
+.pill .homeb { display: none; text-decoration: none; font: 500 13px/1 var(--font); letter-spacing: .3px; padding: 8px 10px; margin-left: -8px; border-radius: 4px; white-space: nowrap; }
+body.away .pill .homeb { display: inline-flex; align-items: center; }
+body.away .pill .homeb:hover { background: rgba(0, 0, 0, .05); }
+@media (max-width: 420px) { body.away .pill .logo { display: none; } }
+/* Sea Shelter */
+.sea-link { font-weight: 500; white-space: nowrap; }
+.sea-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin: 30px 0; }
+.sea-step { padding: 18px; background: var(--seafoam); color: #00302F; }
+.sea-step .n { display: block; font: 500 11px/1 var(--font); letter-spacing: 2px; opacity: .7; margin-bottom: 10px; }
+.sea-step b { display: block; font: 500 22px/1.2 var(--display); margin-bottom: 6px; }
+.sea-step p { margin: 0; font-size: 15px; }
 .crumbs { font: 500 11px/1 var(--font); letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
 .crumbs a { text-decoration: none; }
 .ptitle { font: 500 clamp(44px, 8vw, 120px)/.95 var(--display); letter-spacing: -.03em; }
@@ -1367,11 +1379,12 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
 </head>
 <body>
 <div class="mock">Prototype of the custom website · sample prices, titles and offers · nothing is for sale yet</div>
-<div class="pill"><a class="logo" href="#/">Denise Duffy</a><button class="burger" type="button" id="burger" aria-label="Menu"><i></i></button></div>
+<div class="pill"><a class="homeb" href="#/" aria-label="Back to home">← Home</a><a class="logo" href="#/">Denise Duffy</a><button class="burger" type="button" id="burger" aria-label="Menu"><i></i></button></div>
 <button class="cartp" type="button" id="cartBtn" aria-label="Open cart"><span class="lbl">Cart</span><b id="cartN">0</b></button>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
   <div class="top"><span class="lbl">Denise Duffy · Visual artist</span><button class="x" type="button" id="menuX" aria-label="Close menu">×</button></div>
   <nav>
+    <a href="#/"><small>00</small><span>Home</span></a>
     <a href="#/c/ocean"><small>01</small><span>Ocean</span></a>
     <a href="#/c/forest"><small>02</small><span>Forest</span></a>
     <a href="#/c/skies"><small>03</small><span>Skies &amp; Waters</span></a>
@@ -1379,6 +1392,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     <a href="#/gallery"><small>05</small><span>Living gallery</span></a>
     <a href="#/originals"><small>06</small><span>The originals</span></a>
     <a href="#/about"><small>07</small><span>About</span></a>
+    <a href="#/sea-shelter"><small>08</small><span>Sea Shelter</span></a>
   </nav>
   <div class="foot lbl"><span>Port Stephens, NSW</span><a href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a><a href="#/c/sets">Gift cards</a></div>
 </div>
@@ -1392,7 +1406,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Help</div><a href="#/about">Delivery</a><a href="#/about">Returns</a><a href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a></div>
   </div>
   <div class="big">Denise Duffy</div>
-  <div class="legal lbl"><span>© Denise Duffy · Medowie, NSW</span><span>20% of every marine print supports Sea Shelter</span></div>
+  <div class="legal lbl"><span>© Denise Duffy · Medowie, NSW</span><span>20% of every marine print supports <a href="#/sea-shelter">Sea Shelter</a></span></div>
 </footer>
 <div id="cartLayer"><div class="scrim" id="scrim"></div>
   <aside class="drawer" role="dialog" aria-modal="true" aria-label="Cart"><div class="hd"><h2>Your cart</h2><button class="x" type="button" id="closeCart" aria-label="Close cart">×</button></div><div class="items" id="items"></div><div class="ft" id="cartFt"></div></aside></div>
@@ -2945,7 +2959,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
       : '<div class="og-plc-p">' + priceLine(p) + '<span>One of a kind</span></div>';
     return '<div class="og-plc"' + (attrs || '') + '><div class="og-plc-no">No. ' + (p.no < 10 ? '0' : '') + p.no + ' · ' + esc(p.room.title) + '</div>' +
       '<b class="og-plc-t">' + esc(a.title) + '</b><div class="og-plc-m">The original' + (med ? ' · ' + med : '') + ' · signed</div>' + status +
-      (a.sea ? '<div class="og-plc-sea">Made with the Irukandji Shark &amp; Ray Centre · 20% of every marine print supports Sea Shelter</div>' : '') +
+      (a.sea ? '<div class="og-plc-sea">Made with the Irukandji Shark &amp; Ray Centre · 20% of every marine print supports <a href="#/sea-shelter">Sea Shelter</a></div>' : '') +
       '<span class="og-plc-cta">' + (p.nfs ? 'See its story' : 'Look closer') + ' <i aria-hidden="true">→</i></span></div>';
   }
   function quoteHTML(q, by) {
@@ -3074,7 +3088,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
       '<h2 class="og-i-t">' + esc(a.title) + '</h2><div class="og-i-m">The original · one of a kind · signed by Denise' + (med ? '<br>' + med : '') + '</div>' + buy +
       '<button class="og-i-ask" type="button" data-og-ask>Arrange a viewing, or ask Denise a question</button>' +
       '<form class="og-i-askf" hidden onsubmit="return false"><textarea rows="3" placeholder="Your question, or when you’d like to see it" aria-label="Your message"></textarea><input type="email" placeholder="Your email" aria-label="Your email"><button type="button" data-og-send>Send to Denise</button><p class="prop">Proposal: how viewings are arranged (studio, the centre, or a video call) is to confirm with Denise.</p></form>' +
-      (a.sea ? '<div class="og-i-sea">From the ocean collection, made with the Irukandji Shark &amp; Ray Centre. 20% of every marine print supports Sea Shelter.</div>' : '') +
+      (a.sea ? '<div class="og-i-sea">From the ocean collection, made with the Irukandji Shark &amp; Ray Centre. 20% of every marine print supports <a href="#/sea-shelter">Sea Shelter</a>.</div>' : '') +
       (a.story ? '<p class="og-i-story">' + esc(a.story) + '</p>' : '') +
       '<dl class="og-i-prov">' + rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl>' +
       '<a class="og-i-more" href="#/a/' + esc(a.id) + (og ? '/' + esc(og.id) : '') + '">Everything about this piece <i aria-hidden="true">→</i></a></div></div>';
@@ -3395,7 +3409,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 
         '<section class="sec wrap"><div class="split"><div class="ph wipe"><img class="par" data-speed="-0.06" alt="The shark painting at the Irukandji Shark &amp; Ray Centre" src="' + IMG.oceanTall + '">' + tag('oceanTall', null, null, 'hot-shark') + '</div><div>' +
         '<div class="lbl" style="color:var(--teal)">Made with the Irukandji Shark &amp; Ray Centre</div><h2 class="reveal">Every ocean print <span class="it" style="color:var(--teal)">gives back</span></h2>' +
-        '<p class="reveal">In collaboration with Irukandji Shark and Ray Centre at Port Stephens, I have a selection of originals and prints inspired by resident rays and sharks and my own passion for the ocean and marine life. 20% of every marine print goes to Sea Shelter | Ocean Conservation, to support this Hunter region based organisation to rescue, rehabilitate, release, regenerate and research.</p>' +
+        '<p class="reveal">In collaboration with Irukandji Shark and Ray Centre at Port Stephens, I have a selection of originals and prints inspired by resident rays and sharks and my own passion for the ocean and marine life. 20% of every marine print goes to <a href="#/sea-shelter">Sea Shelter</a>, a volunteer-run ocean conservation group here in the Hunter region that rescues, rehabilitates and releases injured sea creatures.</p><p class="reveal"><a class="sea-link" href="#/sea-shelter">About Sea Shelter →</a></p>' +
         '<p style="margin-top:24px" class="reveal"><a class="chipbtn" href="#/c/ocean">Shop the ocean collection +</a></p></div></div></section>' +
 
         '<section class="pocket"><div class="wrap"><div class="lbl reveal">Pockets of magic</div>' +
@@ -3455,7 +3469,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         (canBuy(a, p) ? '<div class="or">or</div>' : '') +
         '<button class="btn block' + (canBuy(a, p) ? ' ghost' : '') + '" style="margin-top:' + (canBuy(a, p) ? '4' : '16') + 'px" type="button" data-act="add" id="mainAdd"' + (canBuy(a, p) ? '' : ' disabled') + '>' +
           (heldPrint(a, p) ? 'Prints open ' + opensOn(a.ed) : soldOriginal(a, p) ? 'Sold' : p.type === 'Original' ? 'Add the original to cart' : 'Add to cart') + '</button>' +
-        bundle + (a.sea ? '<div class="note">🌊 20% of every marine print goes to Sea Shelter’s marine rescue and rehabilitation.</div>' : '') +
+        bundle + (a.sea ? '<div class="note">🌊 <span>20% of every marine print goes to Sea Shelter, volunteers in Port Stephens who rescue injured sea creatures and release them back to the wild. <a class="sea-link" href="#/sea-shelter">About Sea Shelter →</a></span></div>' : '') +
         '<p class="story">' + esc(a.story) + '</p>' +
         '<div class="acc"><details><summary>Delivery</summary><p>Free over $100, otherwise $12 in Australia. Prints posted flat or in a tube; framed pieces by courier. Downloads by email straight away. (Sample terms.)</p></details>' +
         '<details><summary>Returns</summary><p>A clear, friendly returns promise belongs here. (Proposal.)</p></details>' +
@@ -3519,6 +3533,21 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         rules + '</header><div class="wrap">' + pieces + '</div>' +
         '<div class="wrap">' + closing('The same moments, on paper', 'Or begin with <span class="it">a print</span>', 'Each original also lives as prints, posted to you, for as long as its run lasts.', function (a) { return a.products.some(function (p) { return p.type === 'Print' && canBuy(a, p); }); }) + '</div></div>';
     },
+    'sea-shelter': function () {
+      return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · Sea Shelter</div><h1 class="ptitle reveal">Where <span class="it" style="color:var(--teal)">20%</span> of every ocean print goes</h1>' +
+        '<p class="plede reveal">Sea Shelter is a volunteer-run ocean conservation group here in Port Stephens. 20% of every marine print goes to them.</p>' +
+        '<div class="sea-steps">' + [
+          ['Rescue', 'They rescue injured marine fish and reptiles, like sea turtles, found around Port Stephens and the Hunter coast.'],
+          ['Rehabilitate', 'They care for each animal until it is well again. It is slow work: some turtles stay in their care for more than a year.'],
+          ['Release', 'When an animal is ready, it goes back to the wild.'],
+          ['Protect', 'They also work to protect and restore marine habitat, and help with research into sharks and rays.']
+        ].map(function (s, i) { return '<div class="sea-step reveal"><span class="n">0' + (i + 1) + '</span><b>' + s[0] + '</b><p>' + s[1] + '</p></div>'; }).join('') + '</div>' +
+        '<p class="reveal" style="max-width:640px">They work from Irukandji Shark &amp; Ray Encounters at Anna Bay, where my ocean collection began. Their work runs on volunteers and donations, so a share of every ocean print goes to them.</p>' +
+        '<p style="margin:26px 0;display:flex;gap:10px;flex-wrap:wrap" class="reveal"><a class="chipbtn" href="#/c/ocean">See the ocean prints +</a>' +
+        '<a class="chipbtn light" style="border:1px solid var(--night)" href="https://seashelter.org/" target="_blank" rel="noopener">Visit Sea Shelter ↗</a>' +
+        '<a class="chipbtn light" style="border:1px solid var(--night)" href="https://seashelter.org/donations-now/" target="_blank" rel="noopener">Give to them directly ↗</a></p>' +
+        closing('Made with Irukandji', 'Take the <span class="it" style="color:var(--teal)">ocean</span> home', '20% of every marine print supports Sea Shelter.', function (a) { return a.sea; }) + '</div>';
+    },
     centre: function () {
       return '<div class="page wrap"><div class="crumbs">Welcome from the centre</div><h1 class="ptitle reveal">You met my work at <span class="it" style="color:var(--teal)">Irukandji</span></h1>' +
         '<p class="plede reveal">Thank you for stopping by. Fell for a piece but couldn’t carry it home? Every ocean print comes bigger and framed, delivered anywhere in Australia.</p>' +
@@ -3534,6 +3563,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   function route() {
     var h = location.hash.replace(/^#\/?/, ''), parts = h.split('/');
     closeMenu(); closeQuick(true);
+    document.body.classList.toggle('away', !!h);
     if (parts[0] !== 'gallery') state = {};
     if (window.LivingGallery) { if (parts[0] === 'gallery') window.LivingGallery.show(); else window.LivingGallery.hide(); }
     if (parts[0] === 'gallery') { if (!$('#main').innerHTML) paint(views.home()); return; }
