@@ -5146,9 +5146,12 @@ function tideTalk(env, t) {
       return { kind: 'approve', label: label, why: why };
     }
     // a check that came back no go comes with its fix: agreeing it comes first, whatever the stage, so nothing needs a second OK
+    // one at a time: the first fix on its own, with how many are left; agreeing them all at once stays a choice
     var fixesAll = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action; });
-    if (fixesAll.length) return { kind: 'fix', label: fixesAll.length === 1 ? 'Agree the fix: ' + fixesAll[0].action : 'Agree the ' + fixesAll.length + ' fixes',
-      why: fixesAll.slice(0, 3).map(function (c) { return c.action; }).join(' · ') + (fixesAll.length > 3 ? ' · and ' + (fixesAll.length - 3) + ' more, each listed under Checks. They go on its to-do list before it sells.' : '') };
+    if (fixesAll.length) return { kind: 'fix', target: fixesAll[0].item,
+      label: (fixesAll.length > 1 ? 'Fix 1 of ' + fixesAll.length + ': ' : 'One fix: ') + fixesAll[0].item,
+      why: fixesAll[0].action,
+      alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Agree all ' + fixesAll.length } : null };
     if (r.stage === 'Idea') return { kind: 'advance', label: 'Start shaping it', why: 'Next: the questions that decide what it is.' };
     if (r.stage === 'Questions') return { kind: 'advance', label: 'Move on to the decisions', why: 'What it is, who it’s for and how it’s made.' };
     if (r.stage === 'Decisions') {
@@ -5165,8 +5168,6 @@ function tideTalk(env, t) {
       }
       if (!t.list(r.parts).length) return { kind: 'checks', label: 'Draft the parts list', why: 'What one needs, so it can be costed.' };
       if (t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return { kind: 'clear', label: 'Check the rules for selling it', why: t.list(r.checks).filter(function (c) { return c.status === 'To check'; }).length + ' checks, each settled as a go or with one fix.' };
-      var fixes = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action; });
-      if (fixes.length) return { kind: 'fix', label: fixes.length === 1 ? 'Agree the fix: ' + fixes[0].action : 'Agree the ' + fixes.length + ' fixes', why: fixes.map(function (c) { return c.item + ': ' + c.action; }).join(' · ') };
       var price = Number((r.pricing || {}).price) || 0, unit = unitCost(r);
       if (!(price > unit)) { var want = pl && pl.price > unit ? pl.price : Math.ceil(unit * 2.5); return { kind: 'price', label: 'Set the price to ' + money2(want), why: 'It costs ' + money2(unit) + ' to make, so ' + money2(price) + ' doesn’t cover it.', price: want }; }
       return signOff('OK the costing and move on to the sample', 'Costs ' + money2(Math.round(unit * 100) / 100) + ', sells at ' + money2(price) + ', every check is a go.');
@@ -5218,10 +5219,11 @@ function tideTalk(env, t) {
       return { ok: true };
     }
     if (want === 'checks' || want === 'clear' || want === 'copy') return draftItem(id, want);
-    if (want === 'fix') {
-      var agreed = [];
+    if (want === 'fix' || want === 'fixall') {
+      var agreed = [], one = want === 'fix';
       updateItem(id, { checks: t.list(r.checks).map(function (c) {
         if (!(c.status === 'Problem' && c.action)) return c;
+        if (one && (agreed.length || c.item !== n.target)) return c;
         agreed.push(c.action);
         return Object.assign({}, c, { status: 'OK', verdict: 'Go', note: 'Fix agreed: ' + c.action, why: (c.why ? c.why + ' ' : '') + 'Fixed by: ' + c.action });
       }), decisions: t.list(r.decisions).concat(agreed.map(function (a) { return 'Before selling: ' + a; })) });
