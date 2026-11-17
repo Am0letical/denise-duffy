@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,edit,edit_note,error,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,text_fields,thumb_up,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,text_fields,thumb_up,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -479,6 +479,15 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .inspo-tldr.empty { opacity: .65; font-style: italic; }
 .inspo-full { margin-top: 10px; border-radius: 16px; overflow: hidden; background: var(--surface-highest); }
 .inspo-full iframe { display: block; width: 100%; height: 640px; border: 0; }
+/* arranging the home page: cards to pick up and put down */
+.ho-list { display: flex; flex-direction: column; gap: 8px; }
+.ho-card { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; border-radius: 16px; background: var(--surface, #fff);
+  box-shadow: inset 0 0 0 1px var(--outline-variant); touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; position: relative;
+  transition: box-shadow .15s, background .15s; }
+.ho-card.lifted { z-index: 2; cursor: grabbing; transition: none; background: var(--surface-high, #f3ede6); box-shadow: 0 10px 24px rgba(0,0,0,.18), inset 0 0 0 2px var(--primary); }
+.ho-ic { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; background: var(--secondary-container, #dbe7f3); flex-shrink: 0; }
+.ho-t { font-size: 16px; font-weight: 500; }
+.ho-grip { opacity: .55; }
 /* inspo: a delete button on each card */
 .inspo-wrap { position: relative; }
 .inspo-wrap > .inspo-card { width: 100%; height: 100%; }
@@ -8721,16 +8730,43 @@ var Kit = (function () {
     K.sheet({
       title: 'Arrange your home page', guard: function () { return dirty; },
       build: function (ctl) {
-        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Move what matters most to the top. Sections with nothing in them stay hidden.' }));
-        var list = h('div', { class: 'list' });
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Press and drag a card to where you want it. Sections with nothing in them stay hidden.' }));
+        var list = h('div', { class: 'ho-list' });
+        var HO_ICON = { cover: 'palette', inspo: 'favorite', needs: 'help', waiting: 'hourglass_top', todo: 'fact_check', website: 'language', review: 'perm_media', actions: 'add', glance: 'insights' };
         function draw() {
           list.textContent = '';
-          order.forEach(function (k, i) {
+          order.forEach(function (k) {
             var label = k === 'needs' ? 'Questions from ' + adminName() : HOME_SECTIONS[k];
-            list.appendChild(h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', text: (i + 1) + '. ' + label })),
-              K.iconBtn('arrow_upward', 'Move ' + label + ' up', function () { if (i === 0) return; order.splice(i - 1, 0, order.splice(i, 1)[0]); dirty = true; K.haptic(); draw(); }),
-              K.iconBtn('arrow_downward', 'Move ' + label + ' down', function () { if (i === order.length - 1) return; order.splice(i + 1, 0, order.splice(i, 1)[0]); dirty = true; K.haptic(); draw(); })));
+            var card = h('div', { class: 'ho-card', dataset: { k: k }, role: 'listitem', 'aria-label': label },
+              h('span', { class: 'ho-ic' }, icon(HO_ICON[k] || 'home')), h('span', { class: 'grow ho-t', text: label }), h('span', { class: 'ho-grip' }, icon('drag_indicator')));
+            list.appendChild(card);
+            pickUp(card);
           });
+        }
+        // pick a card up, move it, put it down: the others make room as it passes
+        function pickUp(card) {
+          var startY = 0, dy = 0, moving = false;
+          card.addEventListener('pointerdown', function (e) {
+            if (e.button > 0) return;
+            moving = true; startY = e.clientY; dy = 0;
+            card.setPointerCapture(e.pointerId); card.classList.add('lifted'); K.haptic();
+          });
+          card.addEventListener('pointermove', function (e) {
+            if (!moving) return;
+            dy = e.clientY - startY;
+            card.style.transform = 'translateY(' + dy + 'px)';
+            var prev = card.previousElementSibling, next = card.nextElementSibling;
+            if (prev && dy < -(prev.offsetHeight / 2 + 4)) { list.insertBefore(card, prev); startY -= prev.offsetHeight + 8; dy = e.clientY - startY; card.style.transform = 'translateY(' + dy + 'px)'; K.haptic(); }
+            else if (next && dy > next.offsetHeight / 2 + 4) { list.insertBefore(next, card); startY += next.offsetHeight + 8; dy = e.clientY - startY; card.style.transform = 'translateY(' + dy + 'px)'; K.haptic(); }
+          });
+          function drop() {
+            if (!moving) return;
+            moving = false; card.classList.remove('lifted'); card.style.transform = '';
+            var now = [].slice.call(list.children).map(function (c) { return c.dataset.k; });
+            if (now.join() !== order.join()) { order = now; dirty = true; }
+          }
+          card.addEventListener('pointerup', drop);
+          card.addEventListener('pointercancel', drop);
         }
         draw();
         ctl.body.appendChild(list);
