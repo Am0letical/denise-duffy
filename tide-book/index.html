@@ -464,6 +464,24 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .hand-why { font: 400 13px/18px var(--font); color: var(--on-surface-variant); margin-top: 2px; }
 .hand-row.done .hand-text { text-decoration: line-through; color: var(--on-surface-variant); }
 .hand-row.done .hand-ic { color: var(--tertiary, #2e7d32); }
+/* the next-step card folds: tap the top for the choices */
+.next-head { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.next-head:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; border-radius: 8px; }
+.next-chev { padding-top: 14px; transition: transform .2s var(--ease, ease); }
+.next-card.open .next-chev { transform: rotate(180deg); }
+.next-peek { margin-top: 4px; opacity: .75; }
+.next-body { display: none; }
+.next-card.open .next-body { display: block; }
+.next-opts { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.next-opt { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; padding: 12px 14px; border: 0; border-radius: 16px;
+  background: rgba(255,255,255,.6); color: inherit; font: inherit; cursor: pointer; }
+.next-opt.main { background: var(--primary, #1c4e86); color: var(--on-primary, #fff); }
+.next-opt-ic { padding-top: 1px; }
+.next-opt-label { display: block; font-weight: 600; font-size: 16px; line-height: 22px; }
+.next-opt-why { display: block; font-size: 14px; line-height: 20px; opacity: .8; margin-top: 2px; }
+.next-opt.own { cursor: default; }
+.next-opt.own textarea { display: block; width: 100%; margin-top: 8px; min-height: 64px; padding: 10px 12px; border: 0; border-radius: 12px; resize: vertical;
+  background: var(--surface, #fff); color: var(--on-surface, #1a1c1e); font: 400 16px/22px var(--font); box-shadow: inset 0 0 0 1px var(--outline-variant); }
 /* the recommended next step */
 .next-card { background: var(--primary-container, #d6e3ff); color: var(--on-primary-container, #001b3e); border: 0; }
 .next-card .label-s { opacity: .75; }
@@ -5197,7 +5215,9 @@ function tideTalk(env, t) {
     if (fixesAll.length) return { kind: 'fix', who: 'auto', no: 'fixno', noLabel: 'No go: I’ll do it my way', target: fixesAll[0].item,
       label: (fixesAll.length > 1 ? 'Fix 1 of ' + fixesAll.length + ': ' : 'Fix: ') + shortRule(fixesAll[0].item),
       why: fixesAll[0].action,
-      alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length } : null };
+      alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length } : null,
+      more: [{ kind: 'fixfine', label: 'It’s fine as it is', why: 'Nothing to change. It’s marked settled.' }],
+      own: 'fixown', ownLabel: 'Your own fix', ownHint: 'How you’d like it fixed. Tide Book notes it as the fix.' };
     if (r.stage === 'Idea') return { kind: 'advance', label: 'Start shaping it', why: 'Next: the questions that decide what it is.' };
     if (r.stage === 'Questions') return { kind: 'advance', label: 'Move on to the decisions', why: 'What it is, who it’s for and how it’s made.' };
     if (r.stage === 'Decisions') {
@@ -5291,12 +5311,13 @@ function tideTalk(env, t) {
     if (!blockers(r).length) return advance(id);
     return { ok: true, waiting: blockers(r) };
   }
-  function takeNext(id, kind) {
+  function takeNext(id, kind, text) {
     var role = t.need(['admin', 'artist']);
     var r = item(id), n = nextOf(r, role);
     if (!n || n.wait) t.fail(n ? n.label : 'Nothing to do here right now.');
     var want = String(kind || n.kind);
-    if (want !== n.kind && !(n.alt && n.alt.kind === want) && n.no !== want) t.fail('That step has changed. Have another look.');
+    var extra = (n.more || []).some(function (m) { return m.kind === want; }) || (n.own && n.own === want);
+    if (want !== n.kind && !(n.alt && n.alt.kind === want) && n.no !== want && !extra) t.fail('That step has changed. Have another look.');
     function setDeclined(k, on) {
       var d = Object.assign({}, r.declined || {}); if (on) d[k] = true; else delete d[k];
       env.lock(function () { env.table('pipeline').update(id, { declined: d, updated: t.nowIso(), log: logAdd(item(id), who(role) + (on ? ' chose to do it by hand: ' : ' handed back to Tide Book: ') + (DIY[k] || k)) }); });
@@ -5308,6 +5329,16 @@ function tideTalk(env, t) {
     if (want === 'samplechanges') { updateItem(id, { sample: { status: 'Needs changes', notes: (r.sample || {}).notes || '' } }); return { ok: true }; }
     if (want === 'fixno') {
       updateItem(id, { checks: t.list(r.checks).map(function (c) { return c.item === n.target && c.status === 'Problem' ? Object.assign({}, c, { who: 'artist' }) : c; }) });
+      return { ok: true };
+    }
+    if (want === 'fixfine' || want === 'fixown') {
+      var mine = want === 'fixown' ? t.text(String(text || '').trim(), 600) : '';
+      if (want === 'fixown' && !mine) t.fail('Say how you’d like it fixed first.');
+      updateItem(id, { checks: t.list(r.checks).map(function (c) {
+        if (!(c.item === n.target && c.status === 'Problem')) return c;
+        return Object.assign({}, c, { status: 'OK', verdict: 'Go', note: mine ? 'Fixed her way: ' + mine : 'Fine as it is (' + who(role) + ')',
+          why: (c.why ? c.why + ' ' : '') + (mine ? 'Fixed by: ' + mine : who(role) + ' says it’s fine as it is.') });
+      }), decisions: mine ? t.list(r.decisions).concat(['Before selling: ' + mine]) : t.list(r.decisions) });
       return { ok: true };
     }
     var pl = planOf(r);
@@ -9239,6 +9270,7 @@ var Kit = (function () {
   }
   /** The one step that makes the most sense now, from the research and the checks. One tap does it; everything
    *  below stays hers to change first. While the AI works, it waits here and moves on by itself. */
+  var NEXT_OPEN = {};
   function nextCard(p, saveFirst, reopen) {
     var n = p.next;
     if (!n) return null;
@@ -9246,11 +9278,11 @@ var Kit = (function () {
       h('div', { class: 'row', style: 'gap:12px;align-items:center' }, h('span', { class: 'ic' }, icon('rocket_launch')),
         h('div', { class: 'grow' }, h('div', { class: 'title-m', text: n.label }), h('div', { class: 'body-m', text: readyLine(p.ready) }))));
     var hers = n.who === 'hers';
-    var card = h('div', { class: 'card pad next-card' + (n.wait ? ' wait' : hers ? ' hers' : ''), style: 'margin:10px 0 14px' },
-      h('div', { class: 'label-s next-who' }, icon(n.wait ? 'hourglass_top' : hers ? 'front_hand' : 'auto_awesome'), n.wait ? 'Working on it' : hers ? 'Your turn' : 'Tide Book can do this'),
-      h('div', { class: 'title-m', style: 'margin-top:2px', text: n.label }),
-      n.why ? h('p', { class: 'body-m', style: 'margin:6px 0 0;color:var(--on-surface-variant)', text: n.why }) : null);
+    var whoLine = h('div', { class: 'label-s next-who' }, icon(n.wait ? 'hourglass_top' : hers ? 'front_hand' : 'auto_awesome'), n.wait ? 'Working on it' : hers ? 'Your turn' : 'Tide Book can do this');
     if (n.wait) {
+      var card = h('div', { class: 'card pad next-card wait', style: 'margin:10px 0 14px' }, whoLine,
+        h('div', { class: 'title-m', style: 'margin-top:2px', text: n.label }),
+        n.why ? h('p', { class: 'body-m', style: 'margin:6px 0 0;color:var(--on-surface-variant)', text: n.why }) : null);
       var poll = setInterval(function () {
         if (!document.body.contains(card)) { clearInterval(poll); return; }
         refresh().then(function () { var now = byId(talkData().pipeline, p.id); if (now && JSON.stringify(now.next) !== JSON.stringify(n)) { clearInterval(poll); reopen(); } }).catch(function () {});
@@ -9262,14 +9294,48 @@ var Kit = (function () {
       saveFirst().then(function () { return api('takeNext', p.id, kind); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
         .catch(function (e) { K.setBusy(b, false); fail(e); });
     }
-    var yes = n.kind ? btn('filled', hers ? (n.kind === 'approvesample' ? 'Yes, it’s right' : 'Done') : 'Go', { icon: 'check', onclick: function (e) { take(n.kind, e.currentTarget); } }) : null;
-    var no = n.no ? btn('outlined', n.noLabel || 'No go: I’ll do it myself', { onclick: function (e) { take(n.no, e.currentTarget); } }) : null;
-    var alt = n.alt ? btn('text', n.alt.label, { onclick: function (e) { take(n.alt.kind, e.currentTarget); } }) : null;
-    if (yes || no || alt) card.appendChild(h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, yes, no, alt));
-    var help = hers ? (n.kind ? '' : 'It’s on your checklist below.')
-      : n.no === 'decline' || n.no === 'fixno' ? 'Go and Tide Book does it now. No go and it goes on your checklist to do your way.'
-      : 'Or change anything below first. Your OK is still yours at every stage.';
-    if (help) card.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 0 0', text: help }));
+    // the card folds: the step on top, tap it for the choices
+    var NO_WHY = { fixno: 'It goes on your checklist to do your way.', decline: 'It goes on your checklist to do your way.',
+      goanyway: 'Keep going despite what the research found.', wantsample: 'Get a sample made first after all.', samplechanges: 'It needs changes before it can go on sale.' };
+    var opts = [];
+    if (n.kind) opts.push({ kind: n.kind, main: true, ic: 'check', label: hers ? (n.kind === 'approvesample' ? 'Yes, it’s right' : 'Done') : 'Go',
+      why: hers ? '' : n.kind === 'fix' ? 'Tide Book makes this change now.' : 'Tide Book does it now.' });
+    if (n.alt) opts.push({ kind: n.alt.kind, ic: n.alt.kind === 'fixall' ? 'done_all' : n.alt.kind === 'redo' ? 'auto_awesome' : 'arrow_forward', label: n.alt.label,
+      why: n.alt.kind === 'fixall' ? 'Every fix Tide Book can make, in one go.' : '' });
+    (n.more || []).forEach(function (m) { opts.push({ kind: m.kind, ic: 'thumb_up', label: m.label, why: m.why || '' }); });
+    if (n.no) opts.push({ kind: n.no, ic: n.no === 'fixno' || n.no === 'decline' ? 'front_hand' : 'close', label: n.noLabel || 'No go: I’ll do it myself', why: NO_WHY[n.no] || '' });
+    var canOpen = opts.length > 0 || !!n.own || !!n.why;
+    var open = !!NEXT_OPEN[p.id];
+    var chev = canOpen ? h('span', { class: 'next-chev' }, icon('expand_more')) : null;
+    var head = h('div', { class: 'next-head', role: canOpen ? 'button' : null, tabindex: canOpen ? '0' : null, 'aria-expanded': canOpen ? String(open) : null },
+      h('div', { class: 'grow' }, whoLine, h('div', { class: 'title-m', style: 'margin-top:2px', text: n.label })), chev);
+    var body = h('div', { class: 'next-body' });
+    var card = h('div', { class: 'card pad next-card' + (hers ? ' hers' : '') + (open ? ' open' : ''), style: 'margin:10px 0 14px' }, head, body);
+    function toggle() { if (!canOpen) return; open = !open; NEXT_OPEN[p.id] = open; card.classList.toggle('open', open); head.setAttribute('aria-expanded', String(open)); }
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+    if (!open && opts.length) head.querySelector('.grow').appendChild(h('div', { class: 'body-s next-peek', text: opts.length + (n.own ? 1 : 0) + ' choices · tap to see them' }));
+    if (n.why) body.appendChild(h('p', { class: 'body-m', style: 'margin:6px 0 0;color:var(--on-surface-variant)', text: n.why }));
+    var list = h('div', { class: 'next-opts' });
+    opts.forEach(function (o) {
+      list.appendChild(h('button', { class: 'next-opt' + (o.main ? ' main' : ''), type: 'button', onclick: function (e) { e.stopPropagation(); take(o.kind, e.currentTarget); } },
+        h('span', { class: 'next-opt-ic' }, icon(o.ic)),
+        h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: o.label }), o.why ? h('span', { class: 'next-opt-why', text: o.why }) : null)));
+    });
+    if (n.own) {
+      var ta = h('textarea', { rows: 2, placeholder: n.ownHint || 'Your own way' });
+      var go = btn('tonal', 'Use my fix', { sm: true, icon: 'edit', onclick: function (e) {
+        e.stopPropagation();
+        if (!ta.value.trim()) { ta.focus(); return; }
+        var b = e.currentTarget; K.setBusy(b, true);
+        saveFirst().then(function () { return api('takeNext', p.id, n.own, ta.value.trim()); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
+          .catch(function (er) { K.setBusy(b, false); fail(er); });
+      } });
+      list.appendChild(h('div', { class: 'next-opt own' }, h('span', { class: 'next-opt-ic' }, icon('edit')),
+        h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: n.ownLabel || 'Your own way' }), ta, h('div', { style: 'margin-top:6px' }, go))));
+    }
+    if (opts.length || n.own) body.appendChild(list);
+    if (hers && !n.kind) body.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 0 0', text: 'It’s on your checklist below.' }));
     return card;
   }
   /** Her checklist on a product: only what needs her own hands. Everything else is Tide Book's, with her go. */
