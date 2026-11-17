@@ -1185,7 +1185,7 @@ var TIDE_SCHEMAS = {
       ['summary', 'Summary', 'text'], ['research', 'Research', 'json'], ['researchedAt', 'Researched', 'date'],
       ['researchTries', 'Research tries', 'number'], ['researchNote', 'Research note', 'text'],
       ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date'], ['website', 'Website change', 'json'],
-      ['deleted', 'Removed', 'bool']
+      ['deleted', 'Removed', 'bool'], ['resumeOn', 'Paused until', 'day'], ['resumeStage', 'Stage before the pause', 'text'], ['remindedAt', 'Reminded', 'date']
     ]
   },
   prints: {
@@ -1357,7 +1357,7 @@ var TIDE_SCHEMAS = {
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'],
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
       ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number'],
-      ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list']
+      ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list'], ['resumeOn', 'Paused until', 'day'], ['remindedAt', 'Reminded', 'date']
     ]
   },
   // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
@@ -1533,6 +1533,7 @@ function createTideLogic(env) {
         if ('stage' in ch && ch.stage !== it.stage) {
           out.stage = oneOf(ch.stage, T.STAGES, 'a stage');
           out.stageChanged = now;
+          if (out.stage !== 'Parked') { out.resumeOn = ''; out.remindedAt = ''; }
           if (out.stage === 'Awaiting artist') {
             out.approvalState = 'Pending';
             if (!it.approvalRequest) out.approvalRequest = 'Please take a look.';
@@ -2422,7 +2423,7 @@ function createTideLogic(env) {
   function clientIdea(it, role) {
     var photoIds = list(it.photoIds);
     var out = {
-      id: it.id, created: it.created, updated: it.updated, kind: it.kind, title: it.title, note: it.note || '',
+      id: it.id, created: it.created, updated: it.updated, kind: it.kind, title: it.title, note: it.note || '', resumeOn: it.stage === 'Parked' ? it.resumeOn || '' : '',
       timeline: it.timeline, priority: it.priority, scope: list(it.scope), stage: it.stage,
       status: T.ARTIST_STATUS[it.stage] || 'Received', thumbIds: list(it.thumbIds),
       day: tideDay({ stage: it.stage, since: it.stageChanged }, env.now().getTime()),
@@ -2622,6 +2623,45 @@ function createTideLogic(env) {
   var setup = tideSetup(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
     loadBacklog: talk.api.loadBacklog, addNote: notebook.addNote });
 
+  // ---------- pause: anything in progress can stop for a while, with a day to come back to it
+  // A design rule across the app: pausing never loses progress, it says when it's coming back, a calendar mark shows it,
+  // a reminder goes out the day before, and on the day it wakes up by itself where it left off.
+  function resumeDay(d) {
+    d = String(d || '').slice(0, 10);
+    if (!d) return '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) fail('That date doesn\u2019t look right.');
+    if (d <= env.today()) fail('Pick a day after today.');
+    return d;
+  }
+  function pauseIdea(id, resumeOn) {
+    need(['admin', 'artist']);
+    var day = resumeDay(resumeOn);
+    return env.lock(function () {
+      var it = ideaRow(id), now = nowIso();
+      env.table('ideas').update(id, { stage: 'Parked', stageChanged: now, resumeOn: day, remindedAt: '',
+        resumeStage: it.stage === 'Parked' ? it.resumeStage || 'In progress' : it.stage, updated: now });
+      return { ok: true, resumeOn: day, was: it.stage };
+    });
+  }
+  function wakePaused() {
+    var today = env.today(), tomorrow = shiftDay(today, 1), woke = [];
+    env.lock(function () {
+      rows('ideas').forEach(function (it) {
+        if (it.deleted || it.stage !== 'Parked' || !it.resumeOn) return;
+        if (it.resumeOn <= today) {
+          env.table('ideas').update(it.id, { stage: it.resumeStage || 'In progress', stageChanged: nowIso(), resumeOn: '', remindedAt: '', updated: nowIso() });
+          woke.push(['Back on: ' + it.title, 'Your pause is over. It\u2019s back where you left it.']);
+        } else if (it.resumeOn === tomorrow && !it.remindedAt) {
+          env.table('ideas').update(it.id, { remindedAt: nowIso() });
+          woke.push(['Tomorrow: ' + it.title, 'Your paused idea comes back tomorrow.']);
+        }
+      });
+    });
+    var more = talk.wakePaused ? talk.wakePaused(today, tomorrow) : [];
+    woke.concat(more).forEach(function (w) { try { publish.push('artist', w[0], w[1]); } catch (e) {} });
+    return { woke: woke.length + more.length };
+  }
+
   // ---------- delete, and undo: nothing is wiped, so anything removed can be put back
   function deleteIdea(id) {
     need(['admin', 'artist']);
@@ -2652,7 +2692,7 @@ function createTideLogic(env) {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete,
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea,
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -2664,7 +2704,7 @@ function createTideLogic(env) {
     studio: content.studio,
     publish: publish,
     notebook: notebook,
-    talk: talk,
+    talk: talk, wakePaused: wakePaused,
     direction: direction,
     recordOnlineSales: recordOnlineSales,
     siteData: siteData,
@@ -5261,11 +5301,15 @@ function tideTalk(env, t) {
     if (msg && t.push) t.push(msg[0], msg[1], msg[2]);
     return res;
   }
-  function setParked(id, parked) {
+  function setParked(id, parked, resumeOn) {
     var role = t.need(['admin', 'artist']);
+    var day = String(resumeOn || '').slice(0, 10);
+    if (parked === true && day) { if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) t.fail('That date doesn\u2019t look right.'); if (day <= env.today()) t.fail('Pick a day after today.'); }
+    if (parked !== true) day = '';
     return env.lock(function () {
       var r = item(id);
-      env.table('pipeline').update(id, { parked: parked === true, parkedAt: parked === true ? t.nowIso() : '', updated: t.nowIso(), log: logAdd(r, who(role) + (parked ? ' parked it' : ' brought it back')) });
+      env.table('pipeline').update(id, { parked: parked === true, parkedAt: parked === true ? t.nowIso() : '', resumeOn: day, remindedAt: '', updated: t.nowIso(),
+        log: logAdd(r, who(role) + (parked ? ' paused it' + (day ? ' until ' + day : '') : ' brought it back')) });
       return { ok: true };
     });
   }
@@ -5506,6 +5550,23 @@ function tideTalk(env, t) {
     return { ok: true, done: true };
   }
   /** Ticks off one of her jobs. */
+  /** Timer: paused products whose day has come wake up; the day before, a reminder. Returns [title, body] for each. */
+  function wakePaused(today, tomorrow) {
+    var out = [];
+    env.lock(function () {
+      t.rows('pipeline').forEach(function (r) {
+        if (r.deleted || r.parked !== true || !r.resumeOn) return;
+        if (r.resumeOn <= today) {
+          env.table('pipeline').update(r.id, { parked: false, parkedAt: '', resumeOn: '', remindedAt: '', updated: t.nowIso(), log: logAdd(r, 'Back from its pause') });
+          out.push(['Back on: ' + r.title, 'Your pause is over. It\u2019s back where you left it.']);
+        } else if (r.resumeOn === tomorrow && !r.remindedAt) {
+          env.table('pipeline').update(r.id, { remindedAt: t.nowIso() });
+          out.push(['Tomorrow: ' + r.title, 'Your paused product comes back tomorrow.']);
+        }
+      });
+    });
+    return out;
+  }
   /** Puts one of her jobs off for later (or brings it back), so the rest can move on. */
   function laterHand(id, key, on) {
     t.need(['admin', 'artist']);
@@ -5676,7 +5737,7 @@ function tideTalk(env, t) {
       var price = Number((r.pricing || {}).price) || 0;
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
-        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true,
+        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
         day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
@@ -5799,7 +5860,7 @@ function tideTalk(env, t) {
     return env.lock(function () { var r = item(id); env.table('pipeline').update(id, { deleted: true, updated: t.nowIso(), log: logAdd(r, who(env.user.role) + ' deleted it') }); return { ok: true }; });
   }
   return {
-    ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
+    ai: ai, local: local, snapshot: snapshot, wakePaused: wakePaused, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
       createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, deleteItem: deleteItem, laterHand: laterHand, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
       takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, helpStart: helpStart, helpPick: helpPick }
@@ -8192,7 +8253,13 @@ var Kit = (function () {
     } else if (d.key === 'golden') act('Retire it', 'wb_twilight', 'tonal', function () { return stage('Retired', 'Retired: ' + x.title + '.'); });
     else if (d.key === 'sunset') act('Bring it back', 'restore', 'tonal', function () { return stage('Live', 'Back out in the world: ' + x.title + '.'); });
     else act('Wake it up', 'wb_twilight', 'filled', function () { return stage('Reviewing', 'Awake again: ' + x.title + '.'); });
-    if (d.mode !== 'rest' && d.key !== 'golden') act('Park it', 'bedtime', 'text', function () { return stage('Parked', 'Parked: ' + x.title + '.'); });
+    if (d.mode !== 'rest' && d.key !== 'golden') act('Pause it', 'calendar_month', 'text', function () {
+      ctl.close();
+      setTimeout(function () { openPause(x.title, function (day) {
+        return api('pauseIdea', x.id, day).then(refresh).then(function () { render(); undoCard(pauseLabel(day) + ': ' + x.title + '.', function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); });
+      }); }, 280);
+      return Promise.resolve();
+    });
     card.appendChild(row);
     return card;
   }
@@ -8711,7 +8778,7 @@ var Kit = (function () {
           dayChip(x.day),
           chip(x.priority + ' priority', x.priority === 'High' ? 'high' : 'outline', x.priority === 'High' ? 'flag' : null),
           chip(x.timeline, 'outline', 'schedule'),
-          ADMIN ? chip(stageLabel(x.stage), K.slug(x.stage)) : null,
+          x.stage === 'Parked' ? chip(pauseLabel(x.resumeOn), 'outline', 'calendar_month') : ADMIN ? chip(stageLabel(x.stage), K.slug(x.stage)) : null,
           x.approvalState === 'Change requested' ? chip('Changes asked', 'change-requested') : null,
           x.health ? chip('Sensitive', 'high') : null)));
   }
@@ -9534,7 +9601,7 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ Products: the pipeline from idea to live
   function itemChip(p) {
-    if (p.parked) return chip('Parked', 'outline', 'pause_circle');
+    if (p.parked) return chip(pauseLabel(p.resumeOn), 'outline', 'calendar_month');
     if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') return chip('Drafting', 'pending', 'auto_awesome');
     if (p.needsMe) return chip('Needs your OK', 'approved', 'verified');
     if (p.stage === 'Live') return chip('Live', 'approved', 'rocket_launch');
@@ -9927,7 +9994,7 @@ var Kit = (function () {
         var nc = nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
         var hl = handList(p, saveFirst, reopen); if (hl) ctl.body.appendChild(hl);
         ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
-        if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('Parked. Bring it back when you’re ready.', 'pause_circle')));
+        if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.resumeOn ? 'Paused. It comes back by itself on ' + K.dayLabel(p.resumeOn, true) + ', with a reminder the day before.' : 'Paused. Bring it back when you’re ready.', 'calendar_month')));
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.aiJob === 'clear' ? 'Checking each one…' : 'Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
         if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (ADMIN && p.aiNote ? ': ' + p.aiNote : '. Try it again.'), 'warning', 'warn')));
 
@@ -10062,7 +10129,10 @@ var Kit = (function () {
           var b = e.currentTarget; K.setBusy(b, true);
           api('deleteItem', id).then(refresh).then(function () { ctl.close(); render(); binUndo('Deleted “' + p.title + '”.', 'product', id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
         } }));
-        if (!(p.stage === 'Live' || p.retired)) row.appendChild(btn('text', p.parked ? 'Wake it up' : 'Park it', { icon: p.parked ? 'wb_twilight' : 'bedtime', onclick: function () { saveFirst().then(function () { return api('parkItem', id, !p.parked); }).then(refresh).then(reopen).catch(fail); } }));
+        if (!(p.stage === 'Live' || p.retired)) row.appendChild(btn('text', p.parked ? 'Resume now' : 'Pause it', { icon: p.parked ? 'wb_twilight' : 'calendar_month', onclick: function () {
+          if (p.parked) { saveFirst().then(function () { return api('parkItem', id, false); }).then(refresh).then(reopen).catch(fail); return; }
+          openPause(p.title, function (day) { return saveFirst().then(function () { return api('parkItem', id, true, day); }).then(refresh).then(function () { reopen(); undoCard(pauseLabel(day) + ': ' + p.title + '.', function () { return api('parkItem', id, false); }, 'Back on the go.'); }); });
+        } }));
         s8.appendChild(row);
         if (p.log.length) {
           var lg = h('details', { class: 'talk-past', style: 'margin-top:12px' }, h('summary', { text: 'History' }));
@@ -10484,10 +10554,10 @@ var Kit = (function () {
         .catch(function (err) { K.setBusy(b, false); fail(err); });
     } }));
     row.appendChild(btn('tonal', 'Open it', { sm: true, onclick: function () { openIdea(x.id); } }));
-    if (open > 1) row.appendChild(btn('text', 'Park it', { sm: true, onclick: function (e) {
-      var b = e.currentTarget; K.setBusy(b, true);
-      api('updateIdea', x.id, { stage: 'Parked' }).then(refresh).then(function () { render(); undoCard('Parked: ' + x.title + '.', function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); })
-        .catch(function (err) { K.setBusy(b, false); fail(err); });
+    if (open > 1) row.appendChild(btn('text', 'Pause it', { sm: true, icon: 'calendar_month', onclick: function () {
+      openPause(x.title, function (day) {
+        return api('pauseIdea', x.id, day).then(refresh).then(function () { render(); undoCard(pauseLabel(day) + ': ' + x.title + '.', function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); });
+      });
     } }));
     card.appendChild(row);
     return card;
@@ -11401,6 +11471,31 @@ var Kit = (function () {
     return strip;
   }
 
+  /** Pause: when to come back to it. Quick picks, or any day on the calendar. onPick(day) gets 'YYYY-MM-DD' or '' (no date). */
+  function dayFromNow(n, months) { var d = new Date(); if (months) d.setMonth(d.getMonth() + months); else d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function pauseLabel(day) { return day ? 'Paused · back ' + K.dayLabel(day, true) : 'Paused'; }
+  function openPause(title, onPick) {
+    var picks = [['Tomorrow', dayFromNow(1)], ['In a week', dayFromNow(7)], ['In a month', dayFromNow(0, 1)], ['In 3 months', dayFromNow(0, 3)]];
+    var chosen = dayFromNow(7);
+    K.sheet({
+      title: 'Pause “' + title + '”',
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Nothing is lost. It waits where it is, you get a reminder the day before, and on the day it comes back by itself.' }));
+        var dateF = K.textField({ label: 'Or pick a day', type: 'date', value: chosen, onInput: function (v) { chosen = v; ch.set && ch.set(''); } });
+        var ch = K.choices({ label: 'When to come back to it', value: chosen, options: picks.map(function (p) { return { value: p[1], label: p[0] }; }),
+          onChange: function (v) { if (v) { chosen = v; dateF.input.value = v; } } });
+        ctl.body.appendChild(h('div', { class: 'field-gap' }, h('div', { class: 'label-s', text: 'Come back to it' }), ch, dateF));
+        var go = btn('filled', 'Pause it', { icon: 'calendar_month', lg: true, block: true });
+        go.addEventListener('click', function () {
+          if (!chosen) { toast('Pick a day, or pause with no date.'); return; }
+          K.setBusy(go, true);
+          onPick(chosen).then(function () { ctl.close(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+        });
+        ctl.foot.appendChild(h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, go,
+          btn('text', 'Pause with no date', { onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); onPick('').then(function () { ctl.close(); }).catch(function (er) { K.setBusy(b, false); fail(er); }); } })));
+      }
+    });
+  }
   /** After a delete: a card with Undo that puts it straight back. */
   function binUndo(msg, kind, id) { undoCard(msg, function () { return api('undoDelete', kind, id); }, 'Put back.', 12); }
   /** A card at the bottom for a few seconds after an action, with Undo. */
