@@ -2509,7 +2509,7 @@ function createTideLogic(env) {
         productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: T.SERIES,
         saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES
       },
-      settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, homeOrder: list(env.settings.get().homeOrder),
+      settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, practice: env.practice === true, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -8288,7 +8288,7 @@ var Kit = (function () {
     if (!me) { b.hidden = true; return; }
     var who = me.role === 'artist' ? cap(artist()) : 'admin';
     b.hidden = false;
-    b.querySelector('.vc-t').textContent = 'Viewing as ' + who + (previewing() ? ' \u00b7 nothing saves' : '');
+    b.querySelector('.vc-t').textContent = 'Viewing as ' + who + (previewing() ? (S.data.practice ? ' \u00b7 practice copy' : ' \u00b7 nothing saves') : '');
     b.setAttribute('aria-label', 'Viewing as ' + who + '. Tap to go back to your own view.');
     if (b.wired) return;
     b.wired = true;
@@ -8304,9 +8304,20 @@ var Kit = (function () {
     var sec = h('div', {}, h('div', { class: 'label-s', style: 'margin-bottom:6px', text: 'View' }));
     sec.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: back
       ? (me.real === 'admin' ? 'Go back to your own view to make changes again.' : 'Go back to your own view.')
-      : me.real === 'admin' ? 'See Tide Book exactly as ' + cap(artist()) + ' does, to check how it works. Nothing you do there is saved.'
+      : me.real === 'admin' ? 'Use Tide Book exactly as ' + cap(artist()) + ' does: make an idea, work it through and finish it. It all works and saves, in a practice copy of her Tide Book, so nothing you do there touches hers.'
       : 'Money, settings and publishing.' }));
     sec.appendChild(btn('tonal', back ? 'Back to your own view' : 'Switch to ' + name, { icon: 'swap_horiz', onclick: function () { K.haptic(); setView(other); } }));
+    if (back && me.real === 'admin' && S.data.practice) {
+      sec.appendChild(h('p', { class: 'body-m', style: 'margin:14px 0 8px', text: 'This is a practice copy of ' + cap(artist()) + '’s Tide Book. Everything saves here only: no posts go out and her phone doesn’t buzz.' }));
+      sec.appendChild(btn('text', 'Start the practice copy again from hers', { icon: 'refresh', onclick: function (e) {
+        var b = e.currentTarget;
+        K.confirm({ title: 'Start again?', text: 'Everything you did in the practice copy goes, and it’s made fresh from ' + cap(artist()) + '’s Tide Book as it is now.', confirmLabel: 'Start again' }).then(function (yes) {
+          if (!yes) return;
+          K.setBusy(b, true);
+          fetch('practice/reset', { method: 'POST', credentials: 'same-origin' }).then(function () { setTimeout(function () { location.reload(); }, 1500); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+        });
+      } }));
+    }
     return sec;
   }
 
