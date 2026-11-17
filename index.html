@@ -292,6 +292,9 @@ body.away .pill .homeb:hover { background: rgba(0, 0, 0, .05); }
 }
 /* while the prototype banner is showing, the hero leaves room for it */
 body:has(.mock) .hero { height: calc(100svh - 30px); }
+/* the prototype banner sits above the top bar, never over it */
+body:has(.mock) .pill, body:has(.mock) .cartp { top: 44px; }
+@media (max-width: 640px) { body:has(.mock) .pill, body:has(.mock) .cartp { top: 58px; } }
 @media (max-width: 640px) { body:has(.mock) .hero { height: calc(100svh - 48px); min-height: 560px; } }
 
 /* originals first: the head start, the open run, and the limited run counting down */
