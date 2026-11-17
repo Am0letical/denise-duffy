@@ -464,6 +464,8 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .hand-why { font: 400 13px/18px var(--font); color: var(--on-surface-variant); margin-top: 2px; }
 .hand-row.done .hand-text { text-decoration: line-through; color: var(--on-surface-variant); }
 .hand-row.done .hand-ic { color: var(--tertiary, #2e7d32); }
+/* Done and Later, stacked beside a checklist item */
+.hand-btns { display: flex; flex-direction: column; gap: 4px; align-items: stretch; flex-shrink: 0; }
 /* a checklist item expands: tap it for a one-sentence answer and choices */
 .hand-tap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .hand-more { display: inline-flex; align-items: center; gap: 2px; margin-top: 6px; font-size: 14px; font-weight: 600; color: var(--primary); }
@@ -1355,7 +1357,7 @@ var TIDE_SCHEMAS = {
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'],
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
       ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number'],
-      ['deleted', 'Removed', 'bool']
+      ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list']
     ]
   },
   // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
@@ -5399,6 +5401,9 @@ function tideTalk(env, t) {
       out.push({ key: 'arrived', text: 'Tick when it arrives', why: 'Then have a look at it.', state: sm === 'Here' || sm === 'Approved' ? 'done' : sm === 'Ordered' ? 'now' : 'later', tick: sm === 'Ordered' });
       out.push({ key: 'look', text: 'Look it over and say if it’s right', why: 'Use the card at the top.', state: sm === 'Approved' ? 'done' : sm === 'Here' ? 'now' : 'later' });
     }
+    // what she has put off for later: out of the way, kept, and back with one tap
+    var off = t.list(r.handsLater);
+    out.forEach(function (x) { if (x.state === 'now' && off.indexOf(x.key) >= 0) { x.state = 'later'; x.snoozed = true; x.why = 'Put off for later' + (x.why ? ' · ' + x.why : ''); } });
     var rank = { now: 0, later: 1, done: 2 };
     return out.sort(function (a, b) { return rank[a.state] - rank[b.state]; });
   }
@@ -5501,6 +5506,18 @@ function tideTalk(env, t) {
     return { ok: true, done: true };
   }
   /** Ticks off one of her jobs. */
+  /** Puts one of her jobs off for later (or brings it back), so the rest can move on. */
+  function laterHand(id, key, on) {
+    t.need(['admin', 'artist']);
+    key = String(key || '');
+    if (!key) t.fail('Pick one first.');
+    return env.lock(function () {
+      var r = item(id), off = t.list(r.handsLater).filter(function (k) { return k !== key; });
+      if (on !== false) off.push(key);
+      env.table('pipeline').update(id, { handsLater: off, updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
   function tickHand(id, key) {
     var role = t.need(['admin', 'artist']), r = item(id);
     key = String(key || '');
@@ -5784,7 +5801,7 @@ function tideTalk(env, t) {
   return {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
-      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, deleteItem: deleteItem, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
+      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, deleteItem: deleteItem, laterHand: laterHand, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
       takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, helpStart: helpStart, helpPick: helpPick }
   };
 }
@@ -9691,12 +9708,27 @@ var Kit = (function () {
       var row = h('div', { class: 'hand-row ' + x.state },
         h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'hourglass_top' : 'radio_button_unchecked')),
         h('div', { class: 'grow' }, h('div', { class: 'hand-text', text: x.text }),
-          h('div', { class: 'hand-why', text: x.state === 'later' ? 'Later' + (x.why ? ': ' + x.why : '') : x.why || '' })),
+          h('div', { class: 'hand-why', text: x.state === 'later' && !x.snoozed ? 'Later' + (x.why ? ': ' + x.why : '') : x.why || '' })),
         x.state === 'now' && x.tick ? btn('tonal', 'Done', { sm: true, icon: 'check', onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
           saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
             .catch(function (er) { K.setBusy(b, false); fail(er); });
         } }) : null);
+      // put it off for later, or bring it back
+      if (x.state === 'now' || x.snoozed) {
+        var lb = btn('text', x.snoozed ? 'Bring back' : 'Later', { sm: true, icon: x.snoozed ? 'undo' : 'schedule', onclick: function (e) {
+          e.stopPropagation(); var b = e.currentTarget; K.setBusy(b, true);
+          saveFirst().then(function () { return api('laterHand', p.id, x.key, !x.snoozed); }).then(refresh).then(function () {
+            reopen();
+            if (!x.snoozed) undoCard('Put off for later. It’s under “for later”.', function () { return api('laterHand', p.id, x.key, false); }, 'Back on your list.');
+          }).catch(function (er) { K.setBusy(b, false); fail(er); });
+        } });
+        var tail = row.lastElementChild && row.lastElementChild.tagName === 'BUTTON' ? row.lastElementChild : null;
+        var stackBtns = h('div', { class: 'hand-btns' });
+        if (tail) stackBtns.appendChild(tail);
+        stackBtns.appendChild(lb);
+        row.appendChild(stackBtns);
+      }
       if (helpBtn) {
         var g = row.querySelector('.grow');
         g.appendChild(helpBtn); g.classList.add('hand-tap');
