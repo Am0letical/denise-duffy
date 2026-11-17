@@ -5068,7 +5068,7 @@ function tideTalk(env, t) {
 
   /** Why this needs the admin's OK as well, or '' when hers is enough. */
   function clashOf(r) {
-    if (t.list(r.checks).some(function (c) { return c.status === 'Problem' && !(c.action && fixWho(c) === 'artist'); })) return 'A check found a problem.';
+    // checks are noted, never a gate: an open one doesn't hold anything up or need a second OK
     var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
     var price = Number((r.pricing || {}).price) || 0;
     if (price > 0 && unit > 0 && price <= unit) return 'The price doesn’t cover what it costs to make.';
@@ -5084,13 +5084,11 @@ function tideTalk(env, t) {
     var out = [], ap = (r.approvals || {})[r.stage] || {};
     if (r.stage === 'Decisions' && t.list(r.open).some(function (o) { return !o.a; })) out.push('answers to the open questions');
     if (r.stage === 'Checks & costing') {
-      if (t.list(r.checks).some(function (c) { return c.status === 'To check'; })) out.push('every check confirmed (OK or Problem)');
       if (!t.list(r.parts).length) out.push('a parts list');
       if (!((r.pricing || {}).price > 0)) out.push('a price');
     }
     if (r.stage === 'Sample' && (r.sample || {}).status !== 'Approved') out.push('the sample approved');
     if (r.stage === 'Listing & launch' && !String((r.listing || {}).copy || '').trim()) out.push('the listing words');
-    if (r.stage === 'Listing & launch' && handFixes(r).length) out.push('your checklist done');
     gateFor(r).forEach(function (role) { if (!ap[role]) out.push(who(role) + '’s OK'); });
     return out;
   }
@@ -5210,15 +5208,17 @@ function tideTalk(env, t) {
       return signOff('OK the decisions and move on to checks', pl ? 'Research says go: ' + pl.goWhy : 'Next: suppliers, costs and the rules.');
     }
     if (r.stage === 'Checks & costing') {
-      if (pl && (!t.list(r.parts).length || !(unitCost(r) > 0))) {
+      var dec = r.declined || {};
+      if (pl && !dec.plan && (!t.list(r.parts).length || !(unitCost(r) > 0))) {
         var sup = (r.research.suppliers || [])[pl.supplier];
         return { kind: 'plan', label: 'Use the recommended setup: ' + (sup ? sup.name + ', ' : '') + money2(pl.price), why: (pl.supplierWhy ? pl.supplierWhy + '. ' : '') + pl.parts.length + ' part' + (pl.parts.length === 1 ? '' : 's') + ', ' + money2(pl.parts.reduce(function (n, p) { return n + p.cost * p.qty; }, 0)) + ' to make, sold at ' + money2(pl.price) + '.' };
       }
       if (!t.list(r.parts).length) return { kind: 'checks', label: 'Draft the parts list', why: 'What one needs, so it can be costed.' };
-      if (t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return { kind: 'clear', label: 'Check the rules for selling it', why: t.list(r.checks).filter(function (c) { return c.status === 'To check'; }).length + ' checks, each settled as a go or with one fix.' };
+      if (!dec.clear && t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return { kind: 'clear', label: 'Check the rules for selling it', why: t.list(r.checks).filter(function (c) { return c.status === 'To check'; }).length + ' checks, each settled as a go or with one fix.' };
       var price = Number((r.pricing || {}).price) || 0, unit = unitCost(r);
       if (!(price > unit)) { var want = pl && pl.price > unit ? pl.price : Math.ceil(unit * 2.5); return { kind: 'price', label: 'Set the price to ' + money2(want), why: 'It costs ' + money2(unit) + ' to make, so ' + money2(price) + ' doesn’t cover it.', price: want }; }
-      return signOff('OK the costing and move on to the sample', 'Costs ' + money2(Math.round(unit * 100) / 100) + ', sells at ' + money2(price) + ', every check is a go.');
+      var noted = t.list(r.checks).filter(function (c) { return c.status !== 'OK'; }).length;
+      return signOff('OK the costing and move on to the sample', 'Costs ' + money2(Math.round(unit * 100) / 100) + ', sells at ' + money2(price) + (noted ? '. ' + noted + ' check' + (noted === 1 ? ' is' : 's are') + ' noted for you, and nothing waits on ' + (noted === 1 ? 'it' : 'them') + '.' : ', every check is a go.'));
     }
     if (r.stage === 'Sample') {
       var sm = (r.sample || {}).status || 'Not ordered';
@@ -5230,8 +5230,6 @@ function tideTalk(env, t) {
     }
     if (r.stage === 'Listing & launch') {
       if (!String((r.listing || {}).copy || '').trim()) return { kind: 'copy', label: 'Write the listing and launch posts', why: 'In your voice, from everything decided so far.' };
-      var mineLeft = handFixes(r);
-      if (mineLeft.length) return { who: 'hers', kind: '', label: 'Finish your checklist', why: mineLeft.length + ' thing' + (mineLeft.length === 1 ? '' : 's') + ' only you can do, then it can go on sale.' };
       return signOff('OK the words and put it on sale', 'The listing, the price and every check are ready.');
     }
     return null;
@@ -5240,7 +5238,11 @@ function tideTalk(env, t) {
   function checklistOf(r, next) {
     var out = [], pl = planOf(r), si = K.STAGES.indexOf(r.stage), at = K.STAGES.indexOf('Sample'), sm = (r.sample || {}).status || 'Not ordered';
     if (r.stage === 'Decisions') t.list(r.open).forEach(function (o, i) { if (!o.a && !(o.suggest >= 0)) out.push({ key: 'q' + i, text: 'Answer: ' + o.q, why: 'No clear pick, so it’s your call.', state: 'now' }); });
-    if (next && next.diy) out.push({ key: 'diy', text: next.label, why: 'You chose to do this one yourself.', state: 'now' });
+    var dec = r.declined || {}, open = {
+      plan: !t.list(r.parts).length || !(unitCost(r) > 0), checks: !t.list(r.parts).length,
+      clear: t.list(r.checks).some(function (c) { return c.status === 'To check'; }), copy: !String((r.listing || {}).copy || '').trim(),
+      price: !(((r.pricing || {}).price || 0) > unitCost(r)), answer: t.list(r.open).some(function (o) { return !o.a; }) };
+    Object.keys(DIY).forEach(function (k) { if (dec[k] && open[k]) out.push({ key: 'diy:' + k, text: DIY[k], why: 'You chose to do this one yourself.', state: 'now' }); });
     t.list(r.checks).forEach(function (c) {
       if (c.status === 'Problem' && c.action && fixWho(c) === 'artist') out.push({ key: 'fix:' + c.id, text: c.action, why: shortRule(c.item), state: 'now', tick: true });
       else if (c.status === 'OK' && c.doneBy) out.push({ key: 'fix:' + c.id, text: c.action || c.item, why: shortRule(c.item), state: 'done' });
@@ -9278,7 +9280,7 @@ var Kit = (function () {
     var sec = h('div', { class: 'card pad hand-list', style: 'margin:0 0 14px' },
       h('div', { class: 'row', style: 'gap:8px;align-items:center' }, icon('front_hand'), h('div', { class: 'title-s grow', text: 'Your checklist' }),
         h('span', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: left ? left + ' to do now' : 'Nothing for now' })),
-      h('p', { class: 'body-s', style: 'margin:4px 0 8px;color:var(--on-surface-variant)', text: 'Only the things that need you. Everything else Tide Book does, with your go.' }));
+      h('p', { class: 'body-s', style: 'margin:4px 0 8px;color:var(--on-surface-variant)', text: 'Only the things that need you, noted so nothing’s forgotten. Nothing waits on them: tick each one when it’s done.' }));
     // what's for now in full; what's later or done folds away
     var rest = h('div', { hidden: true }), nLater = 0, nDone = 0;
     L.forEach(function (x) {
