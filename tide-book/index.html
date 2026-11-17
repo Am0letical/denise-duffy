@@ -2375,6 +2375,12 @@ function createTideLogic(env) {
     var byIdC = {}; rows('content').forEach(function (c) { byIdC[c.id] = c; });
     studioData.content.forEach(function (c) { var raw = byIdC[c.id]; var v = raw ? ads.view(raw, role) : null; if (v) c.ad = v; });
     // the website: her gentle asks (two at most), and what she's sent for the admin to put up
+    var talkData = talk.snapshot(role);
+    if (role === 'artist') talkData.pipeline.forEach(function (p) {
+      (p.hands || []).filter(function (x) { return x.state === 'now'; }).forEach(function (x) {
+        publishData.todo.push({ key: 'pp-' + p.id + '-' + x.key, productId: p.id, text: x.text, why: p.title + (x.why && x.why !== x.text ? ': ' + x.why : ''), where: 'Products' });
+      });
+    });
     var sw = siteWishes.snapshot(role);
     sw.wishes.forEach(function (w) { publishData.todo.push({ key: 'site-' + w.key, site: w.key, kind: w.kind, text: w.text, why: w.why, where: 'For your website' }); });
     sw.sent.forEach(function (r) { publishData.todo.unshift({ key: 'sitein-' + r.id, sitein: r, text: 'For the website: ' + r.title, why: r.text ? r.text.slice(0, 140) : r.photos.length + ' photo' + (r.photos.length === 1 ? '' : 's') + ' from ' + env.brand.artistName, where: 'Website' }); });
@@ -2386,7 +2392,7 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talk.snapshot(role), setup: setup.status(), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
@@ -4626,7 +4632,7 @@ function tideTalk(env, t) {
           var go = v.verdict === 'Go', fix = clean(v.action, 300);
           if (!go && !fix) return c;   // a no go always comes with a fix that makes it a go; without one, it's researched again
           if (go) cleared++; else blocked++;
-          return Object.assign({}, c, { verdict: go ? 'Go' : 'No go', why: clean(v.why, 300), action: go ? '' : fix, status: go ? 'OK' : 'Problem', by: by2 });
+          return Object.assign({}, c, { verdict: go ? 'Go' : 'No go', why: clean(v.why, 300), action: go ? '' : fix, status: go ? 'OK' : 'Problem', by: by2, who: go ? '' : whoOf(v.who) });
         });
         env.table('pipeline').update(id, { checks: checks2, aiStatus: '', aiNote: '', aiBy: by2, updated: now,
           log: logAdd(r, by2 + ' cleared ' + cleared + ' check' + (cleared === 1 ? '' : 's') + (blocked ? '; ' + blocked + ' need an action' : '')) });
@@ -4964,7 +4970,7 @@ function tideTalk(env, t) {
       .map(function (s) {
         var v = s.verdict === 'Go' ? 'Go' : s.verdict === 'No go' && String(s.action || '').trim() ? 'No go' : '';   // a no go without its fix is checked again
         return { id: 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(s.item || s.check, 300), status: v === 'Go' ? 'OK' : v ? 'Problem' : 'To check', note: '', from: from || '',
-          verdict: v, why: t.text(s.why, 300), action: v === 'No go' ? t.text(s.action, 300) : '' };
+          verdict: v, why: t.text(s.why, 300), action: v === 'No go' ? t.text(s.action, 300) : '', who: v === 'No go' ? whoOf(s.who) : '' };
       }));
   }
 
@@ -5006,7 +5012,8 @@ function tideTalk(env, t) {
           c = c || {};
           return { id: /^C[A-Z0-9]{3,8}$/.test(String(c.id)) ? c.id : 'C' + Math.random().toString(36).slice(2, 7).toUpperCase(), item: t.text(c.item, 300),
             status: K.CHECK_STATUS.indexOf(c.status) >= 0 ? c.status : 'To check', note: t.text(c.note, 300), ai: c.ai === true,
-            verdict: c.verdict === 'Go' || c.verdict === 'No go' ? c.verdict : '', why: t.text(c.why, 300), action: t.text(c.action, 300), from: t.text(c.from, 20) };
+            verdict: c.verdict === 'Go' || c.verdict === 'No go' ? c.verdict : '', why: t.text(c.why, 300), action: t.text(c.action, 300), from: t.text(c.from, 20),
+            who: c.who === 'artist' || c.who === 'auto' ? c.who : '', doneBy: c.doneBy === 'artist' || c.doneBy === 'admin' ? c.doneBy : '' };
         }).filter(function (c) { return c.item; });
         what.push('checks');
       }
@@ -5031,9 +5038,22 @@ function tideTalk(env, t) {
     });
   }
 
+  // who carries out a fix: Tide Book changes words, prices and posts; anything needing hands is the artist's.
+  // The AI says which; for older checks, the wording decides, and when unsure it goes on her list so nothing is missed.
+  function whoOf(v) { return v === 'artist' ? 'artist' : v === 'Tide Book' || v === 'auto' ? 'auto' : ''; }
+  var HANDS = /\b(sew|stitch|attach|tag|card|insert|sticker|label|packag|box|buy|order|purchas|insur|regist|licen|test|measure|photograph|sign up|contact|ask|email|phone|visit|swap|replace|source|print|make|sample|supplier)/i;
+  var WORDS = /\b(listing|wording|words?|describ|description|say|state|claim|caption|mention|leave|avoid|remove|drop|price|website|post|copy|text|phrase|call it|name it)/i;
+  function fixWho(c) {
+    if (c.who === 'artist' || c.who === 'auto') return c.who;
+    var a = String(c.action || '');
+    return WORDS.test(a) && !HANDS.test(a) ? 'auto' : 'artist';
+  }
+  /** Fixes waiting on her own hands. */
+  function handFixes(r) { return t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action && fixWho(c) === 'artist'; }); }
+
   /** Why this needs the admin's OK as well, or '' when hers is enough. */
   function clashOf(r) {
-    if (t.list(r.checks).some(function (c) { return c.status === 'Problem'; })) return 'A check found a problem.';
+    if (t.list(r.checks).some(function (c) { return c.status === 'Problem' && !(c.action && fixWho(c) === 'artist'); })) return 'A check found a problem.';
     var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
     var price = Number((r.pricing || {}).price) || 0;
     if (price > 0 && unit > 0 && price <= unit) return 'The price doesn’t cover what it costs to make.';
@@ -5055,6 +5075,7 @@ function tideTalk(env, t) {
     }
     if (r.stage === 'Sample' && (r.sample || {}).status !== 'Approved') out.push('the sample approved');
     if (r.stage === 'Listing & launch' && !String((r.listing || {}).copy || '').trim()) out.push('the listing words');
+    if (r.stage === 'Listing & launch' && handFixes(r).length) out.push('your checklist done');
     gateFor(r).forEach(function (role) { if (!ap[role]) out.push(who(role) + '’s OK'); });
     return out;
   }
@@ -5128,6 +5149,19 @@ function tideTalk(env, t) {
   function unitCost(r) { return t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0); }
   function nextOf(r, role) {
     if (r.parked) return null;
+    var n = nextStep(r, role);
+    if (!n || n.wait || n.done) return n;
+    var dec = r.declined || {};
+    if (n.kind && dec[n.kind] && DIY[n.kind]) return { who: 'hers', kind: '', diy: n.kind, label: DIY[n.kind], why: 'You chose to do this one yourself. It’s in the sections below.', alt: { kind: 'redo', label: 'Let Tide Book do it after all' } };
+    n.who = n.who || (HAND_KINDS.indexOf(n.kind) >= 0 || !n.kind ? 'hers' : 'auto');
+    if (n.who === 'auto' && !n.no && DIY[n.kind]) n.no = 'decline';
+    return n;
+  }
+  // what she'd do instead, when she says no go to something Tide Book would do
+  var DIY = { plan: 'Choose the supplier, parts and price yourself', checks: 'Add the parts list yourself', clear: 'Settle the open checks yourself',
+    copy: 'Write the listing and posts yourself', price: 'Set the price yourself', answer: 'Answer the open questions yourself' };
+  var HAND_KINDS = ['order', 'arrived', 'approvesample'];
+  function nextStep(r, role) {
     var pl = planOf(r), name = env.brand.artistName, admin = env.brand.adminName || 'admin';
     // wait only when the job running is the one this stage needs; a rules check started early runs in the background
     var busy = r.aiStatus === 'Queued' || r.aiStatus === 'Working';
@@ -5136,8 +5170,7 @@ function tideTalk(env, t) {
     if (blocksHere) return { wait: true, label: JOB_WAIT[r.aiJob] || 'Working on it…' };
     if (r.stage === 'Live') return { kind: 'done', done: true, label: r.retired ? 'Retired' : 'On sale', why: 'Set up, checked and live.' };
     if (r.researchStatus === 'Queued' || r.researchStatus === 'Researching') return { wait: true, label: 'Researching whether it’s worth making, who makes it and what to charge…' };
-    if (pl && pl.go === 'No go' && !r.goAnyway && r.stage !== 'Live') return { kind: 'park', label: 'Park it for now', why: pl.goWhy + (pl.fix ? ' What would make it a go: ' + pl.fix : ''),
-      alt: { kind: 'goanyway', label: 'Go ahead anyway' } };
+    if (pl && pl.go === 'No go' && !r.goAnyway && r.stage !== 'Live') return { kind: 'park', who: 'auto', no: 'goanyway', noLabel: 'No go: carry on anyway', label: 'Park it for now', why: pl.goWhy + (pl.fix ? ' What would make it a go: ' + pl.fix : '') };
     var gate = gateFor(r), ap = (r.approvals || {})[r.stage] || {}, mineToOk = gate.indexOf(role) >= 0 && !ap[role];
     var othersOk = gate.filter(function (g) { return g !== role && !ap[g]; });
     function signOff(label, why) {
@@ -5146,12 +5179,12 @@ function tideTalk(env, t) {
       return { kind: 'approve', label: label, why: why };
     }
     // a check that came back no go comes with its fix: agreeing it comes first, whatever the stage, so nothing needs a second OK
-    // one at a time: the first fix on its own, with how many are left; agreeing them all at once stays a choice
-    var fixesAll = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action; });
-    if (fixesAll.length) return { kind: 'fix', target: fixesAll[0].item,
-      label: (fixesAll.length > 1 ? 'Fix 1 of ' + fixesAll.length + ': ' : 'One fix: ') + fixesAll[0].item,
+    // one at a time: the first fix Tide Book can make, with how many are left. Fixes that need her hands go on her checklist.
+    var fixesAll = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action && fixWho(c) === 'auto'; });
+    if (fixesAll.length) return { kind: 'fix', who: 'auto', no: 'fixno', noLabel: 'No go: I’ll do it my way', target: fixesAll[0].item,
+      label: (fixesAll.length > 1 ? 'Fix 1 of ' + fixesAll.length + ': ' : 'Fix: ') + fixesAll[0].item,
       why: fixesAll[0].action,
-      alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Agree all ' + fixesAll.length } : null };
+      alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length } : null };
     if (r.stage === 'Idea') return { kind: 'advance', label: 'Start shaping it', why: 'Next: the questions that decide what it is.' };
     if (r.stage === 'Questions') return { kind: 'advance', label: 'Move on to the decisions', why: 'What it is, who it’s for and how it’s made.' };
     if (r.stage === 'Decisions') {
@@ -5174,18 +5207,58 @@ function tideTalk(env, t) {
     }
     if (r.stage === 'Sample') {
       var sm = (r.sample || {}).status || 'Not ordered';
-      if (pl && pl.sampleNeeded === false && sm === 'Not ordered') return Object.assign(signOff('No sample needed: move on to the listing', pl.sampleHow), { kind: 'nosample' });
+      if (pl && pl.sampleNeeded === false && sm === 'Not ordered' && !(r.declined || {}).nosample) return Object.assign(signOff('No sample needed: move on to the listing', pl.sampleHow), { kind: 'nosample', no: 'wantsample', noLabel: 'No go: I want a sample' });
       if (sm === 'Not ordered' || sm === 'Needs changes') return { kind: 'order', label: sm === 'Needs changes' ? 'Order a new sample' : 'Order the sample', why: (pl && pl.sampleHow) || 'One, to check it before selling.' };
       if (sm === 'Ordered') return { kind: 'arrived', label: 'It’s arrived', why: 'Tap when it’s here, then have a look.' };
-      if (sm === 'Here') return Object.assign(signOff('It looks right: approve it and move on to the listing', 'Or tap Needs changes below.'), { kind: mineToOk || !othersOk.length ? 'approvesample' : '' });
+      if (sm === 'Here') return Object.assign(signOff('Look it over: is it right?', 'If it is, it’s approved and moves on to the listing.'), { kind: mineToOk || !othersOk.length ? 'approvesample' : '', who: 'hers', no: 'samplechanges', noLabel: 'No: it needs changes' });
       return signOff('OK the sample and move on to the listing', 'The sample is approved.');
     }
     if (r.stage === 'Listing & launch') {
       if (!String((r.listing || {}).copy || '').trim()) return { kind: 'copy', label: 'Write the listing and launch posts', why: 'In your voice, from everything decided so far.' };
+      var mineLeft = handFixes(r);
+      if (mineLeft.length) return { who: 'hers', kind: '', label: 'Finish your checklist', why: mineLeft.length + ' thing' + (mineLeft.length === 1 ? '' : 's') + ' only you can do, then it can go on sale.' };
       return signOff('OK the words and put it on sale', 'The listing, the price and every check are ready.');
     }
     return null;
   }
+  /** Her checklist for a product: what needs her hands, now, later, and done. */
+  function checklistOf(r, next) {
+    var out = [], pl = planOf(r), si = K.STAGES.indexOf(r.stage), at = K.STAGES.indexOf('Sample'), sm = (r.sample || {}).status || 'Not ordered';
+    if (r.stage === 'Decisions') t.list(r.open).forEach(function (o, i) { if (!o.a && !(o.suggest >= 0)) out.push({ key: 'q' + i, text: 'Answer: ' + o.q, why: 'No clear pick, so it’s your call.', state: 'now' }); });
+    if (next && next.diy) out.push({ key: 'diy', text: next.label, why: 'You chose to do this one yourself.', state: 'now' });
+    t.list(r.checks).forEach(function (c) {
+      if (c.status === 'Problem' && c.action && fixWho(c) === 'artist') out.push({ key: 'fix:' + c.id, text: c.action, why: c.item, state: 'now', tick: true });
+      else if (c.status === 'OK' && c.doneBy) out.push({ key: 'fix:' + c.id, text: c.action || c.item, why: c.item, state: 'done' });
+    });
+    var noSample = pl && pl.sampleNeeded === false && !(r.declined || {}).nosample;
+    if ((!noSample && r.stage !== 'Live') || sm !== 'Not ordered') {
+      var before = si < at, ordered = sm !== 'Not ordered' && sm !== 'Needs changes';
+      out.push({ key: 'order', text: sm === 'Needs changes' ? 'Order a new sample' : 'Order the sample', why: (pl && pl.sampleHow) || 'One, to check before selling.', state: ordered ? 'done' : before ? 'later' : 'now', tick: !ordered });
+      out.push({ key: 'arrived', text: 'Tick when it arrives', why: 'Then have a look at it.', state: sm === 'Here' || sm === 'Approved' ? 'done' : sm === 'Ordered' ? 'now' : 'later', tick: sm === 'Ordered' });
+      out.push({ key: 'look', text: 'Look it over and say if it’s right', why: 'Use the card at the top.', state: sm === 'Approved' ? 'done' : sm === 'Here' ? 'now' : 'later' });
+    }
+    var rank = { now: 0, later: 1, done: 2 };
+    return out.sort(function (a, b) { return rank[a.state] - rank[b.state]; });
+  }
+  /** Ticks off one of her jobs. */
+  function tickHand(id, key) {
+    var role = t.need(['admin', 'artist']), r = item(id);
+    key = String(key || '');
+    if (key === 'order') { updateItem(id, { sample: { status: 'Ordered', notes: t.text(((r.sample || {}).notes ? r.sample.notes + '\n' : '') + 'Ordered', 2000) } }); return { ok: true }; }
+    if (key === 'arrived') { if ((r.sample || {}).status !== 'Ordered') t.fail('Tick the order first.'); updateItem(id, { sample: { status: 'Here', notes: (r.sample || {}).notes || '' } }); return { ok: true }; }
+    var m = /^fix:(C[A-Z0-9]{3,8})$/.exec(key);
+    if (!m) t.fail('That one ticks itself off once it’s done.');
+    var done = '';
+    var checks = t.list(r.checks).map(function (c) {
+      if (c.id !== m[1] || c.status !== 'Problem') return c;
+      done = c.action;
+      return Object.assign({}, c, { status: 'OK', verdict: 'Go', doneBy: role, note: 'Done: ' + c.action, why: (c.why ? c.why + ' ' : '') + 'Done by ' + who(role) + ': ' + c.action });
+    });
+    if (!done) t.fail('That one’s already done.');
+    updateItem(id, { checks: checks });
+    return { ok: true };
+  }
+
   /** Is it ready to sell: the go, the checks, the money and the words, all settled. */
   function readyOf(r) {
     var pl = planOf(r), price = Number((r.pricing || {}).price) || 0, unit = unitCost(r);
@@ -5206,7 +5279,20 @@ function tideTalk(env, t) {
     var r = item(id), n = nextOf(r, role);
     if (!n || n.wait) t.fail(n ? n.label : 'Nothing to do here right now.');
     var want = String(kind || n.kind);
-    if (want !== n.kind && !(n.alt && n.alt.kind === want)) t.fail('That step has changed. Have another look.');
+    if (want !== n.kind && !(n.alt && n.alt.kind === want) && n.no !== want) t.fail('That step has changed. Have another look.');
+    function setDeclined(k, on) {
+      var d = Object.assign({}, r.declined || {}); if (on) d[k] = true; else delete d[k];
+      env.lock(function () { env.table('pipeline').update(id, { declined: d, updated: t.nowIso(), log: logAdd(item(id), who(role) + (on ? ' chose to do it by hand: ' : ' handed back to Tide Book: ') + (DIY[k] || k)) }); });
+      return { ok: true };
+    }
+    if (want === 'decline') return setDeclined(n.kind, true);
+    if (want === 'redo') return setDeclined(n.diy, false);
+    if (want === 'wantsample') return setDeclined('nosample', true);
+    if (want === 'samplechanges') { updateItem(id, { sample: { status: 'Needs changes', notes: (r.sample || {}).notes || '' } }); return { ok: true }; }
+    if (want === 'fixno') {
+      updateItem(id, { checks: t.list(r.checks).map(function (c) { return c.item === n.target && c.status === 'Problem' ? Object.assign({}, c, { who: 'artist' }) : c; }) });
+      return { ok: true };
+    }
     var pl = planOf(r);
     if (want === 'advance') return advance(id);
     if (want === 'approve') return signAndMove(id);
@@ -5222,7 +5308,7 @@ function tideTalk(env, t) {
     if (want === 'fix' || want === 'fixall') {
       var agreed = [], one = want === 'fix';
       updateItem(id, { checks: t.list(r.checks).map(function (c) {
-        if (!(c.status === 'Problem' && c.action)) return c;
+        if (!(c.status === 'Problem' && c.action) || fixWho(c) !== 'auto') return c;
         if (one && (agreed.length || c.item !== n.target)) return c;
         agreed.push(c.action);
         return Object.assign({}, c, { status: 'OK', verdict: 'Go', note: 'Fix agreed: ' + c.action, why: (c.why ? c.why + ' ' : '') + 'Fixed by: ' + c.action });
@@ -5309,6 +5395,7 @@ function tideTalk(env, t) {
         sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: gateFor(r), clash: clashOf(r), blockers: blockers(r),
         needsMe: gateFor(r).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked,
         next: nextOf(Object.assign({}, r, { clash: clashOf(r) }), role), ready: readyOf(r), goAnyway: r.goAnyway === true,
+        hands: r.parked === true || r.retired === true ? [] : checklistOf(r, nextOf(Object.assign({}, r, { clash: clashOf(r) }), role)),
         research: r.research || null, researchStatus: r.researchStatus || '', researchAt: r.researchAt || '', researchNote: r.researchNote || '',
         log: t.list(r.log).slice(-12).reverse(), aiStatus: r.aiStatus || '', aiJob: r.aiJob || '', aiNote: r.aiNote || '', aiBy: r.aiBy || '', updated: r.updated
       };
@@ -5346,7 +5433,7 @@ function tideTalk(env, t) {
             parts: t.list(p.parts).slice(0, 15).map(function (x) { x = x || {}; return { part: t.text(x.part, 120), supplier: t.text(x.supplier, 120), cost: num(x.unit_cost_aud), qty: Math.max(1, Math.round(Number(x.qty) || 1)) }; }).filter(function (x) { return x.part; }),
             price: num(p.price), sampleNeeded: p.sample_needed !== false, sampleHow: t.text(p.sample_how, 300) };
         })(res.plan),
-        legal: t.list(res.legal_checks).slice(0, 8).map(function (c) { return typeof c === 'string' ? { check: t.text(c, 300) } : { check: t.text(c && c.check, 300), verdict: c && c.verdict, why: t.text(c && c.why, 300), action: t.text(c && c.action, 300) }; }).filter(function (c) { return c.check; }),
+        legal: t.list(res.legal_checks).slice(0, 8).map(function (c) { return typeof c === 'string' ? { check: t.text(c, 300) } : { check: t.text(c && c.check, 300), verdict: c && c.verdict, why: t.text(c && c.why, 300), action: t.text(c && c.action, 300), who: c && c.who }; }).filter(function (c) { return c.check; }),
         sources: t.list(res.sources).slice(0, 10).map(function (x) { x = x || {}; return { title: t.text(x.title, 120), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.url; })
       };
       var pushed = null;
@@ -5422,7 +5509,7 @@ function tideTalk(env, t) {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
       createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
-      takeNext: takeNext, takeTopicNext: takeTopicNext }
+      takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand }
   };
 }
 
