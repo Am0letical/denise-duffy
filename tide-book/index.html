@@ -464,6 +464,11 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .hand-why { font: 400 13px/18px var(--font); color: var(--on-surface-variant); margin-top: 2px; }
 .hand-row.done .hand-text { text-decoration: line-through; color: var(--on-surface-variant); }
 .hand-row.done .hand-ic { color: var(--tertiary, #2e7d32); }
+/* inspo: a delete button on each card */
+.inspo-wrap { position: relative; }
+.inspo-wrap > .inspo-card { width: 100%; height: 100%; }
+.inspo-del { position: absolute; top: 6px; right: 6px; width: 40px; height: 40px; border: 0; border-radius: 20px; display: grid; place-items: center;
+  background: rgba(255,255,255,.88); color: var(--on-surface, #1a1c1e); box-shadow: 0 1px 4px rgba(0,0,0,.18); cursor: pointer; }
 /* the next-step card folds: tap the top for the choices */
 .next-head { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .next-head:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; border-radius: 8px; }
@@ -1160,7 +1165,8 @@ var TIDE_SCHEMAS = {
       ['researchStatus', 'Research status', 'text'], ['viability', 'Viability', 'number'],
       ['summary', 'Summary', 'text'], ['research', 'Research', 'json'], ['researchedAt', 'Researched', 'date'],
       ['researchTries', 'Research tries', 'number'], ['researchNote', 'Research note', 'text'],
-      ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date'], ['website', 'Website change', 'json']
+      ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date'], ['website', 'Website change', 'json'],
+      ['deleted', 'Removed', 'bool']
     ]
   },
   prints: {
@@ -1268,21 +1274,23 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['name', 'Name', 'text'], ['organisation', 'Organisation', 'text'],
       ['kind', 'Kind', 'text'], ['email', 'Email', 'text'], ['phone', 'Phone', 'text'], ['lists', 'Email lists', 'list'],
       ['source', 'How they joined', 'text'], ['consent', 'Joined a list on', 'day'], ['notes', 'Notes', 'text'],
-      ['status', 'Status', 'text'], ['updated', 'Updated', 'date']
+      ['status', 'Status', 'text'], ['updated', 'Updated', 'date'], ['prevStatus', 'Status before removal', 'text'], ['prevLists', 'Lists before removal', 'list']
     ]
   },
   accounts: {
     sheet: 'Accounts',
     columns: [
       ['id', 'ID', 'text'], ['name', 'Name', 'text'], ['kind', 'Kind', 'text'], ['url', 'Web address', 'text'],
-      ['login', 'Login it is under', 'text'], ['notes', 'Notes', 'text'], ['status', 'Status', 'text'], ['updated', 'Updated', 'date']
+      ['login', 'Login it is under', 'text'], ['notes', 'Notes', 'text'], ['status', 'Status', 'text'], ['updated', 'Updated', 'date'],
+      ['prevStatus', 'Status before removal', 'text']
     ]
   },
   consent: {
     sheet: 'Consent',
     columns: [
       ['id', 'ID', 'text'], ['term', 'Name or topic', 'text'], ['kind', 'Kind', 'text'], ['status', 'Go or no go', 'text'],
-      ['note', 'Note', 'text'], ['decidedBy', 'Decided by', 'text'], ['decidedOn', 'Decided on', 'day'], ['updated', 'Updated', 'date']
+      ['note', 'Note', 'text'], ['decidedBy', 'Decided by', 'text'], ['decidedOn', 'Decided on', 'day'], ['updated', 'Updated', 'date'],
+      ['prevStatus', 'Status before removal', 'text']
     ]
   },
   calendar: {
@@ -1329,7 +1337,8 @@ var TIDE_SCHEMAS = {
       ['updated', 'Updated', 'date'], ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'],
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'],
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
-      ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number']
+      ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number'],
+      ['deleted', 'Removed', 'bool']
     ]
   },
   // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
@@ -2410,7 +2419,7 @@ function createTideLogic(env) {
   function getData() {
     var role = need(['admin', 'artist']);
     var s = settings(), today = env.today(), registered = gstRegisteredOn(today, s);
-    var ideas = rows('ideas').map(function (it) { return clientIdea(it, role); }).reverse();
+    var ideas = rows('ideas').filter(function (it) { return !it.deleted; }).map(function (it) { return clientIdea(it, role); }).reverse();
     salesCache = null;
     var prints = rows('prints').map(function (p) { return clientPrint(p, role, s, registered); }).reverse();
     var studioData = content.snapshot(role), publishData = publish.snapshot(role);
@@ -2456,7 +2465,7 @@ function createTideLogic(env) {
   // ---------- research hand-off (called by the research job, never by the screens)
   var research = {
     pending: function () {
-      return rows('ideas').filter(function (it) { return it.researchStatus === 'Queued'; });
+      return rows('ideas').filter(function (it) { return it.researchStatus === 'Queued' && !it.deleted; });
     },
     /** Marks ideas as out for research, so an edit made meanwhile (back to Queued) is not overwritten. */
     sent: function (ids) {
@@ -2561,11 +2570,37 @@ function createTideLogic(env) {
   var setup = tideSetup(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
     loadBacklog: talk.api.loadBacklog, addNote: notebook.addNote });
 
+  // ---------- delete, and undo: nothing is wiped, so anything removed can be put back
+  function deleteIdea(id) {
+    need(['admin', 'artist']);
+    return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
+  }
+  var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
+    topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+  function undoDelete(kind, id) {
+    need(['admin', 'artist']);
+    var b = BIN[kind];
+    if (!b) fail('That can\u2019t be put back.');
+    var res = env.lock(function () {
+      var r = rows(b[0]).filter(function (x) { return x.id === id; })[0];
+      if (!r) fail('That can\u2019t be found any more.');
+      var ch = {};
+      if (b[1] === 'deleted') ch.deleted = false;
+      else if (b[1] === 'active') ch.active = true;
+      else { ch.status = r.prevStatus || (kind === 'contact' ? 'Active' : kind === 'consent' ? 'Go' : 'Active'); ch.prevStatus = ''; if (kind === 'contact') { ch.lists = list(r.prevLists); ch.prevLists = []; } }
+      if (b[0] !== 'notes') ch.updated = nowIso();
+      env.table(b[0]).update(id, ch);
+      return { ok: true };
+    });
+    if (kind === 'note' && notebook.relink) notebook.relink();
+    return res;
+  }
+
   var out = {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar,
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete,
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -3398,7 +3433,8 @@ function tideHub(env, t) {
     t.need(['admin', 'artist']);
     return env.lock(function () {
       t.find('contacts', id);
-      env.table('contacts').update(id, { status: 'Archived', lists: [], updated: t.nowIso() });
+      var c = t.find('contacts', id);
+      env.table('contacts').update(id, { status: 'Archived', lists: [], prevStatus: c.status || 'Active', prevLists: t.list(c.lists), updated: t.nowIso() });
       return { ok: true };
     });
   }
@@ -3467,8 +3503,8 @@ function tideHub(env, t) {
   function removeAccount(id) {
     t.need(['admin', 'artist']);
     return env.lock(function () {
-      t.find('accounts', id);
-      env.table('accounts').update(id, { status: 'Removed', updated: t.nowIso() });
+      var a = t.find('accounts', id);
+      env.table('accounts').update(id, { status: 'Removed', prevStatus: a.status || '', updated: t.nowIso() });
       return { ok: true };
     });
   }
@@ -3498,8 +3534,8 @@ function tideHub(env, t) {
   function removeConsent(id) {
     t.need(['admin', 'artist']);
     return env.lock(function () {
-      t.find('consent', id);
-      env.table('consent').update(id, { status: 'Removed', updated: t.nowIso() });
+      var c = t.find('consent', id);
+      env.table('consent').update(id, { status: 'Removed', prevStatus: c.status || '', updated: t.nowIso() });
       return { ok: true };
     });
   }
@@ -4494,6 +4530,7 @@ function tideNotes(env, t) {
   }
 
   return {
+    relink: function () { env.lock(relinkAll); },
     ai: ai,
     local: local,
     addNote: saveNoteCore,
@@ -5550,7 +5587,7 @@ function tideTalk(env, t) {
         private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated,
         next: x.locked ? null : topicNext(x, role) };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
-    var items = t.rows('pipeline').map(function (r) {
+    var items = t.rows('pipeline').filter(function (r) { return !r.deleted; }).map(function (r) {
       var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
       var price = Number((r.pricing || {}).price) || 0;
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
@@ -5574,7 +5611,7 @@ function tideTalk(env, t) {
   var research = {
     standardChecks: standardChecks,
     pending: function () {
-      return t.rows('pipeline').filter(function (r) { return r.researchStatus === 'Queued' && r.parked !== true; }).map(function (r) {
+      return t.rows('pipeline').filter(function (r) { return r.researchStatus === 'Queued' && r.parked !== true && !r.deleted; }).map(function (r) {
         return { id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, decisions: t.list(r.decisions), parts: t.list(r.parts), price: Number((r.pricing || {}).price) || 0 };
       });
     },
@@ -5637,7 +5674,7 @@ function tideTalk(env, t) {
   function autoClear() {
     var n = 0;
     t.rows('pipeline').forEach(function (r) {
-      if (n >= 3 || r.parked === true || r.retired === true || r.aiStatus === 'Queued' || r.aiStatus === 'Working') return;
+      if (n >= 3 || r.deleted === true || r.parked === true || r.retired === true || r.aiStatus === 'Queued' || r.aiStatus === 'Working') return;
       if (!t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return;
       if (r.aiJob === 'clear' && r.aiStatus === 'Failed' && Date.parse(r.updated || '') > env.now().getTime() - 6 * 3600000) return;   // give a failed one a rest
       clearSoon(r.id); n++;
@@ -5660,6 +5697,7 @@ function tideTalk(env, t) {
     return env.lock(function () {
       var n = 0, q = 0;
       t.rows('pipeline').forEach(function (r) {
+        if (r.deleted) return;
         var checks = withChecks(r.checks, standardChecks(), 'standard'), ch = {};
         if (checks.length !== t.list(r.checks).length) { ch.checks = checks; n++; }
         if (!r.research && r.researchStatus !== 'Queued' && r.researchStatus !== 'Researching') { ch.researchStatus = 'Queued'; ch.researchTries = 0; q++; }
@@ -5672,10 +5710,14 @@ function tideTalk(env, t) {
   /** Queues an AI job on any row (used by Reports). Returns the route, or '' if no AI is available. */
   function queueJob(id, job) { try { return env.lock(function () { return queue(id, job); }); } catch (e) { return ''; } }
 
+  function deleteItem(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () { var r = item(id); env.table('pipeline').update(id, { deleted: true, updated: t.nowIso(), log: logAdd(r, who(env.user.role) + ' deleted it') }); return { ok: true }; });
+  }
   return {
     ai: ai, local: local, snapshot: snapshot, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
-      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
+      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, deleteItem: deleteItem, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
       takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, helpStart: helpStart, helpPick: helpPick }
   };
 }
@@ -8551,7 +8593,7 @@ var Kit = (function () {
           var b = e.currentTarget;
           K.confirm({ title: 'Remove “' + d.title + '”?', text: 'Tide Book will stop using it to steer things.', confirmLabel: 'Remove' }).then(function (yes) {
             if (!yes) return; K.setBusy(b, true);
-            api('deleteDirection', d.id).then(refresh).then(function () { dirty = false; render(); ctl.close(); toast('Removed.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+            api('deleteDirection', d.id).then(refresh).then(function () { dirty = false; render(); ctl.close(); binUndo('Removed “' + d.title + '”.', 'direction', d.id); }).catch(function (err) { K.setBusy(b, false); fail(err); });
           });
         } })));
         var save = btn('filled', d ? 'Save changes' : 'Add it', { icon: 'check', lg: true, block: true });
@@ -8908,7 +8950,11 @@ var Kit = (function () {
         i.thumbIds.length ? thumbImg(i.thumbIds[0], 'inspo-img') : h('div', { class: 'inspo-img blank' }, icon('link'), h('span', { text: i.source || 'Link' })),
         h('div', { class: 'inspo-cap' }, i.note ? h('div', { class: 'body-s', text: i.note.length > 70 ? i.note.slice(0, 68) + '…' : i.note }) : null,
           h('div', { class: 'label-s', text: [i.source, i.tags[0]].filter(Boolean).join(' · ') || ago(i.created) })));
-      grid.appendChild(rise(card, 3 + Math.min(n, 8)));
+      var del = h('button', { class: 'inspo-del press', type: 'button', 'aria-label': 'Delete', title: 'Delete', onclick: function (e) {
+        e.stopPropagation(); del.disabled = true;
+        api('deleteInspiration', i.id).then(refresh).then(function () { render(); binUndo('Deleted from your inspo.', 'inspiration', i.id); }).catch(function (er) { del.disabled = false; fail(er); });
+      } }, icon('delete'));
+      grid.appendChild(rise(h('div', { class: 'inspo-wrap' }, card, del), 3 + Math.min(n, 8)));
     });
     main.appendChild(grid);
     if (shown.length > 4) fab(main, 'Save inspiration', 'add', function () { openInspo(null); });
@@ -8945,8 +8991,8 @@ var Kit = (function () {
                 .then(function (r) { dirty = false; ctl.close(); S.ideasTab = 'talk'; setTimeout(function () { go('ideas'); openTopic(r.topicId); }, 280); }).catch(fail);
             } }),
             btn('text', 'Remove', { icon: 'delete', danger: true, onclick: function () {
-              K.confirm({ title: 'Remove this?', confirmLabel: 'Remove', danger: true }).then(function (yes) {
-                if (!yes) return; api('deleteInspiration', it.id).then(refresh).then(function () { dirty = false; ctl.close(); toast('Removed.'); }).catch(fail);
+              Promise.resolve(true).then(function (yes) {
+                if (!yes) return; api('deleteInspiration', it.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Deleted from your inspo.', 'inspiration', it.id); }).catch(fail);
               });
             } })));
         }
@@ -9300,7 +9346,7 @@ var Kit = (function () {
         }
         ctl.body.appendChild(h('div', { style: 'text-align:center;margin-top:18px' }, btn('text', 'Remove this topic', { danger: true, icon: 'delete', onclick: function () {
           K.confirm({ title: 'Remove this topic?', text: 'Anything already filed (a note, a product, an idea) stays.', confirmLabel: 'Remove', danger: true }).then(function (yes) {
-            if (!yes) return; api('deleteTopic', id).then(refresh).then(function () { ctl.close(); toast('Removed.'); }).catch(fail);
+            if (!yes) return; api('deleteTopic', id).then(refresh).then(function () { ctl.close(); render(); binUndo('Topic removed.', 'topic', id); }).catch(fail);
           });
         } })));
       }
@@ -9810,7 +9856,11 @@ var Kit = (function () {
           } });
         } }));
         if (p.stage === 'Live' || p.retired) row.appendChild(btn('text', p.retired ? 'Bring it back' : 'Retire it', { icon: p.retired ? 'restore' : 'wb_twilight', onclick: function () { saveFirst().then(function () { return api('retireItem', id, !p.retired); }).then(refresh).then(reopen).catch(fail); } }));
-        else row.appendChild(btn('text', p.parked ? 'Wake it up' : 'Park it', { icon: p.parked ? 'wb_twilight' : 'bedtime', onclick: function () { saveFirst().then(function () { return api('parkItem', id, !p.parked); }).then(refresh).then(reopen).catch(fail); } }));
+        row.appendChild(btn('text', 'Delete', { icon: 'delete', danger: true, onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('deleteItem', id).then(refresh).then(function () { ctl.close(); render(); binUndo('Deleted “' + p.title + '”.', 'product', id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+        } }));
+        if (!(p.stage === 'Live' || p.retired)) row.appendChild(btn('text', p.parked ? 'Wake it up' : 'Park it', { icon: p.parked ? 'wb_twilight' : 'bedtime', onclick: function () { saveFirst().then(function () { return api('parkItem', id, !p.parked); }).then(refresh).then(reopen).catch(fail); } }));
         s8.appendChild(row);
         if (p.log.length) {
           var lg = h('details', { class: 'talk-past', style: 'margin-top:12px' }, h('summary', { text: 'History' }));
@@ -10043,7 +10093,7 @@ var Kit = (function () {
           more.appendChild(btn('text', 'Earlier versions', { icon: 'history', block: true, onclick: function () { openHistory(n, ctl); } }));
           more.appendChild(btn('text', 'Delete note', { icon: 'delete', block: true, danger: true, onclick: function () {
             K.confirm({ title: 'Delete this note?', text: ADMIN ? 'Links to it will show as not made yet. The earlier versions are kept in the Sheet.' : 'It will be gone from your notebook.', confirmLabel: 'Delete', danger: true })
-              .then(function (yes) { if (yes) api('deleteNote', n.id).then(refresh).then(function () { dirty = false; ctl.close(); toast('Deleted.'); }).catch(fail); });
+              .then(function (yes) { if (yes) api('deleteNote', n.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Note deleted.', 'note', n.id); }).catch(fail); });
           } }));
           s4.appendChild(more);
           ctl.body.appendChild(s4);
@@ -10489,6 +10539,10 @@ var Kit = (function () {
         s7.appendChild(row);
         ctl.body.appendChild(s7);
 
+        ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Delete this idea', { icon: 'delete', danger: true, onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('deleteIdea', x.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Deleted “' + x.title + '”.', 'idea', x.id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+        } })));
         var save = btn('filled', 'Save changes', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           if (!f.title.trim()) { toast('Give the idea a name.'); title.input.focus(); return; }
@@ -11143,6 +11197,8 @@ var Kit = (function () {
     return strip;
   }
 
+  /** After a delete: a card with Undo that puts it straight back. */
+  function binUndo(msg, kind, id) { undoCard(msg, function () { return api('undoDelete', kind, id); }, 'Put back.', 12); }
   /** A card at the bottom for a few seconds after an action, with Undo. */
   var undoTimer = null;
   function undoCard(msg, undo, undoneMsg, secs) {
@@ -11612,7 +11668,7 @@ var Kit = (function () {
       var nl = h('div', { class: 'list' });
       S.data.notes.slice(0, 15).forEach(function (x) {
         nl.appendChild(h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', style: '-webkit-line-clamp:3', text: x.text }), h('div', { class: 'li-sup', text: K.dateLabel(x.created) })),
-          K.iconBtn('close', 'Forget this', function () { api('removeNote', x.id).then(refresh).then(function () { render(); toast('Forgotten.'); }).catch(fail); })));
+          K.iconBtn('close', 'Forget this', function () { api('removeNote', x.id).then(refresh).then(function () { render(); binUndo('Forgotten.', 'reminder', x.id); }).catch(fail); })));
       });
       ns.appendChild(nl);
     }
@@ -12860,7 +12916,7 @@ var Kit = (function () {
           ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Remove this contact', { danger: true, icon: 'delete', onclick: function () {
             K.confirm({ title: 'Remove ' + (c.name || c.email) + '?', text: ADMIN ? 'They come off every list. The record stays in the Sheet, marked as archived.' : 'They come off every list.', confirmLabel: 'Remove', danger: true }).then(function (yes) {
               if (!yes) return;
-              api('archiveContact', c.id).then(refresh).then(function () { dirty = false; render(); toast('Contact removed.'); ctl.close(); }).catch(fail);
+              api('archiveContact', c.id).then(refresh).then(function () { dirty = false; render(); ctl.close(); binUndo('Contact removed.', 'contact', c.id); }).catch(fail);
             });
           } })));
         }
@@ -12978,7 +13034,7 @@ var Kit = (function () {
           note('Never put a password here. Keep those in a password manager.', 'lock', 'warn')));
         if (a) {
           ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Remove this account', { danger: true, icon: 'delete', onclick: function () {
-            api('removeAccount', a.id).then(refresh).then(function () { dirty = false; render(); toast('Removed.'); ctl.close(); }).catch(fail);
+            api('removeAccount', a.id).then(refresh).then(function () { dirty = false; render(); ctl.close(); binUndo('Account removed.', 'account', a.id); }).catch(fail);
           } })));
         }
         var save = btn('filled', a ? 'Save changes' : 'Save account', { icon: 'check', lg: true, block: true });
@@ -13048,7 +13104,7 @@ var Kit = (function () {
         if (c && c.decidedOn) ctl.body.appendChild(h('div', { class: 'li-sup', style: 'margin-top:12px', text: 'Last decided: ' + whoDecided(c) }));
         if (c) {
           ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Remove from the list', { danger: true, icon: 'delete', onclick: function () {
-            api('removeConsent', c.id).then(refresh).then(function () { dirty = false; render(); toast('Removed.'); ctl.close(); }).catch(fail);
+            api('removeConsent', c.id).then(refresh).then(function () { dirty = false; render(); ctl.close(); binUndo('Removed from the list.', 'consent', c.id); }).catch(fail);
           } })));
         }
         var save = btn('filled', c ? 'Save changes' : 'Save', { icon: 'check', lg: true, block: true });
