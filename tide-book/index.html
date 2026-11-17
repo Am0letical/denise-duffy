@@ -460,7 +460,9 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .hand-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--outline-variant, rgba(0,0,0,.08)); }
 .hand-row .hand-ic { padding-top: 2px; color: var(--primary); }
 .hand-row.later { opacity: .6; }
-.hand-row.done .body-m { text-decoration: line-through; color: var(--on-surface-variant); }
+.hand-text { font: 500 15px/21px var(--font); }
+.hand-why { font: 400 13px/18px var(--font); color: var(--on-surface-variant); margin-top: 2px; }
+.hand-row.done .hand-text { text-decoration: line-through; color: var(--on-surface-variant); }
 .hand-row.done .hand-ic { color: var(--tertiary, #2e7d32); }
 /* the recommended next step */
 .next-card { background: var(--primary-container, #d6e3ff); color: var(--on-primary-container, #001b3e); border: 0; }
@@ -5058,6 +5060,8 @@ function tideTalk(env, t) {
     var a = String(c.action || '');
     return WORDS.test(a) && !HANDS.test(a) ? 'auto' : 'artist';
   }
+  /** A rule's short name: "Claims: nothing about health…" is "Claims". */
+  function shortRule(s) { s = String(s || '').split(/[:(]/)[0].trim(); return s.length > 48 ? s.slice(0, 46).replace(/\s+\S*$/, '') + '…' : s; }
   /** Fixes waiting on her own hands. */
   function handFixes(r) { return t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action && fixWho(c) === 'artist'; }); }
 
@@ -5192,7 +5196,7 @@ function tideTalk(env, t) {
     // one at a time: the first fix Tide Book can make, with how many are left. Fixes that need her hands go on her checklist.
     var fixesAll = t.list(r.checks).filter(function (c) { return c.status === 'Problem' && c.action && fixWho(c) === 'auto'; });
     if (fixesAll.length) return { kind: 'fix', who: 'auto', no: 'fixno', noLabel: 'No go: I’ll do it my way', target: fixesAll[0].item,
-      label: (fixesAll.length > 1 ? 'Fix 1 of ' + fixesAll.length + ': ' : 'Fix: ') + fixesAll[0].item,
+      label: (fixesAll.length > 1 ? 'Fix 1 of ' + fixesAll.length + ': ' : 'Fix: ') + shortRule(fixesAll[0].item),
       why: fixesAll[0].action,
       alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length } : null };
     if (r.stage === 'Idea') return { kind: 'advance', label: 'Start shaping it', why: 'Next: the questions that decide what it is.' };
@@ -5237,8 +5241,8 @@ function tideTalk(env, t) {
     if (r.stage === 'Decisions') t.list(r.open).forEach(function (o, i) { if (!o.a && !(o.suggest >= 0)) out.push({ key: 'q' + i, text: 'Answer: ' + o.q, why: 'No clear pick, so it’s your call.', state: 'now' }); });
     if (next && next.diy) out.push({ key: 'diy', text: next.label, why: 'You chose to do this one yourself.', state: 'now' });
     t.list(r.checks).forEach(function (c) {
-      if (c.status === 'Problem' && c.action && fixWho(c) === 'artist') out.push({ key: 'fix:' + c.id, text: c.action, why: c.item, state: 'now', tick: true });
-      else if (c.status === 'OK' && c.doneBy) out.push({ key: 'fix:' + c.id, text: c.action || c.item, why: c.item, state: 'done' });
+      if (c.status === 'Problem' && c.action && fixWho(c) === 'artist') out.push({ key: 'fix:' + c.id, text: c.action, why: shortRule(c.item), state: 'now', tick: true });
+      else if (c.status === 'OK' && c.doneBy) out.push({ key: 'fix:' + c.id, text: c.action || c.item, why: shortRule(c.item), state: 'done' });
     });
     var noSample = pl && pl.sampleNeeded === false && !(r.declined || {}).nosample;
     if ((!noSample && r.stage !== 'Live') || sm !== 'Not ordered') {
@@ -9274,18 +9278,27 @@ var Kit = (function () {
       h('div', { class: 'row', style: 'gap:8px;align-items:center' }, icon('front_hand'), h('div', { class: 'title-s grow', text: 'Your checklist' }),
         h('span', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: left ? left + ' to do now' : 'Nothing for now' })),
       h('p', { class: 'body-s', style: 'margin:4px 0 8px;color:var(--on-surface-variant)', text: 'Only the things that need you. Everything else Tide Book does, with your go.' }));
+    // what's for now in full; what's later or done folds away
+    var rest = h('div', { hidden: true }), nLater = 0, nDone = 0;
     L.forEach(function (x) {
+      if (x.state === 'later') nLater++; if (x.state === 'done') nDone++;
       var row = h('div', { class: 'hand-row ' + x.state },
         h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'hourglass_top' : 'radio_button_unchecked')),
-        h('div', { class: 'grow' }, h('div', { class: 'body-m', text: x.text }),
-          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: x.state === 'later' ? 'Later. ' + (x.why || '') : x.why || '' })),
+        h('div', { class: 'grow' }, h('div', { class: 'hand-text', text: x.text }),
+          h('div', { class: 'hand-why', text: x.state === 'later' ? 'Later' + (x.why ? ': ' + x.why : '') : x.why || '' })),
         x.state === 'now' && x.tick ? btn('tonal', 'Done', { sm: true, icon: 'check', onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
           saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
             .catch(function (er) { K.setBusy(b, false); fail(er); });
         } }) : null);
-      sec.appendChild(row);
+      (x.state === 'now' ? sec : rest).appendChild(row);
     });
+    if (nLater || nDone) {
+      var more = btn('text', [nLater ? nLater + ' for later' : '', nDone ? nDone + ' done' : ''].filter(String).join(' · '), { sm: true, onclick: function () {
+        rest.hidden = !rest.hidden;
+      } });
+      sec.appendChild(h('div', { style: 'margin-top:6px' }, more)); sec.appendChild(rest);
+    }
     return sec;
   }
   function readyLine(r) {
