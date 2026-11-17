@@ -1295,7 +1295,7 @@ var TIDE_SCHEMAS = {
     columns: [
       ['id', 'ID', 'text'], ['term', 'Name or topic', 'text'], ['kind', 'Kind', 'text'], ['status', 'Go or no go', 'text'],
       ['note', 'Note', 'text'], ['decidedBy', 'Decided by', 'text'], ['decidedOn', 'Decided on', 'day'], ['updated', 'Updated', 'date'],
-      ['prevStatus', 'Status before removal', 'text']
+      ['prevStatus', 'Status before removal', 'text'], ['often', 'How often', 'text']
     ]
   },
   calendar: {
@@ -1998,6 +1998,29 @@ function createTideLogic(env) {
     return hit;
   }
 
+  /**
+   * How often a "Go" topic may come up in posts: Now and then (about once a month) or Rarely (a few times a year).
+   * Returns the first limited topic this text mentions that another post already covered inside its window, or null.
+   */
+  var OFTEN_DAYS = { 'Now and then': 30, 'Rarely': 90 };
+  function consentOften(textIn, selfId) {
+    var esc = function (s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+'); };
+    var said = function (term, s) { return new RegExp('(^|[^A-Za-z0-9])' + esc(term) + '(s|\'s|’s)?(?=$|[^A-Za-z0-9])', 'i').test(String(s || '')); };
+    var now = env.now().getTime(), out = null;
+    rows('consent').filter(function (c) { return c.term && c.status === 'Go' && OFTEN_DAYS[c.often]; }).some(function (c) {
+      if (!said(c.term, textIn)) return false;
+      var days = OFTEN_DAYS[c.often];
+      var last = rows('content').filter(function (x) {
+        if (x.id === selfId || x.type !== 'Post' || ['Posted', 'Posting', 'Scheduled', 'Approved'].indexOf(x.status) < 0) return false;
+        var when = Date.parse(x.postedAt || x.scheduledAt || x.updated || '') || 0;
+        return Math.abs(when - now) < days * 86400000 && said(c.term, [x.title, x.caption, x.hashtags, x.onScreen].join(' '));
+      })[0];
+      if (last) { out = { term: c.term, often: c.often, days: days, title: last.title || '' }; return true; }
+      return false;
+    });
+    return out;
+  }
+
   function publishWebsite() {
     need(['admin', 'artist']);
     if (!env.site) fail(env.user.role === 'admin' ? 'Publishing the website works on the PC version of Tide Book.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
@@ -2524,7 +2547,7 @@ function createTideLogic(env) {
   // ---------- content studio (LogicContent.gs)
   var content = tideContent(env, {
     fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf, checkImage: checkImage,
-    publish: publish, consentHit: consentHit
+    publish: publish, consentHit: consentHit, consentOften: consentOften
   });
 
   // ---------- what the website needs from her (LogicSite.gs)
@@ -2688,6 +2711,9 @@ function tideContent(env, t) {
     if (c.clash) return String(c.clash);
     var hit = t.consentHit ? t.consentHit([c.title, c.caption, c.hashtags, c.onScreen].join(' ')) : '';
     if (hit) return 'It mentions “' + hit + '”, which you’ve kept private. Change the post, or mark it Go in Consent.';
+    var oft = t.consentOften ? t.consentOften([c.title, c.caption, c.hashtags, c.onScreen].join(' '), c.id) : null;
+    if (oft) return 'It mentions “' + oft.term + '”, which comes up ' + oft.often.toLowerCase() + ' (about ' + (oft.days === 30 ? 'once a month' : 'a few times a year') + '), and ' +
+      (oft.title ? '“' + oft.title + '”' : 'another post') + ' already covers it. Space them out, or change how often in Consent.';
     return '';
   }
   function approversFor(c) { return clashOf(c) ? C.CLASH_APPROVERS : C.POST_APPROVERS; }
@@ -3524,6 +3550,7 @@ function tideHub(env, t) {
       term: term, kind: H.CONSENT_KINDS.indexOf(p.kind) >= 0 ? p.kind : 'Person',
       status: p.status === 'Go' ? 'Go' : 'No go', note: t.text(p.note, 500), updated: t.nowIso()
     };
+    out.often = out.status === 'Go' && ['Now and then', 'Rarely'].indexOf(p.often) >= 0 ? p.often : '';
     return env.lock(function () {
       var twin = t.rows('consent').filter(function (c) { return c.status !== 'Removed' && c.id !== id && String(c.term).toLowerCase() === term.toLowerCase(); })[0];
       if (twin) t.fail('“' + twin.term + '” is already in the list.');
@@ -3566,7 +3593,7 @@ function tideHub(env, t) {
         return { id: a.id, name: a.name, kind: a.kind, url: a.url, login: a.login || '', notes: a.notes || '' };
       }),
       consent: t.rows('consent').filter(function (c) { return c.term && c.status !== 'Removed'; }).map(function (c) {
-        return { id: c.id, term: c.term, kind: c.kind || 'Person', status: c.status === 'Go' ? 'Go' : 'No go', note: c.note || '',
+        return { id: c.id, term: c.term, kind: c.kind || 'Person', status: c.status === 'Go' ? 'Go' : 'No go', often: c.status === 'Go' ? c.often || '' : '', note: c.note || '',
           decidedBy: c.decidedBy || '', decidedOn: c.decidedOn || '' };
       }).sort(function (a, b) { return a.term.toLowerCase() < b.term.toLowerCase() ? -1 : 1; }),
       contactKinds: H.CONTACT_KINDS, accountKinds: H.ACCOUNT_KINDS, consentKinds: H.CONSENT_KINDS
@@ -13082,7 +13109,8 @@ var Kit = (function () {
   }
 
   // ------------------------------------------------------------------ Consent: names and topics, go or no go
-  function consentChip(status) { return status === 'Go' ? chip('Go', 'approved', 'check_circle') : chip('No go', 'high', 'block'); }
+  function consentChip(status, often) { return status === 'Go' ? chip(often ? 'Go · ' + often.toLowerCase() : 'Go', 'approved', often ? 'schedule' : 'check_circle') : chip('No go', 'high', 'block'); }
+  var OFTEN_OPTS = [{ value: '', label: 'Any time' }, { value: 'Now and then', label: 'Now and then (about once a month)' }, { value: 'Rarely', label: 'Rarely (a few times a year)' }];
   function whoDecided(c) {
     var who = c.decidedBy === 'admin' ? S.data.brand.adminName : c.decidedBy === 'artist' ? S.data.brand.artistName : '';
     return [who, c.decidedOn ? K.dayLabel(String(c.decidedOn).slice(0, 10), true) : ''].filter(String).join(', ');
@@ -13100,11 +13128,11 @@ var Kit = (function () {
         list.appendChild(h('div', { class: 'li acct' },
           h('button', { type: 'button', class: 'acct-go press', 'aria-label': 'Edit ' + c.term, onclick: function () { openConsent(c.id); } },
             h('div', { class: 'th-blank' }, icon(c.kind === 'Topic' ? 'sticky_note_2' : 'contacts')),
-            h('div', { class: 'grow' }, h('div', { class: 'li-head' }, c.term, ' ', consentChip(c.status)),
+            h('div', { class: 'grow' }, h('div', { class: 'li-head' }, c.term, ' ', consentChip(c.status, c.often)),
               h('div', { class: 'li-sup', text: [c.note, whoDecided(c)].filter(String).join(' · ') }))),
           btn('text', flip === 'Go' ? 'Make go' : 'Make no go', { onclick: function (ev) {
             var b = ev.currentTarget; K.setBusy(b, true);
-            api('saveConsent', c.id, { term: c.term, kind: c.kind, note: c.note, status: flip }).then(refresh)
+            api('saveConsent', c.id, { term: c.term, kind: c.kind, note: c.note, status: flip, often: c.often }).then(refresh)
               .then(function () { K.haptic('success'); render(); toast(c.term + ' is now ' + (flip === 'Go' ? 'a go.' : 'a no go.')); })
               .catch(function (e) { K.setBusy(b, false); fail(e); });
           } })));
@@ -13118,18 +13146,22 @@ var Kit = (function () {
   function openConsent(id) {
     var hub = S.data.hub, c = id ? byId(hub.consent || [], id) : null, dirty = false;
     if (id && !c) return;
-    var f = c ? { term: c.term, kind: c.kind, status: c.status, note: c.note } : { term: '', kind: 'Person', status: 'No go', note: '' };
+    var f = c ? { term: c.term, kind: c.kind, status: c.status, often: c.often || '', note: c.note } : { term: '', kind: 'Person', status: 'No go', often: '', note: '' };
     K.sheet({
       title: c ? c.term : 'Add a name or topic', tall: true, guard: function () { return dirty; },
       build: function (ctl) {
         function touch() { dirty = true; }
         var term = K.textField({ label: 'Name or topic', value: f.term, maxlength: 80, onInput: function (v) { f.term = v; touch(); },
           help: 'Add nicknames on their own too.' });
+        var oftenWrap = h('div', { class: 'field-gap', hidden: f.status !== 'Go' }, h('div', { class: 'label-s', text: 'How often can it come up in posts?' }),
+          K.choices({ label: 'How often', value: f.often, options: OFTEN_OPTS, onChange: function (v) { f.often = v; touch(); } }),
+          h('p', { class: 'tf-help', style: 'margin:0', text: 'A post that comes too soon after another about it needs both of you to OK it.' }));
         ctl.body.appendChild(h('div', { class: 'field-gap' }, term,
           h('div', { class: 'label-s', text: 'Is it a person or a topic?' }),
           K.choices({ label: 'This is a', value: f.kind, options: hub.consentKinds || ['Person', 'Topic'], onChange: function (v) { f.kind = v; touch(); } }),
           h('div', { class: 'label-s', text: 'Can it appear in public?' }),
-          K.choices({ label: 'Can it appear in public?', value: f.status, options: ['No go', 'Go'], onChange: function (v) { f.status = v; touch(); } }),
+          K.choices({ label: 'Can it appear in public?', value: f.status, options: ['No go', 'Go'], onChange: function (v) { f.status = v; oftenWrap.hidden = v !== 'Go'; touch(); } }),
+          oftenWrap,
           K.textField({ label: 'Note', value: f.note, multiline: true, maxlength: 500, onInput: function (v) { f.note = v; touch(); },
             help: 'Optional.' })));
         if (c && c.decidedOn) ctl.body.appendChild(h('div', { class: 'li-sup', style: 'margin-top:12px', text: 'Last decided: ' + whoDecided(c) }));
