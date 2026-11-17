@@ -9720,7 +9720,7 @@ var Kit = (function () {
           e.stopPropagation(); var b = e.currentTarget; K.setBusy(b, true);
           saveFirst().then(function () { return api('laterHand', p.id, x.key, !x.snoozed); }).then(refresh).then(function () {
             reopen();
-            if (!x.snoozed) undoCard('Put off for later. It’s under “for later”.', function () { return api('laterHand', p.id, x.key, false); }, 'Back on your list.');
+            if (!x.snoozed) undoCard('Put off for later. It’s under “for later”.', function () { return api('laterHand', p.id, x.key, false).then(function () { return refresh(); }).then(function () { reopen(); }); }, 'Back on your list.');
           }).catch(function (er) { K.setBusy(b, false); fail(er); });
         } });
         var tail = row.lastElementChild && row.lastElementChild.tagName === 'BUTTON' ? row.lastElementChild : null;
@@ -11550,6 +11550,7 @@ var Kit = (function () {
     yes.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'approve', all, after); });
     fix.addEventListener('click', function (e) { e.stopPropagation(); openChanges(c, after); });
     no.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'reject', all, after); });
+    if (aside && c.clash) return h('div', {}, h('div', { class: 'btn-row', style: 'flex-wrap:wrap' }, fix));
     var ask = aside
       ? note('Suggested: don’t post this one. It was marked to be set aside. Tap “Don’t post it”, or “Post it anyway” if that’s changed.', 'lightbulb')
       : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Your call: Approve posts it. Needs changes has it redone. Don’t post it sets it aside.' });
@@ -11599,7 +11600,17 @@ var Kit = (function () {
         body.appendChild(h('div', { class: 'plan' }, h('b', { text: 'Fixed since last time' }),
           h('p', { text: (last.failed.length ? last.failed.join('; ') : '') + (last.failed.length && last.note ? '. ' : '') + (last.note || '') })));
       }
-      if (c.clash) body.appendChild(h('div', { style: 'margin-top:10px' }, note((ADMIN ? 'Why you’re asked as well: ' : 'Why ' + adminName() + ' is asked as well: ') + c.clash, 'info', 'warn')));
+      if (c.clash) {
+        var cn = note((ADMIN ? 'Why you’re asked as well: ' : 'Why ' + adminName() + ' is asked as well: ') + c.clash, 'info', 'warn');
+        if (c.type === 'Post' && c.status === 'Suggested' && setAsideHint(c)) {
+          // what it suggests, right here: one tap to do it
+          var qNo = btn('filled', 'Don’t post it', { sm: true, icon: 'block' }), qYes = btn('outlined', 'Post it anyway', { sm: true, icon: 'check' });
+          qNo.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'reject', [qNo, qYes]); });
+          qYes.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'approve', [qNo, qYes]); });
+          cn.lastElementChild.appendChild(h('div', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' }, qNo, qYes));
+        }
+        body.appendChild(h('div', { style: 'margin-top:10px' }, cn));
+      }
       if (otherDecision(c) === 'Approved' && (c.needs || []).length > 1) body.appendChild(h('div', { style: 'margin-top:10px' }, chip(cap(otherName()) + ' approved', 'approved', 'check')));
       body.appendChild(h('div', { style: 'margin-top:14px' }, reviewButtons(c)));
       card.addEventListener('click', function (e) { if (!e.target.closest('button, a')) openPost(c.id); });
