@@ -8488,6 +8488,9 @@ var Kit = (function () {
     var day = Math.floor(Date.now() / 86400000);
     var news = rest ? [] : welcomeNews();
     pageTitle(main, hello + ', ' + artist(), rest ? 'Taking it easy. Nothing here needs you.' : homeLine(needs, day, news));
+    // every section is named as it's added, then laid out in her order
+    var markedTo = main.children.length;
+    function mark(key) { for (var i = markedTo; i < main.children.length; i++) main.children[i].dataset.hs = key; markedTo = main.children.length; }
 
     var cover = coverPrint();
     if (cover) {
@@ -8496,6 +8499,7 @@ var Kit = (function () {
         h('span', { class: 'cover-cap' }, h('b', { text: cover.title }), h('span', { text: cover.status === 'Live' ? 'Your artwork, on sale now' : 'Your artwork' }))), n++));
     }
 
+    mark('cover');
     // inspiration, right on the home page: save it, and see the last few
     var ins = (S.data.inspiration || []).slice(0, 3);
     var insCard = h('div', { class: 'card pad', style: 'margin-bottom:14px' },
@@ -8514,6 +8518,7 @@ var Kit = (function () {
       insCard.appendChild(strip);
     }
     main.appendChild(rise(insCard, n++));
+    mark('inspo');
 
     if (rest) {
       main.appendChild(rise(h('div', { class: 'card pad rest-card' },
@@ -8523,22 +8528,27 @@ var Kit = (function () {
         h('div', { style: 'margin-top:12px' }, btn('tonal', 'I’m back', { icon: 'wb_sunny', onclick: function (e) { setRest(e.currentTarget, 0); } }))), n++));
     }
 
+    mark('rest');
     if (needs.length) {
       var sec = section(needs.length === 1 ? 'A question from ' + adminName() : needs.length + ' questions from ' + adminName());
       needs.forEach(function (e) { sec.appendChild(needsCard(e)); });
       main.appendChild(rise(sec, n++));
     }
+    mark('needs');
     n = talkCards(main, n);
+    mark('waiting');
     var tdA = rest ? null : todoCard();
     if (tdA) main.appendChild(rise(tdA, n++));
     var fcA = rest ? null : finishCard();
     if (fcA) main.appendChild(rise(fcA, n++));
+    mark('todo');
     if (S.data.website && S.data.website.live) {
       main.appendChild(rise(h('a', { class: 'card pad press soft drafts', href: S.data.website.live, target: '_blank', rel: 'noopener' },
         h('span', { class: 'ic' }, icon('language')),
         h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'Have a wander. It shows the latest every time you open it.' })), icon('open_in_new')), n++));
     }
 
+    mark('website');
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = rest ? 0 : S.data.questions.length;
     if (nPosts || nQs) {
       var what = [];
@@ -8549,6 +8559,7 @@ var Kit = (function () {
         h('span', { class: 'grow' }, h('b', { text: cap(what.join(' and ')) }),
           h('span', { class: 'body-m', text: nQs ? 'A tap each, then posts get made' : 'Made from your footage' })), icon('chevron_right')), n++));
     }
+    mark('review');
 
     var actions = h('div', { class: 'tiles four' });
     actions.appendChild(h('button', { class: 'action wide press', type: 'button', onclick: function () { openAddFootage(); } },
@@ -8563,6 +8574,7 @@ var Kit = (function () {
     var quick = section('What would you like to do?');
     quick.appendChild(actions);
     main.appendChild(rise(quick, n++));
+    mark('actions');
 
     // good news only: what her work has been doing (the books stay on the admin side)
     var m = S.data.money, live = S.data.prints.filter(function (p) { return p.status === 'Live'; }).length;
@@ -8580,9 +8592,52 @@ var Kit = (function () {
     stat('Ideas on the go', String(S.data.ideas.filter(function (x) { return x.stage !== 'Live' && x.stage !== 'Parked' && x.stage !== 'Retired'; }).length), 'ideas');
     glance.appendChild(stats);
     main.appendChild(rise(glance, n++));
+    mark('glance');
 
-    if (!rest) main.appendChild(rise(h('div', { style: 'margin-top:20px;text-align:center' },
-      btn('text', 'Taking it easy for a bit?', { icon: 'spa', onclick: openRest })), n++));
+    // her order: the rest card stays on top, the sections follow in the order she chose
+    homeOrder().forEach(function (k) { [].slice.call(main.querySelectorAll(':scope > [data-hs="' + k + '"]')).forEach(function (el) { main.appendChild(el); }); });
+
+    main.appendChild(rise(h('div', { style: 'margin-top:20px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center' },
+      btn('text', 'Arrange your home page', { icon: 'swap_vert', onclick: openHomeOrder }),
+      rest ? null : btn('text', 'Taking it easy for a bit?', { icon: 'spa', onclick: openRest })), n++));
+  }
+  var HOME_SECTIONS = { cover: 'Your artwork, up top', inspo: 'Inspiration', needs: 'Questions for you', waiting: 'Waiting for you', todo: 'Your to do list',
+    website: 'Your website', review: 'Posts to look at', actions: 'What would you like to do?', glance: 'Your work lately' };
+  var HOME_DEFAULT = ['cover', 'inspo', 'needs', 'waiting', 'todo', 'website', 'review', 'actions', 'glance'];
+  function homeOrder() {
+    var o = (S.data.homeOrder || []).filter(function (k) { return HOME_DEFAULT.indexOf(k) >= 0; });
+    HOME_DEFAULT.forEach(function (k) { if (o.indexOf(k) < 0) o.push(k); });
+    return o;
+  }
+  /** Her home page, in her order: move any section up or down. */
+  function openHomeOrder() {
+    var order = homeOrder(), dirty = false;
+    K.sheet({
+      title: 'Arrange your home page', guard: function () { return dirty; },
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Move what matters most to the top. Sections with nothing in them stay hidden.' }));
+        var list = h('div', { class: 'list' });
+        function draw() {
+          list.textContent = '';
+          order.forEach(function (k, i) {
+            var label = k === 'needs' ? 'Questions from ' + adminName() : HOME_SECTIONS[k];
+            list.appendChild(h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', text: (i + 1) + '. ' + label })),
+              K.iconBtn('arrow_upward', 'Move ' + label + ' up', function () { if (i === 0) return; order.splice(i - 1, 0, order.splice(i, 1)[0]); dirty = true; K.haptic(); draw(); }),
+              K.iconBtn('arrow_downward', 'Move ' + label + ' down', function () { if (i === order.length - 1) return; order.splice(i + 1, 0, order.splice(i, 1)[0]); dirty = true; K.haptic(); draw(); })));
+          });
+        }
+        draw();
+        ctl.body.appendChild(list);
+        ctl.body.appendChild(h('div', { style: 'margin-top:12px;text-align:center' }, btn('text', 'Back to the usual order', { icon: 'restart_alt', onclick: function () { order = HOME_DEFAULT.slice(); dirty = true; draw(); } })));
+        var save = btn('filled', 'Save this order', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          K.setBusy(save, true);
+          api('saveHomeOrder', order).then(refresh).then(function () { dirty = false; K.haptic('success'); ctl.close(); render(); toast('Your home page is in your order.'); })
+            .catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
+      }
+    });
   }
   function setRest(b, days) {
     if (b) K.setBusy(b, true);
