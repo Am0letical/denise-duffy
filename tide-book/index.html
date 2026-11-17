@@ -9464,7 +9464,7 @@ var Kit = (function () {
     L.forEach(function (x) {
       if (x.state === 'later') nLater++; if (x.state === 'done') nDone++;
       var hk = p.id + ':' + x.cid, hv = x.help || { turns: [], state: '' };
-      var helpBtn = x.state === 'now' && x.cid ? btn('tonal', HELP_OPEN[hk] ? 'Close' : 'Help me', { sm: true, icon: HELP_OPEN[hk] ? 'expand_less' : 'auto_awesome', onclick: function (e) {
+      var helpBtn = x.state === 'now' && x.cid ? btn('tonal', HELP_OPEN[hk] ? 'Close' : 'Help me', { sm: true, icon: HELP_OPEN[hk] ? 'close' : 'auto_awesome', onclick: function (e) {
         HELP_OPEN[hk] = !HELP_OPEN[hk];
         if (HELP_OPEN[hk] && !hv.turns.length && hv.state !== 'thinking') {
           var b = e.currentTarget; K.setBusy(b, true);
