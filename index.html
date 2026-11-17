@@ -3448,7 +3448,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var extra = c.soon && !cards ? '<div class="edn hold" style="max-width:640px"><b>' + esc(c.soon) + '</b><p>Join my letters from the studio and you’ll see them first.</p>' + signup() + '</div>' +
         closing('In the meantime', 'A soft moment <span class="it" style="color:var(--teal)">for your wall</span>', 'Until they’re ready, these pieces hold the same quiet.', function (a) { return a.col === k; }) : k === 'wear' ? '<p class="prop" style="margin-top:20px">Here the photos would be the print partner’s mock-ups of each item with her art on it.</p>' : '';
       return '<div class="page wrap"><div class="crumbs"><a href="#/">Home</a> · Shop</div><h1 class="ptitle reveal">' + c.title.replace('&', '<span class="it" style="color:var(--ocean)">&amp;</span>') + '</h1>' +
-        '<p class="plede reveal">' + c.sub + (c.link ? ' <a href="' + c.link[0] + '">' + c.link[1] + ' →</a>' : '') + '</p><div class="cards">' + cards + '</div>' + extra + '</div>';
+        '<p class="plede reveal">' + c.sub + (c.link ? ' <a href="' + c.link[0] + '">' + c.link[1] + ' →</a>' : '') + (k === 'ocean' ? ' <a href="#/sea-shelter">About Sea Shelter →</a>' : '') + '</p><div class="cards">' + cards + '</div>' + extra + '</div>';
     },
     artwork: function (id, pid) {
       var a = art(id); if (!a) return views.home();
