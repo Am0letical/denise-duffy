@@ -5318,7 +5318,7 @@ function tideTalk(env, t) {
       label: (function (r) { r = r.charAt(0).toUpperCase() + r.slice(1); return fixesAll.length > 1 ? 'First fix of ' + fixesAll.length + ': ' + r : 'One fix: ' + r; })(shortRule(fixesAll[0].item)),
       why: fixesAll[0].action,
       alt: fixesAll.length > 1 ? { kind: 'fixall', label: 'Go on all ' + fixesAll.length, why: (function (names) {
-        names = names.map(function (x) { x = shortRule(x.item); return x.charAt(0).toUpperCase() + x.slice(1); });
+        names = names.map(function (x) { x = shortRule(x.item).replace(/…$/, ''); if (x.length > 26) x = x.split(/\s+/).slice(0, 4).join(' ') + '…'; return x.charAt(0).toUpperCase() + x.slice(1); });
         return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] + ', all in one go.';
       })(fixesAll) } : null,
       more: [{ kind: 'fixfine', label: 'It’s fine as it is', why: 'Nothing to change. It’s marked settled.' }],
