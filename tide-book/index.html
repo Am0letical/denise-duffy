@@ -2693,7 +2693,7 @@ function createTideLogic(env) {
   function setupContext() {
     var s = settings(), out = [], sup = supplierList();
     if (sup.length) {
-      out.push('Her suppliers (use the default for each kind unless there is a reason not to; only ever name these, or a kind of supplier):');
+      out.push('Her suppliers. Use them for everything they make (her default first for each kind). Only suggest another supplier for a part or product none of hers makes, and then say plainly that none of hers make it:');
       sup.forEach(function (x) {
         out.push('- ' + x.name + (list(x.makes).length ? ': makes ' + list(x.makes).join(', ') : '') + (list(x.defaultFor).length ? '; her default for ' + list(x.defaultFor).join(', ') : '') +
           (x.costNote ? '; cost ' + x.costNote : '') + (x.leadTime ? '; lead time ' + x.leadTime : '') + (x.notes ? '; ' + x.notes : ''));
