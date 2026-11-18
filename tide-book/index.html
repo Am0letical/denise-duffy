@@ -479,6 +479,22 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .inspo-tldr.empty { opacity: .65; font-style: italic; }
 .inspo-full { margin-top: 10px; border-radius: 16px; overflow: hidden; background: var(--surface-highest); }
 .inspo-full iframe { display: block; width: 100%; height: 640px; border: 0; }
+/* goals: the map, and the bubbles on it */
+.goal-map { position: relative; border-radius: 20px; background: radial-gradient(circle at 30% 20%, rgba(28,78,134,.06), transparent 60%), var(--surface, #fff);
+  box-shadow: inset 0 0 0 1px var(--outline-variant); overflow: hidden; touch-action: none; }
+.goal-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.goal-lines line { stroke: var(--outline, #8a8f98); stroke-width: 2; stroke-dasharray: 4 5; }
+.goal-lines line.part { stroke: var(--primary, #1c4e86); stroke-dasharray: none; opacity: .5; }
+.goal-bubble { position: absolute; max-width: 46%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px 10px 12px; border-radius: 18px;
+  background: var(--secondary-container, #dbe7f3); color: var(--on-secondary-container, #0f2944); box-shadow: 0 2px 8px rgba(0,0,0,.08); cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; }
+.goal-bubble.active { background: var(--primary, #1c4e86); color: var(--on-primary, #fff); }
+.goal-bubble.sub { padding: 8px 12px; border-radius: 14px; background: var(--surface-high, #f3ede6); color: inherit; font-size: 14px; }
+.goal-bubble.done { opacity: .55; }
+.goal-bubble.lifted { box-shadow: 0 12px 26px rgba(0,0,0,.22); cursor: grabbing; z-index: 3; }
+.gb-rank { font: 600 11px/1 var(--font); opacity: .7; }
+.gb-t { font-weight: 600; font-size: 15px; line-height: 19px; }
+.gb-s { font-size: 12px; opacity: .75; }
+.goal-card.active { box-shadow: inset 0 0 0 2px var(--primary); }
 /* her plan on the home page: where she's up to */
 .plan-dots { display: flex; gap: 6px; margin-top: 10px; }
 .plan-dots i { flex: 1; height: 6px; border-radius: 3px; background: var(--outline-variant); }
@@ -1366,12 +1382,22 @@ var TIDE_SCHEMAS = {
     ]
   },
   // Talk it through (LogicTalk.gs): topics the artist names and answers questions about
+  // her goals: a map she arranges, in order of importance. The most important goal's steps set the order of work.
+  goals: {
+    sheet: 'Goals',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['title', 'Goal', 'text'], ['why', 'Why it matters', 'text'],
+      ['x', 'Map across', 'number'], ['y', 'Map down', 'number'], ['links', 'Linked to', 'list'], ['parentId', 'Part of', 'text'],
+      ['rank', 'Importance', 'number'], ['status', 'Status', 'text'], ['steps', 'Plan steps', 'json'], ['topicId', 'Planned in talk', 'text'],
+      ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
   topics: {
     sheet: 'Talk It Through',
     columns: [
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Started by', 'text'], ['title', 'Topic', 'text'],
       ['detail', 'To start with', 'text'], ['status', 'Status', 'text'], ['rounds', 'Questions and answers', 'json'],
-      ['outcome', 'Written up', 'json'], ['filed', 'Filed as', 'json'], ['maxQ', 'Question limit', 'number'], ['deleted', 'Removed', 'bool'],
+      ['outcome', 'Written up', 'json'], ['filed', 'Filed as', 'json'], ['maxQ', 'Question limit', 'number'], ['deleted', 'Removed', 'bool'], ['goalId', 'For goal', 'text'],
       ['updated', 'Updated', 'date'], ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'],
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
     ]
@@ -2550,7 +2576,7 @@ function createTideLogic(env) {
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
-      plan: planState(), homeOrder: list(env.settings.get().homeOrder),
+      plan: planState(), goals: goalSnapshot(), homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -2674,7 +2700,104 @@ function createTideLogic(env) {
     var x = rows('ideas').filter(function (r) { return r.id === id && !r.deleted; })[0];
     return x && list(x.scope).length ? x : null;
   }
+  // ---------- goals: she adds them freely on a map, puts them in order of importance, and each one grows a plan
+  function goalList() {
+    return rows('goals').filter(function (g) { return !g.deleted; }).sort(function (a, b) { return (Number(a.rank) || 999) - (Number(b.rank) || 999) || (a.created < b.created ? -1 : 1); });
+  }
+  function goalRow(id) { var g = rows('goals').filter(function (x) { return x.id === id && !x.deleted; })[0]; if (!g) fail('That goal has been removed.'); return g; }
+  function cleanSteps(a) {
+    return list(a).slice(0, 15).map(function (s, i) {
+      var tx = text(typeof s === 'string' ? s : s && s.text, 300);
+      return tx ? { id: (s && s.id) ? String(s.id).slice(0, 12) : 'g' + (i + 1) + Math.random().toString(36).slice(2, 6), text: tx, done: !!(s && s.done) } : null;
+    }).filter(Boolean);
+  }
+  function clamp01(n, d) { n = Number(n); return isFinite(n) ? Math.max(0, Math.min(1, n)) : d; }
+  function addGoal(p) {
+    var role = need(['admin', 'artist']);
+    p = p || {};
+    var title = text(p.title, 120);
+    if (!title) fail('What’s the goal?');
+    return env.lock(function () {
+      var id = env.nextId('GL', 3), now = nowIso(), all = goalList();
+      env.table('goals').append({ id: id, created: now, createdBy: role, title: title, why: text(p.why, 1000), x: clamp01(p.x, 0.15 + Math.random() * 0.7), y: clamp01(p.y, 0.15 + Math.random() * 0.7),
+        links: [], parentId: p.parentId && all.some(function (g) { return g.id === p.parentId; }) ? p.parentId : '', rank: all.length + 1, status: 'Open',
+        steps: cleanSteps(p.steps), topicId: '', deleted: false, updated: now });
+      return { id: id };
+    });
+  }
+  function updateGoal(id, ch) {
+    need(['admin', 'artist']);
+    ch = ch || {};
+    return env.lock(function () {
+      var g = goalRow(id), out = { updated: nowIso() }, ids = goalList().map(function (x) { return x.id; });
+      if ('title' in ch) { out.title = text(ch.title, 120); if (!out.title) fail('What’s the goal?'); }
+      if ('why' in ch) out.why = text(ch.why, 1000);
+      if ('x' in ch) out.x = clamp01(ch.x, g.x);
+      if ('y' in ch) out.y = clamp01(ch.y, g.y);
+      if ('links' in ch) out.links = list(ch.links).filter(function (l) { return l !== id && ids.indexOf(l) >= 0; }).slice(0, 12);
+      if ('parentId' in ch) out.parentId = ch.parentId && ch.parentId !== id && ids.indexOf(ch.parentId) >= 0 ? ch.parentId : '';
+      if ('status' in ch) out.status = ch.status === 'Done' ? 'Done' : 'Open';
+      if ('steps' in ch) out.steps = cleanSteps(ch.steps);
+      env.table('goals').update(id, out);
+      return { ok: true };
+    });
+  }
+  function orderGoals(ids) {
+    need(['admin', 'artist']);
+    return env.lock(function () {
+      var have = goalList(), order = list(ids).filter(function (x, i, a) { return a.indexOf(x) === i && have.some(function (g) { return g.id === x; }); });
+      have.forEach(function (g) { if (order.indexOf(g.id) < 0) order.push(g.id); });
+      order.forEach(function (gid, i) { env.table('goals').update(gid, { rank: i + 1 }); });
+      return { ok: true };
+    });
+  }
+  function deleteGoal(id) {
+    need(['admin', 'artist']);
+    return env.lock(function () { goalRow(id); env.table('goals').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
+  }
+  /** Builds a goal's plan with her: a few rounds of questions (local first), then the steps. */
+  function planGoal(id) {
+    need(['admin', 'artist']);
+    var g = goalRow(id);
+    if (g.topicId && rows('topics').some(function (x) { return x.id === g.topicId && !x.deleted && x.status !== 'Done'; })) return { topicId: g.topicId, existing: true };
+    var others = goalList().filter(function (x) { return x.id !== id; }).map(function (x) { return x.title; });
+    var detail = ['This is a goal she wants to reach: ' + g.title + (g.why ? '. Why it matters: ' + g.why : '') + '.',
+      'Ask what you need to know to plan the steps to get there: where she is now, what she has, her time and energy, what has to happen first, and what done looks like.',
+      others.length ? 'Her other goals, for context: ' + others.join('; ') + '.' : ''].filter(String).join('\n');
+    var made = talk.api.startTopic({ title: 'Plan: ' + g.title, detail: detail, goalId: id });
+    env.lock(function () { env.table('goals').update(id, { topicId: made.id, updated: nowIso() }); });
+    return { topicId: made.id };
+  }
+  function goalSnapshot() {
+    var top = activeGoal();
+    return goalList().map(function (g) {
+      var steps = list(g.steps), next = steps.filter(function (s) { return !s.done; })[0];
+      var tp = g.topicId ? rows('topics').filter(function (x) { return x.id === g.topicId && !x.deleted; })[0] : null;
+      return { id: g.id, title: g.title, why: g.why || '', x: Number(g.x), y: Number(g.y), links: list(g.links), parentId: g.parentId || '', rank: Number(g.rank) || 0,
+        status: g.status || 'Open', steps: steps, next: next ? next.text : '', active: !!(top && top.id === g.id),
+        planning: tp ? { id: tp.id, status: tp.status } : null };
+    });
+  }
+  /** The goal that sets the order of work: the most important open goal with steps still to do. */
+  function activeGoal() {
+    return goalList().filter(function (g) { return g.status !== 'Done' && !g.parentId && list(g.steps).some(function (s) { return !s.done; }); })[0] || null;
+  }
+  function tickGoalStep(id, stepId, done) {
+    need(['admin', 'artist']);
+    return env.lock(function () {
+      var g = goalRow(id), steps = list(g.steps).map(function (s) { return s.id === stepId ? Object.assign({}, s, { done: done !== false }) : s; });
+      var all = steps.length && steps.every(function (s) { return s.done; });
+      env.table('goals').update(id, { steps: steps, status: all ? 'Done' : 'Open', updated: nowIso() });
+      return { ok: true, finished: all };
+    });
+  }
   function planState() {
+    var ag = activeGoal();
+    if (ag) {
+      var gsteps = list(ag.steps).map(function (s, i) { return { n: i + 1, id: s.id, text: s.text, done: !!s.done }; });
+      var gcur = gsteps.filter(function (s) { return !s.done; })[0];
+      return { goalId: ag.id, ideaId: '', title: ag.title, steps: gsteps, current: gcur ? gcur.n : 0 };
+    }
     var p = planIdea();
     if (!p) return null;
     var steps = list(p.scope).map(function (s, i) { return { n: i + 1, text: s.text, done: !!s.done }; });
@@ -2707,7 +2830,9 @@ function createTideLogic(env) {
     if (!st || row.id === st.ideaId) return 0;
     var n = Number(row.planStep) || 0;
     if (n === -1) return -1;
-    return n >= 1 && n <= st.steps.length ? n : placeFor(row.title, row.summary || row.note, st);
+    // a step she chose counts for the plan she chose it in; anything else is placed afresh in the plan now
+    var mine = row.planPlacedBy && row.planPlacedBy !== 'auto' && (!row.planOf || row.planOf === (st.goalId || st.ideaId));
+    return mine && n >= 1 && n <= st.steps.length ? n : placeFor(row.title, row.summary || row.note, st);
   }
   function planWaits(row, st) {
     st = st || planState();
@@ -2725,7 +2850,7 @@ function createTideLogic(env) {
     var tb = kind === 'idea' ? 'ideas' : 'pipeline';
     return env.lock(function () {
       if (!rows(tb).some(function (r) { return r.id === id; })) fail('That has been removed.');
-      env.table(tb).update(id, { planStep: n, planPlacedBy: role, updated: nowIso() });
+      env.table(tb).update(id, { planStep: n, planPlacedBy: role, planOf: st.goalId || st.ideaId, updated: nowIso() });
       return { ok: true };
     });
   }
@@ -2802,6 +2927,8 @@ function createTideLogic(env) {
     if (list(s.askFirst).length) how.push('always check with her first before: ' + list(s.askFirst).join(', ').toLowerCase());
     if (s.workNotes) how.push('in her words: ' + s.workNotes);
     if (how.length) out.push('How she likes to work: ' + how.join('; ') + '.');
+    var gl = goalList().filter(function (g) { return g.status !== 'Done'; }).map(function (g, i) { return (i + 1) + '. ' + g.title + (g.why ? ' (' + g.why + ')' : ''); });
+    if (gl.length) out.push('Her goals, most important first:\n' + gl.join('\n'));
     var pl = planLines();
     return [out.length ? 'The business setup (her defaults):\n' + out.join('\n') : '', pl].filter(String).join('\n\n');
   }
@@ -2851,7 +2978,7 @@ function createTideLogic(env) {
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
   var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
-    supplier: ['suppliers', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
     var b = BIN[kind];
@@ -2875,7 +3002,7 @@ function createTideLogic(env) {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -4965,6 +5092,16 @@ function tideTalk(env, t) {
         var rounds = t.list(r.rounds).concat([{ questions: qs, readyToWrap: res.ready_to_wrap === true, by: by2, at: now }]);
         env.table('topics').update(id, { rounds: rounds, status: 'Your turn', aiStatus: '', aiNote: '', updated: now });
         pushOut = [r.createdBy, 'New questions about ' + r.title, qs.length + ' questions are ready when you are.'];
+      } else if (tb === 'topics' && r.aiJob === 'goalplan') {
+        // a goal's plan: the steps go onto the goal; the talk is written up as the plan
+        var steps = t.list(res.steps).slice(0, 12).map(function (s) { return clean(typeof s === 'string' ? s : s && s.text, 300); }).filter(String);
+        if (!steps.length) steps = [clean(res.first_step, 300) || 'Decide the first small step'];
+        if (r.goalId && t.rows('goals').some(function (g) { return g.id === r.goalId && !g.deleted; })) {
+          env.table('goals').update(r.goalId, { steps: steps.map(function (s, i) { return { id: 'g' + (i + 1) + Math.random().toString(36).slice(2, 6), text: s, done: false }; }), status: 'Open', updated: now });
+        }
+        env.table('topics').update(id, { outcome: { title: r.title, summary: clean(res.summary, 1500), kind: 'Other', decisions: steps, open: [], openOptions: [], openSuggest: [],
+          nextStep: steps[0], forAdmin: { title: r.title, summary: clean(res.summary, 600), decisions: steps }, shareState: '', by: by2, at: now, plan: true }, status: 'Done', aiStatus: '', aiNote: '', updated: now });
+        pushOut = [r.createdBy, 'Your plan is ready', r.title.replace(/^Plan: /, '') + ': ' + steps.length + ' steps, starting with ' + steps[0].slice(0, 80)];
       } else if (tb === 'topics' && r.aiJob === 'wrap') {
         var kind = K.KINDS.indexOf(res.kind) >= 0 ? res.kind : 'Other';
         var out = {
@@ -5118,8 +5255,8 @@ function tideTalk(env, t) {
     if (!title) t.fail('What would you like to talk through?');
     var res = env.lock(function () {
       var id = env.nextId('TP', 4), now = t.nowIso();
-      env.table('topics').append({ id: id, created: now, createdBy: role, private: role === 'artist', title: title, detail: t.text(p.detail, 2000), status: 'Thinking',
-        rounds: [], outcome: null, filed: null, maxQ: K.MAX_Q, updated: now, aiJob: '', aiStatus: '' });
+      env.table('topics').append({ id: id, created: now, createdBy: role, private: role === 'artist' && !p.goalId, title: title, detail: t.text(p.detail, 2000), status: 'Thinking',
+        rounds: [], outcome: null, filed: null, maxQ: p.goalId ? 12 : K.MAX_Q, goalId: p.goalId ? String(p.goalId) : '', updated: now, aiJob: '', aiStatus: '' });
       queue(id, 'round');
       return { id: id };
     });
@@ -5231,14 +5368,14 @@ function tideTalk(env, t) {
       env.table('topics').update(id, { rounds: rounds, updated: t.nowIso() });
       var n = asked(Object.assign({}, tp, { rounds: rounds })), max = Number(tp.maxQ) || K.MAX_Q;
       var enough = opts.wrap === true || n >= max || (n >= K.MIN_Q && round.readyToWrap);
-      if (enough) { env.table('topics').update(id, { status: 'Wrapping' }); queue(id, 'wrap'); }
+      if (enough) { env.table('topics').update(id, { status: 'Wrapping' }); queue(id, tp.goalId ? 'goalplan' : 'wrap'); }
       else { env.table('topics').update(id, { status: 'Thinking' }); queue(id, 'round'); }
       return { ok: true, wrapping: enough, answered: n };
     });
     if (env.talkNow) env.talkNow(id);
     return res;
   }
-  function wrapNow(tp, why) { env.table('topics').update(tp.id, { status: 'Wrapping', aiNote: t.text(why, 200) }); queue(tp.id, 'wrap'); }
+  function wrapNow(tp, why) { env.table('topics').update(tp.id, { status: 'Wrapping', aiNote: t.text(why, 200) }); queue(tp.id, tp.goalId ? 'goalplan' : 'wrap'); }
 
   /** After it's written up: a few more questions on the same topic. */
   function keepTalking(id) {
@@ -9071,17 +9208,18 @@ var Kit = (function () {
   }
 
   function viewIdeas(main) {
-    var tab = ['talk', 'products', 'notebook', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = tab === 'notebook', T = talkData();
+    var tab = ['goals', 'talk', 'products', 'notebook', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = tab === 'notebook', T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
-    pageTitle(main, 'Ideas', tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
+    pageTitle(main, 'Ideas', tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : 'Ranked by ' + (ADMIN ? artist() + '’s' : 'your') + ' priority, then by viability.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: tab, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
-      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
+      options: [{ value: 'goals', label: 'Goals' }, { value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
         { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }, { value: 'notebook', label: 'Notes' }]
     })), 1));
     if (nb) return viewNotebook(main);
+    if (tab === 'goals') return viewGoals(main);
     if (tab === 'talk') return viewTalk(main);
     if (tab === 'products') return viewProducts(main);
     if (tab === 'inspo') return viewInspo(main);
@@ -11744,6 +11882,196 @@ var Kit = (function () {
       }
     });
   }
+  // ------------------------------------------------------------------ goals: a map, then an order
+  var GOAL_STARTERS = ['Open my online shop', 'Sell at markets and events', 'Grow my Instagram', 'Release small batches of originals', 'Finish a new collection', 'Keep my energy steady'];
+  function goalById(id) { return byId(S.data.goals || [], id); }
+  function viewGoals(main) {
+    var goals = S.data.goals || [], mode = S.goalMode === 'order' ? 'order' : 'map';
+    var active = goals.filter(function (g) { return g.active; })[0];
+    if (active) main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openGoal(active.id); } },
+      h('span', { class: 'ic' }, icon('flag')), h('span', { class: 'grow' }, h('b', { text: 'Now: ' + active.title }),
+        h('span', { class: 'body-m', text: 'Next step: ' + (active.next || 'all done') + '. This goal sets the order of everything else.' })), icon('chevron_right')), 1));
+    main.appendChild(rise(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 12px;flex-wrap:wrap' },
+      h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }] })),
+      btn('filled', 'Add a goal', { icon: 'add', sm: true, onclick: function () { addGoalAsk(null); } })), 1));
+    if (!goals.length) {
+      var start = h('div', { class: 'card pad' }, h('div', { class: 'title-m', text: 'Where would you like to get to?' }),
+        h('p', { class: 'body-m', style: 'margin:4px 0 12px;color:var(--on-surface-variant)', text: 'Add anything, big or small. Then put them in order, and Tide Book helps you plan the steps for each one. Tap one to start, or add your own.' }));
+      var chips = h('div', { class: 'choices' });
+      GOAL_STARTERS.forEach(function (s) { chips.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { K.setBusy(e.currentTarget, true); api('addGoal', { title: s }).then(refresh).then(render).catch(fail); } }, s)); });
+      chips.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { addGoalAsk(null); } }, icon('edit'), 'My own'));
+      start.appendChild(chips);
+      main.appendChild(rise(start, 2));
+      return;
+    }
+    if (mode === 'order') return goalOrder(main, goals);
+    goalMap(main, goals);
+  }
+  function addGoalAsk(parentId, at) {
+    K.ask({ title: parentId ? 'A smaller goal, as part of this one' : 'Add a goal', label: 'The goal', options: parentId ? [] : GOAL_STARTERS.slice(0, 4), confirmLabel: 'Add it', maxlength: 120 }).then(function (title) {
+      if (!title) return;
+      api('addGoal', Object.assign({ title: title, parentId: parentId || '' }, at || {})).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
+    });
+  }
+  /** The map: goals as bubbles she drags about. Lines show links and what is part of what. */
+  function goalMap(main, goals) {
+    var H = 460;
+    var board = h('div', { class: 'goal-map', style: 'height:' + H + 'px' });
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); board.appendChild(svg);
+    var els = {};
+    function lines() {
+      svg.textContent = '';
+      var W = board.clientWidth;
+      goals.forEach(function (g) {
+        [].concat(g.parentId ? [[g.parentId, 'part']] : [], g.links.map(function (l) { return [l, 'link']; })).forEach(function (pair) {
+          var o = goalById(pair[0]), a = els[g.id], b = o && els[o.id];
+          if (!a || !b) return;
+          var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          ln.setAttribute('x1', a.offsetLeft + a.offsetWidth / 2); ln.setAttribute('y1', a.offsetTop + a.offsetHeight / 2);
+          ln.setAttribute('x2', b.offsetLeft + b.offsetWidth / 2); ln.setAttribute('y2', b.offsetTop + b.offsetHeight / 2);
+          ln.setAttribute('class', pair[1]); svg.appendChild(ln);
+        });
+      });
+    }
+    goals.forEach(function (g) {
+      var el = h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (g.status === 'Done' ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
+        h('span', { class: 'gb-rank', text: g.parentId ? '' : String(g.rank) }), h('span', { class: 'gb-t', text: g.title }),
+        g.steps.length ? h('span', { class: 'gb-s', text: g.steps.filter(function (s) { return s.done; }).length + '/' + g.steps.length }) : null);
+      el.style.left = (g.x * 100) + '%'; el.style.top = (g.y * 100) + '%';
+      els[g.id] = el; board.appendChild(el);
+      // drag to move; a tap opens it
+      var sx = 0, sy = 0, ox = 0, oy = 0, moved = false, down = false;
+      el.addEventListener('pointerdown', function (e) { down = true; moved = false; sx = e.clientX; sy = e.clientY; ox = el.offsetLeft; oy = el.offsetTop; el.setPointerCapture(e.pointerId); });
+      el.addEventListener('pointermove', function (e) {
+        if (!down) return;
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!moved && Math.abs(dx) + Math.abs(dy) < 8) return;
+        if (!moved) { moved = true; el.classList.add('lifted'); K.haptic(); }
+        var W = board.clientWidth, x = Math.max(0, Math.min(W - el.offsetWidth, ox + dx)), y = Math.max(0, Math.min(H - el.offsetHeight, oy + dy));
+        el.style.left = x + 'px'; el.style.top = y + 'px'; lines();
+      });
+      el.addEventListener('pointerup', function () {
+        if (!down) return; down = false;
+        if (!moved) { openGoal(g.id); return; }
+        el.classList.remove('lifted');
+        var W = board.clientWidth, x = el.offsetLeft / W, y = el.offsetTop / H;
+        g.x = x; g.y = y;
+        api('updateGoal', g.id, { x: x, y: y }).then(refresh).catch(fail);
+      });
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') openGoal(g.id); });
+    });
+    // tap an empty spot to add a goal there
+    board.addEventListener('dblclick', function (e) { if (e.target !== board && e.target !== svg) return; var r = board.getBoundingClientRect(); addGoalAsk(null, { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height }); });
+    main.appendChild(rise(board, 2));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Tap one to plan it, link it to others, or add smaller goals. Put them in order under “In order”.' }));
+    setTimeout(lines, 0); setTimeout(lines, 400);
+  }
+  /** In order: drag the goal cards into order of importance. The top one sets the order of work. */
+  function goalOrder(main, goals) {
+    var tops = goals.filter(function (g) { return !g.parentId; }), order = tops.map(function (g) { return g.id; });
+    var list = h('div', { class: 'ho-list' });
+    tops.forEach(function (g, i) {
+      var subs = goals.filter(function (x) { return x.parentId === g.id; });
+      var card = h('div', { class: 'ho-card goal-card' + (g.active ? ' active' : ''), dataset: { k: g.id } },
+        h('span', { class: 'ho-ic' }, icon(g.status === 'Done' ? 'check' : g.active ? 'flag' : 'lightbulb')),
+        h('span', { class: 'grow' }, h('span', { class: 'ho-t', style: 'display:block', text: g.title }),
+          h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: g.status === 'Done' ? 'Done' : g.active ? 'Sets the order now · next: ' + g.next : g.steps.length ? g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : 'No plan yet' }),
+          subs.length ? h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: 'Includes: ' + subs.map(function (x) { return x.title; }).join(', ') }) : null),
+        h('span', { class: 'ho-grip' }, icon('drag_indicator')));
+      card.addEventListener('click', function () { if (!card.dragged) openGoal(g.id); card.dragged = false; });
+      list.appendChild(card);
+      (function (card) {
+        var startY = 0, moving = false, dist = 0;
+        card.addEventListener('pointerdown', function (e) { moving = true; startY = e.clientY; dist = 0; card.setPointerCapture(e.pointerId); });
+        card.addEventListener('pointermove', function (e) {
+          if (!moving) return;
+          var dy = e.clientY - startY; dist = Math.max(dist, Math.abs(dy));
+          if (dist < 8) return;
+          card.classList.add('lifted'); card.style.transform = 'translateY(' + dy + 'px)';
+          var prev = card.previousElementSibling, next = card.nextElementSibling;
+          if (prev && dy < -(prev.offsetHeight / 2 + 4)) { list.insertBefore(card, prev); startY -= prev.offsetHeight + 8; K.haptic(); card.style.transform = 'translateY(' + (e.clientY - startY) + 'px)'; }
+          else if (next && dy > next.offsetHeight / 2 + 4) { list.insertBefore(next, card); startY += next.offsetHeight + 8; K.haptic(); card.style.transform = 'translateY(' + (e.clientY - startY) + 'px)'; }
+        });
+        function drop() {
+          if (!moving) return; moving = false;
+          if (dist >= 8) card.dragged = true;
+          card.classList.remove('lifted'); card.style.transform = '';
+          var now = [].slice.call(list.children).map(function (c) { return c.dataset.k; });
+          if (now.join() !== order.join()) { order = now; api('orderGoals', now).then(refresh).then(function () { K.haptic('success'); render(); toast('In order. The top goal sets the order of work.'); }).catch(fail); }
+        }
+        card.addEventListener('pointerup', drop); card.addEventListener('pointercancel', drop);
+      })(card);
+    });
+    main.appendChild(rise(list, 2));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag the most important to the top. Its plan decides what happens now; everything else waits its turn.' }));
+  }
+  /** One goal: why it matters, its plan (built with Tide Book, or written yourself), links, and smaller goals. */
+  function openGoal(id) {
+    var g = goalById(id);
+    if (!g) return;
+    var f = { title: g.title, why: g.why, links: g.links.slice(), parentId: g.parentId }, dirty = false;
+    K.sheet({
+      title: g.title, tall: true, guard: function () { return dirty; },
+      build: function (ctl) {
+        function touch() { dirty = true; }
+        function again() { ctl.close(); setTimeout(function () { openGoal(id); }, 280); }
+        if (g.active) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('This is your most important goal, so its plan sets the order of everything. Anything for a later step waits.', 'flag')));
+        ctl.body.appendChild(h('div', { class: 'field-gap' },
+          K.textField({ label: 'The goal', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } }),
+          K.textField({ label: 'Why it matters (optional)', value: f.why, multiline: true, maxlength: 1000, onInput: function (v) { f.why = v; touch(); } })));
+        // the plan
+        var sp = sheetSection('The plan');
+        if (g.steps.length) {
+          var sl = h('div', { class: 'list' });
+          g.steps.forEach(function (s, i) {
+            sl.appendChild(h('div', { class: 'li' }, h('span', { class: 'hand-ic' }, icon(s.done ? 'check_circle' : 'radio_button_unchecked')),
+              h('div', { class: 'grow' }, h('div', { class: 'li-head', style: s.done ? 'text-decoration:line-through;opacity:.6' : '', text: (i + 1) + '. ' + s.text })),
+              btn('text', s.done ? 'Undo' : 'Done', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('tickGoalStep', id, s.id, !s.done).then(refresh).then(again).catch(fail); } })));
+          });
+          sp.appendChild(sl);
+        } else sp.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 8px;color:var(--on-surface-variant)', text: 'No plan yet. Tide Book can ask you a few questions and suggest the steps, or write them yourself.' }));
+        var pt = g.planning;
+        var planBtn = btn(g.steps.length ? 'tonal' : 'filled', pt && pt.status !== 'Done' ? 'Carry on planning it' : g.steps.length ? 'Plan it again with Tide Book' : 'Plan it with Tide Book', { icon: 'auto_awesome', onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('planGoal', id).then(function (r) { return refresh().then(function () { return r; }); }).then(function (r) { dirty = false; ctl.close(); setTimeout(function () { openTopic(r.topicId); }, 300); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+        } });
+        var writeBtn = btn('text', g.steps.length ? 'Change the steps' : 'Write the steps myself', { icon: 'edit', onclick: function () {
+          K.ask({ title: 'The steps', label: 'One step per line, in order', value: g.steps.map(function (s) { return s.text; }).join('\n'), multiline: true, maxlength: 3000, confirmLabel: 'Save the steps' }).then(function (txt) {
+            if (txt == null) return;
+            var old = {}; g.steps.forEach(function (s) { old[s.text] = s; });
+            var steps = String(txt).split(/\n+/).map(function (x) { return x.trim(); }).filter(String).map(function (x) { return old[x] || { text: x, done: false }; });
+            api('updateGoal', id, { steps: steps }).then(refresh).then(again).catch(fail);
+          });
+        } });
+        sp.appendChild(h('div', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' }, planBtn, writeBtn));
+        // links and smaller goals
+        var others = (S.data.goals || []).filter(function (x) { return x.id !== id; });
+        var sx = sheetSection('How it fits with the others');
+        if (others.length) {
+          sx.appendChild(h('div', { class: 'label-s', text: 'Linked to' }));
+          sx.appendChild(multiChips(others.map(function (x) { return x.title; }), others.filter(function (x) { return f.links.indexOf(x.id) >= 0; }).map(function (x) { return x.title; }),
+            function (v) { f.links = others.filter(function (x) { return v.indexOf(x.title) >= 0; }).map(function (x) { return x.id; }); touch(); }));
+          var tops = others.filter(function (x) { return !x.parentId; });
+          if (tops.length) {
+            sx.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px', text: 'Part of a bigger goal?' }));
+            sx.appendChild(K.choices({ label: 'Part of', value: f.parentId, allowNone: true, options: tops.map(function (x) { return { value: x.id, label: x.title }; }), onChange: function (v) { f.parentId = v || ''; touch(); } }));
+          }
+        }
+        sx.appendChild(h('div', { style: 'margin-top:10px' }, btn('text', 'Add a smaller goal inside this one', { icon: 'add', sm: true, onclick: function () { ctl.close(); setTimeout(function () { addGoalAsk(id); }, 280); } })));
+        ctl.body.append(sp, sx);
+        ctl.body.appendChild(h('div', { style: 'margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:4px' },
+          btn('text', g.status === 'Done' ? 'Open it again' : 'Mark it reached', { icon: g.status === 'Done' ? 'restore' : 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', id, { status: g.status === 'Done' ? 'Open' : 'Done' }).then(refresh).then(function () { render(); again(); }).catch(fail); } }),
+          btn('text', 'Delete this goal', { icon: 'delete', danger: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('deleteGoal', id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Goal deleted.', 'goal', id); }).catch(fail); } })));
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          K.setBusy(save, true);
+          api('updateGoal', id, f).then(refresh).then(function () { dirty = false; K.haptic('success'); render(); ctl.close(); toast('Saved.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
+
   // ------------------------------------------------------------------ her plan: the order of work
   function planStepText(n) { var pl = S.data.plan; var s = pl && pl.steps[n - 1]; return s ? s.text : ''; }
   function openPlanStep(kind, x, after) {
@@ -11787,12 +12115,21 @@ var Kit = (function () {
   function planCard() {
     var pl = S.data.plan;
     if (!pl || !pl.current) return null;
-    var idea = byId(S.data.ideas, pl.ideaId);
+    var idea = pl.ideaId ? byId(S.data.ideas, pl.ideaId) : null;
     var cur = pl.steps[pl.current - 1];
     var dots = h('div', { class: 'plan-dots' }, pl.steps.map(function (s) { return h('i', { class: s.done ? 'done' : s.n === pl.current ? 'on' : '' }); }));
     var done = btn('filled', 'Done, on to the next step', { icon: 'check', sm: true, onclick: function (e) {
+      var b = e.currentTarget;
+      if (pl.goalId) {
+        K.setBusy(b, true);
+        api('tickGoalStep', pl.goalId, cur.id, true).then(refresh).then(function (r) {
+          K.haptic('success'); render();
+          undoCard('Step ' + pl.current + ' done. On to the next.', function () { return api('tickGoalStep', pl.goalId, cur.id, false); }, 'Back on that step.');
+        }).catch(function (er) { K.setBusy(b, false); fail(er); });
+        return;
+      }
       if (!idea) return;
-      var b = e.currentTarget; K.setBusy(b, true);
+      K.setBusy(b, true);
       var scope = idea.scope.map(function (s, i) { return { id: s.id, text: s.text, done: s.done || i === pl.current - 1 }; });
       api('updateIdea', idea.id, { scope: scope }).then(refresh).then(function () {
         K.haptic('success'); render();
@@ -11800,9 +12137,9 @@ var Kit = (function () {
       }).catch(function (er) { K.setBusy(b, false); fail(er); });
     } });
     return h('div', { class: 'card pad plan-card' },
-      h('div', { class: 'label-s', text: 'Your plan · step ' + pl.current + ' of ' + pl.steps.length }),
+      h('div', { class: 'label-s', text: (pl.goalId ? pl.title + ' · ' : 'Your plan · ') + 'step ' + pl.current + ' of ' + pl.steps.length }),
       h('div', { class: 'title-m', style: 'margin-top:4px', text: cur.text }), dots,
-      h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { openIdea(pl.ideaId); } })));
+      h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })));
   }
   /** After a delete: a card with Undo that puts it straight back. */
   function binUndo(msg, kind, id) { undoCard(msg, function () { return api('undoDelete', kind, id); }, 'Put back.', 12); }
