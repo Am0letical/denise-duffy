@@ -1167,6 +1167,10 @@ img, video { max-width: 100%; }
 .ig-open b, .ig-open .body-s { display: block; }
 .ig-open .body-s { color: var(--on-surface-variant); }
 .seg.fit button { padding: 0 9px; }
+/* research suppliers: the words get the full width, the button sits under them */
+.research-row:has(> .choice) { flex-wrap: wrap; }
+.research-row:has(> .choice) > .grow { flex: 1 1 100%; }
+.research-row > .choice { margin: 2px 0 2px auto; }
 </style>
 
   <script>
@@ -6362,12 +6366,17 @@ function tideTalk(env, t) {
       res = res || {};
       var num = function (v) { v = Number(v); return isFinite(v) && v > 0 ? Math.round(v * 100) / 100 : 0; };
       var d = res.demand || {}, c = res.costing || {};
+      // A small model sometimes scores out of 5 or 10 instead of 100: "Promising, 4" means 4 out of 5, not 4 in 100.
+      // When the score contradicts its own verdict like that, it is put on the 100 scale, inside that verdict's range.
+      var via = Math.max(0, Math.min(100, Math.round(Number(res.viability) || 0))), band = { Strong: [75, 90], Promising: [55, 74], Uncertain: [35, 54] }[res.verdict];
+      if (via > 0 && via <= 10 && band) via = Math.max(band[0], Math.min(band[1], via <= 5 ? via * 20 : via * 10));
+      var noName = /^(unknown|not known|tbd|tbc|n\/?a|none|not sure|unsure|to be (confirmed|decided|found))\.?$/i;
       var clean = {
         by: t.text(by || 'Claude', 60), summary: t.text(res.summary, 800),
-        viability: Math.max(0, Math.min(100, Math.round(Number(res.viability) || 0))),
+        viability: via,
         verdict: ['Strong', 'Promising', 'Uncertain', 'Weak'].indexOf(res.verdict) >= 0 ? res.verdict : 'Uncertain',
         demand: { level: ['Low', 'Moderate', 'Strong'].indexOf(d.level) >= 0 ? d.level : 'Low', low: Math.max(0, Math.round(Number(d.monthly_low) || 0)), high: Math.max(0, Math.round(Number(d.monthly_high) || 0)), reasoning: t.text(d.reasoning, 400) },
-        suppliers: t.list(res.suppliers).slice(0, 5).map(function (s) { s = s || {}; return { name: t.text(s.name, 100), what: t.text(s.what, 160), unit: num(s.unit_cost_aud), minOrder: t.text(s.min_order, 80), where: t.text(s.location, 80), url: /^https?:\/\//.test(s.url) ? t.text(s.url, 400) : '' }; }).filter(function (s) { return s.name; }),
+        suppliers: t.list(res.suppliers).slice(0, 5).map(function (s) { s = s || {}; return { name: t.text(s.name, 100), what: t.text(s.what, 160), unit: num(s.unit_cost_aud), minOrder: t.text(s.min_order, 80), where: t.text(s.location, 80), url: /^https?:\/\//.test(s.url) ? t.text(s.url, 400) : '' }; }).filter(function (s) { return s.name && !noName.test(s.name); }),
         costing: { low: num(c.unit_cost_low), high: num(c.unit_cost_high), price: num(c.suggested_price), notes: t.text(c.notes, 400) },
         comparables: t.list(res.comparables).slice(0, 6).map(function (x) { x = x || {}; return { name: t.text(x.name, 120), price: num(x.price_aud), url: /^https?:\/\//.test(x.url) ? t.text(x.url, 400) : '' }; }).filter(function (x) { return x.name; }),
         risks: cleanList(res.risks, 4, 240), advertising: tideAdvertising(res.advertising),
