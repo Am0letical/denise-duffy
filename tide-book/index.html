@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,text_fields,thumb_up,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,text_fields,thumb_up,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -479,6 +479,13 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .inspo-tldr.empty { opacity: .65; font-style: italic; }
 .inspo-full { margin-top: 10px; border-radius: 16px; overflow: hidden; background: var(--surface-highest); }
 .inspo-full iframe { display: block; width: 100%; height: 640px; border: 0; }
+/* Printful on a product: four steps, one at a time */
+.pf-step { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--outline-variant); }
+.pf-step:first-of-type { border-top: 0; }
+.pf-n { width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0; font-weight: 600; font-size: 14px; background: var(--surface-high, #eee); }
+.pf-step.done .pf-n { background: var(--primary); color: var(--on-primary, #fff); }
+.pf-mocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 8px; }
+.pf-mocks img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; }
 /* goals: the map, and the bubbles on it */
 .goal-map { position: relative; border-radius: 20px; background: radial-gradient(circle at 30% 20%, rgba(28,78,134,.06), transparent 60%), var(--surface, #fff);
   box-shadow: inset 0 0 0 1px var(--outline-variant); overflow: hidden; touch-action: none; }
@@ -10527,6 +10534,7 @@ var Kit = (function () {
         var nc = p.planWaits ? null : nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
         var hl = handList(p, saveFirst, reopen); if (hl) ctl.body.appendChild(hl);
         ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
+        var pfc = printfulCard(p, reopen, saveFirst); if (pfc) ctl.body.appendChild(pfc);
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.resumeOn ? 'Paused. It comes back by itself on ' + K.dayLabel(p.resumeOn, true) + ', with a reminder the day before.' : 'Paused. Bring it back when you’re ready.', 'calendar_month')));
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.aiJob === 'clear' ? 'Checking each one…' : 'Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
         if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (ADMIN && p.aiNote ? ': ' + p.aiNote : '. Try it again.'), 'warning', 'warn')));
@@ -12374,6 +12382,199 @@ var Kit = (function () {
       }
     });
   }
+  // ------------------------------------------------------------------ Printful: from idea to production, without leaving Tide Book
+  function usesPrintful() { return (S.data.printful || {}).linked || (S.data.suppliers || []).some(function (x) { return /printful/i.test(x.name); }); }
+  function pfMoney(n, cur) { return (cur && cur !== 'AUD' ? (cur === 'USD' ? 'US$' : cur + ' ') : '$') + (Number(n) || 0).toFixed(2); }
+  /** Linking Printful, step by step. She makes a key in her Printful account and pastes it here. */
+  function openPrintfulLink(after) {
+    K.sheet({
+      title: 'Link Printful', tall: true,
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 14px;color:var(--on-surface-variant)', text: 'Once it’s linked, Tide Book can choose what Printful makes, price it, make mockups and order your samples, all from here. It takes a couple of minutes, once.' }));
+        var steps = [
+          ['Open Printful’s key page', 'It opens in a new tab. Sign in to Printful if it asks.', h('a', { class: 'btn tonal press', href: 'https://developers.printful.com/tokens', target: '_blank', rel: 'noopener', style: 'margin-top:8px;display:inline-flex' }, icon('open_in_new'), h('span', { text: 'Open the key page' }))],
+          ['Make a new key', 'Tap “Create token”. Call it Tide Book, choose your store, and tick every box it offers. Keep the date as far ahead as it lets you.', null],
+          ['Copy the key', 'Printful shows the key once. Tap copy.', null],
+          ['Paste it here', '', null]
+        ];
+        steps.forEach(function (st, i) {
+          var card = h('div', { class: 'card pad', style: 'margin-bottom:10px' }, h('div', { class: 'label-s', text: 'Step ' + (i + 1) }), h('div', { class: 'title-m', text: st[0] }),
+            st[1] ? h('p', { class: 'body-m', style: 'margin:4px 0 0;color:var(--on-surface-variant)', text: st[1] }) : null, st[2]);
+          ctl.body.appendChild(card);
+        });
+        var key = '';
+        ctl.body.appendChild(K.textField({ label: 'Your Printful key', maxlength: 400, onInput: function (v) { key = v; }, help: 'It’s kept on the PC and never shown again.' }));
+        var go = btn('filled', 'Link Printful', { icon: 'link', lg: true, block: true });
+        go.addEventListener('click', function () {
+          if (!key.trim()) { toast('Paste the key first.'); return; }
+          K.setBusy(go, true);
+          api('linkPrintful', key.trim()).then(function (r) { return refresh().then(function () { return r; }); }).then(function (r) { K.haptic('success'); ctl.close(); toast('Linked to ' + r.store + '.'); if (after) after(); })
+            .catch(function (e) { K.setBusy(go, false); fail(e); });
+        });
+        ctl.foot.appendChild(go);
+      }
+    });
+  }
+  /** Choosing what Printful makes for this product, and its sizes. */
+  function openPrintfulPick(p, reopen) {
+    K.sheet({
+      title: 'What should Printful make?', tall: true,
+      build: function (ctl) {
+        var q = (p.title || '').replace(/\(.*?\)/g, ''), res = h('div', { class: 'list', style: 'margin-top:10px' });
+        function search() {
+          res.textContent = ''; res.appendChild(h('p', { class: 'body-m', style: 'padding:12px', text: 'Looking…' }));
+          api('printfulSearch', q).then(function (r) {
+            res.textContent = '';
+            if (!r.results.length) res.appendChild(h('p', { class: 'body-m', style: 'padding:12px', text: 'Nothing found. Try other words, like “poster”, “mug” or “tote”.' }));
+            r.results.forEach(function (x) {
+              res.appendChild(h('button', { class: 'li press soft', type: 'button', style: 'width:100%;text-align:left', onclick: function () { sizes(x); } },
+                x.image ? h('img', { src: x.image, alt: '', style: 'width:52px;height:52px;object-fit:cover;border-radius:10px' }) : null,
+                h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.title }), h('div', { class: 'li-sup', text: x.type })), icon('chevron_right')));
+            });
+          }).catch(fail);
+        }
+        function sizes(x) {
+          res.textContent = ''; res.appendChild(h('p', { class: 'body-m', style: 'padding:12px', text: 'Getting the sizes and costs…' }));
+          api('printfulProduct', x.id).then(function (pr) {
+            res.textContent = '';
+            var on = [];
+            res.appendChild(h('div', { class: 'title-m', style: 'margin:4px 0 8px', text: pr.title }));
+            var chips = h('div', { class: 'choices' });
+            pr.variants.forEach(function (v) {
+              var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': 'false' }, v.name.replace(pr.title, '').replace(/^[\s\/-]+/, '') + ' · ' + pfMoney(v.cost, pr.currency));
+              b.addEventListener('click', function () { var i = on.indexOf(v.id); if (i >= 0) on.splice(i, 1); else on.push(v.id); b.setAttribute('aria-pressed', String(i < 0)); K.haptic(); });
+              chips.appendChild(b);
+            });
+            res.appendChild(chips);
+            if (pr.currency !== 'AUD') res.appendChild(h('p', { class: 'tf-help', text: 'Printful shows these costs in ' + pr.currency + '. The exact Australian total comes when you order a sample, before anything is charged.' }));
+            res.appendChild(h('div', { style: 'margin-top:12px' }, btn('filled', 'Use these sizes', { icon: 'check', onclick: function (e) {
+              if (!on.length) { toast('Pick at least one size.'); return; }
+              K.setBusy(e.currentTarget, true);
+              api('printfulPick', p.id, x.id, on).then(refresh).then(function () { K.haptic('success'); ctl.close(); reopen(); }).catch(fail);
+            } })));
+          }).catch(fail);
+        }
+        var field = K.textField({ label: 'What is it?', value: q, maxlength: 120, onInput: function (v) { q = v; }, onEnter: function () { search(); } });
+        ctl.body.append(field, h('div', { style: 'margin-top:8px' }, btn('tonal', 'Search Printful', { icon: 'travel_explore', onclick: search })), res);
+        search();
+      }
+    });
+  }
+  /** The artwork to print: one of her artworks' photos, or a print file she uploads. */
+  function openPrintfulArt(p, reopen) {
+    K.sheet({
+      title: 'The artwork to print', tall: true,
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'The bigger the file, the crisper the print. Tide Book shares it with Printful for a few minutes so it can collect it, then takes it down.' }));
+        function send(fileId, b) {
+          K.setBusy(b, true);
+          api('printfulSendArt', p.id, fileId).then(refresh).then(function () { K.haptic('success'); ctl.close(); toast('Sending it to Printful. It usually takes a few minutes.'); reopen(); }).catch(function (e) { K.setBusy(b, false); fail(e); });
+        }
+        var up = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/tiff', hidden: true });
+        up.addEventListener('change', function () {
+          var f = up.files[0]; if (!f) return;
+          var b = ctl.body.querySelector('.pf-up'); K.setBusy(b, true);
+          fetch('upload?name=' + encodeURIComponent(f.name) + '&folder=' + encodeURIComponent('Print files'), { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg' }, body: f, credentials: 'same-origin' })
+            .then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw new Error(j.error); send(j.id, b); }).catch(function (e) { K.setBusy(b, false); fail(e); });
+        });
+        ctl.body.append(up, btn('filled', 'Upload a print file', { icon: 'upload', block: true, onclick: function () { up.click(); } }));
+        ctl.body.lastChild.classList.add('pf-up');
+        var arts = S.data.prints.filter(function (x) { return (x.photoIds || x.photoUrls || []).length; });
+        if (arts.length) {
+          ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin:16px 0 8px', text: 'Or one of your artworks' }));
+          var grid = h('div', { class: 'inspo-grid', style: 'grid-template-columns:repeat(3,1fr);gap:8px' });
+          arts.forEach(function (a) {
+            var fid = (a.photoIds || [])[0] || String((a.photoUrls || [])[0] || '').replace(/^files\//, '');
+            if (!fid) return;
+            grid.appendChild(h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': a.title, onclick: function (e) { send(fid, e.currentTarget); } },
+              a.thumbIds && a.thumbIds.length ? thumbImg(a.thumbIds[0], 'inspo-img') : h('div', { class: 'inspo-img blank' }, icon('image')), h('div', { class: 'inspo-cap' }, h('div', { class: 'body-s', text: a.title }))));
+          });
+          ctl.body.appendChild(grid);
+          setTimeout(loadThumbs, 0);
+        }
+      }
+    });
+  }
+  function openPrintfulSample(p, reopen) {
+    var P = p.printful || {}, a = Object.assign({ name: '', address1: '', city: '', state: 'NSW', zip: '' }, S.data.settings.sampleAddress || {}), vid = (P.variants[0] || {}).id;
+    K.sheet({
+      title: 'Order a sample', tall: true,
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Printful works out the exact cost first. Nothing is charged until you say yes on the next screen.' }));
+        if (P.variants.length > 1) ctl.body.append(h('div', { class: 'label-s', text: 'Which size?' }),
+          K.choices({ label: 'Size', value: vid, options: P.variants.map(function (v) { return { value: v.id, label: v.name.replace(P.title, '').replace(/^[\s\/-]+/, '') || v.name }; }), onChange: function (v) { vid = v; } }));
+        ctl.body.appendChild(h('div', { class: 'field-gap', style: 'margin-top:12px' },
+          K.textField({ label: 'Name', value: a.name, onInput: function (v) { a.name = v; } }),
+          K.textField({ label: 'Street address', value: a.address1, onInput: function (v) { a.address1 = v; } }),
+          K.textField({ label: 'Suburb or town', value: a.city, onInput: function (v) { a.city = v; } }),
+          K.choices({ label: 'State', value: a.state, options: ['NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'ACT', 'NT'], onChange: function (v) { a.state = v; } }),
+          K.textField({ label: 'Postcode', value: a.zip, inputmode: 'numeric', maxlength: 4, onInput: function (v) { a.zip = v; } })));
+        var go = btn('filled', 'Work out the cost', { icon: 'calculate', lg: true, block: true });
+        go.addEventListener('click', function () {
+          K.setBusy(go, true);
+          api('printfulSample', p.id, vid, a).then(refresh).then(function () { ctl.close(); reopen(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+        });
+        ctl.foot.appendChild(go);
+      }
+    });
+  }
+  /** On a product: linking, what Printful makes, the artwork, mockups, shipping and a sample. One step at a time. */
+  function printfulCard(p, reopen, saveFirst) {
+    if (!usesPrintful()) return null;
+    var P = p.printful || {}, linked = (S.data.printful || {}).linked, sec = sheetSection('Make it with Printful');
+    function step(n, done, title, body) {
+      return h('div', { class: 'pf-step' + (done ? ' done' : '') }, h('span', { class: 'pf-n' }, done ? icon('check') : String(n)), h('div', { class: 'grow' }, h('div', { class: 'title-s', text: title }), body));
+    }
+    if (!linked) {
+      sec.appendChild(note('Link your Printful account once, and Tide Book does the rest from here: what it makes, prices, mockups and samples.', 'link'));
+      sec.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Link Printful', { icon: 'link', onclick: function () { openPrintfulLink(reopen); } })));
+      return sec;
+    }
+    var f = P.file || {}, s = P.sample || {};
+    // 1 what it makes
+    var b1 = P.productId ? h('div', {}, h('p', { class: 'body-m', style: 'margin:2px 0 6px', text: P.title + ' · ' + P.variants.map(function (v) { return v.name.replace(P.title, '').replace(/^[\s\/-]+/, '') + ' ' + pfMoney(v.cost, P.currency); }).join(', ') }),
+      btn('text', 'Change', { sm: true, onclick: function () { openPrintfulPick(p, reopen); } }))
+      : btn('filled', 'Choose what Printful makes', { sm: true, icon: 'storefront', onclick: function () { openPrintfulPick(p, reopen); } });
+    sec.appendChild(step(1, !!P.productId, 'What Printful makes', b1));
+    if (!P.productId) return sec;
+    // 2 the artwork
+    var b2 = f.status === 'ok' ? h('div', {}, f.preview ? h('img', { src: f.preview, alt: 'The print file', style: 'width:84px;height:84px;object-fit:cover;border-radius:10px;margin:4px 0' }) : null,
+        f.dpi && Number(f.dpi) < 150 ? h('p', { class: 'tf-help', text: 'Printful says this file is ' + f.dpi + ' dpi: a bigger file will print crisper.' }) : null,
+        btn('text', 'Use a different file', { sm: true, onclick: function () { openPrintfulArt(p, reopen); } }))
+      : f.status === 'sending' ? note('Sending it to Printful. It usually takes a few minutes.', 'hourglass_top')
+      : h('div', {}, f.status === 'failed' ? h('p', { class: 'tf-help', text: f.error || 'That didn’t go through.' }) : null, btn('filled', f.status === 'failed' ? 'Try again' : 'Send the artwork', { sm: true, icon: 'upload', onclick: function () { openPrintfulArt(p, reopen); } }));
+    sec.appendChild(step(2, f.status === 'ok', 'The artwork', b2));
+    if (f.status === 'sending') { setTimeout(function () { refresh().then(function () { var now = byId(talkData().pipeline, p.id); if (now && ((now.printful || {}).file || {}).status !== 'sending') reopen(); }).catch(function () {}); }, 20000); }
+    if (f.status !== 'ok') return sec;
+    // 3 mockups and shipping
+    var b3 = h('div', {});
+    if ((P.mockups || []).length) b3.appendChild(h('div', { class: 'pf-mocks' }, P.mockups.slice(0, 6).map(function (u) { return h('a', { href: u, target: '_blank', rel: 'noopener' }, h('img', { src: u, alt: 'Mockup' })); })));
+    if (P.mockupTask) {
+      b3.appendChild(note('Making the mockups. About a minute.', 'hourglass_top'));
+      setTimeout(function () { api('printfulMockupCheck', p.id).then(function (r) { if (r.status !== 'pending') refresh().then(reopen); }).catch(function () {}); }, 15000);
+    } else b3.appendChild(btn((P.mockups || []).length ? 'text' : 'filled', (P.mockups || []).length ? 'Make them again' : 'Make mockups', { sm: true, icon: 'image', onclick: function (e) {
+      K.setBusy(e.currentTarget, true); api('printfulMockups', p.id).then(refresh).then(reopen).catch(fail);
+    } }));
+    var ship = (P.shipping || [])[0];
+    b3.appendChild(h('div', { style: 'margin-top:8px' }, ship ? h('p', { class: 'body-s', text: 'Posting to you: from ' + pfMoney(ship.rate, ship.currency) + ' (' + ship.name + (ship.min ? ', ' + ship.min + '–' + ship.max + ' days' : '') + ')' })
+      : btn('text', 'What does posting cost?', { sm: true, icon: 'local_shipping', onclick: function (e) { K.setBusy(e.currentTarget, true); api('printfulShipping', p.id).then(refresh).then(reopen).catch(fail); } })));
+    sec.appendChild(step(3, (P.mockups || []).length > 0, 'See it, and what posting costs', b3));
+    // 4 a sample
+    var b4;
+    if (s.orderId && s.status === 'draft') {
+      b4 = h('div', {}, h('p', { class: 'body-m', style: 'margin:2px 0 8px', text: 'Ready to order: ' + (s.variant || '') + '. Total ' + pfMoney(s.total, s.currency) + ' (item ' + pfMoney(s.subtotal, s.currency) + ', posting ' + pfMoney(s.shipping, s.currency) + (s.tax ? ', tax ' + pfMoney(s.tax, s.currency) : '') + ').' }),
+        btn('filled', 'Yes, order it · ' + pfMoney(s.total, s.currency), { sm: true, icon: 'check', onclick: function (e) {
+          var b = e.currentTarget;
+          K.confirm({ title: 'Order the sample?', text: 'Printful makes it and posts it to you, and charges ' + pfMoney(s.total, s.currency) + ' to the card on your Printful account.', confirmLabel: 'Order it' }).then(function (yes) {
+            if (!yes) return; K.setBusy(b, true);
+            api('printfulConfirm', p.id).then(refresh).then(function () { K.haptic('success'); toast('Ordered. Printful will post it to you.'); reopen(); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+          });
+        } }), btn('text', 'Change it', { sm: true, onclick: function () { openPrintfulSample(p, reopen); } }));
+    } else if (s.orderId) b4 = h('p', { class: 'body-m', text: 'Ordered (' + (s.variant || '') + '). Printful will post it to you.' });
+    else b4 = btn('filled', 'Order a sample', { sm: true, icon: 'local_shipping', onclick: function () { openPrintfulSample(p, reopen); } });
+    sec.appendChild(step(4, !!(s.orderId && s.status !== 'draft'), 'A sample, to check before selling', b4));
+    return sec;
+  }
   /** While the PC's own model works on something: a quicker answer from Claude, for a small cost. */
   function quickerBtn(id) {
     return h('div', { style: 'margin-top:8px' }, btn('text', 'Quicker answer with Claude · about 1c', { sm: true, icon: 'auto_awesome', onclick: function (e) {
@@ -12536,6 +12737,10 @@ var Kit = (function () {
           K.textField({ label: 'Rough cost', value: f.costNote, maxlength: 200, placeholder: 'e.g. A4 print about $6', onInput: function (v) { f.costNote = v; touch(); } }),
           K.textField({ label: 'How long they take', value: f.leadTime, maxlength: 80, placeholder: 'e.g. 3 to 5 days', onInput: function (v) { f.leadTime = v; touch(); } }),
           K.textField({ label: 'Notes', multiline: true, value: f.notes, maxlength: 1000, onInput: function (v) { f.notes = v; touch(); } })));
+        if (/printful/i.test(f.name || '')) ctl.body.appendChild(h('div', { style: 'margin-top:14px' }, (S.data.printful || {}).linked
+          ? note('Linked to ' + (S.data.printful.store || 'Printful') + '. Products can be made with Printful from their Products page.', 'check_circle', 'good')
+          : h('div', {}, note('Link Printful, and your products go from idea to production right here: what it makes, prices, mockups and samples.', 'link'),
+            h('div', { style: 'margin-top:8px' }, btn('filled', 'Link Printful', { icon: 'link', onclick: function () { ctl.close(); setTimeout(function () { openPrintfulLink(); }, 300); } })))));
         if (x) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Delete this supplier', { icon: 'delete', danger: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
           api('deleteSupplier', x.id).then(refresh).then(function () { dirty = false; ctl.close(); binUndo('Supplier deleted.', 'supplier', x.id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
