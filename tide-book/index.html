@@ -1390,6 +1390,11 @@ body.map-full { overflow: hidden; }
 .goal-bubble.alongside .gb-grip { background: rgba(29, 111, 121, 0.12); color: var(--on-secondary-container); }
 .goal-bubble.sub .gb-grip { margin: -8px 0 -8px 2px; border-radius: 0 16px 16px 0; }
 .goal-bubble.lifted .gb-grip { background: var(--secondary-container); color: var(--on-secondary-container); }
+.site-modes { display: flex; align-items: center; gap: 8px; }
+.site-modes > .seg { flex: 1; }
+.site-visit { flex: none; display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 12px; border-radius: var(--r-m); background: var(--primary-container); color: var(--on-primary-container); font: 500 14px/20px var(--font); text-decoration: none; }
+.site-visit .ms { font-size: 18px; }
+.site-card .btn-row a.btn { text-decoration: none; }
 </style>
 
   <script>
@@ -7033,7 +7038,7 @@ var TIDE_CHANGES = [
     go: { view: 'site', find: '.site-frame', tip: 'Tap a picture on your website to try it.' } },
   { id: '2026-11-18-website-tab', on: '2026-11-18', to: 'artist', icon: 'language', title: 'Change your website yourself',
     say: 'The new Website tab shows your website. Tap any words, picture or part of a page to change it, then publish when you’re happy.',
-    steps: ['Open the menu (bottom left) and tap Website.', 'Tap any words or picture on your website to change them.', 'Tap a part of a page to move it, hide it, or add a new section below it.', 'Colours and fonts, and Pages, are just under your website.', 'Nothing goes live until you tap Publish.'],
+    steps: ['Open the menu (bottom left) and tap Website. “Visit” at the top opens your website as visitors see it.', 'Tap any words or picture on your website to change them.', 'Tap a part of a page to move it, hide it, or add a new section below it.', 'Colours and fonts, and Pages, are just under your website.', 'Nothing goes live until you tap Publish.'],
     go: { view: 'site', find: '.site-frame', tip: 'Tap anything here to change it.' } },
   { id: '2026-11-18-website-ask', on: '2026-11-18', to: 'artist', icon: 'forum', title: 'Ask for something bigger on your website',
     say: 'For a new kind of section or a different layout, tap the spot and ask in your own words. You’ll see it in the preview before it goes live.',
@@ -9991,7 +9996,9 @@ var Kit = (function () {
       options: [{ value: 'edit', label: 'Change things' }, { value: 'look', label: 'Look around' }] });
     var hint = h('p', { class: 'tf-help', style: 'margin:6px 4px 0', text: S.siteMode === 'look' ? 'Look around: links work as they will for visitors.' : 'Tap anything to change it.' });
     SITE.bar = h('div', { class: 'site-bar' });
-    main.appendChild(rise(h('div', { class: 'site-top' }, mode, hint, SITE.bar), 1));
+    var live = S.data.website && S.data.website.live;
+    var visit = live ? h('a', { class: 'site-visit press soft', href: live, target: '_blank', rel: 'noopener', 'aria-label': 'Visit your website, as visitors see it (opens a new tab)' }, icon('open_in_new'), h('span', { text: 'Visit' })) : null;
+    main.appendChild(rise(h('div', { class: 'site-top' }, h('div', { class: 'site-modes' }, mode, visit), hint, SITE.bar), 1));
     paintSiteBar();
     var H = Math.max(460, window.innerHeight - 330);
     SITE.frame = h('iframe', { class: 'site-frame', title: 'Your website', src: 'site-preview/?edit=1' + (SITE.route && SITE.route !== '#/' ? SITE.route : ''), style: 'height:' + H + 'px' });
@@ -10617,9 +10624,13 @@ var Kit = (function () {
     if (fcA) main.appendChild(rise(fcA, n++));
     mark('todo');
     if (S.data.website && S.data.website.live) {
-      main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { go('site'); } },
+      // her website: go and see it as visitors do, or change it
+      main.appendChild(rise(h('div', { class: 'card pad drafts site-card' },
         h('span', { class: 'ic' }, icon('language')),
-        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'Have a look, and tap anything on it to change it.' })), icon('chevron_right')), n++));
+        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'See it as visitors do, or tap anything on it to change it.' }),
+          h('span', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' },
+            h('a', { class: 'btn tonal sm press', href: S.data.website.live, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Visit it' })),
+            btn('filled', 'Change it', { sm: true, icon: 'edit', onclick: function () { go('site'); } })))), n++));
     }
 
     mark('website');
