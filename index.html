@@ -4479,7 +4479,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var place = ss.slice(); named.forEach(function (x, j) { place[namedSlots[j]] = x.s; });
       place.forEach(function (s) { c.appendChild(s); });
     }
-    sections().forEach(function (s) { var hid = (S.hidden || []).indexOf(sectionKey(s)) >= 0; s.classList.toggle('te-hide', hid); });
+    var Lk = (L && L.looks) || {};
+    sections().forEach(function (s) { var hid = (S.hidden || []).indexOf(sectionKey(s)) >= 0; s.classList.toggle('te-hide', hid); sectionLook(s, Lk['s|' + route() + '|' + sectionKey(s)]); });
   }
   function applyThings(root) {
     var W = (L && L.words) || {}, Pi = (L && L.pics) || {}, Lk = (L && L.looks) || {};
@@ -4491,6 +4492,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       else if (el.dataset.teo != null && el.dataset.teEdited) { el.textContent = el.dataset.teo; delete el.dataset.teEdited; }
       if (W[k] != null) el.dataset.teEdited = '1';
       look(el, Lk[k]);
+      // where a button or link goes
+      var a = el.closest('a'), to = ((L && L.links) || {})[k];
+      if (a) { if (a.dataset.teoh == null) a.dataset.teoh = a.getAttribute('href') || ''; var want = to || a.dataset.teoh; if (a.getAttribute('href') !== want) a.setAttribute('href', want); if (/^https?:/.test(want)) { a.target = '_blank'; a.rel = 'noopener'; } }
     });
     [].slice.call(root.querySelectorAll('img,[style*="background-image"]')).forEach(function (el) {
       if (!isPic(el)) return;
@@ -4501,18 +4505,58 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       look(el, Lk[k]);
     });
   }
+  var RADIUS = { none: '0', soft: '12px', round: '28px', circle: '50%' };
+  var BG = { white: '#ffffff', blush: 'var(--blush)', seafoam: 'var(--seafoam)', 'paper-2': 'var(--paper-2)', 'aqua-wash': 'var(--aqua-wash)' };
+  function colour(c) { return !c ? '' : /^#/.test(c) ? c : BG[c] || 'var(--' + c + ')'; }
+  /** How a thing looks: words (size, colour, bold, italic, font, line up), pictures (framing, zoom, light, shape, size),
+   *  buttons (style), and whether it shows at all. */
   function look(el, p) {
     var was = el.dataset.teLook || '';
     var now = p ? JSON.stringify(p) : '';
     if (was === now) return;
-    if (el.dataset.teFs == null) el.dataset.teFs = parseFloat(getComputedStyle(el).fontSize) || 16;
-    el.style.fontSize = p && p.size ? Math.round(el.dataset.teFs * p.size) + 'px' : '';
-    el.style.color = p && p.color ? 'var(--' + p.color + ')' : '';
-    el.style.fontWeight = p && p.bold ? '700' : '';
-    el.style.textAlign = p && p.align ? p.align : '';
-    el.classList.toggle('te-hide', !!(p && p.hide));
-    if (el.tagName === 'IMG') el.style.width = p && p.width ? Math.round(p.width * 100) + '%' : '';
+    p = p || {};
+    var pic = isPic(el), img = el.tagName === 'IMG';
+    if (!pic) {
+      if (el.dataset.teFs == null) el.dataset.teFs = parseFloat(getComputedStyle(el).fontSize) || 16;
+      el.style.fontSize = p.size ? Math.round(el.dataset.teFs * p.size) + 'px' : '';
+      el.style.color = colour(p.color);
+      el.style.fontWeight = p.bold ? '700' : '';
+      el.style.fontStyle = p.italic ? 'italic' : '';
+      el.style.fontFamily = p.font === 'display' ? 'var(--display)' : p.font === 'body' ? 'var(--font)' : '';
+      el.style.textAlign = p.align || '';
+      var b = el.closest('.chipbtn') || (el.classList.contains('chipbtn') ? el : null);
+      if (b) { if (b.dataset.teoc == null) b.dataset.teoc = b.className; b.className = b.dataset.teoc.replace(/\b(light|ghost)\b/g, '').trim() + (p.btn === 'light' ? ' light' : p.btn === 'ghost' ? ' ghost' : ''); }
+    } else if (img) {
+      var pos = p.posX != null || p.posY != null ? (p.posX == null ? 50 : p.posX) + '% ' + (p.posY == null ? 50 : p.posY) + '%' : '';
+      el.style.objectFit = p.fit === 'contain' ? 'contain' : p.radius === 'circle' ? 'cover' : '';
+      el.style.objectPosition = pos;
+      el.style.scale = p.zoom > 1 ? String(p.zoom) : '';
+      el.style.transformOrigin = p.zoom > 1 ? (pos || '50% 50%') : '';
+      if (el.parentElement) el.parentElement.style.overflow = p.zoom > 1 ? 'hidden' : '';
+      el.style.filter = [p.bright && p.bright !== 1 ? 'brightness(' + p.bright + ')' : '', p.contrast && p.contrast !== 1 ? 'contrast(' + p.contrast + ')' : '', p.sat != null && p.sat !== 1 ? 'saturate(' + p.sat + ')' : ''].filter(String).join(' ');
+      el.style.borderRadius = p.radius ? RADIUS[p.radius] || '' : '';
+      el.style.aspectRatio = p.radius === 'circle' ? '1' : '';
+      el.style.width = p.width ? Math.round(p.width * 100) + '%' : '';
+      el.style.marginLeft = el.style.marginRight = p.width ? 'auto' : '';
+      el.style.display = p.width ? 'block' : '';
+    } else {      // a picture behind something: where it sits, and how close
+      el.style.backgroundPosition = p.posX != null || p.posY != null ? (p.posX == null ? 50 : p.posX) + '% ' + (p.posY == null ? 50 : p.posY) + '%' : '';
+      el.style.backgroundSize = p.zoom > 1 ? Math.round(p.zoom * 100) + '%' : '';
+    }
+    el.classList.toggle('te-hide', !!p.hide);
     el.dataset.teLook = now;
+  }
+  /** A part of the page: its background, spacing and line-up. */
+  function sectionLook(s, p) {
+    var now = p ? JSON.stringify(p) : '';
+    if ((s.dataset.teSlook || '') === now) return;
+    p = p || {};
+    s.style.background = colour(p.bg);
+    s.style.paddingTop = s.style.paddingBottom = p.pad === 'tight' ? '20px' : p.pad === 'roomy' ? '96px' : '';
+    s.style.textAlign = p.align || '';
+    if (p.bg && !s.dataset.teRound) { s.style.borderRadius = '18px'; s.style.paddingLeft = s.style.paddingRight = s.style.paddingLeft || '20px'; }
+    if (!p.bg) { s.style.borderRadius = ''; s.style.paddingLeft = s.style.paddingRight = ''; }
+    s.dataset.teSlook = now;
   }
   function apply() {
     if (busy) return;

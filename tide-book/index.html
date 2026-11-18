@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_note,edit_off,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_note,edit_off,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1235,6 +1235,21 @@ img, video { max-width: 100%; }
 .site-pages .li.hid .li-head { color: var(--on-surface-variant); text-decoration: line-through; }
 .site-pages .li.here { background: var(--secondary-container); }
 .site-pg { all: unset; box-sizing: border-box; display: flex; flex-direction: column; min-width: 0; cursor: pointer; padding: 6px 0; }
+/* the website inspector */
+.insp-pane { min-height: 120px; }
+.insp-row { margin-bottom: 14px; }
+.insp-row > .label-s { margin: 0 0 6px; }
+.insp-lab { display: flex; justify-content: space-between; align-items: baseline; }
+.insp-val { font: 500 13px/18px var(--font); color: var(--primary); }
+.insp-row .slider { height: 36px; }
+.insp-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--hairline); }
+.fp-pad { position: relative; display: inline-block; max-width: 100%; border-radius: 12px; overflow: hidden; touch-action: none; cursor: crosshair; background: var(--surface-high); line-height: 0; }
+.fp-pad img { display: block; max-width: 100%; max-height: 190px; width: auto; height: auto; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.fp-dot { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--primary), 0 2px 8px rgba(0,0,0,.35); background: rgba(27, 79, 134, 0.35); pointer-events: none; transition: left .05s, top .05s; }
+.site-pic.on { box-shadow: 0 0 0 3px var(--primary); }
+.sheet.insp-sheet { max-height: 54vh; }
+.sheet.insp-sheet .scrim, .layer:has(.insp-sheet) .scrim { background: transparent; }
+body.inspecting .site-top { visibility: hidden; }
 </style>
 
   <script>
@@ -6686,6 +6701,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-18-website-controls', on: '2026-11-18', to: 'artist', icon: 'tune', title: 'Adjust things right on your website',
+    say: 'Tap a picture to move it in its frame, zoom, brighten it or round its corners. Tap words or a button for size, font, colour and where it goes.',
+    steps: ['In the Website tab, tap a picture.', 'Drag the dot to the part that matters most, then slide Zoom.', 'Look has brightness, colour and corners. Your website changes as you slide.', 'Tap Done to keep it, or close to leave it as it was.'],
+    go: { view: 'site', find: '.site-frame', tip: 'Tap a picture on your website to try it.' } },
   { id: '2026-11-18-website-tab', on: '2026-11-18', to: 'artist', icon: 'language', title: 'Change your website yourself',
     say: 'The new Website tab shows your website. Tap any words, picture or part of a page to change it, then publish when you’re happy.',
     steps: ['Tap Website in the bar at the bottom.', 'Tap any words or picture on your website to change them.', 'Tap a part of a page to move it, hide it, or add a new section below it.', 'Colours and fonts, and Pages, are just under your website.', 'Nothing goes live until you tap Publish.'],
@@ -7473,12 +7492,44 @@ var TIDE_SITE_EDITOR = {
 
 function tideSiteEditor(env, t) {
   var X = TIDE_SITE_EDITOR;
-  function blank() { return { v: 1, words: {}, pics: {}, looks: {}, theme: {}, sections: {}, pages: { names: {}, hidden: [], order: [], added: [] } }; }
-  function parse(s) { try { var o = s ? JSON.parse(s) : null; return o && o.v === 1 ? o : blank(); } catch (e) { return blank(); } }
+  function blank() { return { v: 1, words: {}, pics: {}, looks: {}, links: {}, theme: {}, sections: {}, pages: { names: {}, hidden: [], order: [], added: [] } }; }
+  function parse(s) { try { var o = s ? JSON.parse(s) : null; if (o && o.v === 1) { o.links = o.links || {}; return o; } return blank(); } catch (e) { return blank(); } }
   function st() { return env.settings.get(); }
   function draft() { return parse(st().siteDraft); }
   function live() { return parse(st().siteLive); }
-  function key(k) { k = String(k || ''); if (!k || k.length > 400 || !/^[wpb]\|/.test(k)) t.fail('Tap the thing you want to change first.'); return k; }
+  function key(k) { k = String(k || ''); if (!k || k.length > 400 || !/^[wpbs]\|/.test(k)) t.fail('Tap the thing you want to change first.'); return k; }
+  function num(v, lo, hi, places) { v = Number(v); if (!isFinite(v)) return null; var f = Math.pow(10, places || 2); return Math.max(lo, Math.min(hi, Math.round(v * f) / f)); }
+  /** A look, checked: only what the editor can set, each within its range. */
+  function cleanLook(p) {
+    var out = {};
+    if (!p) return out;
+    var size = num(p.size, 0.6, 2.2); if (size && Math.abs(size - 1) > 0.01) out.size = size;
+    var width = num(p.width, 0.3, 1); if (width && width < 0.99) out.width = width;
+    if (X.COLOURS.indexOf(p.color) >= 0) out.color = p.color;
+    if (p.bold) out.bold = true;
+    if (p.italic) out.italic = true;
+    if (p.font === 'display' || p.font === 'body') out.font = p.font;
+    if (['left', 'center', 'right'].indexOf(p.align) >= 0) out.align = p.align;
+    if (p.hide) out.hide = true;
+    ['posX', 'posY'].forEach(function (k) { var v = num(p[k], 0, 100, 0); if (v != null && p[k] !== '' && p[k] != null) out[k] = v; });
+    if (out.posX === 50 && out.posY === 50) { delete out.posX; delete out.posY; }
+    var zoom = num(p.zoom, 1, 3); if (zoom && zoom > 1.01) out.zoom = zoom;
+    if (p.fit === 'contain') out.fit = 'contain';
+    if (['none', 'soft', 'round', 'circle'].indexOf(p.radius) >= 0) out.radius = p.radius;
+    ['bright', 'contrast'].forEach(function (k) { var v = num(p[k], 0.5, 1.5); if (v && Math.abs(v - 1) > 0.01) out[k] = v; });
+    var sat = num(p.sat, 0, 1.8); if (sat != null && p.sat != null && p.sat !== '' && Math.abs(sat - 1) > 0.01) out.sat = sat;
+    if (['light', 'ghost', 'solid'].indexOf(p.btn) >= 0 && p.btn !== 'solid') out.btn = p.btn;
+    if (X.COLOURS.concat(['white', 'blush', 'seafoam', 'paper-2', 'aqua-wash']).indexOf(p.bg) >= 0 || hex(p.bg)) out.bg = hex(p.bg) || p.bg;
+    if (p.pad === 'tight' || p.pad === 'roomy') out.pad = p.pad;
+    return out;
+  }
+  function link(h) {
+    h = String(h || '').trim();
+    if (!h) return '';
+    if (/^#\/[a-z0-9\/-]{0,80}$/.test(h) || /^https:\/\/[^\s"'<>]{3,300}$/.test(h) || /^mailto:[^\s"'<>@]+@[^\s"'<>]+$/.test(h)) return h;
+    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(h)) return 'https://' + h;
+    t.fail('That address doesn’t look right. Start it with https://');
+  }
   function route(r) { r = String(r || ''); if (!/^(#\/[^\s"'<>]{0,160}|\*)$/.test(r)) t.fail('That page wasn’t found.'); return r; }
   function hex(c) { c = String(c || '').toLowerCase(); return /^#[0-9a-f]{6}$/.test(c) ? c : ''; }
   function file(f) { f = String(f || ''); if (!/^f[0-9a-f]{6,40}$/.test(f)) t.fail('Pick a picture first.'); return f; }
@@ -7502,22 +7553,28 @@ function tideSiteEditor(env, t) {
     t.need(['admin', 'artist']);
     op = op || {};
     var d = draft();
-    if (op.words) {
+    if (op.batch) {
+      var ops = t.list(op.batch).slice(0, 12);
+      if (!ops.length) t.fail('Nothing to change.');
+      ops.forEach(function (o) { var r = applyOp(d, o || {}); if (r && r.added) op.added = r.added; });
+      var snap = save(d); if (op.added) snap.added = op.added; return snap;
+    }
+    var res = applyOp(d, op), out = save(d);
+    if (res && res.added) out.added = res.added;
+    return out;
+  }
+  function applyOp(d, op) {
+    if (op.link) {
+      var nk = key(op.link.key), to = link(op.link.href);
+      if (to) d.links[nk] = to; else delete d.links[nk];
+    } else if (op.words) {
       var wk = key(op.words.key), txt = op.words.text == null ? null : t.text(op.words.text, 2000);
       if (txt === null || txt === '') delete d.words[wk]; else d.words[wk] = txt;
     } else if (op.pic) {
       var pk = key(op.pic.key);
       if (!op.pic.file) delete d.pics[pk]; else d.pics[pk] = file(op.pic.file);
     } else if (op.look) {
-      var lk = key(op.look.key), p = op.look.props, out = {};
-      if (p) {
-        var size = Number(p.size); if (size && Math.abs(size - 1) > 0.01) out.size = Math.max(0.6, Math.min(2.2, Math.round(size * 100) / 100));
-        var width = Number(p.width); if (width && width < 1) out.width = Math.max(0.3, Math.round(width * 100) / 100);
-        if (X.COLOURS.indexOf(p.color) >= 0) out.color = p.color;
-        if (p.bold) out.bold = true;
-        if (['left', 'center', 'right'].indexOf(p.align) >= 0) out.align = p.align;
-        if (p.hide) out.hide = true;
-      }
+      var lk = key(op.look.key), out = cleanLook(op.look.props);
       if (Object.keys(out).length) d.looks[lk] = out; else delete d.looks[lk];
     } else if ('theme' in op) {
       if (!op.theme) d.theme = {};
@@ -7554,7 +7611,7 @@ function tideSiteEditor(env, t) {
         var pid = (title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24) || 'page') + '-' + id().slice(0, 3);
         P.added.push({ id: pid, title: title });
         var nr = '#/p/' + pid; d.sections[nr] = { order: [], hidden: [], added: [{ id: 'tb' + id(), type: 'text', after: '' }] };
-        return Object.assign(save(d), { added: nr });
+        return { added: nr };
       }
       if (!/^#\/[a-z0-9\/-]{0,60}$/.test(href)) t.fail('Pick a page first.');
       if (act === 'rename') { var nm = t.text(op.page.name, 40); if (nm) P.names[href] = nm; else delete P.names[href]; P.added.forEach(function (a) { if ('#/p/' + a.id === href && nm) a.title = nm; }); }
@@ -7566,9 +7623,9 @@ function tideSiteEditor(env, t) {
         P.order = P.order.filter(function (x) { return x !== href; }); P.hidden = P.hidden.filter(function (x) { return x !== href; });
       } else t.fail('Pick what to do with the page.');
     } else if (op.reset) {
-      var rk = key(op.reset); delete d.words[rk]; delete d.pics[rk]; delete d.looks[rk];
+      var rk = key(op.reset); delete d.words[rk]; delete d.pics[rk]; delete d.looks[rk]; delete d.links[rk];
     } else t.fail('Nothing to change.');
-    return save(d);
+    return null;
   }
   function undoSiteEdit() {
     t.need(['admin', 'artist']);
@@ -9520,7 +9577,12 @@ var Kit = (function () {
     if (m.type === 'ready') { SITE.ready = true; SITE.pages = m.pages || []; SITE.sections = m.sections || []; sitePost({ type: 'layer', layer: siteLayer() }); sitePost({ type: 'mode', edit: S.siteMode !== 'look' }); }
     if (m.type === 'route') { SITE.route = m.route; SITE.title = pageName(m.route, m.title); SITE.pages = m.pages || SITE.pages; paintSiteBar(); }
     if (m.type === 'drawn') { SITE.sections = m.sections || SITE.sections; SITE.pages = m.pages || SITE.pages; }
-    if (m.type === 'pick') { K.haptic(); openSitePick(m.it); }
+    if (m.type === 'pick') {
+      K.haptic();
+      if (SITE.frame) { var fr = SITE.frame.getBoundingClientRect(); if (Math.abs(fr.top) > 4) window.scrollTo({ top: window.scrollY + fr.top, behavior: 'smooth' }); }
+      if (K.openSheets()) return;
+      openSitePick(m.it);
+    }
   });
   function pageName(route, h1) {
     var p = SITE.pages.filter(function (x) { return x.href === route; })[0];
@@ -9597,87 +9659,170 @@ var Kit = (function () {
     }
   }
 
-  /** She tapped something on her website: change its words or picture, how it looks, or the part of the page it's in. */
+  /** She tapped something on her website: the controls for that kind of thing. Every control moves the page as she
+   *  goes; Done keeps it all as one change (one Undo), and closing without Done puts the page back as it was. */
+  var SITE_BGS = [['', 'None'], ['white', '#ffffff'], ['paper-2', '#F2EBDF'], ['blush', '#FCDDE6'], ['seafoam', '#CFEDEC'], ['aqua-wash', '#D5ECF6'], ['sun', '#FFD873']];
   function openSitePick(it) {
-    var E = siteEd(), D = E.draft || {}, look = Object.assign({}, (D.looks || {})[it.key] || {}), edited = it.key && ((D.words || {})[it.key] != null || (D.pics || {})[it.key] || (D.looks || {})[it.key]);
-    var title = it.kind === 'picture' ? 'This picture' : it.kind === 'words' ? (/^h[1-4]$/.test(it.tag) ? 'This heading' : it.isLink ? 'This button' : 'These words') : 'This part of the page';
+    var E = siteEd(), D = E.draft || {}, looks = D.looks || {};
+    var kind = it.kind, sk = it.section && it.section.skey;
+    var cur = JSON.parse(JSON.stringify(looks[it.key] || {})), sec = JSON.parse(JSON.stringify(sk ? looks[sk] || {} : {}));
+    var origText = it.text, text = it.text, origHref = (D.links || {})[it.key] || '', href = origHref, pic = '';
+    var kept = false, raf = 0;
+    // the page shows each control as it moves (nothing saved until Done)
+    function preview() {
+      if (raf) return;
+      raf = requestAnimationFrame(function () {
+        raf = 0;
+        var L = siteLayer(); L.looks = L.looks || {}; L.words = L.words || {}; L.links = L.links || {}; L.pics = L.pics || {}; L.urls = L.urls || {};
+        if (it.key) { if (Object.keys(cur).length) L.looks[it.key] = cur; else delete L.looks[it.key]; }
+        if (sk) { if (Object.keys(sec).length) L.looks[sk] = sec; else delete L.looks[sk]; }
+        if (kind === 'words' && text.trim() && text !== origText) L.words[it.key] = text;
+        if (href !== origHref) { if (href) L.links[it.key] = href; else delete L.links[it.key]; }
+        if (pic) { L.pics[it.key] = pic.fid; L.urls[pic.fid] = new URL(pic.url, location.href).href; }
+        sitePost({ type: 'layer', layer: L });
+      });
+    }
+    function setLook(o, k, v) { if (v === null || v === undefined || v === '' || v === false) delete o[k]; else o[k] = v; preview(); }
+    function ops() {
+      var out = [];
+      if (it.key && JSON.stringify(cur) !== JSON.stringify(looks[it.key] || {})) out.push({ look: { key: it.key, props: Object.keys(cur).length ? cur : null } });
+      if (sk && JSON.stringify(sec) !== JSON.stringify(looks[sk] || {})) out.push({ look: { key: sk, props: Object.keys(sec).length ? sec : null } });
+      if (kind === 'words' && text.trim() && text.trim() !== origText) out.push({ words: { key: it.key, text: text.trim() } });
+      if (href !== origHref) out.push({ link: { key: it.key, href: href } });
+      if (pic) out.push({ pic: { key: it.key, file: pic.fid } });
+      return out;
+    }
+    var title = kind === 'picture' ? 'This picture' : kind === 'section' ? 'This part of the page' : it.isButton ? 'This button' : /^h[1-4]$/.test(it.tag) ? 'This heading' : it.isLink ? 'This link' : 'These words';
     K.sheet({
       title: title,
-      onClose: function () { sitePost({ type: 'unpick' }); },
+      onClose: function () { document.body.classList.remove('inspecting'); if (!kept) sitePost({ type: 'layer', layer: siteLayer() }); sitePost({ type: 'unpick' }); },
       build: function (ctl) {
-        function done(p) { return p.then(function () { ctl.close(); }).catch(function () {}); }
-        function lookOp(change) { Object.assign(look, change); Object.keys(look).forEach(function (k) { if (look[k] === null || look[k] === false || look[k] === '') delete look[k]; }); return siteOp({ look: { key: it.key, props: Object.keys(look).length ? look : null } }); }
-        if (it.kind === 'words') {
-          var val = it.text;
-          var tf = K.textField({ label: /^h[1-4]$/.test(it.tag) ? 'The heading' : 'The words', value: val, multiline: true, maxlength: 2000, onInput: function (v) { val = v; } });
-          ctl.body.appendChild(tf);
-          ctl.foot.appendChild(btn('filled', 'Save the words', { icon: 'check', lg: true, block: true, onclick: function (e) {
-            var b = e.currentTarget;
-            if (!val.trim()) { toast('Write something, or tap “Hide it” below to take it away.'); return; }
-            if (val.trim() === it.text) { ctl.close(); return; }
-            K.setBusy(b, true); done(siteOp({ words: { key: it.key, text: val.trim() } }, 'Changed on your draft.'));
-          } }));
+        // half the screen for the controls, the website above it: the toolbar steps aside while she adjusts
+        ctl.panel.classList.add('insp-sheet'); document.body.classList.add('inspecting');
+        function keep(msg) {
+          var list = ops();
+          if (!list.length) { kept = true; ctl.close(); return Promise.resolve(); }
+          return api('saveSiteEdit', { batch: list }).then(function (snap) { kept = true; K.haptic('success'); siteAfter(snap, msg || 'Changed on your draft.'); ctl.close(); }).catch(fail);
         }
-        if (it.kind === 'picture') {
-          var arts = S.data.prints.map(function (x) { return { title: x.title, thumbIds: x.thumbIds, fid: (x.photoIds || [])[0] || String((x.photoUrls || [])[0] || '').replace(/^files\//, '') }; }).filter(function (x) { return /^f[0-9a-f]+$/.test(x.fid); });
-          var grid = h('div', { class: 'site-pics' });
-          var up = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', hidden: true });
-          up.addEventListener('change', function () {
-            var f = up.files[0]; if (!f) return;
-            toast('Adding your photo…');
-            fetch('upload?name=' + encodeURIComponent(f.name) + '&folder=' + encodeURIComponent('Website'), { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg' }, body: f, credentials: 'same-origin' })
-              .then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw new Error(j.error); return done(siteOp({ pic: { key: it.key, file: j.id } }, 'Picture changed on your draft.')); }).catch(fail);
-          });
-          grid.appendChild(h('button', { type: 'button', class: 'site-pic add press soft', onclick: function () { up.click(); } }, icon('add_a_photo'), h('span', { text: 'A new photo' })));
-          arts.forEach(function (a) {
-            grid.appendChild(h('button', { type: 'button', class: 'site-pic press soft', 'aria-label': a.title, onclick: function (e) { K.setBusy(e.currentTarget, true); done(siteOp({ pic: { key: it.key, file: a.fid } }, 'Picture changed on your draft.')); } },
-              a.thumbIds && a.thumbIds.length ? thumbImg(a.thumbIds[0], 'site-pic-img') : h('span', { class: 'site-pic-img' }, icon('image'))));
-          });
-          ctl.body.append(up, h('div', { class: 'label-s', style: 'margin:0 0 8px', text: 'Swap it for one of your artworks, or a new photo' }), grid);
-          setTimeout(loadThumbs, 0);
+        function row(label, el) { return h('div', { class: 'insp-row' }, h('div', { class: 'label-s', text: label }), el); }
+        function slide(label, min, max, val, step, fmt, onv) {
+          var out = h('span', { class: 'insp-val', text: fmt(val) });
+          var s = K.slider({ label: label, min: min, max: max, step: step, value: val, tickEvery: (max - min) / 4, onInput: function (v) { out.textContent = fmt(v); onv(v); } });
+          return h('div', { class: 'insp-row' }, h('div', { class: 'insp-lab' }, h('span', { class: 'label-s', text: label }), out), s);
         }
-        // how it looks
-        if (it.key) {
-          var ls = sheetSection('How it looks');
-          if (it.kind === 'words') {
-            ls.appendChild(h('div', { class: 'label-s', text: 'Size' }));
-            ls.appendChild(K.choices({ row: true, label: 'Size', value: String(look.size || 1), options: [{ value: '0.85', label: 'Smaller' }, { value: '1', label: 'As it was' }, { value: '1.2', label: 'Bigger' }, { value: '1.45', label: 'Biggest' }],
-              onChange: function (v) { lookOp({ size: Number(v) === 1 ? null : Number(v) }); } }));
-            var sw = h('div', { class: 'site-swatches' });
-            sw.appendChild(h('button', { type: 'button', class: 'site-sw none' + (!look.color ? ' on' : ''), 'aria-label': 'As it was', onclick: function () { lookOp({ color: null }); ctl.close(); } }, icon('format_color_reset')));
-            Object.keys(SITE_COLOURS).forEach(function (c) {
-              var hex = ((D.theme || {})[c]) || SITE_COLOURS[c][1];
-              sw.appendChild(h('button', { type: 'button', class: 'site-sw' + (look.color === c ? ' on' : ''), style: 'background:' + hex, 'aria-label': SITE_COLOURS[c][0], onclick: function () { lookOp({ color: c }); ctl.close(); } }));
+        function pct(v) { return Math.round(v) + '%'; }
+        function chips(label, value, opts, onv) { return row(label, K.choices({ row: true, label: label, value: value, options: opts, onChange: onv })); }
+        function swatches(value, list, onv) {
+          var w = h('div', { class: 'site-swatches' });
+          list.forEach(function (c) {
+            w.appendChild(h('button', { type: 'button', class: 'site-sw' + (c[0] ? '' : ' none') + ((value || '') === c[0] ? ' on' : ''), style: c[0] ? 'background:' + c[1] : '', 'aria-label': c[0] ? c[0] : 'None',
+              onclick: function (e) { [].slice.call(w.children).forEach(function (x) { x.classList.remove('on'); }); e.currentTarget.classList.add('on'); onv(c[0]); } }, c[0] ? null : icon('format_color_reset')));
+          });
+          return w;
+        }
+        var tabs = [], panes = {}, bar;
+        function tab(k, label, build) { tabs.push({ value: k, label: label }); panes[k] = build; }
+
+        // ---- a picture: where it sits in its frame, how close, its light and shape, or a different one
+        if (kind === 'picture') {
+          tab('frame', 'Framing', function (p) {
+            if (it.thumb) {
+              var dot = h('span', { class: 'fp-dot' }), img = h('img', { src: it.thumb, alt: '' }), padEl = h('div', { class: 'fp-pad' }, img, dot);
+              function place() { dot.style.left = (cur.posX == null ? 50 : cur.posX) + '%'; dot.style.top = (cur.posY == null ? 50 : cur.posY) + '%'; }
+              function at(e) { var r = img.getBoundingClientRect(); var x = Math.round(Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100))), y = Math.round(Math.max(0, Math.min(100, (e.clientY - r.top) / r.height * 100))); cur.posX = x; cur.posY = y; place(); preview(); }
+              var down = false;
+              padEl.addEventListener('pointerdown', function (e) { down = true; padEl.setPointerCapture(e.pointerId); at(e); });
+              padEl.addEventListener('pointermove', function (e) { if (down) at(e); });
+              padEl.addEventListener('pointerup', function () { down = false; K.haptic(); });
+              place();
+              p.appendChild(row('Tap or drag to the part that matters most', padEl));
+            }
+            p.appendChild(slide('Zoom', 100, 300, (cur.zoom || 1) * 100, 5, pct, function (v) { setLook(cur, 'zoom', v > 101 ? v / 100 : null); }));
+            if (!it.bgPic) p.appendChild(chips('Fit', cur.fit || '', [{ value: '', label: 'Fill the space' }, { value: 'contain', label: 'Show all of it' }], function (v) { setLook(cur, 'fit', v || null); }));
+            p.appendChild(h('div', { style: 'margin-top:6px' }, btn('text', 'Back to the middle', { sm: true, icon: 'center_focus_strong', onclick: function () { delete cur.posX; delete cur.posY; delete cur.zoom; preview(); K.swap(ctl, function () { openSitePickAgain(); }); } })));
+          });
+          if (!it.bgPic) tab('look', 'Look', function (p) {
+            p.appendChild(slide('Brightness', 50, 150, (cur.bright || 1) * 100, 1, pct, function (v) { setLook(cur, 'bright', Math.abs(v - 100) > 1 ? v / 100 : null); }));
+            p.appendChild(slide('Contrast', 50, 150, (cur.contrast || 1) * 100, 1, pct, function (v) { setLook(cur, 'contrast', Math.abs(v - 100) > 1 ? v / 100 : null); }));
+            p.appendChild(slide('Colour', 0, 180, (cur.sat == null ? 1 : cur.sat) * 100, 1, function (v) { return v < 5 ? 'Black and white' : pct(v); }, function (v) { setLook(cur, 'sat', Math.abs(v - 100) > 1 ? v / 100 : null); }));
+            p.appendChild(chips('Corners', cur.radius || '', [{ value: '', label: 'As it was' }, { value: 'none', label: 'Square' }, { value: 'soft', label: 'Soft' }, { value: 'round', label: 'Round' }, { value: 'circle', label: 'Circle' }], function (v) { setLook(cur, 'radius', v || null); }));
+            p.appendChild(slide('Size', 30, 100, (cur.width || 1) * 100, 5, pct, function (v) { setLook(cur, 'width', v < 99 ? v / 100 : null); }));
+          });
+          tab('swap', 'Swap it', function (p) {
+            var arts = S.data.prints.map(function (x) { return { title: x.title, thumbIds: x.thumbIds, fid: (x.photoIds || [])[0] || String((x.photoUrls || [])[0] || '').replace(/^files\//, '') }; }).filter(function (x) { return /^f[0-9a-f]+$/.test(x.fid); });
+            var grid = h('div', { class: 'site-pics' });
+            var up = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', hidden: true });
+            function choose(fid, b) { [].slice.call(grid.children).forEach(function (x) { x.classList.remove('on'); }); if (b) b.classList.add('on'); pic = { fid: fid, url: 'files/' + fid }; preview(); }
+            up.addEventListener('change', function () {
+              var f = up.files[0]; if (!f) return;
+              var addB = grid.firstChild; K.setBusy(addB, true);
+              fetch('upload?name=' + encodeURIComponent(f.name) + '&folder=' + encodeURIComponent('Website'), { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg' }, body: f, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw new Error(j.error); K.setBusy(addB, false); choose(j.id, addB); toast('Your photo is in. Tap Done to keep it.'); }).catch(function (e) { K.setBusy(addB, false); fail(e); });
             });
-            ls.append(h('div', { class: 'label-s', style: 'margin-top:10px', text: 'Colour' }), sw,
-              h('div', { class: 'label-s', style: 'margin-top:10px', text: 'Line up' }),
-              K.choices({ row: true, label: 'Line up', value: look.align || '', allowNone: true, options: [{ value: 'left', label: 'Left' }, { value: 'center', label: 'Centre' }, { value: 'right', label: 'Right' }], onChange: function (v) { lookOp({ align: v || null }); } }),
-              h('div', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' },
-                btn(look.bold ? 'tonal' : 'outlined', look.bold ? 'Bold: on' : 'Bold', { sm: true, icon: 'format_bold', onclick: function (e) { lookOp({ bold: !look.bold }); e.currentTarget.lastChild.textContent = look.bold ? 'Bold: on' : 'Bold'; } })));
-          } else if (it.kind === 'picture') {
-            ls.append(h('div', { class: 'label-s', text: 'Size' }),
-              K.choices({ row: true, label: 'Size', value: String(look.width || 1), options: [{ value: '1', label: 'Full' }, { value: '0.75', label: 'Three quarters' }, { value: '0.5', label: 'Half' }], onChange: function (v) { lookOp({ width: Number(v) === 1 ? null : Number(v) }); } }));
-          }
-          ls.appendChild(h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' },
-            btn('text', look.hide ? 'Show it again' : 'Hide it', { sm: true, icon: look.hide ? 'visibility' : 'visibility_off', onclick: function () { done(lookOp({ hide: !look.hide })); } }),
-            edited ? btn('text', 'Put it back as it was', { sm: true, icon: 'restart_alt', onclick: function () { done(siteOp({ reset: it.key }, 'Back as it was.')); } }) : null));
-          ctl.body.appendChild(ls);
+            grid.appendChild(h('button', { type: 'button', class: 'site-pic add press soft', onclick: function () { up.click(); } }, icon('add_a_photo'), h('span', { text: 'A new photo' })));
+            arts.forEach(function (a) {
+              grid.appendChild(h('button', { type: 'button', class: 'site-pic press soft', 'aria-label': a.title, onclick: function (e) { choose(a.fid, e.currentTarget); } },
+                a.thumbIds && a.thumbIds.length ? thumbImg(a.thumbIds[0], 'site-pic-img') : h('span', { class: 'site-pic-img' }, icon('image'))));
+            });
+            p.append(up, h('p', { class: 'body-s', style: 'margin:0 0 8px;color:var(--on-surface-variant)', text: arts.length ? 'One of your artworks, or a new photo. It shows on the page straight away.' : 'Add a new photo. Your artworks show here too once they have photos.' }), grid);
+            setTimeout(loadThumbs, 0);
+          });
         }
-        // the part of the page it's in
-        if (it.section) {
-          var ss = sheetSection(it.kind === 'section' ? 'Move, hide or add' : 'The part of the page it’s in'), sx = it.section;
-          if (it.kind !== 'section') ss.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 8px;color:var(--on-surface-variant)', text: '“' + sx.label + '”' }));
-          function secOp(act) { return siteOp({ section: { route: it.route, key: sx.key, act: act, keys: SITE.sections } }); }
-          ss.appendChild(h('div', { class: 'btn-row', style: 'flex-wrap:wrap' },
-            sx.index > 0 ? btn('outlined', 'Move up', { sm: true, icon: 'arrow_upward', onclick: function () { done(secOp('up')); } }) : null,
-            sx.index < sx.count - 1 ? btn('outlined', 'Move down', { sm: true, icon: 'arrow_downward', onclick: function () { done(secOp('down')); } }) : null,
-            sx.added ? btn('text', 'Remove it', { sm: true, icon: 'delete', danger: true, onclick: function () { done(siteOp({ unblock: { route: it.route, id: sx.block } }, 'Removed. Undo is at the top.')); } })
-              : btn('text', 'Hide this part', { sm: true, icon: 'visibility_off', onclick: function () { done(secOp('hide')).then(function () { toast('Hidden on your draft. Undo is at the top.'); }); } })));
-          ss.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a new section below', { sm: true, icon: 'add', onclick: function () { K.swap(ctl, function () { openSiteBlocks(it.route, sx.key); }); } })));
-          ctl.body.appendChild(ss);
+        // ---- words: what they say, then how they look (and for a button or link, where it goes)
+        if (kind === 'words') {
+          tab('words', it.isButton ? 'Button' : 'Words', function (p) {
+            p.appendChild(K.textField({ label: it.isButton ? 'What the button says' : /^h[1-4]$/.test(it.tag) ? 'The heading' : 'The words', value: text, multiline: !it.isButton, maxlength: 2000, onInput: function (v) { text = v; preview(); } }));
+            if (it.isLink || it.isButton) {
+              var pages = SITE.pages.map(function (x) { return { value: x.href, label: x.now || x.label }; });
+              var hereNow = href || it.href || '';
+              p.appendChild(row('Where it goes', K.choices({ label: 'Where it goes', value: hereNow, options: pages, own: 'A web address', ownMax: 300, onChange: function (v) { href = v === it.href && !origHref ? '' : v; preview(); } })));
+            }
+            if (it.isButton) p.appendChild(chips('Button style', cur.btn || 'solid', [{ value: 'solid', label: 'Filled' }, { value: 'light', label: 'Light' }, { value: 'ghost', label: 'Outline' }], function (v) { setLook(cur, 'btn', v === 'solid' ? null : v); }));
+          });
+          tab('style', 'Style', function (p) {
+            p.appendChild(slide('Size', 60, 220, (cur.size || 1) * 100, 5, pct, function (v) { setLook(cur, 'size', Math.abs(v - 100) > 2 ? v / 100 : null); }));
+            var tg = h('div', { class: 'btn-row', style: 'flex-wrap:wrap' });
+            [['bold', 'Bold', 'format_bold'], ['italic', 'Italic', 'format_italic']].forEach(function (b) {
+              var x = btn(cur[b[0]] ? 'tonal' : 'outlined', b[1], { sm: true, icon: b[2], onclick: function () { setLook(cur, b[0], !cur[b[0]]); x.classList.toggle('tonal', !!cur[b[0]]); x.classList.toggle('outlined', !cur[b[0]]); } });
+              tg.appendChild(x);
+            });
+            p.appendChild(row('Style', tg));
+            p.appendChild(chips('Font', cur.font || '', [{ value: '', label: 'As it was' }, { value: 'display', label: 'Heading font' }, { value: 'body', label: 'Plain' }], function (v) { setLook(cur, 'font', v || null); }));
+            var T = (D.theme || {});
+            p.appendChild(row('Colour', swatches(cur.color || '', [['', '']].concat(Object.keys(SITE_COLOURS).filter(function (c) { return c !== 'paper'; }).map(function (c) { return [c, T[c] || SITE_COLOURS[c][1]]; })), function (v) { setLook(cur, 'color', v || null); })));
+            p.appendChild(chips('Line up', cur.align || '', [{ value: '', label: 'As it was' }, { value: 'left', label: 'Left' }, { value: 'center', label: 'Centre' }, { value: 'right', label: 'Right' }], function (v) { setLook(cur, 'align', v || null); }));
+          });
         }
-        ctl.body.appendChild(h('div', { style: 'margin-top:18px;text-align:center' }, btn('text', 'Ask for something bigger here', { icon: 'forum', onclick: function () { K.swap(ctl, function () { openSiteAsk(it); }); } })));
-        if (it.kind === 'section' && !ctl.foot.firstChild) ctl.foot.appendChild(btn('filled', 'Done', { icon: 'check', lg: true, block: true, onclick: function () { ctl.close(); } }));
+        // ---- the part of the page: its background, spacing and line-up, and moving, hiding or adding parts
+        if (sk) {
+          tab('part', kind === 'section' ? 'This part' : 'Around it', function (p) {
+            var sx = it.section;
+            if (kind !== 'section') p.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 8px;color:var(--on-surface-variant)', text: 'The part of the page it’s in: “' + sx.label + '”' }));
+            p.appendChild(row('Background', swatches(sec.bg || '', SITE_BGS, function (v) { setLook(sec, 'bg', v || null); })));
+            p.appendChild(chips('Spacing', sec.pad || '', [{ value: 'tight', label: 'Tight' }, { value: '', label: 'As it was' }, { value: 'roomy', label: 'Roomy' }], function (v) { setLook(sec, 'pad', v || null); }));
+            p.appendChild(chips('Line up', sec.align || '', [{ value: '', label: 'As it was' }, { value: 'left', label: 'Left' }, { value: 'center', label: 'Centre' }], function (v) { setLook(sec, 'align', v || null); }));
+            function secOp(act) { return siteOp({ section: { route: it.route, key: sx.key, act: act, keys: SITE.sections } }).then(function () { kept = true; ctl.close(); }).catch(function () {}); }
+            p.appendChild(row('Where it sits', h('div', { class: 'btn-row', style: 'flex-wrap:wrap' },
+              sx.index > 0 ? btn('outlined', 'Move up', { sm: true, icon: 'arrow_upward', onclick: function () { secOp('up'); } }) : null,
+              sx.index < sx.count - 1 ? btn('outlined', 'Move down', { sm: true, icon: 'arrow_downward', onclick: function () { secOp('down'); } }) : null,
+              sx.added ? btn('text', 'Remove it', { sm: true, icon: 'delete', danger: true, onclick: function () { siteOp({ unblock: { route: it.route, id: sx.block } }, 'Removed. Undo is at the top.').then(function () { kept = true; ctl.close(); }).catch(function () {}); } })
+                : btn('text', 'Hide this part', { sm: true, icon: 'visibility_off', onclick: function () { secOp('hide').then(function () { toast('Hidden on your draft. Undo is at the top.'); }); } }))));
+            p.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a new section below', { sm: true, icon: 'add', onclick: function () { kept = true; K.swap(ctl, function () { openSiteBlocks(it.route, sx.key); }); } })));
+          });
+        }
+        function openSitePickAgain() { openSitePick(Object.assign({}, it)); }
+        var body = h('div', { class: 'insp-pane' });
+        function show(k) { body.textContent = ''; panes[k](body); }
+        if (tabs.length > 1) { bar = K.segmented({ label: 'Change', value: tabs[0].value, options: tabs, fit: tabs.length > 3, onChange: show }); ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, bar)); }
+        ctl.body.appendChild(body);
+        show(tabs[0].value);
+        // the rest: hide it, back as it was, or something bigger
+        var edited = it.key && ((D.words || {})[it.key] != null || (D.pics || {})[it.key] || looks[it.key] || (D.links || {})[it.key]);
+        ctl.body.appendChild(h('div', { class: 'insp-more' },
+          it.key ? btn('text', cur.hide ? 'Show it again' : 'Hide it', { sm: true, icon: cur.hide ? 'visibility' : 'visibility_off', onclick: function () { cur.hide = !cur.hide; if (!cur.hide) delete cur.hide; keep(cur.hide ? 'Hidden on your draft. Undo is at the top.' : 'Showing again.'); } }) : null,
+          edited ? btn('text', 'Put it back as it was', { sm: true, icon: 'restart_alt', onclick: function () { siteOp({ reset: it.key }, 'Back as it was.').then(function () { kept = true; ctl.close(); }).catch(function () {}); } }) : null,
+          btn('text', 'Ask for something bigger', { sm: true, icon: 'forum', onclick: function () { K.swap(ctl, function () { openSiteAsk(it); }); } })));
+        ctl.foot.appendChild(btn('filled', 'Done', { icon: 'check', lg: true, block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); keep(); } }));
       }
     });
   }
