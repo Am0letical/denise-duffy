@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1359,6 +1359,27 @@ body.inspecting .site-top { visibility: hidden; }
 .ho-grip:active, .ho-card.lifted .ho-grip { background: var(--secondary-container); color: var(--on-secondary-container); cursor: grabbing; }
 .goal-card.active { box-shadow: inset 0 0 0 1px var(--outline-variant); outline: 2px solid var(--primary); outline-offset: -2px; }
 .ho-grip { border-radius: 0 16px 16px 0; }
+/* the goal map, full screen */
+.goal-map.full { position: fixed; inset: 0; z-index: 35; border-radius: 0; box-shadow: none; }
+.gm-full-bar { position: absolute; z-index: 4; top: calc(env(safe-area-inset-top) + 10px); left: 10px; right: 10px; display: flex; align-items: center; gap: 8px;
+  padding: 6px 6px 6px 16px; border-radius: var(--r-full); background: rgba(252, 249, 244, 0.94); box-shadow: var(--shadow-2); }
+.gm-full-t { flex: 1; font: 500 17px/22px var(--display); }
+.goal-map.full .gz { bottom: calc(env(safe-area-inset-bottom) + 14px); right: 14px; }
+body.map-full .menu-bubble, body.map-full .fb-bubble, body.map-full .view-pill { display: none; }
+body.map-full { overflow: hidden; }
+/* bubbles: three lines of the title at most, so they fit beside each other (the whole title is one tap away) */
+.goal-bubble { max-width: 44%; }
+.gb-t { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+/* a goal shrunk to a dot */
+.goal-bubble.dot { width: 38px; height: 38px; padding: 0; border-radius: 50%; justify-content: center; max-width: none; background: var(--gc, var(--secondary)); color: #fff;
+  font: 700 14px/1 var(--font); box-shadow: 0 0 0 3px var(--surface-lowest), 0 2px 8px rgba(16, 24, 40, .25); }
+.goal-bubble.dot.active { box-shadow: 0 0 0 3px var(--surface-lowest), 0 0 0 5px var(--primary); }
+.goal-bubble.dot .ms { font-size: 18px; }
+.gb-min { all: unset; position: absolute; top: -9px; right: -9px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  background: var(--surface-lowest); color: var(--on-surface-variant); box-shadow: 0 0 0 1px var(--outline-variant), 0 1px 4px rgba(0,0,0,.15); }
+.gb-min .ms { font-size: 18px; }
+.gb-min::after { content: ''; position: absolute; inset: -9px; }   /* a bigger target than it looks */
+.goal-bubble.active .gb-min, .goal-bubble.alongside .gb-min { display: none; }
 </style>
 
   <script>
@@ -1721,7 +1742,7 @@ var TIDE_SCHEMAS = {
     columns: [
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['title', 'Goal', 'text'], ['why', 'Why it matters', 'text'],
       ['x', 'Map across', 'number'], ['y', 'Map down', 'number'], ['links', 'Linked to', 'list'], ['parentId', 'Part of', 'text'],
-      ['rank', 'Importance', 'number'], ['status', 'Status', 'text'], ['steps', 'Plan steps', 'json'], ['topicId', 'Planned in talk', 'text'], ['targetOn', 'Aim to reach it by', 'day'], ['remindedTarget', 'Reminded of its day', 'day'],
+      ['rank', 'Importance', 'number'], ['status', 'Status', 'text'], ['steps', 'Plan steps', 'json'], ['topicId', 'Planned in talk', 'text'], ['targetOn', 'Aim to reach it by', 'day'], ['remindedTarget', 'Reminded of its day', 'day'], ['mini', 'Shrunk to a dot on the map', 'bool'],
       ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
@@ -3084,6 +3105,7 @@ function createTideLogic(env) {
       if ('parentId' in ch) out.parentId = ch.parentId && ch.parentId !== id && ids.indexOf(ch.parentId) >= 0 ? ch.parentId : '';
       if ('status' in ch) out.status = ch.status === 'Done' ? 'Done' : 'Open';
       if ('steps' in ch) out.steps = cleanSteps(ch.steps);
+      if ('mini' in ch) out.mini = ch.mini === true;
       if ('targetOn' in ch) { var tg = String(ch.targetOn || '').slice(0, 10); if (tg && !/^\d{4}-\d{2}-\d{2}$/.test(tg)) fail('That date doesn\u2019t look right.'); out.targetOn = tg; }
       env.table('goals').update(id, out);
       if (out.links) syncLinks(id, out.links);
@@ -3138,6 +3160,15 @@ function createTideLogic(env) {
       return { ok: true };
     });
   }
+  /** Shrinks goals on the map to dots (or opens them up again), several at once. */
+  function miniGoals(ids, on) {
+    need(['admin', 'artist']);
+    return env.lock(function () {
+      var have = goalList().map(function (g) { return g.id; });
+      list(ids).forEach(function (id) { if (have.indexOf(id) >= 0) env.table('goals').update(id, { mini: on === true }); });
+      return { ok: true };
+    });
+  }
   /** A day for one step of a goal (or none): it shows on the calendar, with a reminder the day before. */
   function setStepDay(goalId, stepId, day) {
     need(['admin', 'artist']);
@@ -3187,7 +3218,7 @@ function createTideLogic(env) {
       var steps = list(g.steps), next = steps.filter(function (s) { return !s.done; })[0];
       var tp = g.topicId ? rows('topics').filter(function (x) { return x.id === g.topicId && !x.deleted; })[0] : null;
       return { id: g.id, title: g.title, why: g.why || '', x: Number(g.x), y: Number(g.y), links: list(g.links), parentId: g.parentId || '', rank: Number(g.rank) || 0,
-        status: g.status || 'Open', steps: steps, next: next ? next.text : '', active: !!(top && top.id === g.id), targetOn: g.targetOn || '',
+        status: g.status || 'Open', steps: steps, next: next ? next.text : '', active: !!(top && top.id === g.id), targetOn: g.targetOn || '', mini: g.mini === true,
         alongside: !!(top && top.id !== g.id && togetherWith(top).some(function (o) { return o.id === g.id; })),
         group: groupOf(g).map(function (o) { return o.id; }),
         planning: tp ? { id: tp.id, status: tp.status } : null };
@@ -3665,7 +3696,7 @@ function createTideLogic(env) {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -6970,6 +7001,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-18-goal-map-full', on: '2026-11-18', to: 'artist', icon: 'open_in_full', title: 'Your goals map: full screen, and dots',
+    say: 'Open the goals map to the whole screen, and shrink any goal down to a dot to make room.',
+    steps: ['In Ideas › Goals, tap the corner button with two arrows to go full screen.', 'Tap “–” on a goal to shrink it to a dot. Tap the dot to open it again.', 'The button with two arrows pointing in shrinks every goal but the ones you’re on now.', 'Tap Done to come back.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gz', tip: 'Full screen and dots are here.' } },
   { id: '2026-11-18-menu-bubble', on: '2026-11-18', to: 'all', icon: 'apps', title: 'The menu is a bubble now',
     say: 'The bar along the bottom is now one round button, bottom left. It says where you are; tap it for every part of Tide Book.',
     steps: ['Tap the button in the bottom-left corner.', 'Tap where you want to go: Home, Posts, Artworks, Ideas, Calendar, Website, Money or Settings.', 'A red number means something is waiting there.', 'More of each page fits on your screen now.'],
@@ -9865,6 +9900,7 @@ var Kit = (function () {
     var first = pop.querySelector('.menu-item.here') || pop.querySelector('.menu-item'); if (first) first.focus({ preventScroll: true });
   }
   function go(view) {
+    if (S.mapFull) { S.mapFull = false; document.body.classList.remove('map-full'); try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {} }
     var from = NAV.map(function (n) { return n[0]; }).indexOf(S.view), to = NAV.map(function (n) { return n[0]; }).indexOf(view);
     S.view = view; S.animate = true;
     render();
@@ -13750,24 +13786,43 @@ var Kit = (function () {
   /** The map: goals as bubbles she drags about. Pinch (or the buttons) to zoom; drag an empty spot to move around.
    *  Drop one goal on another to work on them together, or to make it part of it. Lines show what goes with what. */
   var GZ = { s: 1, x: 0, y: 0 };
+  function goalMapFull(on) {
+    S.mapFull = !!on; GZ = null;
+    var de = document.documentElement;
+    try {
+      if (on && de.requestFullscreen && !document.fullscreenElement) de.requestFullscreen().catch(function () {});
+      if (!on && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+    } catch (e) { /* the phone keeps its bar: the map still fills the page */ }
+    render();
+    if (on) window.scrollTo(0, 0);
+  }
+  // leaving the phone's full screen (back gesture, Escape) brings the map back to its place too
+  document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && S.mapFull) { S.mapFull = false; render(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.mapFull && !K.openSheets()) goalMapFull(false); });
+  window.addEventListener('resize', function () { if (S.mapFull && S.view === 'ideas') render(); });
   function goalMap(main, goals) {
-    var H = Math.max(400, Math.min(560, window.innerHeight - 440));
-    var board = h('div', { class: 'goal-map', style: 'height:' + H + 'px' });
-    var world = h('div', { class: 'goal-world' });
+    // full screen: the whole phone for the map (and the browser's bar hidden too, where the phone allows it)
+    var full = !!S.mapFull;
+    var H = full ? window.innerHeight : Math.max(400, Math.min(560, window.innerHeight - 440));
+    // the goals sit on a canvas at least this tall; when the box is shorter, it starts zoomed out so every goal shows
+    var HW = Math.max(H, 60 + goals.length * 72, 520);
+    var board = h('div', { class: 'goal-map' + (full ? ' full' : ''), style: 'height:' + H + 'px' });
+    document.body.classList.toggle('map-full', full);
+    var world = h('div', { class: 'goal-world', style: 'height:' + HW + 'px;bottom:auto' });
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); world.appendChild(svg);
     board.appendChild(world);
     var els = {}, ghost = null, pinching = false;
     function W() { return board.clientWidth; }
     function paintZoom() {
-      var w = W(), lo = Math.min(0, w - w * GZ.s), hi = Math.max(0, w - w * GZ.s), lo2 = Math.min(0, H - H * GZ.s), hi2 = Math.max(0, H - H * GZ.s);
+      var w = W(), lo = Math.min(0, w - w * GZ.s), hi = Math.max(0, w - w * GZ.s), lo2 = Math.min(0, H - HW * GZ.s), hi2 = Math.max(0, H - HW * GZ.s);
       GZ.x = Math.max(lo - 40, Math.min(hi + 40, GZ.x)); GZ.y = Math.max(lo2 - 40, Math.min(hi2 + 40, GZ.y));
       world.style.transform = 'translate(' + GZ.x + 'px,' + GZ.y + 'px) scale(' + GZ.s + ')';
       zl.textContent = Math.round(GZ.s * 100) + '%';
     }
     function zoomAt(s, cx, cy) {         // cx, cy: a point on the board that stays still
-      s = Math.max(0.5, Math.min(2.5, s));
+      s = Math.max(0.3, Math.min(2.5, s));
       var wx = (cx - GZ.x) / GZ.s, wy = (cy - GZ.y) / GZ.s;
-      GZ.s = s; GZ.x = cx - wx * s; GZ.y = cy - wy * s; paintZoom();
+      GZ = { s: s, x: cx - wx * s, y: cy - wy * s }; paintZoom();
     }
     function lines() {
       svg.textContent = '';
@@ -13790,9 +13845,11 @@ var Kit = (function () {
       var w = W(), PAD = 8;
       if (!w) return;
       var R = goals.map(function (g) { var el = els[g.id]; return { g: g, el: el, w: el.offsetWidth, h: el.offsetHeight, x: el.offsetLeft, y: el.offsetTop, fixed: g.id === keep }; });
-      function inside(r) { r.x = Math.max(PAD, Math.min(w - r.w - PAD, r.x)); r.y = Math.max(PAD, Math.min(H - r.h - PAD, r.y)); }
+      // clear of the bar along the top (full screen) and the zoom buttons along the bottom
+      var TOP = full ? 72 : PAD, BOTTOM = 62;
+      function inside(r) { r.x = Math.max(PAD, Math.min(w - r.w - PAD, r.x)); r.y = Math.max(TOP, Math.min(HW - r.h - BOTTOM, r.y)); }
       R.forEach(inside);
-      for (var it = 0; it < 80; it++) {
+      for (var it = 0; it < 200; it++) {
         var moved = false;
         for (var i = 0; i < R.length; i++) for (var j = i + 1; j < R.length; j++) {
           var a = R[i], b = R[j];
@@ -13806,9 +13863,25 @@ var Kit = (function () {
         R.forEach(inside);
         if (!moved) break;
       }
+      // still crowded (a narrow phone, many goals): anything still overlapping moves to the nearest free spot
+      function hits(a, list) { return list.some(function (b) { return b !== a && a.x < b.x + b.w + PAD && b.x < a.x + a.w + PAD && a.y < b.y + b.h + PAD && b.y < a.y + a.h + PAD; }); }
+      var placed = [];
+      R.slice().sort(function (a, b) { return (b.fixed - a.fixed) || (a.y - b.y); }).forEach(function (r) {
+        if (hits(r, placed)) {
+          var best = null, bd = Infinity;
+          for (var yy = TOP; yy <= HW - r.h - BOTTOM; yy += 10) for (var xx = PAD; xx <= w - r.w - PAD; xx += 14) {
+            var c = { x: xx, y: yy, w: r.w, h: r.h };
+            if (hits(c, placed)) continue;
+            var dd = Math.abs(xx - r.x) + Math.abs(yy - r.y);
+            if (dd < bd) { bd = dd; best = c; }
+          }
+          if (best) { r.x = best.x; r.y = best.y; }
+        }
+        placed.push(r);
+      });
       R.forEach(function (r) {
         r.el.style.left = r.x + 'px'; r.el.style.top = r.y + 'px';
-        var nx = r.x / w, ny = r.y / H;
+        var nx = r.x / w, ny = r.y / HW;
         if (Math.abs(nx - r.g.x) > 0.015 || Math.abs(ny - r.g.y) > 0.015) { r.g.x = nx; r.g.y = ny; api('updateGoal', r.g.id, { x: nx, y: ny }).catch(function () {}); }
       });
       lines();
@@ -13840,10 +13913,20 @@ var Kit = (function () {
     }
     goals.forEach(function (g) {
       var nd = g.steps.filter(function (s) { return s.done; }).length, isDone = g.status === 'Done';
-      var el = h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (g.alongside ? ' alongside' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
+      // shrunk to a dot: just its number, in its colour; a tap opens it up again
+      var el = g.mini
+        ? h('div', { class: 'goal-bubble dot' + (g.active ? ' active' : '') + (g.alongside ? ' alongside' : '') + (isDone ? ' done' : ''), role: 'button', tabindex: '0', 'aria-label': g.title + '. Shrunk to a dot: tap to open it up', title: g.title, style: '--gc:' + goalColour(g.id) },
+            isDone ? icon('check') : h('span', { text: g.parentId ? '•' : String(g.rank) }))
+        : h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (g.alongside ? ' alongside' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
         g.parentId ? null : isDone ? h('span', { class: 'gb-rank' }, icon('check')) : h('span', { class: 'gb-rank', text: String(g.rank) }),
         h('span', { class: 'gb-main' }, g.active || g.alongside ? h('span', { class: 'gb-now' }, g.alongside ? icon('link') : null, g.alongside ? 'Now, together' : 'Now') : null, h('span', { class: 'gb-t', text: g.title }),
-          h('span', { class: 'gb-s', text: isDone ? 'Reached' : g.steps.length ? nd + ' of ' + g.steps.length + ' steps' : 'No plan yet' })));
+          h('span', { class: 'gb-s', text: isDone ? 'Reached' : g.steps.length ? nd + ' of ' + g.steps.length + ' steps' : 'No plan yet' })),
+        h('button', { type: 'button', class: 'gb-min', 'aria-label': 'Shrink to a dot', title: 'Shrink to a dot' }, icon('remove')));
+      var minB = el.querySelector('.gb-min');
+      if (minB) {
+        minB.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+        minB.addEventListener('click', function (e) { e.stopPropagation(); K.haptic(); g.mini = true; api('updateGoal', g.id, { mini: true }).then(refresh).then(function () { render(); }).catch(fail); });
+      }
       el.style.left = (g.x * 100) + '%'; el.style.top = (g.y * 100) + '%';
       els[g.id] = el; world.appendChild(el);
       var sx = 0, sy = 0, ox = 0, oy = 0, moved = false, down = false;
@@ -13853,7 +13936,7 @@ var Kit = (function () {
         var dx = (e.clientX - sx) / GZ.s, dy = (e.clientY - sy) / GZ.s;
         if (!moved && Math.abs(dx) + Math.abs(dy) < 8) return;
         if (!moved) { moved = true; el.classList.add('lifted'); K.haptic(); }
-        var x = Math.max(0, Math.min(W() - el.offsetWidth, ox + dx)), y = Math.max(0, Math.min(H - el.offsetHeight, oy + dy));
+        var x = Math.max(0, Math.min(W() - el.offsetWidth, ox + dx)), y = Math.max(0, Math.min(HW - el.offsetHeight, oy + dy));
         el.style.left = x + 'px'; el.style.top = y + 'px'; lines();
         // over another goal: it lights up, ready to be dropped on
         var over = overOf(g, x + el.offsetWidth / 2, y + el.offsetHeight / 2);
@@ -13863,7 +13946,10 @@ var Kit = (function () {
         untrack(e);
         if (!down) return; down = false;
         if (pinching) { el.style.left = ox + 'px'; el.style.top = oy + 'px'; el.classList.remove('lifted'); lines(); return; }
-        if (!moved) { openGoal(g.id); return; }
+        if (!moved) {
+          if (g.mini) { K.haptic(); api('updateGoal', g.id, { mini: false }).then(refresh).then(function () { render(); }).catch(fail); return; }
+          openGoal(g.id); return;
+        }
         el.classList.remove('lifted');
         var over = overOf(g, el.offsetLeft + el.offsetWidth / 2, el.offsetTop + el.offsetHeight / 2);
         goals.forEach(function (o) { els[o.id].classList.remove('target'); });
@@ -13902,18 +13988,18 @@ var Kit = (function () {
       if (pin) {
         var k = Object.keys(ptrs); if (k.length < 2) return;
         var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect();
-        var s = Math.max(0.5, Math.min(2.5, pin.s * Math.hypot(a.x - b.x, a.y - b.y) / pin.d));
+        var s = Math.max(0.3, Math.min(2.5, pin.s * Math.hypot(a.x - b.x, a.y - b.y) / pin.d));
         var mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
         var wx = (pin.mx - pin.gx) / pin.s, wy = (pin.my - pin.gy) / pin.s;
-        GZ.s = s; GZ.x = mx - wx * s; GZ.y = my - wy * s; paintZoom();
+        GZ = { s: s, x: mx - wx * s, y: my - wy * s }; paintZoom();
         return;
       }
       if (!pan) return;
       var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
       if (!pan.moved && Math.abs(dx) + Math.abs(dy) < 6) return;
       pan.moved = true;
-      if (GZ.s === 1 && Math.abs(dy) > Math.abs(dx)) window.scrollTo(0, pan.sy - dy);   // at 100%, up and down scroll the page
-      else { GZ.x = pan.gx + dx; GZ.y = pan.gy + dy; paintZoom(); }
+      if ((GZ.s === 1 || GZ.fit) && Math.abs(dy) > Math.abs(dx)) window.scrollTo(0, pan.sy - dy);   // until she zooms, up and down scroll the page
+      else { GZ = { s: GZ.s, x: pan.gx + dx, y: pan.gy + dy }; paintZoom(); }
     });
     function endPan(e) { untrack(e); if (pan && pan.moved) board.dataset.panned = '1'; pan = null; }
     board.addEventListener('pointerup', endPan); board.addEventListener('pointercancel', endPan);
@@ -13928,14 +14014,14 @@ var Kit = (function () {
       if (e.target !== board && e.target !== world && e.target !== svg) return;
       var r = board.getBoundingClientRect();
       var wx = (e.clientX - r.left - GZ.x) / GZ.s, wy = (e.clientY - r.top - GZ.y) / GZ.s;
-      if (wx < 0 || wy < 0 || wx > W() || wy > H) return;
+      if (wx < 0 || wy < 0 || wx > W() || wy > HW) return;
       if (ghost) ghost.remove();
       var mine = ghost = h('button', { type: 'button', class: 'goal-ghost' }, icon('add'), 'Add a goal here');
       world.appendChild(mine);
-      var gx = Math.max(8, Math.min(W() - mine.offsetWidth - 8, wx - mine.offsetWidth / 2)), gy = Math.max(8, Math.min(H - mine.offsetHeight - 8, wy - mine.offsetHeight / 2));
+      var gx = Math.max(8, Math.min(W() - mine.offsetWidth - 8, wx - mine.offsetWidth / 2)), gy = Math.max(8, Math.min(HW - mine.offsetHeight - 8, wy - mine.offsetHeight / 2));
       mine.style.left = gx + 'px'; mine.style.top = gy + 'px';
       mine.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });
-      mine.addEventListener('click', function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: gx / W(), y: gy / H }); });
+      mine.addEventListener('click', function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: gx / W(), y: gy / HW }); });
       setTimeout(function () { if (ghost === mine) { mine.remove(); ghost = null; } }, 5000);
     });
     // zoom buttons, for one hand or a mouse
@@ -13944,11 +14030,28 @@ var Kit = (function () {
     board.appendChild(h('div', { class: 'gz' },
       zb('zoom_out', 'Zoom out', function () { zoomAt(GZ.s / 1.25, W() / 2, H / 2); }), zl,
       zb('zoom_in', 'Zoom in', function () { zoomAt(GZ.s * 1.25, W() / 2, H / 2); }),
-      zb('fit_screen', 'Show the whole map', function () { GZ = { s: 1, x: 0, y: 0 }; paintZoom(); })));
+      zb('fit_screen', 'Show the whole map', function () { GZ = fitZoom(); paintZoom(); }),
+      (function () {
+        // everything but the goals being worked on now: down to dots, or all open again
+        var rest = goals.filter(function (g) { return !g.active && !g.alongside; }), anyOpen = rest.some(function (g) { return !g.mini; });
+        if (!rest.length) return null;
+        return zb(anyOpen ? 'unfold_less' : 'unfold_more', anyOpen ? 'Shrink the others to dots' : 'Open every goal up', function () {
+          api('miniGoals', anyOpen ? rest.map(function (g) { return g.id; }) : goals.map(function (g) { return g.id; }), anyOpen).then(refresh).then(function () { render(); toast(anyOpen ? 'The others are dots now. Tap one to open it.' : 'Every goal is open again.'); }).catch(fail);
+        });
+      })(),
+      full ? null : zb('open_in_full', 'Full screen', function () { goalMapFull(true); })));
+    if (full) {
+      board.appendChild(h('div', { class: 'gm-full-bar' },
+        h('span', { class: 'gm-full-t', text: 'Your goals' }),
+        btn('tonal', 'Add a goal', { sm: true, icon: 'add', onclick: function () { addGoalAsk(null); } }),
+        btn('filled', 'Done', { sm: true, icon: 'close_fullscreen', onclick: function () { goalMapFull(false); } })));
+    }
     main.appendChild(rise(board, 2));
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Drop one on another to work on them together. Pinch to zoom. Tap an empty spot to add a goal there.' }));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Drop one on another to work on them together. “–” shrinks a goal to a dot; tap the dot to open it. Pinch to zoom.' }));
+    function fitZoom() { var f = Math.min(1, (H - 8) / HW); return { s: f, x: (W() - W() * f) / 2, y: 0, fit: true }; }
+    if (!GZ || GZ.fit || (GZ.s === 1 && !GZ.x && !GZ.y)) GZ = fitZoom();
     paintZoom();
-    setTimeout(function () { makeRoom(); paintZoom(); }, 0); setTimeout(function () { makeRoom(); }, 450);
+    setTimeout(function () { if (GZ.fit) GZ = fitZoom(); makeRoom(); paintZoom(); }, 0); setTimeout(function () { makeRoom(); }, 450);
   }
 
   // ------------------------------------------------------------------ the calendar: month and week, built around her goals
