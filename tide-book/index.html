@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,print,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1417,6 +1417,13 @@ body.map-full { overflow: hidden; }
 .who-makes { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
 .who-row { display: flex; gap: 10px; align-items: flex-start; font: 400 14px/20px var(--font); }
 .who-row .ms { color: var(--primary); flex: none; }
+/* Orders › Ready to sell */
+.ready-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-top: 1px solid var(--outline-variant); }
+.ready-row .grow { display: flex; flex-direction: column; gap: 2px; }
+.ready-row .body-s { color: var(--on-surface-variant); }
+.ready-ic { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 12px; background: var(--surface-high); color: var(--primary); }
+.ready-row.done .ready-ic { background: var(--secondary-container); color: var(--on-secondary-container); }
+.ready-row.done b { color: var(--on-surface-variant); font-weight: 500; }
 </style>
 
   <script>
@@ -1576,7 +1583,7 @@ var TIDE_SETTING_DEFAULTS = {
   sitePublishedAt: '',      // when the website was last published from Tide Book
   sitePublishedSig: '',     // what the shop looked like then, to tell when it has changes that aren't on the website yet
   siteDomain: '', siteDomainOn: false, siteDomainCheck: '',  // her own web address (LogicSite.gs): the name, in use or not, the last check
-  shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true,  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
+  shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false,  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
   seriesExtra: ''           // series she added herself, each with a line about it (JSON): each becomes a page on her website
 };
 
@@ -2648,7 +2655,7 @@ function createTideLogic(env) {
     return { at: nowIso(), artworks: art.filter(function (a) { return a.products.length; }),
       keeps: art.filter(function (a) { return !a.products.length; }), edits: lay.edits, editFiles: lay.editFiles,
       series: seriesInfo(), shop: { url: env.site && env.site.shopUrl ? env.site.shopUrl(which === 'draft') : '', countries: shop.COUNTRIES, auStates: shop.AU_STATES, needsState: shop.NEEDS_STATE,
-        freeOverAU: shop.snapshot('admin').rates.freeOverAU } };
+        freeOverAU: shop.rates().freeOverAU } };
   }
 
   // ---------- money
@@ -3174,7 +3181,7 @@ function createTideLogic(env) {
   var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push });
   // ---------- the website's shop: checkout, orders and their parcels (LogicShop.gs)
   var shop = tideShop(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push,
-    siteData: function (w) { return siteData(w); }, recordSales: function (s) { var r = recordOnlineSales(s, 'website'); publishFeed(); return r; }, recordExpense: recordShopExpense });
+    siteData: function (w) { return siteData(w); }, shopPending: function () { return shopPending(); }, recordSales: function (s) { var r = recordOnlineSales(s, 'website'); publishFeed(); return r; }, recordExpense: recordShopExpense });
   var siteEditor = tideSiteEditor(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push, publishWebsite: function () { return publishWebsite(); }, shopPending: function () { return shopPending(); }, markPublished: function () { env.settings.set({ sitePublishedSig: shopSig() }); },
     liveArtworks: function () { return rows('prints').filter(function (pr) { return pr.status === 'Live' && list(pr.photoIds).length; }).length; } });
 
@@ -7278,6 +7285,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-ready-to-sell', on: '2026-11-19', to: 'all', icon: 'storefront', title: 'Ready to sell: a checklist in Orders',
+    say: 'Everything your website needs before its first sale is in one list, with the button for each step right there.',
+    steps: ['Open the menu (bottom left) and tap Orders.', 'Work down “Ready to sell”: Stripe (for payments), Printful (for the bigger prints), your postage, then your first artwork on your website.', 'Each step has its own button. A tick means it’s done.', 'When every step is ticked, the list goes and your shop is open.'],
+    go: { view: 'orders', find: '.ready-card', tip: 'Your steps to the first sale.' } },
   { id: '2026-11-19-art-to-door', on: '2026-11-19', to: 'all', icon: 'local_shipping', title: 'From your painting to the buyer’s door',
     say: 'Add an artwork once, and it goes on your website in its series and in the living gallery, as prints and as the original. When someone buys, it comes to Orders, with what to post and what Printful is making.',
     steps: ['In Artworks, tap “Add an artwork”: photos, its title and story, and the series it belongs to. “A new series…” makes a new page on your website for it.',
@@ -7410,7 +7421,7 @@ function tideSetup(env, t) {
       { key: 'buzzes', title: 'Phone buzzes', done: !!st.notifyAdmin, required: false, text: 'Hear when questions are answered or something needs you.' },
       { key: 'pc', title: 'The PC helper', done: !!st.localSeenAt, required: false, text: env.site ? (st.localSeenAt ? 'Running on this PC: it starts with Tide Book, and everyday AI jobs go to its free model first.' : 'It starts with Tide Book on this PC. If this stays unticked, check Ollama is running.') : 'Everyday AI jobs on the PC’s own models first (free).' },
       { key: 'backup', title: 'Local backup', done: !!st.lastBackupAt, required: false, text: env.site ? 'Your records live on this PC. Each day Tide Book also keeps a dated copy (the last 30 days), so a mistake can be undone. For a disaster copy, save the Tide Book Data folder to another drive or cloud now and then.' : 'Money and customer records copied to the PC daily.' },
-      { key: 'stripe', title: 'Taking payment', done: on(st.stripeDone), required: false, text: 'Stripe payment links for the first products.' }
+      { key: 'stripe', title: 'Taking payment', done: on(st.stripeDone), required: false, text: 'Stripe, for the website’s checkout: Orders › Ready to sell.' }
     ];
     return { role: role, steps: steps, people: people, done: steps.filter(function (x) { return x.required && !x.done; }).length === 0 };
   }
@@ -8736,18 +8747,34 @@ function tideShop(env, t) {
     if (p.rates) { var cur = rates(), r = p.rates; ch.shopRates = JSON.stringify({ self: Object.assign({}, cur.self, r.self || {}), original: Object.assign({}, cur.original, r.original || {}), freeOverAU: r.freeOverAU != null ? r.freeOverAU : cur.freeOverAU }); }
     if (p.selfSizes) ch.shopSelfSizes = t.list(p.selfSizes).map(function (s) { return t.text(s, 20); }).filter(String).slice(0, 12);
     if ('printfulAuto' in p) ch.shopPrintfulAuto = p.printfulAuto === true;
+    if (p.rates) ch.shopRatesChecked = true;
     env.settings.set(ch);
     return { ok: true };
   }
-  function linkStripe(key) { t.need(['admin']); if (!env.stripe) t.fail('Stripe works on the PC version of Tide Book.'); return env.stripe.link(key); }
-  function unlinkStripe() { t.need(['admin']); if (env.stripe) env.stripe.unlink(); return { ok: true }; }
+  // her Stripe account: hers to link (or the admin's, for her)
+  function linkStripe(key) {
+    var role = t.need(['admin', 'artist']);
+    if (!env.stripe) t.fail('Stripe works on the PC version of Tide Book.');
+    var r = env.stripe.link(key);
+    env.settings.set({ stripeDone: true });
+    if (role === 'artist' && t.push) t.push('admin', 'Denise linked Stripe', r.mode === 'test' ? 'In test mode: checkouts are pretend until a live key is linked.' : 'Checkout is open on her website.');
+    return r;
+  }
+  function unlinkStripe() { t.need(['admin', 'artist']); if (env.stripe) env.stripe.unlink(); return { ok: true }; }
+  /** Ready to sell? Each step, done or not, so Orders can show what's left and the button for it. */
+  function readiness() {
+    var s = st(), live = t.rows('prints').filter(function (p) { return p.status === 'Live' && t.list(p.photoIds).length; }).length;
+    var stripe = env.stripe ? { linked: env.stripe.linked(), mode: env.stripe.mode() } : { linked: false, mode: '' };
+    return { stripe: stripe.linked, stripeLive: stripe.mode === 'live', printful: !!(env.printful && env.printful.linked()), rates: s.shopRatesChecked === true,
+      artworks: live, published: live > 0 && !!s.sitePublishedAt && !(t.shopPending && t.shopPending()), reach: !!(env.site && env.site.shopUrl && env.site.shopUrl(false)) };
+  }
   function snapshot(role) {
     if (role !== 'admin' && role !== 'artist') return null;
     var orders = t.rows('orders').slice().sort(function (a, b) { return a.created < b.created ? 1 : -1; }).slice(0, 200);
     var todo = 0; orders.forEach(function (o) { t.list(o.parts).forEach(function (p) { if (/^(To post|To send|Needs you|Needs your OK)$/.test(p.status)) todo++; }); });
     var o = open();
     return { orders: orders, todo: todo, rates: rates(), selfSizes: selfSizes(), printfulAuto: printfulAuto(), stripe: env.stripe ? { linked: env.stripe.linked(), mode: env.stripe.mode(), name: env.stripe.name() } : null,
-      open: o.open, why: o.why || '', zones: X.ZONE_NAMES, carriers: Object.keys(CARRIERS) };
+      open: o.open, why: o.why || '', zones: X.ZONE_NAMES, carriers: Object.keys(CARRIERS), ready: readiness() };
   }
   /** The pages allowed to ask for prices and checkouts: her website (both addresses), plus what the PC adds (its preview). */
   function origins(extra) {
@@ -8757,7 +8784,7 @@ function tideShop(env, t) {
     if (s.siteDomain) { ['https://', 'http://'].forEach(function (p) { add(p + s.siteDomain + '/'); add(p + 'www.' + s.siteDomain + '/'); }); }
     return out;
   }
-  return { quote: quote, siteQuote: siteQuote, origins: origins, open: open, startCheckout: startCheckout, sync: sync, thanks: thanks, snapshot: snapshot, selfSize: selfSize, COUNTRIES: X.COUNTRIES, AU_STATES: X.AU_STATES, NEEDS_STATE: X.NEEDS_STATE,
+  return { quote: quote, siteQuote: siteQuote, origins: origins, rates: rates, open: open, startCheckout: startCheckout, sync: sync, thanks: thanks, snapshot: snapshot, selfSize: selfSize, COUNTRIES: X.COUNTRIES, AU_STATES: X.AU_STATES, NEEDS_STATE: X.NEEDS_STATE,
     api: { checkShop: function () { t.need(['admin']); return sync(); }, shopSiteData: function (w) { t.need(['admin']); return t.siteData(w === 'draft' ? 'draft' : 'live'); }, markPosted: markPosted, undoPosted: undoPosted, retryPrintful: retryPrintful, orderNote: orderNote, saveShopSettings: saveShopSettings, linkStripe: linkStripe, unlinkStripe: unlinkStripe } };
 }
 
@@ -10948,11 +10975,14 @@ var Kit = (function () {
   function viewOrders(main) {
     var SH = shopData();
     pageTitle(main, 'Orders', 'From your website to the buyer’s door: what to post, what Printful is making, and where each one is.');
-    if (!SH.open || !(S.data.website || {}).checkout) {
+    var RD = SH.ready || {};
+    var readyAll = RD.stripe && RD.stripeLive && RD.printful && RD.rates && RD.published && RD.reach;
+    if (!readyAll) main.appendChild(rise(readyCard(RD), 1));
+    if (false) {
       var why = !SH.stripe || !SH.stripe.linked ? (ADMIN ? 'Link Stripe to open checkout: buyers pay on Stripe’s own page, and paid orders land here by themselves.' : adminName() + ' is setting up the payments. Until then your website’s Check out button says it opens soon.')
         : !SH.open ? SH.why : (ADMIN ? 'Checkout works from the preview. The published website needs its public address set (shopUrl in the PC’s config) to reach checkout.' : 'Checkout is nearly ready: ' + adminName() + ' has one last step to do.');
       var box = h('div', { class: 'card pad', style: 'margin-bottom:14px' }, h('div', { class: 'title-m', text: 'Checkout isn’t open yet' }), h('p', { class: 'body-m', style: 'margin:6px 0 10px', text: why }));
-      if (ADMIN) box.appendChild(btn(SH.stripe && SH.stripe.linked ? 'outlined' : 'filled', SH.stripe && SH.stripe.linked ? 'Stripe: ' + SH.stripe.name + (SH.stripe.mode === 'test' ? ' (test)' : '') : 'Link Stripe', { sm: true, icon: 'credit_card', onclick: openStripeLink }));
+      if (false) box.appendChild(btn(SH.stripe && SH.stripe.linked ? 'outlined' : 'filled', SH.stripe && SH.stripe.linked ? 'Stripe: ' + SH.stripe.name + (SH.stripe.mode === 'test' ? ' (test)' : '') : 'Link Stripe', { sm: true, icon: 'credit_card', onclick: openStripeLink }));
       main.appendChild(rise(box, 1));
     } else if (SH.stripe && SH.stripe.mode === 'test') main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('Stripe is in test mode: checkouts are pretend, with Stripe’s test cards.', 'science', 'warn')), 1));
     var orders = SH.orders || [], tab = S.orderTab || (orders.some(function (o) { return orderState(o) === 'todo'; }) ? 'todo' : 'way');
@@ -10969,6 +10999,30 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-top:18px' }, h('div', { class: 'title-m', text: 'Postage at checkout' }),
       h('p', { class: 'body-m', style: 'margin:6px 0 10px;color:var(--on-surface-variant)', text: 'Your parcels (' + (SH.selfSizes || []).join(', ') + ' prints, cards and anything from stock): $' + R.self.AU + ' in Australia, free over $' + R.freeOverAU + '; $' + R.self.NZ + ' to New Zealand; $' + R.self.WORLD + ' elsewhere. Originals, insured: $' + R.original.AU + ' / $' + R.original.NZ + ' / $' + R.original.WORLD + '. Bigger prints: what Printful charges for that order.' }),
       btn('tonal', 'Change postage', { sm: true, icon: 'tune', onclick: openShopSettings })), 4));
+  }
+  /** Ready to sell: each step to the first sale, ticked when done, with its button right there. */
+  function readyCard(RD) {
+    var steps = [
+      { done: RD.stripe && RD.stripeLive, part: RD.stripe && !RD.stripeLive, ic: 'credit_card', t: 'Payments, through Stripe',
+        line: !RD.stripe ? 'Buyers pay on Stripe’s own secure page, and the money goes to your bank. Set up a free account, then link it here.' : 'Linked in test mode: checkouts are pretend. Link your live key when you’re ready to take real money.',
+        b: RD.stripe ? 'Link the live key' : 'Set up Stripe', go: openStripeLink },
+      { done: RD.printful, ic: 'local_shipping', t: 'Printful, for prints A3 and bigger', line: 'Printful prints and posts the bigger sizes for you. Link your Printful account (it’s free).', b: 'Link Printful',
+        go: function () { openPrintfulLink(function () { refresh().then(render); }); } },
+      { done: RD.rates, ic: 'package_2', t: 'Your postage', line: 'Check the rates for the parcels you post, against Australia Post’s prices.', b: 'Check postage', go: openShopSettings },
+      { done: RD.published, ic: 'palette', t: 'Your first artwork on your website', line: !RD.artworks ? 'Add an artwork with its photos, sizes and prices, then Launch it.' : 'Publish your website so your shop shows it.',
+        b: !RD.artworks ? 'Add an artwork' : 'Publish your website', go: !RD.artworks ? function () { go('prints'); setTimeout(function () { openPrint(null); }, 350); } : publishSite }
+    ];
+    if (ADMIN || !RD.reach) steps.push({ done: RD.reach, ic: 'public', t: 'Checkout reachable from the website', line: RD.reach ? 'Done.' : ADMIN ? 'The PC needs a public address for the shop (shopUrl in its config).' : adminName() + ' has this one.', b: '', go: null });
+    var left = steps.filter(function (s) { return !s.done; }).length;
+    var card = h('div', { class: 'card pad ready-card', style: 'margin-bottom:14px' }, h('div', { class: 'title-m', text: 'Ready to sell' }),
+      h('p', { class: 'body-s', style: 'margin:2px 0 10px;color:var(--on-surface-variant)', text: left ? left + ' step' + (left === 1 ? '' : 's') + ' to your first sale.' : 'All done: your shop is open.' }));
+    steps.forEach(function (s) {
+      var row = h('div', { class: 'ready-row' + (s.done ? ' done' : '') }, h('span', { class: 'ready-ic' }, icon(s.done ? 'check_circle' : s.ic, s.done)),
+        h('span', { class: 'grow' }, h('b', { text: s.t }), s.done ? null : h('span', { class: 'body-s', text: s.line })));
+      if (!s.done && s.b && s.go) row.querySelector('.grow').appendChild(h('div', { style: 'margin-top:8px' }, btn(s.part ? 'outlined' : 'tonal', s.b, { sm: true, onclick: s.go })));
+      card.appendChild(row);
+    });
+    return card;
   }
   function openShopSettings() {
     var SH = shopData(), R = JSON.parse(JSON.stringify(SH.rates)), sizes = (SH.selfSizes || []).slice(), auto = SH.printfulAuto !== false;
@@ -11008,12 +11062,17 @@ var Kit = (function () {
       title: 'Stripe', tall: true,
       build: function (ctl) {
         var B = ctl.body;
-        if (SH.stripe && SH.stripe.linked) {
+        if (SH.stripe && SH.stripe.linked && SH.stripe.mode === 'live') {
           B.appendChild(note('Linked: ' + SH.stripe.name + (SH.stripe.mode === 'test' ? ' (test mode)' : ''), 'check_circle', 'good'));
           ctl.foot.appendChild(btn('text', 'Unlink Stripe', { icon: 'link_off', onclick: function (e) { K.setBusy(e.currentTarget, true); api('unlinkStripe').then(refresh).then(function () { ctl.close(); render(); }).catch(fail); } }));
           return;
         }
-        B.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'In Stripe: Developers › API keys › Secret key. Copy it and paste it here. It’s kept on this PC and never shown again. A test key (sk_test_…) makes pretend checkouts to try it first.' }));
+        if (!(SH.stripe && SH.stripe.linked)) B.append(h('div', { class: 'title-s dom-step', text: '1. Make your Stripe account (free)' }),
+          h('p', { class: 'body-m', style: 'margin:4px 0 8px', text: 'Have ready: photo ID, your bank account for the money, and your ABN if you have one. Choose “Individual / sole trader”. Stripe charges 1.65% + 30c a sale, nothing else.' }),
+          h('a', { class: 'btn tonal press', href: 'https://dashboard.stripe.com/register', target: '_blank', rel: 'noopener', style: 'margin-bottom:10px' }, icon('open_in_new'), h('span', { text: 'Open Stripe’s sign-up' })),
+          h('p', { class: 'tf-help', text: 'Once it’s set up, in Stripe’s settings turn on email receipts, so buyers get one.' }));
+        B.append(h('div', { class: 'title-s dom-step', style: 'margin-top:14px', text: (SH.stripe && SH.stripe.linked ? '' : '2. ') + 'Link it to Tide Book' }),
+          h('p', { class: 'body-m', style: 'margin:4px 0 12px', text: 'In Stripe, open Developers, then API keys. Copy the Secret key (it starts sk_live_) and paste it here. It stays on this PC and isn’t shown again. To try it first with pretend payments, use the test key (sk_test_).' }));
         var k = K.textField({ label: 'Secret key', value: '', autocomplete: 'off', onInput: function () {} });
         B.appendChild(k);
         var go = btn('filled', 'Link it', { icon: 'link', lg: true, block: true, onclick: function () {
