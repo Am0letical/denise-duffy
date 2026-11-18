@@ -1562,6 +1562,14 @@ var TIDE_SETTING_DEFAULTS = {
  * day (calendar date), list (comma separated), json.
  */
 var TIDE_SCHEMAS = {
+  // her own things on the calendar: a few words on a day (RP-0003). Only the person who wrote one sees it.
+  days: {
+    sheet: 'Calendar Own',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['by', 'By', 'text'], ['day', 'Day', 'day'], ['text', 'What', 'text'], ['goalId', 'Goal', 'text'],
+      ['done', 'Done', 'bool'], ['reminded', 'Reminded for', 'text'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
   siteasks: {
     sheet: 'Website Asks',
     columns: [
@@ -3010,7 +3018,7 @@ function createTideLogic(env) {
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
-      plan: planState(), goals: goalSnapshot(), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
+      plan: planState(), goals: goalSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -3243,6 +3251,40 @@ function createTideLogic(env) {
     });
   }
   /** A day for one step of a goal (or none): it shows on the calendar, with a reminder the day before. */
+  // ---------- her own things on the calendar: a few words on a day, ticked off when done. Hers alone.
+  function ownDays(role) {
+    return rows('days').filter(function (d) { return d.deleted !== true && d.by === role; })
+      .map(function (d) { return { id: d.id, day: d.day, text: d.text, goalId: d.goalId || '', done: d.done === true }; });
+  }
+  function saveOwnDay(id, p) {
+    var role = need(['admin', 'artist']);
+    p = p || {};
+    return env.lock(function () {
+      var now = nowIso(), old = id ? find('days', id) : null, out = { updated: now };
+      if (old && old.by !== role) fail('That one isn’t yours to change.');
+      if (!old || 'text' in p) { out.text = text(p.text, 200); if (!out.text) fail('Say what it is first.'); }
+      if (!old || 'day' in p) {
+        out.day = String(p.day || '').slice(0, 10);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(out.day)) fail('Pick a day first.');
+        if (!old || old.day !== out.day) out.reminded = '';
+      }
+      if ('goalId' in p) out.goalId = p.goalId && goalList().some(function (g) { return g.id === p.goalId; }) ? String(p.goalId) : '';
+      if ('done' in p) out.done = p.done === true;
+      if (old) { env.table('days').update(id, out); return { id: id }; }
+      var nid = env.nextId('DY', 4);
+      env.table('days').append(Object.assign({ id: nid, created: now, by: role, goalId: '', done: false, reminded: '', deleted: false }, out));
+      return { id: nid };
+    });
+  }
+  function deleteOwnDay(id) {
+    var role = need(['admin', 'artist']);
+    return env.lock(function () {
+      var d = find('days', id);
+      if (d.by !== role) fail('That one isn’t yours to change.');
+      env.table('days').update(id, { deleted: true, updated: nowIso() });
+      return { ok: true };
+    });
+  }
   function setStepDay(goalId, stepId, day) {
     need(['admin', 'artist']);
     day = String(day || '').slice(0, 10);
@@ -3632,6 +3674,14 @@ function createTideLogic(env) {
         if (changed) env.table('goals').update(g.id, { steps: steps });
       });
     });
+    // her own things: a nudge the day before, and on the day
+    env.lock(function () {
+      rows('days').forEach(function (d) {
+        if (d.deleted === true || d.done === true || d.by !== 'artist') return;
+        if (d.day === today && d.reminded !== 'on') { env.table('days').update(d.id, { reminded: 'on' }); woke.push(['Today: ' + d.text, 'On your calendar for today.']); }
+        else if (d.day === tomorrow && !d.reminded) { env.table('days').update(d.id, { reminded: 'before' }); woke.push(['Tomorrow: ' + d.text, 'On your calendar for tomorrow.']); }
+      });
+    });
     var more = talk.wakePaused ? talk.wakePaused(today, tomorrow) : [];
     woke.concat(more).forEach(function (w) { try { publish.push('artist', w[0], w[1]); } catch (e) {} });
     return { woke: woke.length + more.length };
@@ -3743,7 +3793,7 @@ function createTideLogic(env) {
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
   var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], post: ['content', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
-    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
     var b = BIN[kind];
@@ -3769,7 +3819,7 @@ function createTideLogic(env) {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -7102,6 +7152,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-18-calendar-own', on: '2026-11-18', to: 'artist', icon: 'event', title: 'Add your own things to the calendar',
+    say: 'You asked for this: anything of your own can go on a day now, like chasing up the photographer about prints.',
+    steps: ['Open the menu (bottom left) and tap Calendar.', 'Tap a day, then “Add”, then “Your own thing”.', 'Write it in a few words. If it’s for one of your goals, tap the goal and it takes that goal’s colour.', 'Tap it later to tick it off, move it or remove it. You get a nudge the day before and on the day.'],
+    go: { view: 'calendar', state: { calMode: 'month' }, find: '.cal-panel-h .btn', tip: 'Tap Add to put your own thing on this day.' } },
   { id: '2026-11-18-idea-to-website', on: '2026-11-18', to: 'artist', icon: 'storefront', title: 'From an idea all the way to your website',
     say: 'A product no longer stops at “on sale”. Tide Book makes its page for your website, you add a photo, and one tap publishes it.',
     steps: ['On an idea, open “Take it further” and tap “Make it a product”. It joins Ideas › Products.', 'Tap the step at the top of the product each time. Tide Book does what it can; you say go.', 'When the words are OK’d, its shop page is made for you from the listing and the price. Tap “Add the photo”.', 'Tap “Put it in your shop”, then “Publish now”. “Look at it first” shows your website with it on.', 'Home and the Website tab say when your shop has changes that aren’t on your website yet.'],
@@ -14245,6 +14299,10 @@ var Kit = (function () {
       if (c.start) out.push({ day: c.start, kind: 'campaign', icon: 'campaign', title: c.title, sub: 'Campaign starts', open: function () { openCampaign(c.id); } });
       if (c.end) out.push({ day: c.end, kind: 'campaign', icon: 'campaign', title: c.title, sub: 'Campaign ends', open: function () { openCampaign(c.id); } });
     });
+    (S.data.ownDays || []).forEach(function (d) {
+      var g = d.goalId ? goalById(d.goalId) : null;
+      out.push({ day: d.day, kind: 'own', goalId: g ? g.id : '', done: d.done, icon: d.done ? 'check_circle' : 'event', title: d.text, sub: g ? 'Yours · for “' + g.title + '”' : 'Your own', open: function () { openOwnDay(d); } });
+    });
     var only = S.calGoal || '';
     if (only) out = out.filter(function (e) { var g = e.goalId && goalById(e.goalId); return g && (g.id === only || g.parentId === only); });
     return out.filter(function (e) { return e.day; });
@@ -14280,6 +14338,58 @@ var Kit = (function () {
       }
     });
   }
+  /** Add to a day: her own thing in a few words, or a step of one of her goals. */
+  function addToDay(day) {
+    var hasSteps = (S.data.goals || []).some(function (g) { return g.status !== 'Done' && g.steps.some(function (s) { return !s.done; }); });
+    if (!hasSteps) { openOwnDay(null, day); return; }
+    K.sheet({
+      title: 'Add to ' + K.dayLabel(day, true),
+      build: function (ctl) {
+        function pick(ic, label, why, fn) {
+          return h('button', { type: 'button', class: 'next-opt', style: 'width:100%;margin-bottom:8px', onclick: function () { ctl.close(); setTimeout(fn, 280); } },
+            h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), h('span', { class: 'next-opt-why', text: why })));
+        }
+        ctl.body.append(pick('event', 'Your own thing', 'A few words: a call to make, something to chase up, anything.', function () { openOwnDay(null, day); }),
+          pick('flag', 'A step of one of your goals', 'Pick a step you’ve already planned, and give it this day.', function () { planStepOn(day); }));
+      }
+    });
+  }
+  /** Her own thing on a day: what it is, the day, and (if she likes) the goal it's for. Tick it off, move it, or remove it. */
+  function openOwnDay(d, day) {
+    var f = { text: d ? d.text : '', day: d ? d.day : (day || ymd(new Date())), goalId: d ? d.goalId : '' };
+    var goals = (S.data.goals || []).filter(function (g) { return !g.parentId && g.status !== 'Done'; });
+    K.sheet({
+      title: d ? 'On your calendar' : 'Add your own', tall: goals.length > 3,
+      build: function (ctl) {
+        var today = ymd(new Date());
+        var what = K.textField({ label: 'What is it?', value: f.text, maxlength: 200, placeholder: 'For example: chase the photographer about prints', onInput: function (v) { f.text = v; } });
+        var dateF = K.textField({ label: 'Which day?', type: 'date', value: f.day, onInput: function (v) { f.day = v; } });
+        ctl.body.append(what, h('div', { style: 'height:12px' }),
+          K.choices({ row: true, label: 'Quick picks', value: '', options: [{ value: today, label: 'Today' }, { value: addDays(today, 1), label: 'Tomorrow' }, { value: addDays(today, 7 - dow(today)), label: 'Next Monday' }, { value: addDays(today, 7), label: 'In a week' }],
+            onChange: function (v) { if (v) { f.day = v; dateF.input.value = v; } } }), h('div', { style: 'height:10px' }), dateF);
+        if (goals.length) ctl.body.append(h('div', { style: 'height:14px' }),
+          K.choices({ label: 'Is it for one of your goals?', value: f.goalId || '', options: [{ value: '', label: 'No, it’s on its own' }].concat(goals.slice(0, 8).map(function (g) { return { value: g.id, label: g.title }; })),
+            onChange: function (v) { f.goalId = v || ''; } }),
+          h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: 'With a goal, it shows in that goal’s colour.' }));
+        function done(msg) { return refresh().then(function () { K.haptic('success'); ctl.close(); render(); if (msg) toast(msg); }); }
+        var save = btn('filled', d ? 'Save' : 'Add it', { icon: 'check', lg: true, block: true, onclick: function () {
+          if (!f.text.trim()) { toast('Say what it is first.'); what.input.focus(); return; }
+          if (!f.day) { toast('Pick a day first.'); return; }
+          K.setBusy(save, true);
+          api('saveOwnDay', d ? d.id : null, { text: f.text, day: f.day, goalId: f.goalId }).then(function () { S.calSel = f.day; return done('On your calendar for ' + K.dayLabel(f.day, true) + '.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+        } });
+        var foot = h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, save);
+        if (d) foot.appendChild(h('div', { class: 'btn-row' },
+          btn('tonal', d.done ? 'Not done yet' : 'It’s done', { icon: d.done ? 'undo' : 'task_alt', onclick: function (e) { K.setBusy(e.currentTarget, true); api('saveOwnDay', d.id, { done: !d.done }).then(function () { return done(d.done ? '' : 'Ticked off.'); }).catch(fail); } }),
+          btn('text', 'Remove', { icon: 'delete', onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            api('deleteOwnDay', d.id).then(function () { return done(); }).then(function () { undoCard('Removed: ' + d.text + '.', function () { return api('undoDelete', 'day', d.id); }, 'Back on your calendar.'); }).catch(fail);
+          } })));
+        ctl.foot.appendChild(foot);
+        if (!d) setTimeout(function () { what.input.focus(); }, 350);
+      }
+    });
+  }
   /** Give a goal step a day: her goals' steps still to do, the most important goal first. */
   function planStepOn(day) {
     K.sheet({
@@ -14302,7 +14412,7 @@ var Kit = (function () {
     });
   }
   function viewCalendar(main) {
-    pageTitle(main, 'Calendar', 'Your goals’ steps in their colours, with your posts and plans, day by day.');
+    pageTitle(main, 'Calendar', 'Your goals’ steps in their colours, your posts, and anything of your own, day by day.');
     goalCalendar(main);
   }
   function goalCalendar(main) {
@@ -14344,7 +14454,7 @@ var Kit = (function () {
       // the chosen day, in full
       var dl = byDay[sel] || [], panel = h('div', { class: 'cal-panel' },
         h('div', { class: 'cal-panel-h' }, h('b', { text: new Date(sel + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }) }),
-          btn('tonal', 'Plan a step', { sm: true, icon: 'add', onclick: function () { planStepOn(sel); } })));
+          btn('filled', 'Add', { sm: true, icon: 'add', onclick: function () { addToDay(sel); } })));
       if (!dl.length) panel.appendChild(h('p', { class: 'body-s', style: 'margin:4px 0 0;color:var(--on-surface-variant)', text: 'Nothing on this day.' }));
       dl.forEach(function (e) { panel.appendChild(calRow(e)); });
       main.appendChild(rise(panel, 4));
@@ -14354,7 +14464,7 @@ var Kit = (function () {
         var list = byDay[d] || [];
         var day = h('div', { class: 'cal-wday' + (d === today ? ' today' : '') },
           h('div', { class: 'cal-wday-h' }, h('span', { class: 'cal-wday-d', text: new Date(d + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'short' }) }), h('span', { class: 'cal-wday-n', text: String(Number(d.slice(8))) }),
-            h('span', { class: 'grow' }), K.iconBtn('add', 'Plan a step for ' + K.dayLabel(d, true), function () { planStepOn(d); })));
+            h('span', { class: 'grow' }), K.iconBtn('add', 'Add to ' + K.dayLabel(d, true), function () { addToDay(d); })));
         if (!list.length) day.appendChild(h('p', { class: 'cal-empty', text: 'Free' }));
         list.forEach(function (e) { day.appendChild(calRow(e)); });
         wk.appendChild(day);
@@ -14362,7 +14472,7 @@ var Kit = (function () {
       main.appendChild(rise(wk, 3));
     }
     var undated = (S.data.goals || []).reduce(function (n, g) { return n + (g.status === 'Done' ? 0 : g.steps.filter(function (s) { return !s.done && !s.due; }).length); }, 0);
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:10px 4px', text: undated ? undated + ' goal ' + (undated === 1 ? 'step has' : 'steps have') + ' no day yet. Tap a day, then “Plan a step”, to give one a day.' : 'Every goal step has a day.' }));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:10px 4px', text: undated ? undated + ' goal ' + (undated === 1 ? 'step has' : 'steps have') + ' no day yet. Tap a day, then “Add”, to give one a day.' : 'Every goal step has a day.' }));
   }
   /** In order: drag the goal cards into order of importance. The top one sets the order of work. */
   function goalOrder(main, goals) {
