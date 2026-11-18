@@ -1070,6 +1070,11 @@ var TIDE = {
   // options: the usual sizes or packs; fulfil: how it usually gets to the buyer.
   // where an artwork sits on the website
   SERIES: ['Ocean', 'Forest', 'Skies & Waters', 'Living in Gratitude'],
+  // the business setup: who makes what, and how she likes to work
+  SUPPLY_KINDS: ['Art prints', 'Cards', 'Stickers', 'Clothing and scarves', 'Homewares', 'Packaging', 'Framing', 'Other'],
+  PACES: ['Gentle', 'Steady', 'Full steam'],
+  ASK_FIRST: ['Spending money', 'Anything going public', 'Changing prices', 'Using family names', 'Ordering stock'],
+  WEEKDAYS: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   PRODUCT_TYPES: {
     Apparel: { items: ['Lounge pants', 'Lounge top', 'T-shirt', 'Hoodie', 'Scarf', 'Tote bag'], options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'], fulfil: 'Print on demand' },
     Cards: { items: ['Greeting card', 'Card pack'], options: ['Single', 'Pack of 5'], fulfil: 'From stock' },
@@ -1144,6 +1149,8 @@ var TIDE_SETTING_DEFAULTS = {
   // originals first: prints wait while a new original has its head start, then sell as a limited run once it sells
   editionBufferDays: 30, editionSize: 50, quickEditionPct: 50,
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
+  // how she likes to work (the business setup): fed into every plan, question round and draft
+  workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
   priceRounding: 'dollar',   // 'dollar', 'five' or 'none'
   gstThreshold: 75000,
   // the brand brief the studio writes to (edited in the app)
@@ -1195,6 +1202,15 @@ var TIDE_SCHEMAS = {
       ['researchTries', 'Research tries', 'number'], ['researchNote', 'Research note', 'text'],
       ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date'], ['website', 'Website change', 'json'],
       ['deleted', 'Removed', 'bool'], ['resumeOn', 'Paused until', 'day'], ['resumeStage', 'Stage before the pause', 'text'], ['remindedAt', 'Reminded', 'date']
+    ]
+  },
+  // who makes what for her (the business setup): the default for each kind is what plans start from
+  suppliers: {
+    sheet: 'Suppliers',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['name', 'Name', 'text'], ['makes', 'Makes', 'list'], ['defaultFor', 'Default for', 'list'],
+      ['contact', 'Contact', 'text'], ['website', 'Website', 'text'], ['costNote', 'Rough cost', 'text'], ['leadTime', 'Lead time', 'text'],
+      ['notes', 'Notes', 'text'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
   prints: {
@@ -2518,7 +2534,10 @@ function createTideLogic(env) {
         productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: T.SERIES,
         saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES
       },
-      settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, practice: env.practice === true, homeOrder: list(env.settings.get().homeOrder),
+      settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, practice: env.practice === true,
+      suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
+        costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
+      bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS }, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -2632,6 +2651,66 @@ function createTideLogic(env) {
   var setup = tideSetup(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
     loadBacklog: talk.api.loadBacklog, addNote: notebook.addNote });
 
+  // ---------- the business setup: suppliers, money, how she likes to work. Everything else uses it as the default.
+  function supplierList() { return rows('suppliers').filter(function (x) { return !x.deleted; }); }
+  function saveSupplier(id, p) {
+    need(['admin', 'artist']);
+    p = p || {};
+    var name = text(p.name, 80);
+    if (!name) fail('Give the supplier a name.');
+    var makes = list(p.makes).filter(function (k) { return T.SUPPLY_KINDS.indexOf(k) >= 0; });
+    var out = { name: name, makes: makes, defaultFor: list(p.defaultFor).filter(function (k) { return makes.indexOf(k) >= 0; }),
+      contact: text(p.contact, 160), website: text(p.website, 300), costNote: text(p.costNote, 200), leadTime: text(p.leadTime, 80), notes: text(p.notes, 1000), updated: nowIso() };
+    return env.lock(function () {
+      // one default per kind: choosing this one moves the default from any other
+      out.defaultFor.forEach(function (k) {
+        supplierList().forEach(function (o) { if (o.id !== id && list(o.defaultFor).indexOf(k) >= 0) env.table('suppliers').update(o.id, { defaultFor: list(o.defaultFor).filter(function (x) { return x !== k; }) }); });
+      });
+      if (id) { find('suppliers', id); env.table('suppliers').update(id, out); return { id: id }; }
+      out.id = env.nextId('SP', 3); out.created = nowIso(); out.deleted = false;
+      env.table('suppliers').append(out);
+      return { id: out.id };
+    });
+  }
+  function deleteSupplier(id) {
+    need(['admin', 'artist']);
+    return env.lock(function () { find('suppliers', id); env.table('suppliers').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
+  }
+  function saveWorkPrefs(p) {
+    need(['admin', 'artist']);
+    p = p || {};
+    var out = {};
+    if ('workPace' in p) out.workPace = T.PACES.indexOf(p.workPace) >= 0 ? p.workPace : text(p.workPace, 80);
+    if ('perRound' in p) { var n = Math.round(Number(p.perRound)); if (!(n >= 1 && n <= 10)) fail('Pick between 1 and 10 questions at a time.'); out.perRound = n; }
+    if ('quietDays' in p) out.quietDays = list(p.quietDays).filter(function (d) { return T.WEEKDAYS.indexOf(d) >= 0; });
+    if ('askFirst' in p) out.askFirst = list(p.askFirst).map(function (x) { return text(x, 80); }).filter(String).slice(0, 12);
+    if ('workNotes' in p) out.workNotes = text(p.workNotes, 1000);
+    if (p.done === true) out.bizSetupDone = nowIso();
+    env.settings.set(out);
+    return { ok: true };
+  }
+  /** The setup in plain words, for every AI job: the defaults to start from. */
+  function setupContext() {
+    var s = settings(), out = [], sup = supplierList();
+    if (sup.length) {
+      out.push('Her suppliers (use the default for each kind unless there is a reason not to; only ever name these, or a kind of supplier):');
+      sup.forEach(function (x) {
+        out.push('- ' + x.name + (list(x.makes).length ? ': makes ' + list(x.makes).join(', ') : '') + (list(x.defaultFor).length ? '; her default for ' + list(x.defaultFor).join(', ') : '') +
+          (x.costNote ? '; cost ' + x.costNote : '') + (x.leadTime ? '; lead time ' + x.leadTime : '') + (x.notes ? '; ' + x.notes : ''));
+      });
+    }
+    out.push('Pricing: usual markup ' + s.defaultMarkupPct + '% on cost, prices rounded ' + ({ dollar: 'to the dollar', five: 'to $5', none: 'not at all' }[s.priceRounding] || 'to the dollar') +
+      ', card fee ' + s.paymentFeePct + '%, ' + s.taxSetAsidePct + '% set aside for tax.');
+    var how = [];
+    if (s.workPace) how.push('pace: ' + s.workPace);
+    if (s.perRound) how.push('about ' + s.perRound + ' questions at a time');
+    if (list(s.quietDays).length) how.push('quiet days (no buzzes): ' + list(s.quietDays).join(', '));
+    if (list(s.askFirst).length) how.push('always check with her first before: ' + list(s.askFirst).join(', ').toLowerCase());
+    if (s.workNotes) how.push('in her words: ' + s.workNotes);
+    if (how.length) out.push('How she likes to work: ' + how.join('; ') + '.');
+    return out.length ? 'The business setup (her defaults):\n' + out.join('\n') : '';
+  }
+
   // ---------- pause: anything in progress can stop for a while, with a day to come back to it
   // A design rule across the app: pausing never loses progress, it says when it's coming back, a calendar mark shows it,
   // a reminder goes out the day before, and on the day it wakes up by itself where it left off.
@@ -2677,7 +2756,7 @@ function createTideLogic(env) {
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
   var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
-    topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+    supplier: ['suppliers', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
     var b = BIN[kind];
@@ -2701,7 +2780,7 @@ function createTideLogic(env) {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -2713,7 +2792,7 @@ function createTideLogic(env) {
     studio: content.studio,
     publish: publish,
     notebook: notebook,
-    talk: talk, wakePaused: wakePaused,
+    talk: talk, wakePaused: wakePaused, setupContext: setupContext,
     direction: direction,
     recordOnlineSales: recordOnlineSales,
     siteData: siteData,
@@ -3764,6 +3843,9 @@ function tidePublish(env, t) {
   /** Buzzes. While the artist is taking it easy, hers go to the admin instead. */
   function push(who, title, text) {
     if (rest() && (who === 'artist' || who === 'both')) who = 'admin';
+    // her quiet days (the business setup): no buzzes to her
+    var quiet = [].concat(env.settings.get().quietDays || []), dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][env.now().getDay()];
+    if (quiet.indexOf(dayName) >= 0) { if (who === 'artist') return; if (who === 'both') who = 'admin'; }
     if (env.notify) { try { env.notify(who, title, text); } catch (e) { /* a missed buzz is not fatal */ } }
   }
   function setRest(days) {
@@ -4738,7 +4820,7 @@ function tideTalk(env, t) {
             return { question: q.question, options: t.list(q.options), answer: a ? (a.skip ? '(skipped)' : t.list(a.picked).map(function (p) { return q.options[p]; }).filter(Boolean).concat(a.text ? [a.text] : []).join('; ')) : null };
           }) };
         }),
-        answered: asked(r), min: K.MIN_Q, max: Number(r.maxQ) || K.MAX_Q, perRound: K.PER_ROUND
+        answered: asked(r), min: K.MIN_Q, max: Number(r.maxQ) || K.MAX_Q, perRound: Number(env.settings.get().perRound) || K.PER_ROUND
       };
     }
     return {
@@ -8607,6 +8689,10 @@ var Kit = (function () {
     var markedTo = main.children.length;
     function mark(key) { for (var i = markedTo; i < main.children.length; i++) main.children[i].dataset.hs = key; markedTo = main.children.length; }
 
+    if (!S.data.settings.bizSetupDone && !rest) main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openBizGuide(); } },
+      h('span', { class: 'ic' }, icon('tune')), h('span', { class: 'grow' }, h('b', { text: 'Set up your business' }),
+        h('span', { class: 'body-m', text: 'A few taps: who makes your things, your prices and how you like to work. Tide Book uses it everywhere.' })), icon('chevron_right')), n++));
+    mark('setup');
     var cover = coverPrint();
     if (cover) {
       main.appendChild(rise(h('button', { class: 'cover press soft', type: 'button', 'aria-label': 'Open ' + cover.title, onclick: function () { openPrint(cover.id); } },
@@ -11546,6 +11632,172 @@ var Kit = (function () {
   /** After a delete: a card with Undo that puts it straight back. */
   function binUndo(msg, kind, id) { undoCard(msg, function () { return api('undoDelete', kind, id); }, 'Put back.', 12); }
   /** A card at the bottom for a few seconds after an action, with Undo. */
+  // ------------------------------------------------------------------ the business setup
+  /** Tap-to-pick chips where several can be on. */
+  function multiChips(options, picked, onChange) {
+    var wrap = h('div', { class: 'choices' }), on = picked.slice();
+    options.forEach(function (o) {
+      var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(on.indexOf(o) >= 0) }, o);
+      b.addEventListener('click', function () { var i = on.indexOf(o); if (i >= 0) on.splice(i, 1); else on.push(o); b.setAttribute('aria-pressed', String(i < 0)); K.haptic(); onChange(on.slice()); });
+      wrap.appendChild(b);
+    });
+    return wrap;
+  }
+  function bizPrefs() { var s = S.data.settings; return { workPace: s.workPace || '', perRound: s.perRound || 5, quietDays: (s.quietDays || []).slice(), askFirst: (s.askFirst || []).slice(), workNotes: s.workNotes || '' }; }
+  /** The first time: a few questions, one at a time, each with taps and her own words. */
+  function openBizGuide() {
+    var L = S.data.bizLists, f = bizPrefs(), money = { defaultMarkupPct: S.data.settings.defaultMarkupPct }, sup = { name: '', makes: [] }, i = 0;
+    var you = ADMIN ? cap(artist()) : 'you', your = ADMIN ? cap(artist()) + '’s' : 'your';
+    var steps = [
+      { q: 'How fast do ' + (ADMIN ? 'she' : 'you') + ' like things to move?', why: 'Tide Book keeps to ' + your + ' pace.', build: function () {
+        return K.choices({ label: 'Pace', value: f.workPace, options: L.paces, own: 'Your own words', onChange: function (v) { f.workPace = v; } }); } },
+      { q: 'How many questions at a time?', why: 'When Tide Book asks about an idea.', build: function () {
+        return K.choices({ label: 'Questions at a time', value: String(f.perRound), options: ['3', '5', '8'], onChange: function (v) { f.perRound = Number(v) || 5; } }); } },
+      { q: 'Any days ' + you + '’d rather not get buzzes?', why: 'Pick any. Nothing is missed: it waits.', build: function () {
+        return multiChips(L.weekdays, f.quietDays, function (v) { f.quietDays = v; }); } },
+      { q: 'What should Tide Book always check with ' + you + ' first?', why: 'Pick any.', build: function () {
+        var w = h('div', {}, multiChips(L.askFirst, f.askFirst, function (v) { f.askFirst = v; }));
+        w.appendChild(K.textField({ label: 'Anything else, in ' + your + ' own words', multiline: true, compact: true, value: f.workNotes, maxlength: 1000, onInput: function (v) { f.workNotes = v; } }));
+        return w; } },
+      { q: 'What’s ' + your + ' usual markup on cost?', why: '150% turns a $20 cost into a $50 price.', build: function () {
+        return K.choices({ label: 'Markup', value: String(money.defaultMarkupPct), options: [{ value: '100', label: '100% (double)' }, { value: '150', label: '150%' }, { value: '200', label: '200%' }],
+          own: 'Your own %', onChange: function (v) { var n = parseFloat(v); if (isFinite(n)) money.defaultMarkupPct = n; } }); } },
+      { q: 'Who prints or makes ' + your + ' things?', why: 'Start with one. Add more any time.', build: function () {
+        var w = h('div', { class: 'field-gap' });
+        w.appendChild(K.textField({ label: 'Supplier’s name', value: sup.name, maxlength: 80, onInput: function (v) { sup.name = v; } }));
+        w.appendChild(h('div', { class: 'label-s', text: 'They make' }));
+        w.appendChild(multiChips(L.kinds, sup.makes, function (v) { sup.makes = v; }));
+        return w; } }
+    ];
+    function finish() {
+      var jobs = [api('saveWorkPrefs', Object.assign({}, f, { done: true })), api('saveSettings', { defaultMarkupPct: money.defaultMarkupPct })];
+      if (sup.name.trim()) jobs.push(api('saveSupplier', null, { name: sup.name.trim(), makes: sup.makes, defaultFor: sup.makes }));
+      return Promise.all(jobs).then(refresh);
+    }
+    K.sheet({
+      title: 'Set up ' + (ADMIN ? cap(artist()) + '’s' : 'your') + ' business', tall: true,
+      build: function (ctl) {
+        function draw() {
+          ctl.body.textContent = ''; ctl.foot.textContent = '';
+          var st = steps[i];
+          ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin-bottom:6px', text: (i + 1) + ' of ' + steps.length }));
+          ctl.body.appendChild(h('div', { class: 'title-m', text: st.q }));
+          ctl.body.appendChild(h('p', { class: 'body-s', style: 'margin:4px 0 14px;color:var(--on-surface-variant)', text: st.why }));
+          ctl.body.appendChild(st.build());
+          var last = i === steps.length - 1;
+          var next = btn('filled', last ? 'All done' : 'Next', { icon: last ? 'check' : 'arrow_forward', lg: true, block: true });
+          next.addEventListener('click', function () {
+            if (!last) { i++; draw(); return; }
+            K.setBusy(next, true);
+            finish().then(function () { K.haptic('success'); ctl.close(); render(); toast('All set. Tide Book starts from this now.'); setTimeout(openBusiness, 320); }).catch(function (e) { K.setBusy(next, false); fail(e); });
+          });
+          var row = h('div', { style: 'display:flex;gap:8px;justify-content:space-between;margin-top:6px' },
+            i > 0 ? btn('text', 'Back', { onclick: function () { i--; draw(); } }) : h('span'),
+            btn('text', 'That’s enough for now', { onclick: function (e) { K.setBusy(e.currentTarget, true); finish().then(function () { ctl.close(); render(); setTimeout(openBusiness, 320); }).catch(fail); } }));
+          ctl.foot.appendChild(h('div', {}, next, row));
+        }
+        draw();
+      }
+    });
+  }
+  /** The page: everything in the setup, to change any time. */
+  function openBusiness() {
+    var L = S.data.bizLists, s = S.data.settings, f = bizPrefs(), dirty = false;
+    var m = { defaultMarkupPct: s.defaultMarkupPct, priceRounding: s.priceRounding, paymentFeePct: s.paymentFeePct, taxSetAsidePct: s.taxSetAsidePct };
+    var your = ADMIN ? cap(artist()) + '’s' : 'your', yours = ADMIN ? cap(artist()) : 'you';
+    K.sheet({
+      title: 'Business setup', tall: true, guard: function () { return dirty; },
+      build: function (ctl) {
+        function touch() { dirty = true; }
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 6px;color:var(--on-surface-variant)', text: 'Tide Book starts every plan, price and question from this. Change anything on a single product as you go.' }));
+        // suppliers
+        var s1 = sheetSection('Suppliers');
+        var sl = h('div', { class: 'list' });
+        (S.data.suppliers || []).forEach(function (x) {
+          sl.appendChild(h('button', { class: 'li press soft', type: 'button', style: 'width:100%;text-align:left', onclick: function () { ctl.close(); setTimeout(function () { openSupplier(x.id); }, 280); } },
+            h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.name }),
+              h('div', { class: 'li-sup', text: [x.makes.join(', '), x.defaultFor.length ? 'Default for ' + x.defaultFor.join(', ') : ''].filter(String).join(' · ') || 'Tap to say what they make' })), icon('chevron_right')));
+        });
+        if (!(S.data.suppliers || []).length) sl.appendChild(h('p', { class: 'body-m', style: 'margin:0;padding:12px;color:var(--on-surface-variant)', text: 'No suppliers yet. Add who prints or makes ' + your + ' things.' }));
+        s1.append(sl, h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a supplier', { icon: 'add', onclick: function () { ctl.close(); setTimeout(function () { openSupplier(null); }, 280); } })));
+        // money
+        var s2 = sheetSection('Money');
+        s2.appendChild(h('div', { class: 'field-gap' },
+          K.textField({ label: 'Usual markup on cost', suffix: '%', inputmode: 'decimal', value: m.defaultMarkupPct, onInput: function (v) { m.defaultMarkupPct = K.num(v); touch(); }, help: '150% turns a $20 cost into a $50 price.' }),
+          h('div', { class: 'label-s', text: 'Round prices' }),
+          K.choices({ label: 'Round prices', value: m.priceRounding, options: [{ value: 'dollar', label: 'To the dollar' }, { value: 'five', label: 'To $5' }, { value: 'none', label: 'Leave as is' }], onChange: function (v) { m.priceRounding = v; touch(); } }),
+          K.textField({ label: 'Card fee', suffix: '%', inputmode: 'decimal', value: m.paymentFeePct, onInput: function (v) { m.paymentFeePct = K.num(v); touch(); } }),
+          K.textField({ label: 'Set aside for tax', suffix: '%', inputmode: 'decimal', value: m.taxSetAsidePct, onInput: function (v) { m.taxSetAsidePct = K.num(v); touch(); } })));
+        // how she likes to work
+        var s3 = sheetSection('How ' + yours + ' like' + (ADMIN ? 's' : '') + ' to work');
+        s3.appendChild(h('div', { class: 'field-gap' },
+          h('div', { class: 'label-s', text: 'Pace' }),
+          K.choices({ label: 'Pace', value: f.workPace, options: L.paces, own: 'Your own words', onChange: function (v) { f.workPace = v; touch(); } }),
+          h('div', { class: 'label-s', text: 'Questions at a time' }),
+          K.choices({ label: 'Questions at a time', value: String(f.perRound), options: ['3', '5', '8'], onChange: function (v) { f.perRound = Number(v) || 5; touch(); } }),
+          h('div', { class: 'label-s', text: 'Quiet days (no buzzes)' }),
+          multiChips(L.weekdays, f.quietDays, function (v) { f.quietDays = v; touch(); }),
+          h('div', { class: 'label-s', text: 'Always check first before' }),
+          multiChips(L.askFirst, f.askFirst, function (v) { f.askFirst = v; touch(); }),
+          K.textField({ label: 'Anything else, in ' + your + ' own words', multiline: true, value: f.workNotes, maxlength: 1000, onInput: function (v) { f.workNotes = v; touch(); } })));
+        // brand and boundaries
+        var s4 = sheetSection('Brand and boundaries');
+        function go2(label, ic, fn) { return h('button', { class: 'li press soft', type: 'button', style: 'width:100%;text-align:left', onclick: function () { ctl.close(); setTimeout(fn, 280); } },
+          h('span', { class: 'ic' }, icon(ic)), h('div', { class: 'grow' }, h('div', { class: 'li-head', text: label })), icon('chevron_right')); }
+        s4.appendChild(h('div', { class: 'list' },
+          go2('Voice, and who it’s for', 'edit_note', function () { openBrief(); }),
+          go2('Our direction', 'explore', function () { S.ideasTab = 'ideas'; go('ideas'); }),
+          go2('Names and topics: go or no go', 'verified', function () { S.adminTab = 'consent'; go('settings'); })));
+        ctl.body.append(s1, s2, s3, s4,
+          h('div', { style: 'margin-top:14px;text-align:center' }, btn('text', 'Walk me through it again', { icon: 'refresh', onclick: function () { ctl.close(); setTimeout(openBizGuide, 280); } })));
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          K.setBusy(save, true);
+          Promise.all([api('saveWorkPrefs', f), api('saveSettings', m)]).then(refresh).then(function () { dirty = false; K.haptic('success'); render(); toast('Saved. Tide Book starts from this now.'); ctl.close(); })
+            .catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
+  function openSupplier(id) {
+    var L = S.data.bizLists, x = id ? byId(S.data.suppliers || [], id) : null, dirty = false;
+    var f = x ? JSON.parse(JSON.stringify(x)) : { name: '', makes: [], defaultFor: [], contact: '', website: '', costNote: '', leadTime: '', notes: '' };
+    K.sheet({
+      title: x ? x.name : 'Add a supplier', tall: true, guard: function () { return dirty; }, onClose: function () { setTimeout(openBusiness, 300); },
+      build: function (ctl) {
+        function touch() { dirty = true; }
+        var defWrap = h('div');
+        function drawDef() {
+          defWrap.textContent = '';
+          f.defaultFor = f.defaultFor.filter(function (k) { return f.makes.indexOf(k) >= 0; });
+          if (!f.makes.length) return;
+          defWrap.append(h('div', { class: 'label-s', text: 'Use them first for' }), multiChips(f.makes, f.defaultFor, function (v) { f.defaultFor = v; touch(); }),
+            h('p', { class: 'tf-help', style: 'margin:4px 0 0', text: 'Plans start from this supplier for these. Only one supplier is first for each.' }));
+        }
+        drawDef();
+        var name = K.textField({ label: 'Name', value: f.name, maxlength: 80, onInput: function (v) { f.name = v; touch(); } });
+        ctl.body.appendChild(h('div', { class: 'field-gap' }, name,
+          h('div', { class: 'label-s', text: 'They make' }), multiChips(L.kinds, f.makes, function (v) { f.makes = v; touch(); drawDef(); }), defWrap,
+          K.textField({ label: 'Contact (email or phone)', value: f.contact, maxlength: 160, onInput: function (v) { f.contact = v; touch(); } }),
+          K.textField({ label: 'Website', value: f.website, maxlength: 300, onInput: function (v) { f.website = v; touch(); } }),
+          K.textField({ label: 'Rough cost', value: f.costNote, maxlength: 200, placeholder: 'e.g. A4 print about $6', onInput: function (v) { f.costNote = v; touch(); } }),
+          K.textField({ label: 'How long they take', value: f.leadTime, maxlength: 80, placeholder: 'e.g. 3 to 5 days', onInput: function (v) { f.leadTime = v; touch(); } }),
+          K.textField({ label: 'Notes', multiline: true, value: f.notes, maxlength: 1000, onInput: function (v) { f.notes = v; touch(); } })));
+        if (x) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Delete this supplier', { icon: 'delete', danger: true, onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('deleteSupplier', x.id).then(refresh).then(function () { dirty = false; ctl.close(); binUndo('Supplier deleted.', 'supplier', x.id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+        } })));
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
+        save.addEventListener('click', function () {
+          if (!f.name.trim()) { toast('Give the supplier a name.'); name.input.focus(); return; }
+          K.setBusy(save, true);
+          api('saveSupplier', x ? x.id : null, f).then(refresh).then(function () { dirty = false; K.haptic('success'); toast('Saved.'); ctl.close(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+        });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
   var undoTimer = null;
   function undoCard(msg, undo, undoneMsg, secs) {
     var old = document.getElementById('undo-card');
@@ -13496,6 +13748,9 @@ var Kit = (function () {
       taxSetAsidePct: s.taxSetAsidePct, gstOn: !!s.gstRegisteredFrom, gstRegisteredFrom: s.gstRegisteredFrom || S.data.today };
     if (S.data.setup && S.data.setup.steps) main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, btn(S.data.setup.done ? 'outlined' : 'filled', S.data.setup.done ? 'Setup and connections' : 'Finish getting set up', { icon: 'rocket_launch', block: true, onclick: openSetup })), 1));
 
+    main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', style: 'margin-bottom:16px', onclick: function () { openBusiness(); } },
+      h('span', { class: 'ic' }, icon('tune')), h('span', { class: 'grow' }, h('b', { text: 'Business setup' }),
+        h('span', { class: 'body-m', text: 'Suppliers, prices, how ' + (ADMIN ? cap(artist()) + ' likes' : 'you like') + ' to work, and the brand. Everything else starts from it.' })), icon('chevron_right')), 1));
     var p = section('Pricing');
     p.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
       K.textField({ label: 'Usual markup on cost', suffix: '%', inputmode: 'decimal', value: f.defaultMarkupPct, onInput: function (v) { f.defaultMarkupPct = K.num(v); },
