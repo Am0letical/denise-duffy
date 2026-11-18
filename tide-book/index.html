@@ -1352,6 +1352,13 @@ body.inspecting .site-top { visibility: hidden; }
 .menu-l { font: 500 13px/16px var(--font); }
 @keyframes mpop { from { opacity: 0; transform: scale(.6) translateY(20px); } to { opacity: 1; transform: none; } }
 @keyframes mfade { from { opacity: 0; } to { opacity: 1; } }
+/* cards that can be put in order: only the handle drags, so the page still scrolls with a finger anywhere else */
+.ho-card { touch-action: pan-y; cursor: default; padding-right: 0; overflow: hidden; }
+.ho-grip { align-self: stretch; flex: none; width: 48px; margin: -14px 0 -14px 4px; display: grid; place-items: center; opacity: 1; color: var(--on-surface-variant);
+  background: var(--surface-low); border-left: 1px solid var(--hairline); touch-action: none; cursor: grab; }
+.ho-grip:active, .ho-card.lifted .ho-grip { background: var(--secondary-container); color: var(--on-secondary-container); cursor: grabbing; }
+.goal-card.active { box-shadow: inset 0 0 0 1px var(--outline-variant); outline: 2px solid var(--primary); outline-offset: -2px; }
+.ho-grip { border-radius: 0 16px 16px 0; }
 </style>
 
   <script>
@@ -10638,7 +10645,7 @@ var Kit = (function () {
     K.sheet({
       title: 'Arrange your home page', guard: function () { return dirty; },
       build: function (ctl) {
-        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Press and drag a card to where you want it. Sections with nothing in them stay hidden.' }));
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Hold the dotted handle on the right of a card and drag it to where you want it. Sections with nothing in them stay hidden.' }));
         var list = h('div', { class: 'ho-list' });
         var HO_ICON = { plan: 'flag', cover: 'palette', inspo: 'favorite', needs: 'help', waiting: 'hourglass_top', todo: 'fact_check', website: 'language', review: 'perm_media', actions: 'add', glance: 'insights' };
         function draw() {
@@ -10646,7 +10653,7 @@ var Kit = (function () {
           order.forEach(function (k) {
             var label = k === 'needs' ? 'Questions from ' + adminName() : HOME_SECTIONS[k];
             var card = h('div', { class: 'ho-card', dataset: { k: k }, role: 'listitem', 'aria-label': label },
-              h('span', { class: 'ho-ic' }, icon(HO_ICON[k] || 'home')), h('span', { class: 'grow ho-t', text: label }), h('span', { class: 'ho-grip' }, icon('drag_indicator')));
+              h('span', { class: 'ho-ic' }, icon(HO_ICON[k] || 'home')), h('span', { class: 'grow ho-t', text: label }), h('span', { class: 'ho-grip', 'aria-label': 'Drag to move', title: 'Drag to move' }, icon('drag_indicator')));
             list.appendChild(card);
             pickUp(card);
           });
@@ -10655,7 +10662,7 @@ var Kit = (function () {
         function pickUp(card) {
           var startY = 0, dy = 0, moving = false;
           card.addEventListener('pointerdown', function (e) {
-            if (e.button > 0) return;
+            if (e.button > 0 || !e.target.closest('.ho-grip')) return;     // only the handle drags; the rest of the card scrolls
             moving = true; startY = e.clientY; dy = 0;
             card.setPointerCapture(e.pointerId); card.classList.add('lifted'); K.haptic();
           });
@@ -14114,12 +14121,12 @@ var Kit = (function () {
         h('span', { class: 'grow' }, h('span', { class: 'ho-t', style: 'display:block', text: g.title }),
           h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: g.status === 'Done' ? 'Done' : g.active ? 'Sets the order now · next: ' + g.next : g.alongside ? 'Together with the top goal · next: ' + g.next : g.steps.length ? g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : 'No plan yet' }),
           subs.length ? h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: 'Includes: ' + subs.map(function (x) { return x.title; }).join(', ') }) : null),
-        h('span', { class: 'ho-grip' }, icon('drag_indicator')));
+        h('span', { class: 'ho-grip', 'aria-label': 'Drag to move', title: 'Drag to move' }, icon('drag_indicator')));
       card.addEventListener('click', function () { if (!card.dragged) openGoal(g.id); card.dragged = false; });
       list.appendChild(card);
       (function (card) {
         var startY = 0, moving = false, dist = 0;
-        card.addEventListener('pointerdown', function (e) { moving = true; startY = e.clientY; dist = 0; card.setPointerCapture(e.pointerId); });
+        card.addEventListener('pointerdown', function (e) { if (!e.target.closest('.ho-grip')) return; moving = true; startY = e.clientY; dist = 0; card.setPointerCapture(e.pointerId); });
         card.addEventListener('pointermove', function (e) {
           if (!moving) return;
           var dy = e.clientY - startY; dist = Math.max(dist, Math.abs(dy));
@@ -14140,7 +14147,7 @@ var Kit = (function () {
       })(card);
     });
     main.appendChild(rise(list, 2));
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag the most important to the top. Its plan decides what happens now; everything else waits its turn.' }));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Hold the dotted handle on the right and drag the most important to the top. Its plan decides what happens now; everything else waits its turn.' }));
   }
   /** One goal: why it matters, its plan (built with Tide Book, or written yourself), links, and smaller goals. */
   function openGoal(id) {
