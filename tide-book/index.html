@@ -1380,6 +1380,16 @@ body.map-full { overflow: hidden; }
 .gb-min .ms { font-size: 18px; }
 .gb-min::after { content: ''; position: absolute; inset: -9px; }   /* a bigger target than it looks */
 .goal-bubble.active .gb-min, .goal-bubble.alongside .gb-min { display: none; }
+/* a goal on the map moves only by its dotted handle */
+.goal-bubble { cursor: pointer; padding-right: 0; }
+.goal-bubble.dot { cursor: grab; }
+.gb-grip { align-self: stretch; flex: none; width: 30px; margin: -10px 0 -10px 2px; display: grid; place-items: center; border-radius: 0 22px 22px 0;
+  background: rgba(27, 28, 30, 0.05); color: var(--on-surface-variant); touch-action: none; cursor: grab; }
+.gb-grip .ms { font-size: 20px; }
+.goal-bubble.active .gb-grip { background: rgba(255, 255, 255, 0.16); color: rgba(255, 255, 255, 0.9); }
+.goal-bubble.alongside .gb-grip { background: rgba(29, 111, 121, 0.12); color: var(--on-secondary-container); }
+.goal-bubble.sub .gb-grip { margin: -8px 0 -8px 2px; border-radius: 0 16px 16px 0; }
+.goal-bubble.lifted .gb-grip { background: var(--secondary-container); color: var(--on-secondary-container); }
 </style>
 
   <script>
@@ -7003,7 +7013,7 @@ var TIDE_BACKLOG = [
 var TIDE_CHANGES = [
   { id: '2026-11-18-goal-map-full', on: '2026-11-18', to: 'artist', icon: 'open_in_full', title: 'Your goals map: full screen, and dots',
     say: 'Open the goals map to the whole screen, and shrink any goal down to a dot to make room.',
-    steps: ['In Ideas › Goals, tap the corner button with two arrows to go full screen.', 'Tap “–” on a goal to shrink it to a dot. Tap the dot to open it again.', 'The button with two arrows pointing in shrinks every goal but the ones you’re on now.', 'Tap Done to come back.'],
+    steps: ['In Ideas › Goals, tap the corner button with two arrows to go full screen.', 'To move a goal, hold the dotted handle on its right and drag. Anywhere else, your finger scrolls.', 'Tap “–” on a goal to shrink it to a dot. Tap the dot to open it again.', 'The button with two arrows pointing in shrinks every goal but the ones you’re on now.', 'Tap Done to come back.'],
     go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gz', tip: 'Full screen and dots are here.' } },
   { id: '2026-11-18-menu-bubble', on: '2026-11-18', to: 'all', icon: 'apps', title: 'The menu is a bubble now',
     say: 'The bar along the bottom is now one round button, bottom left. It says where you are; tap it for every part of Tide Book.',
@@ -13921,7 +13931,9 @@ var Kit = (function () {
         g.parentId ? null : isDone ? h('span', { class: 'gb-rank' }, icon('check')) : h('span', { class: 'gb-rank', text: String(g.rank) }),
         h('span', { class: 'gb-main' }, g.active || g.alongside ? h('span', { class: 'gb-now' }, g.alongside ? icon('link') : null, g.alongside ? 'Now, together' : 'Now') : null, h('span', { class: 'gb-t', text: g.title }),
           h('span', { class: 'gb-s', text: isDone ? 'Reached' : g.steps.length ? nd + ' of ' + g.steps.length + ' steps' : 'No plan yet' })),
+        h('span', { class: 'gb-grip', title: 'Drag to move', 'aria-hidden': 'true' }, icon('drag_indicator')),
         h('button', { type: 'button', class: 'gb-min', 'aria-label': 'Shrink to a dot', title: 'Shrink to a dot' }, icon('remove')));
+      el.dataset.gid = g.id;
       var minB = el.querySelector('.gb-min');
       if (minB) {
         minB.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
@@ -13930,7 +13942,11 @@ var Kit = (function () {
       el.style.left = (g.x * 100) + '%'; el.style.top = (g.y * 100) + '%';
       els[g.id] = el; world.appendChild(el);
       var sx = 0, sy = 0, ox = 0, oy = 0, moved = false, down = false;
-      el.addEventListener('pointerdown', function (e) { if (pinching) return; down = true; moved = false; sx = e.clientX; sy = e.clientY; ox = el.offsetLeft; oy = el.offsetTop; el.setPointerCapture(e.pointerId); e.stopPropagation(); track(e); });
+      el.addEventListener('pointerdown', function (e) {
+        if (pinching) return;
+        // only the dotted handle moves a goal (a dot moves whole); anywhere else, the finger scrolls or moves the map
+        if (!g.mini && !e.target.closest('.gb-grip')) return;
+        down = true; moved = false; sx = e.clientX; sy = e.clientY; ox = el.offsetLeft; oy = el.offsetTop; el.setPointerCapture(e.pointerId); e.stopPropagation(); track(e); });
       el.addEventListener('pointermove', function (e) {
         if (!down || pinching) return;
         var dx = (e.clientX - sx) / GZ.s, dy = (e.clientY - sy) / GZ.s;
@@ -13981,7 +13997,9 @@ var Kit = (function () {
     board.addEventListener('pointerdown', function (e) {
       track(e);
       if (pinching) return;
-      if (e.target === board || e.target === world || e.target === svg) { pan = { x: e.clientX, y: e.clientY, gx: GZ.x, gy: GZ.y, sy: window.scrollY, moved: false }; board.setPointerCapture(e.pointerId); }
+      var bub = e.target.closest('.goal-bubble');
+      if (bub && (bub.classList.contains('dot') || e.target.closest('.gb-grip, .gb-min'))) return;
+      if (bub || e.target === board || e.target === world || e.target === svg) { pan = { x: e.clientX, y: e.clientY, gx: GZ.x, gy: GZ.y, sy: window.scrollY, moved: false, goal: bub ? bub.dataset.gid : '' }; board.setPointerCapture(e.pointerId); }
     });
     board.addEventListener('pointermove', function (e) {
       if (ptrs[e.pointerId]) ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
@@ -14001,7 +14019,15 @@ var Kit = (function () {
       if ((GZ.s === 1 || GZ.fit) && Math.abs(dy) > Math.abs(dx)) window.scrollTo(0, pan.sy - dy);   // until she zooms, up and down scroll the page
       else { GZ = { s: GZ.s, x: pan.gx + dx, y: pan.gy + dy }; paintZoom(); }
     });
-    function endPan(e) { untrack(e); if (pan && pan.moved) board.dataset.panned = '1'; pan = null; }
+    function endPan(e) {
+      untrack(e);
+      if (pan && pan.moved) board.dataset.panned = '1';
+      else if (pan && pan.goal) {       // a tap on a goal opens it, once the tap's own click has passed (or it would land on the new sheet)
+        var gid = pan.goal; board.dataset.panned = '1'; board.dataset.openGoal = gid;
+        setTimeout(function () { if (board.dataset.openGoal === gid) { delete board.dataset.openGoal; delete board.dataset.panned; openGoal(gid); } }, 450);
+      }
+      pan = null;
+    }
     board.addEventListener('pointerup', endPan); board.addEventListener('pointercancel', endPan);
     board.addEventListener('wheel', function (e) {
       if (!e.ctrlKey && !e.metaKey) return;
@@ -14010,7 +14036,7 @@ var Kit = (function () {
     }, { passive: false });
     // tap an empty spot: an offer to add a goal right there
     board.addEventListener('click', function (e) {
-      if (board.dataset.panned) { delete board.dataset.panned; return; }
+      if (board.dataset.panned) { delete board.dataset.panned; if (board.dataset.openGoal) { var og = board.dataset.openGoal; delete board.dataset.openGoal; openGoal(og); } return; }
       if (e.target !== board && e.target !== world && e.target !== svg) return;
       var r = board.getBoundingClientRect();
       var wx = (e.clientX - r.left - GZ.x) / GZ.s, wy = (e.clientY - r.top - GZ.y) / GZ.s;
@@ -14047,7 +14073,7 @@ var Kit = (function () {
         btn('filled', 'Done', { sm: true, icon: 'close_fullscreen', onclick: function () { goalMapFull(false); } })));
     }
     main.appendChild(rise(board, 2));
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Drop one on another to work on them together. “–” shrinks a goal to a dot; tap the dot to open it. Pinch to zoom.' }));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Hold a goal’s dotted handle to drag it anywhere; drop it on another to work on them together. “–” shrinks a goal to a dot. Pinch to zoom.' }));
     function fitZoom() { var f = Math.min(1, (H - 8) / HW); return { s: f, x: (W() - W() * f) / 2, y: 0, fit: true }; }
     if (!GZ || GZ.fit || (GZ.s === 1 && !GZ.x && !GZ.y)) GZ = fitZoom();
     paintZoom();
