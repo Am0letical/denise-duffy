@@ -11818,7 +11818,8 @@ var Kit = (function () {
       }
       asec.appendChild(row('This month', sv.month));
       asec.appendChild(row('Since ' + (sv.since ? K.dayLabel(sv.since.slice(0, 10), true) : 'the start'), sv.total));
-      asec.appendChild(h('p', { class: 'tf-help', text: 'Claude jobs count what Claude charged. Jobs on the PC, or in Claude chat, cost nothing; what they would have cost is estimated from their size at Claude’s prices.' }));
+      asec.appendChild(h('p', { class: 'tf-help', text: 'Claude jobs count what Claude charged. Jobs on the PC, or in Claude chat, cost nothing; what they would have cost is estimated from their size at Claude’s prices.' +
+        (sv.earlier ? ' The ' + sv.earlier + ' PC job' + (sv.earlier === 1 ? '' : 's') + ' from before the tally began were found in the records and estimated the same way.' : '') }));
       main.appendChild(rise(asec, n++));
     }
 
