@@ -2251,6 +2251,7 @@ function createTideLogic(env) {
 
   function createPrint(p) {
     need(['admin', 'artist']);
+    if (env.workDone) env.workDone('price');
     p = p || {};
     var title = text(p.title, 120);
     if (!title) fail('Give the artwork a title.');
@@ -2269,6 +2270,7 @@ function createTideLogic(env) {
 
   function updatePrint(id, ch) {
     var role = need(['admin', 'artist']);
+    if ('variants' in (ch || {}) || 'products' in (ch || {})) if (env.workDone) env.workDone('price');
     ch = ch || {};
     return env.lock(function () {
       var pr = find('prints', id), out = { updated: nowIso() };
@@ -2571,6 +2573,7 @@ function createTideLogic(env) {
   function publishWebsite() {
     need(['admin', 'artist']);
     if (!env.site) fail(env.user.role === 'admin' ? 'Publishing the website works on the PC version of Tide Book.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
+if (env.workDone) env.workDone('publish');
     var r = env.site.publish(consentHit);
     env.settings.set({ sitePublishedAt: nowIso(), sitePublishedSig: shopSig() });
     return r;
@@ -2696,6 +2699,7 @@ function createTideLogic(env) {
 
   function addTransaction(p) {
     need(['admin', 'artist']);
+    if (env.workDone) env.workDone('money');
     var row = readTxn(p || {});
     return env.lock(function () {
       row.id = env.nextId('TX', 5);
@@ -2942,7 +2946,7 @@ function createTideLogic(env) {
           gst: gstRegisteredOn(o.date, s) ? r2(amount / 11) : 0, qty: Number(o.qty) > 0 ? Math.round(Number(o.qty)) : '', printId: text(o.printId, 20), receiptId: '', receiptThumbId: '',
           source: source, externalRef: ref, status: 'OK', voidReason: '', enteredBy: source, created: nowIso(), notes: ''
         });
-        added++;
+        added++; if (env.workDone) env.workDone('money');
       });
       return { added: added };
     });
@@ -3815,6 +3819,7 @@ function createTideLogic(env) {
     });
     var more = talk.wakePaused ? talk.wakePaused(today, tomorrow) : [];
     woke.concat(more).forEach(function (w) { try { publish.push('artist', w[0], w[1]); } catch (e) {} });
+    if (woke.length + more.length) if (env.workDone) env.workDone('reminder', woke.length + more.length);
     return { woke: woke.length + more.length };
   }
 
@@ -7285,8 +7290,8 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
-  { id: '2026-11-19-hand-savings', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'Savings compared with prompting Claude yourself',
-    say: 'A second card under AI costs: the same work as if you’d prompted Claude’s API by hand, on the model you’d pick, with some back and forth.',
+  { id: '2026-11-19-hand-savings', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'Savings compared with doing it all with AI',
+    say: 'A second card under AI costs: everything Tide Book does (its AI jobs, and its own work like prices, postage, orders and the website) as if Claude’s API had been prompted to do it all.',
     steps: ['Open Money and scroll to “AI costs”.', 'The second card compares Tide Book with prompting Claude yourself.', 'Pick the model you’d have used, and how much back and forth. The card says what it counts and what it leaves out.'],
     go: { view: 'money', find: '.hand-cost', tip: 'Change the model and the back and forth here.' } },
   { id: '2026-11-19-ready-to-sell', on: '2026-11-19', to: 'all', icon: 'storefront', title: 'Ready to sell: a checklist in Orders',
@@ -8180,6 +8185,7 @@ function tideSiteEditor(env, t) {
   /** One change from the editor. */
   function saveSiteEdit(op) {
     t.need(['admin', 'artist']);
+    if (env.workDone) env.workDone('siteEdit');
     op = op || {};
     var d = draft();
     if (op.batch) {
@@ -8578,10 +8584,10 @@ function tideShop(env, t) {
     if (practice() && env.stripe.mode() === 'live') return { open: false, why: 'Checkout is off in the practice copy.' };
     return { open: true, test: env.stripe.mode() !== 'live' };
   }
-  function siteQuote(p) { p = p || {}; return publicQuote(quote(p.cart, { country: p.country, state: p.state }, p.code)); }
+  function siteQuote(p) { p = p || {}; if (env.workDone) env.workDone('quote'); return publicQuote(quote(p.cart, { country: p.country, state: p.state }, p.code)); }
   /** Starts a Stripe checkout for the cart: priced here, the address locked to the country it was priced for. */
   function startCheckout(p, back) {
-    p = p || {};
+    p = p || {}; if (env.workDone) env.workDone('checkout');
     var o = open();
     if (!o.open) t.fail(o.why);
     var q = quote(p.cart, { country: p.country, state: p.state }, p.code);
@@ -8611,6 +8617,7 @@ function tideShop(env, t) {
   // ---------------------------------------------------------------- paid: the order, its parcels, the money records
   function catOf(l) { return l.p.type === 'Print' ? 'Prints' : l.p.type === 'Original' ? 'Originals' : l.p.type === 'Apparel' ? 'Clothing' : l.p.type === 'Download' ? 'Digital downloads' : 'Other income'; }
   function makeOrder(ck, s) {
+    if (env.workDone) env.workDone('order');
     var cat = catalog(), lines = [], now = t.nowIso();
     // priced as the buyer saw it; the artworks are read again only for their ids and Printful sizes
     t.list(ck.cart).forEach(function (l) {
@@ -8704,7 +8711,7 @@ function tideShop(env, t) {
           try {
             var r = env.printful.orderByRef(o.id), sh = (r.shipments || [])[0];
             var ch = { pfStatus: r.status, pfChecked: t.nowIso() };
-            if (sh && (sh.number || sh.url)) { ch.status = 'Shipped'; ch.tracking = sh.number; ch.trackUrl = sh.url; ch.carrier = sh.carrier; ch.postedAt = sh.shipped || t.nowIso(); out.shipped++;
+            if (sh && (sh.number || sh.url)) { if (env.workDone) env.workDone('tracking'); ch.status = 'Shipped'; ch.tracking = sh.number; ch.trackUrl = sh.url; ch.carrier = sh.carrier; ch.postedAt = sh.shipped || t.nowIso(); out.shipped++;
               if (t.push) t.push('both', 'Order ' + o.id + ' is on its way', 'Printful posted it' + (sh.carrier ? ' with ' + sh.carrier : '') + '. Let ' + (o.buyer.name || 'the buyer') + ' know: it’s in Orders.'); }
             else if (/failed|canceled|cancelled|onhold/i.test(r.status)) { ch.status = 'Needs you'; ch.error = 'Printful says the order is ' + r.status + '.'; }
             savePart(o.id, i, ch);
@@ -8728,6 +8735,7 @@ function tideShop(env, t) {
   // ---------------------------------------------------------------- her side: orders to post, tracking, settings
   var CARRIERS = { 'Australia Post': 'https://auspost.com.au/mypost/track/details/', 'Sendle': 'https://track.sendle.com/tracking?ref=', 'Aramex': 'https://www.aramex.com.au/tools/track?l=' };
   function markPosted(id, i, p) {
+    if (env.workDone) env.workDone('tracking');
     t.need(['admin', 'artist']); p = p || {};
     var o = orderRow(id), part = t.list(o.parts)[i];
     if (!part || part.kind === 'printful') t.fail('That parcel is Printful’s to post.');
@@ -14717,16 +14725,23 @@ var Kit = (function () {
           h('div', { class: 'ai-track' }, h('i', { class: cls, style: 'width:' + (val > 0 ? Math.max(1.5, val / htop * 100) : 0) + '%' })));
       }
       var hcard = h('div', { class: 'card pad ai-cost hand-cost', style: 'margin-top:12px' },
-        h('div', { class: 'ai-head' }, h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Saved compared with prompting Claude yourself' }), h('div', { class: 'ai-big', text: usd(hSaved) })),
+        h('div', { class: 'ai-head' }, h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Saved compared with doing it all with AI' }), h('div', { class: 'ai-big', text: usd(hSaved) })),
           h('span', { class: 'chip ' + (hpct > 0 ? 'approved' : 'plain'), text: hpct + '% less' })),
-        hbar('Prompting Claude’s API yourself', handUsd, 'would'), hbar('With Tide Book', t.actual, 'actual'),
+        hbar('All of it done with Claude’s API', handUsd, 'would'), hbar('With Tide Book', t.actual, 'actual'),
         h('div', { class: 'label-s', style: 'margin:12px 0 6px', text: 'You’d have used' }),
         K.choices({ row: true, label: 'Model', value: hm, options: [{ value: 'sonnet', label: 'Sonnet' }, { value: 'opus', label: 'Opus' }, { value: 'haiku', label: 'Haiku' }], onChange: function (v) { S.handModel = v || 'sonnet'; render(); } }),
         h('div', { class: 'label-s', style: 'margin:10px 0 6px', text: 'Back and forth' }),
         K.choices({ row: true, label: 'Back and forth', value: String(hf), options: [{ value: '1', label: 'One message each' }, { value: '2', label: 'A little' }, { value: '4', label: 'A lot' }], onChange: function (v) { S.handTalk = Number(v) || 2; render(); } }),
-        h('p', { class: 'body-s ai-line', text: 'The same ' + t.jobs + ' job' + (t.jobs === 1 ? '' : 's') + ', each prompted by hand on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' at full price' + (hf > 1 ? ', with the conversation sent again ' + (hf === 2 ? 'once more' : 'a few more times') + ' as you go back and forth' : '') + '. Tide Book saves by doing jobs on the PC or in Claude chat for nothing, using the cheapest model that does the job well, sending research in half-price batches, reusing its saved instructions, and asking once with everything Claude needs.' }),
-        h('p', { class: 'body-s ai-line', text: 'An estimate, on the low side: it leaves out the work Tide Book does with no AI at all (prices, postage, orders, the website), and your time.' +
-          (t.estimatedJobs ? ' The ' + t.estimatedJobs + ' job' + (t.estimatedJobs === 1 ? '' : 's') + ' from before it counted tokens are sized from what they cost.' : '') }),
+        h('p', { class: 'body-s ai-line', text: 'Everything Tide Book did, done by prompting Claude’s API instead: the ' + t.jobs + ' AI job' + (t.jobs === 1 ? '' : 's') + ' and the work below, each on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' at full price' + (hf > 1 ? ', with the conversation sent again ' + (hf === 2 ? 'once more' : 'a few more times') + ' as you go back and forth' : '') + '. Tide Book saves by doing jobs on the PC or in Claude chat for nothing, using the cheapest model that does the job well, sending research in half-price batches, reusing its saved instructions, asking once with everything Claude needs, and doing the rest in its own code, at no cost.' }),
+        (function () {
+          // the work Tide Book does without AI, counted as if Claude had been asked to do each piece
+          var W = t.work || {}, LBL = { price: ['price worked out', 'prices worked out'], money: ['sale or expense recorded', 'sales and expenses recorded'], quote: ['cart priced', 'carts priced'],
+            checkout: ['checkout started', 'checkouts started'], order: ['order split into parcels', 'orders split into parcels'], tracking: ['parcel followed', 'parcels followed'],
+            siteEdit: ['website change', 'website changes'], publish: ['website publish', 'website publishes'], reminder: ['reminder', 'reminders'] };
+          var bits = Object.keys(LBL).filter(function (k) { return W[k] > 0; }).map(function (k) { return W[k] + ' ' + LBL[k][W[k] === 1 ? 0 : 1]; });
+          return h('p', { class: 'body-s ai-line', text: (bits.length ? 'It also counts the work Tide Book does with no AI at all, as if Claude had been asked to do each piece: ' + bits.join(', ') + '. ' : 'Work Tide Book does with no AI at all (prices, postage, orders, the website) is counted here as it happens, as if Claude had been asked to do it. ') +
+            'An estimate, kept on the small side.' + (t.estimatedJobs ? ' The ' + t.estimatedJobs + ' AI job' + (t.estimatedJobs === 1 ? '' : 's') + ' from before it counted tokens are sized from what they cost.' : '') });
+        })(),
         handUsd < t.actual ? note('Prompting everything on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' yourself would have cost ' + usd(t.actual - handUsd) + ' less. Tide Book spends more where it matters: research and the rules checks use Sonnet, because Haiku’s answers weren’t good enough for them.', 'info') : null);
       asec.appendChild(hcard);
       main.appendChild(rise(asec, n++));
