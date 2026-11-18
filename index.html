@@ -511,6 +511,15 @@ html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 .room .close-buy { padding-top: clamp(80px, 10vw, 140px); }
 /* the living gallery still carries an old commission link; commissions are off */
 .lg-link[href="#/c/originals"] { display: none; }
+/* the real cart: where it's going, and what the PC worked out */
+.shipto { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 14px; }
+.shipto span { color: var(--muted); }
+.shipto select, .shipto input { font: inherit; padding: 8px 10px; border: 1px solid var(--line, rgba(0,0,0,.2)); border-radius: 10px; background: transparent; max-width: 100%; }
+.shipto input { width: 110px; text-transform: uppercase; }
+.row small { color: var(--muted); font-size: 12px; }
+.cart-err { color: #a3342b; font-size: 14px; margin: 8px 0; }
+.cart-sec { color: var(--muted); font-size: 12px; text-align: center; margin: 10px 0 0; }
+.btn[disabled] { opacity: .45; pointer-events: none; }
 
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
@@ -3254,7 +3263,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     var SERIES_COL = { 'Ocean': 'ocean', 'Forest': 'forest', 'Skies & Waters': 'skies', 'Living in Gratitude': 'gratitude', 'Mind Garden': 'skies', 'Pockets of Magic': 'gratitude', 'Studio': 'forest' };
     var fromTide = function (a, i) {
       var keys = a.photos.map(function (ph, j) { var k = 'tb' + i + '_' + j; IMG[k] = REAL.images[ph] || ''; return k; });
-      return { id: a.id, title: a.title, col: SERIES_COL[a.series] || 'forest', img: keys[0], card: keys[0], alt: keys[1] || keys[0],
+      return { id: a.id, title: a.title, col: SERIES_COL[a.series] || a.seriesKey || 'forest', img: keys[0], card: keys[0], alt: keys[1] || keys[0],
         sea: a.series === 'Ocean', isNew: i < 2, ogSold: !!a.ogSold, story: a.story, products: a.products,
         // optional, for the originals: a 3D scan (.glb, or { glb, usdz }), the medium and the size, when Tide Book has them
         scan: a.scan ? (REAL.images[a.scan] || (/[./]/.test(a.scan) ? a.scan : null)) : null, medium: a.medium || '', dims: a.size || a.dimensions || '' };
@@ -3281,6 +3290,16 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     digital: { title: 'Downloads', sub: 'Phone wallpapers and printable art. Instant, nothing to post.', img: 'flowersDetail' }
   };
   var FREE_SHIP = 100, SHIP = 12, BUNDLE_N = 3, BUNDLE_OFF = 0.15;
+  // series she added in Tide Book: a page each, like the others, with her line about it and its own pieces
+  var OWN_SERIES = [];
+  if (REAL && hasReal) (REAL.series || []).forEach(function (s) {
+    if (!s.own || COLS[s.key]) return;
+    var first = ARTWORKS.concat(KEPT).filter(function (a) { return a.col === s.key; })[0];
+    COLS[s.key] = { title: s.name, sub: s.sub || '', img: first ? first.card : 'rootsTall', own: true };
+    OWN_SERIES.push(s.key);
+  });
+  var SHOPC = (REAL && REAL.shop) || null;
+  if (SHOPC && SHOPC.freeOverAU != null) FREE_SHIP = SHOPC.freeOverAU > 0 ? SHOPC.freeOverAU : Infinity;
 
   // ---------- the IKEA rule: anything for sale that you can see, you can buy from where you are ----------
   var SOURCE = {};
@@ -3365,7 +3384,24 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   }
 
   // ---------- pages ----------
+  function thanks(sid) {
+    if (!SHOPC || !SHOPC.url || !sid) return;
+    var tries = 0;
+    (function look() {
+      shopCall('thanks?s=' + encodeURIComponent(sid)).then(function (r) {
+        var el = document.getElementById('thanksRef'); if (!el) return;
+        if (r && r.ok) el.textContent = 'Your order number is ' + r.ref + '. A receipt is on its way to your email.';
+        else if (++tries < 6) setTimeout(look, 4000);
+        else el.textContent = 'Your receipt is on its way to your email.';
+      }).catch(function () {});
+    })();
+  }
   var views = {
+    thanks: function () {
+      return '<div class="page wrap" style="min-height:60vh"><div class="crumbs"><a href="#/">Home</a> · Thank you</div><h1 class="ptitle reveal">Thank <span class="it" style="color:var(--pink-deep)">you</span></h1>' +
+        '<p class="lead" style="max-width:560px">Your order is in. Denise will be in touch when it’s on its way, with how to follow it.</p><p id="thanksRef" class="lbl" style="opacity:.75">Checking your order…</p>' +
+        '<p style="margin-top:24px"><a class="chipbtn" href="#/gallery">Wander the gallery +</a></p></div>';
+    },
     home: function () {
       var name = 'Denise Duffy'.split(' ');
       var word = name.map(function (w, wi) { return '<span class="ln">' + w.split('').map(function (c, i) { return '<span class="ch" style="transition-delay:' + (0.25 + (wi * 6 + i) * 0.05) + 's">' + c + '</span>'; }).join('') + '</span>'; }).join('');
@@ -3436,7 +3472,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       }); });
       if (k === 'originals') cards = '<a class="room-door reveal" href="#/originals"><span class="lbl">The originals</span><b>Walk through the originals still looking for a home</b><span>How the prints work, and how many are left of each <i>→</i></span></a>' + cards;
       // an art set with nothing in it yet: say why, rather than an empty page
-      if (!cards && !c.soon && ['ocean', 'forest', 'skies', 'gratitude'].indexOf(k) >= 0) cards = '<div class="edn hold" style="grid-column:1/-1;max-width:640px"><b>' +
+      if (!cards && !c.soon && (['ocean', 'forest', 'skies', 'gratitude'].indexOf(k) >= 0 || c.own)) cards = '<div class="edn hold" style="grid-column:1/-1;max-width:640px"><b>' +
         (REAL && REAL.preview ? 'No artworks in this set yet' : 'New pieces are on their way') + '</b><p>' +
         (REAL && REAL.preview ? 'Add an artwork in Tide Book, give it this series, put a price on it and switch it on sale. It appears here with its photos and buying options.' : 'Join my letters from the studio and you’ll see them first.') + '</p>' + (REAL && REAL.preview ? '' : signup()) + '</div>';
       var extra = c.soon && !cards ? '<div class="edn hold" style="max-width:640px"><b>' + esc(c.soon) + '</b><p>Join my letters from the studio and you’ll see them first.</p>' + signup() + '</div>' +
@@ -3546,6 +3582,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (parts[0] !== 'gallery') state = {};
     if (window.LivingGallery) { if (parts[0] === 'gallery') window.LivingGallery.show(); else window.LivingGallery.hide(); }
     if (parts[0] === 'gallery') { if (!$('#main').innerHTML) paint(views.home()); return; }
+    if (parts[0] === 'cart') { if (!$('#main').innerHTML) paint(views.home()); openCart(true); return; }
+    if (parts[0] === 'thanks') { cart.length = 0; drawCart(); thanks(parts[1] || ''); }
     var html = !h ? views.home() : parts[0] === 'c' ? views.collection(parts[1]) : parts[0] === 'a' ? views.artwork(parts[1], parts[2]) : parts[0] === 's' ? views.set(parts[1]) : views[parts[0]] ? views[parts[0]]() : views.home();
     if (first || REDUCED) { paint(html); first = false; return; }
     var v = $('#veil'); v.classList.remove('go'); void v.offsetWidth; v.classList.add('go');
@@ -3720,6 +3758,18 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   }, true);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.body.classList.contains('qs-open')) { e.stopImmediatePropagation(); closeQuick(); } }, true);
   window.TideShop = { can: function (id) { return buyable(art(id)); }, open: openQuick };
+  (function ownSeriesLinks() {
+    if (!OWN_SERIES.length) return;
+    var nav = document.querySelector('#menu nav'), after = nav && nav.querySelector('a[href="#/c/gratitude"]');
+    var foot = document.querySelector('#footer a[href="#/c/gratitude"]');
+    OWN_SERIES.slice().reverse().forEach(function (k) {
+      if (after) after.insertAdjacentHTML('afterend', '<a href="#/c/' + k + '"><small></small><span>' + esc(COLS[k].title) + '</span></a>');
+      if (foot) foot.insertAdjacentHTML('afterend', '<a href="#/c/' + k + '">' + esc(COLS[k].title) + '</a>');
+    });
+  })();
+  // the menu's numbers follow its order, including her series and any page she added with the editor
+  function renumberMenu() { var nav = document.querySelector('#menu nav'); if (nav) [].forEach.call(nav.querySelectorAll('a small'), function (s, i) { s.textContent = ('0' + i).slice(-2); }); }
+  renumberMenu(); setTimeout(renumberMenu, 0); setTimeout(renumberMenu, 1200);
 
   // ---------- cart ----------
   function totals() {
@@ -3730,11 +3780,14 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     var posted = cart.some(function (c) { return !c.digital; }), ship = !posted || code === 'IRUKANDJI' || sub - off >= FREE_SHIP ? 0 : SHIP;
     return { sub: sub, off: off, ship: ship, posted: posted, total: sub - off + ship, a4: a4.length };
   }
-  function drawCart() {
+  function drawCart(fromQuote) {
+    keepCart();
+    if (!fromQuote) getQuote();
     $('#cartN').textContent = String(cart.length);
     var items = $('#items'), ft = $('#cartFt');
     if (!cart.length) { items.innerHTML = '<div class="empty">Nothing here yet.<br>Have a wander through the work.</div>'; ft.innerHTML = ''; return; }
     var t = totals(), away = FREE_SHIP - (t.sub - t.off);
+    if (REAL_SHOP) return drawShopCart(items, ft, t, away);
     items.innerHTML = (t.posted ? '<div class="ship">' + (t.ship === 0 ? '✦ Free delivery unlocked' : 'You’re <b>' + money(away) + '</b> away from free delivery') + '<div class="meter"><i style="width:' + Math.min(100, Math.round((t.sub - t.off) / FREE_SHIP * 100)) + '%"></i></div></div>' : '') +
       (t.a4 % BUNDLE_N ? '<div class="ship">Add ' + (BUNDLE_N - t.a4 % BUNDLE_N) + ' more A4 print' + (BUNDLE_N - t.a4 % BUNDLE_N === 1 ? '' : 's') + ' to save 15% on the set.</div>' : '') +
       cart.map(function (c, i) { return '<div class="cl"><img alt="" src="' + IMG[c.img] + '"><div><div class="t">' + esc(c.title) + '</div><div class="m">' + esc(c.detail) + ' · ' + money(c.price) + '</div></div><button class="rm" type="button" data-rm="' + i + '">Remove</button></div>'; }).join('') +
@@ -3744,8 +3797,67 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       '<div class="code"><input id="codeIn" placeholder="Discount or gift card code" value="' + esc(code) + '" aria-label="Discount code"><button type="button" data-act="code">Apply</button></div>' +
       '<button class="btn block" type="button" data-act="checkout">Check out</button><div class="or">or pay in one tap</div><div class="express"><button class="xb shop" type="button" data-act="express" data-via="Link">Link</button><button class="xb apple" type="button" data-act="express" data-via="Apple Pay">Apple Pay</button><button class="xb google" type="button" data-act="express" data-via="Google Pay">G Pay</button></div>';
   }
+  /** The real cart: what's in it, where it's going, and the prices and postage as Denise's PC worked them out. */
+  function drawShopCart(items, ft, t, away) {
+    var Q = QUOTE && QUOTE.lines ? QUOTE : null, errs = QUOTE && QUOTE.errors && QUOTE.errors.length ? QUOTE.errors : [];
+    var selfIn = Q ? Q.shipping.some(function (s) { return s.kind === 'self'; }) : t.posted;
+    items.innerHTML = (selfIn && SHIPTO.country === 'AU' && away > 0 && isFinite(away) ? '<div class="ship">You’re <b>' + money(away) + '</b> away from free postage on Denise’s own parcels<div class="meter"><i style="width:' + Math.min(100, Math.round((t.sub - t.off) / FREE_SHIP * 100)) + '%"></i></div></div>' : '') +
+      (t.a4 % BUNDLE_N ? '<div class="ship">Add ' + (BUNDLE_N - t.a4 % BUNDLE_N) + ' more A4 print' + (BUNDLE_N - t.a4 % BUNDLE_N === 1 ? '' : 's') + ' to save 15% on the set.</div>' : '') +
+      cart.map(function (c, i) { return '<div class="cl"><img alt="" src="' + IMG[c.img] + '"><div><div class="t">' + esc(c.title) + '</div><div class="m">' + esc(c.detail) + ' · ' + money(c.price) + '</div></div><button class="rm" type="button" data-rm="' + i + '">Remove</button></div>'; }).join('');
+    var rows = '<div class="row"><span>Subtotal</span><span>' + money(Q ? Q.subtotal : t.sub) + '</span></div>' + ((Q ? Q.discount : t.off) ? '<div class="row disc"><span>Set of 3 A4 prints, 15% off</span><span>−' + money(Q ? Q.discount : t.off) + '</span></div>' : '');
+    if (Q) rows += Q.shipping.map(function (s) { return '<div class="row" style="color:var(--muted);font-size:14px"><span>' + esc(s.label) + (s.note ? '<br><small>' + esc(s.note) + '</small>' : '') + '</span><span>' + (s.amount ? money(s.amount) : 'Free') + '</span></div>'; }).join('') +
+      (!Q.shipping.length ? '<div class="row" style="color:var(--muted);font-size:14px"><span>Delivery</span><span>None: instant download</span></div>' : '') + '<div class="row tot"><span>Total</span><span>' + money(Q.total) + '</span></div>';
+    else rows += '<div class="row" style="color:var(--muted);font-size:14px"><span>Postage</span><span>' + (QUOTE && QUOTE.closed ? 'Worked out at checkout' : 'Working it out…') + '</span></div>';
+    ft.innerHTML = shipToHtml() + rows + (errs.length ? '<p class="cart-err">' + esc(errs[0]) + '</p>' : '') +
+      '<div class="code"><input id="codeIn" placeholder="Discount code" value="' + esc(code) + '" aria-label="Discount code"><button type="button" data-act="code">Apply</button></div>' +
+      '<button class="btn block" type="button" data-act="checkout"' + (errs.length ? ' disabled' : '') + '>Check out</button><p class="cart-sec">Secure checkout by Stripe: cards, Apple Pay and Google Pay. Prints A3 and bigger are printed to order for you.</p>';
+  }
   function openCart(on) { document.body.classList.toggle('cart-open', on); }
   function addLine(l) { cart.push(l); drawCart(); openCart(true); }
+  // ---------- checkout: priced on Denise's PC (never here), paid on Stripe's own page ----------
+  var REAL_SHOP = !!(REAL && hasReal && SHOPC);
+  var SHIPTO = (function () { try { return JSON.parse(localStorage.getItem('dd_shipto') || 'null') || { country: 'AU', state: '' }; } catch (e) { return { country: 'AU', state: '' }; } })();
+  var QUOTE = null, QUOTE_KEY = '', QUOTE_BUSY = false;
+  function keepCart() { try { localStorage.setItem('dd_cart', JSON.stringify(cart.filter(function (c) { return c.a; }))); } catch (e) {} }
+  (function () { try { var c = JSON.parse(localStorage.getItem('dd_cart') || '[]'); if (REAL_SHOP && Array.isArray(c)) c.forEach(function (l) { if (art(l.a)) cart.push(l); }); } catch (e) {} })();
+  function shopLines() { return cart.filter(function (c) { return c.a; }).map(function (c) { return { a: c.a, p: c.pid, o: c.opt, q: 1, frame: !!c.frame, gift: !!c.gift }; }); }
+  function shopCall(path, body) {
+    if (!SHOPC || !SHOPC.url) return Promise.reject(new Error('closed'));
+    return fetch(SHOPC.url.replace(/\/?$/, '/') + path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {})
+      .then(function (r) { return r.json(); });
+  }
+  function getQuote() {
+    if (!REAL_SHOP || !cart.length) { QUOTE = null; return; }
+    var body = { cart: shopLines(), country: SHIPTO.country, state: SHIPTO.state, code: code }, key = JSON.stringify(body);
+    if (key === QUOTE_KEY || QUOTE_BUSY) return;
+    QUOTE_KEY = key; QUOTE_BUSY = true;
+    shopCall('quote', body).then(function (q) { QUOTE_BUSY = false; QUOTE = q && !q.error ? q : { errors: [q && q.error || 'Prices can’t be checked right now.'] }; if (key === QUOTE_KEY) drawCart(true); })
+      .catch(function () { QUOTE_BUSY = false; QUOTE = { closed: true }; drawCart(true); });
+  }
+  function shipToHtml() {
+    if (!REAL_SHOP) return '';
+    var cs = (SHOPC.countries || []).map(function (c) { return '<option value="' + c[0] + '"' + (c[0] === SHIPTO.country ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('');
+    var needs = (SHOPC.needsState || []).indexOf(SHIPTO.country) >= 0, st = '';
+    if (needs && SHIPTO.country === 'AU') st = '<select id="shipState" aria-label="State"><option value="">State</option>' + (SHOPC.auStates || []).map(function (s) { return '<option' + (s === SHIPTO.state ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>';
+    else if (needs) st = '<input id="shipState" maxlength="3" placeholder="State code" value="' + esc(SHIPTO.state || '') + '" aria-label="State or province code">';
+    return '<div class="shipto"><span>Sending to</span><select id="shipCountry" aria-label="Country">' + cs + '</select>' + st + '</div>';
+  }
+  function checkout(b) {
+    if (!REAL_SHOP) { toast('This is a preview of the shop: nothing is for sale yet.'); return; }
+    if (!SHOPC.url) { toast('Checkout opens very soon. Message Denise on Instagram in the meantime.'); return; }
+    if (b) { b.disabled = true; b.textContent = 'Opening the secure checkout…'; }
+    shopCall('checkout', { cart: shopLines(), country: SHIPTO.country, state: SHIPTO.state, code: code, back: location.href.split('#')[0] }).then(function (r) {
+      if (r && r.url) { location.href = r.url; return; }
+      throw new Error(r && r.error || 'The checkout couldn’t open.');
+    }).catch(function (e) { if (b) { b.disabled = false; b.textContent = 'Check out'; } toast(e.message === 'closed' || /fetch/i.test(e.message) ? 'Checkout is resting for a moment. Try again shortly, or message Denise on Instagram.' : e.message); });
+  }
+  document.addEventListener('change', function (e) {
+    if (e.target.id === 'shipCountry') { SHIPTO = { country: e.target.value, state: '' }; }
+    else if (e.target.id === 'shipState') SHIPTO.state = String(e.target.value || '').toUpperCase();
+    else return;
+    try { localStorage.setItem('dd_shipto', JSON.stringify(SHIPTO)); } catch (er) {}
+    drawCart();
+  });
   document.addEventListener('click', function (e) {
     var t = e.target.closest('[data-opt],[data-act],[data-rm]'); if (!t) return;
     var act = t.dataset.act;
@@ -3754,20 +3866,20 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     else if (act === 'add' && state.a) {
       var a = state.a, p = state.p, o = state.o;
       if (heldPrint(a, p) || soldOriginal(a, p)) return;
-      addLine({ title: a.title, img: a.card, pid: p.id, opt: o.id, digital: p.type === 'Download', price: price(), detail: (p.type === 'Print' ? o.label : p.name + (p.options.length > 1 ? ', ' + o.label : '')) + (state.frame ? ', framed' : '') + (state.gift ? ', gift wrapped' : '') });
+      addLine({ a: a.id, frame: !!state.frame, gift: !!state.gift, title: a.title, img: a.card, pid: p.id, opt: o.id, digital: p.type === 'Download', price: price(), detail: (p.type === 'Print' ? o.label : p.name + (p.options.length > 1 ? ', ' + o.label : '')) + (state.frame ? ', framed' : '') + (state.gift ? ', gift wrapped' : '') });
     } else if (act === 'addset') addLine({ title: state.set.title, img: state.set.img, pid: state.set.id, digital: !!state.set.gift, price: state.set.price, detail: state.set.gift ? 'Gift card' : 'Pair of A4 prints' });
     else if (act === 'qadd' && qs.a && canBuy(qs.a, qs.p)) {
       var qa = qs.a, qp = qs.p, qo = qs.o;
-      cart.push({ title: qa.title, img: qa.card, pid: qp.id, opt: qo.id, digital: qp.type === 'Download', price: qo.price, detail: qp.type === 'Print' ? qo.label : qp.name + (qp.options.length > 1 ? ', ' + qo.label : '') });
+      cart.push({ a: qa.id, title: qa.title, img: qa.card, pid: qp.id, opt: qo.id, digital: qp.type === 'Download', price: qo.price, detail: qp.type === 'Print' ? qo.label : qp.name + (qp.options.length > 1 ? ', ' + qo.label : '') });
       drawCart(); closeQuick(true);
       // the 3D viewer sits above the cart, so there a note does instead
       if (document.querySelector('.rv.on')) toast('Added to your cart: ' + qa.title + '.');
       else { if (window.OriginalsHall && window.OriginalsHall.isOpen()) window.OriginalsHall.close(); openCart(true); }
     }
     else if (act === 'upsell') addLine({ title: (art('walkway') || {}).title || 'Card pack', img: 'flowersDetail', pid: 'cards', opt: 'p5', price: 25, detail: 'Card pack, Pack of 5' });
-    else if (act === 'code') { code = ($('#codeIn').value || '').trim().toUpperCase(); drawCart(); toast(code === 'IRUKANDJI' ? 'Free delivery applied.' : code ? 'That code isn’t set up in this prototype. Try IRUKANDJI.' : 'Code cleared.'); }
-    else if (act === 'express') toast('On the live site, ' + t.dataset.via + ' fills in the address and card: one tap and it’s paid.');
-    else if (act === 'checkout') toast('On the live site this goes to the secure checkout.');
+    else if (act === 'code') { code = ($('#codeIn').value || '').trim().toUpperCase(); drawCart(); toast(REAL_SHOP ? (code === 'IRUKANDJI' ? 'Free postage on Denise’s own parcels.' : code ? 'Checking the code…' : 'Code cleared.') : code === 'IRUKANDJI' ? 'Free delivery applied.' : code ? 'That code isn’t set up in this prototype. Try IRUKANDJI.' : 'Code cleared.'); }
+    else if (act === 'express') { if (REAL_SHOP) { openCart(true); toast('Choose where it’s going, then Check out: Apple Pay and Google Pay are on the next page.'); } else toast('On the live site, ' + t.dataset.via + ' fills in the address and card: one tap and it’s paid.'); }
+    else if (act === 'checkout') { if (REAL_SHOP) checkout(t); else toast('On the live site this goes to the secure checkout.'); }
     else if (act === 'join') toast('On the live site this joins the newsletter and sends the wallpaper.');
   });
   document.addEventListener('change', function (e) { var t = e.target.closest('input[data-act]'); if (!t) return; if (t.dataset.act === 'frame') state.frame = t.checked; if (t.dataset.act === 'gift') state.gift = t.checked; paintPrice(); });

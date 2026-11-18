@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,print,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1405,6 +1405,18 @@ body.map-full { overflow: hidden; }
 .dns-row.head { padding: 8px 12px; font: 500 12px/16px var(--font); color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: .04em; }
 .dns-t { font-weight: 600; }
 .dns-v { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; word-break: break-all; }
+/* orders */
+.order-list { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.order-h { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.order-part { border-top: 1px solid var(--outline-variant); padding: 10px 0 4px; }
+.order-part-h { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.order-part-h .ms { color: var(--primary); }
+.order-items { margin: 4px 0 0 32px; padding: 0; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
+.order-more summary { cursor: pointer; font: 500 14px/20px var(--font); color: var(--primary); margin-top: 8px; }
+.order-addr { white-space: pre-wrap; font: 400 14px/20px var(--font); margin: 8px 0 4px; }
+.who-makes { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.who-row { display: flex; gap: 10px; align-items: flex-start; font: 400 14px/20px var(--font); }
+.who-row .ms { color: var(--primary); flex: none; }
 </style>
 
   <script>
@@ -1563,7 +1575,9 @@ var TIDE_SETTING_DEFAULTS = {
   seenChangesArtist: [], seenChangesAdmin: [],   // what's new (TIDE_CHANGES in LogicSetup.gs): the changes each has seen
   sitePublishedAt: '',      // when the website was last published from Tide Book
   sitePublishedSig: '',     // what the shop looked like then, to tell when it has changes that aren't on the website yet
-  siteDomain: '', siteDomainOn: false, siteDomainCheck: ''   // her own web address (LogicSite.gs): the name, in use or not, the last check
+  siteDomain: '', siteDomainOn: false, siteDomainCheck: '',  // her own web address (LogicSite.gs): the name, in use or not, the last check
+  shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true,  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
+  seriesExtra: ''           // series she added herself, each with a line about it (JSON): each becomes a page on her website
 };
 
 /**
@@ -1571,6 +1585,23 @@ var TIDE_SETTING_DEFAULTS = {
  * day (calendar date), list (comma separated), json.
  */
 var TIDE_SCHEMAS = {
+  // the website's shop (LogicShop.gs): each paid order, split into the parcels it makes, and the checkouts started
+  orders: {
+    sheet: 'Orders',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['session', 'Stripe checkout', 'text'], ['checkout', 'Checkout', 'text'], ['status', 'Status', 'text'],
+      ['buyer', 'Buyer', 'json'], ['address', 'Address', 'json'], ['items', 'Items', 'json'], ['parts', 'Parcels', 'json'],
+      ['shipping', 'Postage charged', 'number'], ['discount', 'Discount', 'number'], ['total', 'Total', 'number'], ['currency', 'Currency', 'text'],
+      ['notes', 'Notes', 'text'], ['updated', 'Updated', 'date']
+    ]
+  },
+  checkouts: {
+    sheet: 'Checkouts',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['session', 'Stripe checkout', 'text'], ['status', 'Status', 'text'], ['cart', 'Cart', 'json'],
+      ['quote', 'Priced', 'json'], ['country', 'Country', 'text'], ['state', 'State', 'text'], ['code', 'Code', 'text'], ['orderId', 'Order', 'text'], ['updated', 'Updated', 'date']
+    ]
+  },
   // her own things on the calendar: a few words on a day (RP-0003). Only the person who wrote one sees it.
   days: {
     sheet: 'Calendar Own',
@@ -1633,7 +1664,7 @@ var TIDE_SCHEMAS = {
       ['approvalRequest', 'Approval request', 'text'], ['approvalState', 'Approval state', 'text'],
       ['artistComment', 'Artist comment', 'text'], ['approvalAnswered', 'Approval answered', 'date'],
       ['adminNotes', 'Admin notes', 'text'], ['sourceIdea', 'From idea', 'text'],
-      ['series', 'Series', 'text'], ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date'],
+      ['series', 'Series', 'text'], ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date'], ['printful', 'Printful sizes and file', 'json'],
       ['approvalLater', 'Request parked until', 'day']
     ]
   },
@@ -2186,6 +2217,31 @@ function createTideLogic(env) {
     });
   }
 
+  // ---------- series: the four she started with, and any she adds (each its own page on the website)
+  function seriesExtra() { try { var x = JSON.parse(settings().seriesExtra || '[]'); return Array.isArray(x) ? x : []; } catch (e) { return []; } }
+  function allSeries() { return T.SERIES.concat(seriesExtra().map(function (x) { return x.name; })); }
+  function seriesKey(name) { var k = { 'Ocean': 'ocean', 'Forest': 'forest', 'Skies & Waters': 'skies', 'Living in Gratitude': 'gratitude' }[name]; return k || 's-' + String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30); }
+  function seriesInfo() {
+    return allSeries().map(function (n) { var x = seriesExtra().filter(function (e) { return e.name === n; })[0]; return { name: n, key: seriesKey(n), sub: x ? x.sub : '', own: !!x }; });
+  }
+  /** A new series: its name and a line about it. It gets its own page on the website, laid out like the others. */
+  function addSeries(name, sub) {
+    need(['admin', 'artist']);
+    name = text(name, 40).replace(/\s+/g, ' ').trim();
+    if (!name) fail('Give the series a name.');
+    if (allSeries().some(function (s) { return s.toLowerCase() === name.toLowerCase(); })) fail('There’s already a series called ' + name + '.');
+    var list2 = seriesExtra().concat([{ name: name, sub: text(sub, 240) }]).slice(0, 20);
+    env.settings.set({ seriesExtra: JSON.stringify(list2) });
+    return { ok: true, name: name };
+  }
+  function updateSeries(name, sub) {
+    need(['admin', 'artist']);
+    var found = false, list2 = seriesExtra().map(function (x) { if (x.name !== name) return x; found = true; return { name: x.name, sub: text(sub, 240) }; });
+    if (!found) fail('Only the series you added can be changed here.');
+    env.settings.set({ seriesExtra: JSON.stringify(list2) });
+    return { ok: true };
+  }
+
   function createPrint(p) {
     need(['admin', 'artist']);
     p = p || {};
@@ -2198,7 +2254,7 @@ function createTideLogic(env) {
         status: 'Draft', variants: normaliseVariants(p.variants, id, settings()), products: normaliseProducts(p.products, id, settings()),
         folderUrl: env.files.folder(['Prints', id + ' ' + cleanName(title)]), photoIds: [], thumbIds: [],
         approvalRequest: '', approvalState: '', artistComment: '', adminNotes: '',
-        sourceIdea: text(p.sourceIdea, 20), series: T.SERIES.indexOf(p.series) >= 0 ? p.series : 'Forest', edition: readEdition(p.edition, {}, null), updated: now
+        sourceIdea: text(p.sourceIdea, 20), series: allSeries().indexOf(p.series) >= 0 ? p.series : 'Forest', edition: readEdition(p.edition, {}, null), updated: now
       });
       return { id: id };
     });
@@ -2214,7 +2270,7 @@ function createTideLogic(env) {
       if ('variants' in ch) out.variants = normaliseVariants(ch.variants, id, settings());
       if ('products' in ch) out.products = normaliseProducts(ch.products, id, settings());
       if ('edition' in ch) out.edition = readEdition(ch.edition, pr.edition || {}, pr);
-      if ('series' in ch) out.series = oneOf(ch.series, T.SERIES, 'a series');
+      if ('series' in ch) out.series = oneOf(ch.series, allSeries(), 'a series');
       if (role === 'admin' && 'adminNotes' in ch) out.adminNotes = text(ch.adminNotes, 5000);
       if (pr.status === 'Live') {
         var missing = liveGaps(Object.assign({}, pr, out));
@@ -2540,7 +2596,7 @@ function createTideLogic(env) {
       });
       var pl = (r.research && r.research.plan) || {}, how = String(pl.supplierWhy || '') + ' ' + String(pl.sampleHow || '');
       var price = Number((r.pricing || {}).price) || 0;
-      var series = T.SERIES.filter(function (s) { return low.indexOf(s.toLowerCase().split(/[ &]/)[0]) >= 0; })[0];
+      var series = allSeries().filter(function (s) { return low.indexOf(s.toLowerCase().split(/[ &]/)[0]) >= 0; })[0];
       var made = createPrint({ title: title, description: String((r.listing || {}).copy || r.summary || ''), series: series,
         products: [{ type: type, name: text(name || title, 60), status: price > 0 ? 'Live' : 'Draft',
           fulfilment: type === 'Download' ? 'Digital download' : /to order|on demand|one at a time|printful/i.test(how) ? 'Print on demand' : T.PRODUCT_TYPES[type].fulfil,
@@ -2568,23 +2624,31 @@ function createTideLogic(env) {
       else if (st.mode === 'limited' || st.mode === 'soldout') ed = { mode: st.mode, left: st.left, limit: st.limit, size: st.size, quick: !!st.quick };
       var products = [];
       var sizes = list(pr.variants).filter(function (v) { return v.price > 0; });
-      if (sizes.length) products.push({ id: 'print', type: 'Print', name: 'Art print', options: sizes.map(function (v) {
-        return { id: String(v.size).toLowerCase().replace(/[^a-z0-9]+/g, ''), label: v.size + ' print', note: FULFIL['From stock'], price: v.price };
-      }) });
+      var pfm = pr.printful || {}, pfReady = !!((pfm.file || {}).id);
+      var popts = sizes.map(function (v) {
+        var self = shop.selfSize(v.size), pv = (pfm.sizes || {})[v.size];
+        if (!self && !(pv && pv.id && pfReady)) return null;     // printed to order: only once Printful has the size and the file
+        return { id: String(v.size).toLowerCase().replace(/[^a-z0-9]+/g, ''), label: v.size + ' print', price: v.price,
+          note: self ? 'Posted by Denise · 2 to 4 days in Australia' : 'Printed to order · posted in 5 to 9 days', ship: self ? 'self' : 'printful', pf: self ? '' : String(pv.id) };
+      }).filter(Boolean);
+      if (popts.length) products.push({ id: 'print', type: 'Print', name: 'Art print', options: popts });
       list(pr.products).filter(function (pd) { return pd.status === 'Live'; }).forEach(function (pd) {
         var opts = list(pd.variants).filter(function (v) { return v.price > 0; });
         if (!opts.length) return;
         products.push({ id: pd.type === 'Original' ? 'original' : String(pd.id).toLowerCase(), type: pd.type, name: pd.type === 'Original' ? 'The original' : pd.name,
-          options: opts.map(function (v) { return { id: String(v.option).toLowerCase().replace(/[^a-z0-9]+/g, '') || 'one', label: v.option, note: FULFIL[pd.fulfilment] || '', price: v.price }; }) });
+          options: opts.map(function (v) { return { id: String(v.option).toLowerCase().replace(/[^a-z0-9]+/g, '') || 'one', label: v.option, note: FULFIL[pd.fulfilment] || '', price: v.price,
+            ship: pd.type === 'Original' || pd.fulfilment === 'One-off' ? 'original' : pd.fulfilment === 'Digital download' ? 'download' : 'self' }; }) });
       });
-      return { id: slugOf(pr.title, pr.id), title: pr.title, story: pr.description || '', series: pr.series || 'Forest',
+      return { id: slugOf(pr.title, pr.id), printId: pr.id, title: pr.title, story: pr.description || '', series: pr.series || 'Forest', seriesKey: seriesKey(pr.series || 'Forest'),
         photos: list(pr.photoIds).slice(0, 3), scan: pr.scanId || '', ed: ed, ogSold: !!st.sold, products: products, wentLive: pr.wentLive || '' };
     }).sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
     // an original is for sale only when "The original" has a price. Live pieces with nothing to buy are still shown in the
     // gallery, as part of Denise's own collection; pieces with prints show there too, marked as hers.
     var lay = siteEditor.layerFor(which === 'draft' ? 'draft' : 'live');
     return { at: nowIso(), artworks: art.filter(function (a) { return a.products.length; }),
-      keeps: art.filter(function (a) { return !a.products.length; }), edits: lay.edits, editFiles: lay.editFiles };
+      keeps: art.filter(function (a) { return !a.products.length; }), edits: lay.edits, editFiles: lay.editFiles,
+      series: seriesInfo(), shop: { url: env.site && env.site.shopUrl ? env.site.shopUrl(which === 'draft') : '', countries: shop.COUNTRIES, auStates: shop.AU_STATES, needsState: shop.NEEDS_STATE,
+        freeOverAU: shop.snapshot('admin').rates.freeOverAU } };
   }
 
   // ---------- money
@@ -2843,6 +2907,18 @@ function createTideLogic(env) {
   }
 
   /** Used by store connectors (see Code.gs): adds sales that are not in the ledger yet. */
+  /** What a website order cost to make (Printful's charge), once, by its reference. */
+  function recordShopExpense(o) {
+    var ref = 'shop:' + text(o.ref, 80);
+    if (rows('ledger').some(function (t) { return t.externalRef === ref; })) return;
+    var amount = Math.round(Number(o.amount) * 100) / 100;
+    if (!(amount > 0)) return;
+    env.lock(function () {
+      env.table('ledger').append({ id: env.nextId('TX', 5), kind: 'Expense', date: o.date, channel: '', category: T.EXPENSE_CATEGORIES.indexOf(o.category) >= 0 ? o.category : 'Printing',
+        description: text(o.description, 300), amount: amount, gst: 0, qty: '', printId: '', receiptId: '', receiptThumbId: '', source: 'shop', externalRef: ref,
+        status: 'OK', voidReason: '', enteredBy: 'shop', created: nowIso(), notes: '' });
+    });
+  }
   function recordOnlineSales(sales, source) {
     var s = settings(), known = {}, added = 0;
     rows('ledger').forEach(function (t) { if (t.externalRef) known[t.externalRef] = true; });
@@ -2856,7 +2932,7 @@ function createTideLogic(env) {
           id: env.nextId('TX', 5), kind: 'Sale', date: o.date, channel: 'Online store',
           category: T.INCOME_CATEGORIES.indexOf(o.category) >= 0 ? o.category : 'Prints',
           description: text(o.description, 300) || ('Order ' + o.ref), amount: amount,
-          gst: gstRegisteredOn(o.date, s) ? r2(amount / 11) : 0, qty: '', printId: '', receiptId: '', receiptThumbId: '',
+          gst: gstRegisteredOn(o.date, s) ? r2(amount / 11) : 0, qty: Number(o.qty) > 0 ? Math.round(Number(o.qty)) : '', printId: text(o.printId, 20), receiptId: '', receiptThumbId: '',
           source: source, externalRef: ref, status: 'OK', voidReason: '', enteredBy: source, created: nowIso(), notes: ''
         });
         added++;
@@ -2961,6 +3037,7 @@ function createTideLogic(env) {
     var photoIds = list(pr.photoIds);
     var out = {
       id: pr.id, created: pr.created, updated: pr.updated, title: pr.title, description: pr.description || '', series: pr.series || 'Forest',
+      printful: pr.printful ? { productId: pr.printful.productId || 0, title: pr.printful.title || '', sizes: pr.printful.sizes || {}, file: pr.printful.file ? { id: pr.printful.file.id || '', status: pr.printful.file.status || '', error: pr.printful.file.error || '' } : null } : null,
       status: pr.status, thumbIds: list(pr.thumbIds), scanUrl: pr.scanId ? env.files.viewUrl(pr.scanId) : '',
       variants: list(pr.variants).map(function (v) {
         return { sku: v.sku, size: v.size, cost: v.cost, markupPct: v.markupPct, price: v.price,
@@ -3011,16 +3088,16 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), shop: shop.snapshot(role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
-      website: env.site ? { preview: env.site.previewUrl(), live: siteEditor.liveUrl(), pending: shopPending(), lastPublished: String(settings().sitePublishedAt || '') } : null,
+      website: env.site ? { preview: env.site.previewUrl(), live: siteEditor.liveUrl(), pending: shopPending(), checkout: !!(env.site.shopUrl && env.site.shopUrl(false)), lastPublished: String(settings().sitePublishedAt || '') } : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
         kinds: T.KINDS, timelines: T.TIMELINES, priorities: T.PRIORITIES, stages: T.STAGES, sizes: T.SIZES,
-        productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: T.SERIES,
+        productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: allSeries(), seriesInfo: seriesInfo(),
         saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES
       },
       settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, practice: env.practice === true,
@@ -3095,6 +3172,9 @@ function createTideLogic(env) {
 
   // ---------- what the website needs from her (LogicSite.gs)
   var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push });
+  // ---------- the website's shop: checkout, orders and their parcels (LogicShop.gs)
+  var shop = tideShop(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push,
+    siteData: function (w) { return siteData(w); }, recordSales: function (s) { var r = recordOnlineSales(s, 'website'); publishFeed(); return r; }, recordExpense: recordShopExpense });
   var siteEditor = tideSiteEditor(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push, publishWebsite: function () { return publishWebsite(); }, shopPending: function () { return shopPending(); }, markPublished: function () { env.settings.set({ sitePublishedSig: shopSig() }); },
     liveArtworks: function () { return rows('prints').filter(function (pr) { return pr.status === 'Live' && list(pr.photoIds).length; }).length; } });
 
@@ -3574,7 +3654,42 @@ function createTideLogic(env) {
     return { ok: true };
   }
   /** The PC calls this when Printful has the file (or couldn't take it). */
-  function printfulFileDone(id, res) { pfSave(id, { file: Object.assign({ at: nowIso() }, res || {}) }); }
+  function printfulFileDone(id, res) {
+    if (/^PR-/.test(String(id))) { env.lock(function () { var pr = find('prints', id); env.table('prints').update(id, { printful: Object.assign({}, pr.printful || {}, { file: Object.assign({ at: nowIso() }, res || {}) }), updated: nowIso() }); }); publishFeed(); return; }
+    pfSave(id, { file: Object.assign({ at: nowIso() }, res || {}) });
+  }
+  /** An artwork's bigger sizes, printed to order: which Printful paper, and which of its sizes is each of hers. */
+  function printfulForPrint(printId, productId, sizes) {
+    need(['admin', 'artist']);
+    var pr = find('prints', printId), p = pf().product(productId), map = {};
+    Object.keys(sizes || {}).forEach(function (sz) {
+      var v = p.variants.filter(function (x) { return x.id === Number(sizes[sz]); })[0];
+      if (v && !shop.selfSize(sz) && list(pr.variants).some(function (x) { return x.size === sz; })) map[sz] = { id: v.id, name: v.name, cost: v.cost };
+    });
+    env.lock(function () { env.table('prints').update(printId, { printful: Object.assign({}, pr.printful || {}, { productId: p.id, title: p.title, currency: p.currency, sizes: map }), updated: nowIso() }); });
+    publishFeed();
+    return { ok: true, currency: p.currency, sizes: Object.keys(map).length };
+  }
+  /** A print file already in her Printful library (its number from Printful's File library), used for this artwork. */
+  function printfulFileUse(printId, fileId) {
+    need(['admin']);
+    find('prints', printId);
+    var f = pf().file(Number(fileId));
+    if (f.status !== 'ok') fail('Printful hasn’t finished with that file yet (' + f.status + '). Try again in a minute.');
+    printfulFileDone(printId, { status: 'ok', id: f.id, preview: f.preview, from: 'library' });
+    return { ok: true };
+  }
+  /** The print file for an artwork's Printful sizes: shared with Printful for a few minutes, then taken down. */
+  function printfulPrintFile(printId, fileId) {
+    need(['admin', 'artist']);
+    pf();
+    if (!env.briefPrintful) fail('Sending print files works on the PC version of Tide Book.');
+    var pr = find('prints', printId);
+    if (!fileId) fail('Pick the file to print from.');
+    env.lock(function () { env.table('prints').update(printId, { printful: Object.assign({}, pr.printful || {}, { file: { status: 'sending', from: String(fileId), at: nowIso() } }), updated: nowIso() }); });
+    env.briefPrintful(printId, String(fileId));
+    return { ok: true };
+  }
   function printfulMockups(id) {
     need(['admin', 'artist']);
     var r = pfItem(id), P = r.printful || {}, f = P.file || {};
@@ -3829,7 +3944,7 @@ function createTideLogic(env) {
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
       printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
-      createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, requeueResearch: requeueResearch,
+      createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, addSeries: addSeries, updateSeries: updateSeries, printfulForPrint: printfulForPrint, printfulPrintFile: printfulPrintFile, printfulFileUse: printfulFileUse, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
@@ -3863,6 +3978,8 @@ function createTideLogic(env) {
   out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock;
   Object.keys(siteWishes.api).forEach(function (k) { out.api[k] = siteWishes.api[k]; });
   Object.keys(siteEditor.api).forEach(function (k) { out.api[k] = siteEditor.api[k]; });
+  Object.keys(shop.api).forEach(function (k) { out.api[k] = shop.api[k]; });
+  out.shop = shop;
   return out;
 }
 
@@ -7161,6 +7278,15 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-art-to-door', on: '2026-11-19', to: 'all', icon: 'local_shipping', title: 'From your painting to the buyer’s door',
+    say: 'Add an artwork once, and it goes on your website in its series and in the living gallery, as prints and as the original. When someone buys, it comes to Orders, with what to post and what Printful is making.',
+    steps: ['In Artworks, tap “Add an artwork”: photos, its title and story, and the series it belongs to. “A new series…” makes a new page on your website for it.',
+      'Add the print sizes with a price. A4 and smaller you post yourself. A3 and up are printed and posted by Printful: tap “Choose Printful’s paper”, match the sizes, then “Send the print file”.',
+      'To sell the original too, tap “Make it into…” then “The original”, with its price. It’s posted insured.',
+      'Tap Launch, then Publish your website. It shows in its series, in the shop and in the living gallery.',
+      'When someone buys, you get a buzz and it’s in Orders (in the menu). Printful’s part is sent for you. For yours: Packing slip, post it, then “It’s posted” with the tracking number, and “Tell” the buyer.',
+      'Postage at checkout is worked out per order: change your rates at the bottom of Orders.'],
+    go: { view: 'prints', find: '.fab', tip: 'Start with Add an artwork.' } },
   { id: '2026-11-19-own-address', on: '2026-11-19', to: 'all', icon: 'link', title: 'Your website at your own address',
     say: 'If you own a web address, your website can live there. Tide Book shows what to copy to where you bought it, checks it, then switches.',
     steps: ['Open the menu (bottom left) and tap Website.', 'Tap “Your own address” under your website, and type it.', 'Copy the lines shown into the DNS settings where you bought the address. Or tap “Ask Jye to do this part”.', 'Tap Check. When it says it points here, tap Switch. You can go back to the old address any time.'],
@@ -8295,6 +8421,344 @@ function tideSiteEditor(env, t) {
   return { snapshot: snapshot, layerFor: layerFor, liveUrl: liveUrl,
     api: { setSiteDomain: setSiteDomain, checkSiteDomain: checkSiteDomain, useSiteDomain: useSiteDomain, dropSiteDomain: dropSiteDomain, sendSiteDomainSteps: sendSiteDomainSteps,
       saveSiteEdit: saveSiteEdit, undoSiteEdit: undoSiteEdit, discardSiteDraft: discardSiteDraft, publishSiteDraft: publishSiteDraft, askSiteChange: askSiteChange, siteAskDone: siteAskDone, withdrawSiteAsk: withdrawSiteAsk } };
+}
+
+/**
+ * Tide Book: the shop. Her website's cart is priced here, never by the page, paid on Stripe's own checkout, and every
+ * paid order is split into the parcels it makes:
+ *   self      what she posts herself: prints A4 and smaller (her setting), cards and anything from stock
+ *   printful  prints A3 and up: Printful prints and posts them, sent the moment the order is paid (her setting)
+ *   original  each original she sells, posted insured
+ *   download  digital files, sent by her
+ * Shipping is worked out per order: her own parcel at her rate for the buyer's part of the world (free in Australia
+ * over her amount), originals at her insured rate, and Printful's live rate for its part. Everything ships worldwide.
+ * Stripe is asked how its checkouts went (no webhook to set up); Printful is asked how its orders are going.
+ * Shared by the app and the demo. Stripe.gs and Printful.gs do the talking; this file decides.
+ */
+
+var TIDE_SHOP = {
+  // her starting rates (AUD, postage included): to check against Australia Post's prices and change in Orders › Shipping
+  RATES: { self: { AU: 12, NZ: 25, WORLD: 35 }, original: { AU: 45, NZ: 90, WORLD: 140 }, freeOverAU: 100 },
+  SELF_SIZES: ['A6', 'A5', 'A4'],          // the print sizes she posts herself; anything bigger is Printful's
+  BUNDLE_N: 3, BUNDLE_OFF: 0.15,           // any 3 A4 prints: 15% off (as the website says)
+  GIFT_WRAP: 8,
+  CODES: { IRUKANDJI: 'Free postage on Denise’s own parcels' },
+  MAX_LINES: 30, MAX_QTY: 10,
+  ZONE_NAMES: { AU: 'Australia', NZ: 'New Zealand', WORLD: 'the rest of the world' },
+  COUNTRIES: [['AU', 'Australia'], ['NZ', 'New Zealand'], ['US', 'United States'], ['GB', 'United Kingdom'], ['CA', 'Canada'], ['IE', 'Ireland'],
+    ['DE', 'Germany'], ['FR', 'France'], ['NL', 'Netherlands'], ['BE', 'Belgium'], ['ES', 'Spain'], ['IT', 'Italy'], ['PT', 'Portugal'], ['AT', 'Austria'],
+    ['CH', 'Switzerland'], ['SE', 'Sweden'], ['NO', 'Norway'], ['DK', 'Denmark'], ['FI', 'Finland'], ['PL', 'Poland'], ['CZ', 'Czechia'], ['GR', 'Greece'],
+    ['JP', 'Japan'], ['SG', 'Singapore'], ['HK', 'Hong Kong'], ['KR', 'South Korea'], ['TW', 'Taiwan'], ['MY', 'Malaysia'], ['TH', 'Thailand'],
+    ['PH', 'Philippines'], ['ID', 'Indonesia'], ['IN', 'India'], ['AE', 'United Arab Emirates'], ['IL', 'Israel'], ['ZA', 'South Africa'],
+    ['BR', 'Brazil'], ['MX', 'Mexico'], ['AR', 'Argentina'], ['CL', 'Chile']],
+  AU_STATES: ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'],
+  NEEDS_STATE: ['AU', 'US', 'CA'],         // Printful needs the state for these
+  RATE_MINUTES: 30, PF_CHECK_MINUTES: 30
+};
+
+function tideShop(env, t) {
+  var X = TIDE_SHOP;
+  function st() { return env.settings.get(); }
+  function rates() {
+    var r = null; try { r = JSON.parse(st().shopRates || 'null'); } catch (e) { r = null; }
+    r = r || {};
+    function zone(o, d) { o = o || {}; return { AU: num(o.AU, d.AU), NZ: num(o.NZ, d.NZ), WORLD: num(o.WORLD, d.WORLD) }; }
+    return { self: zone(r.self, X.RATES.self), original: zone(r.original, X.RATES.original), freeOverAU: num(r.freeOverAU, X.RATES.freeOverAU) };
+  }
+  function num(v, d) { v = Number(v); return isFinite(v) && v >= 0 ? Math.round(v * 100) / 100 : d; }
+  function r2(n) { return Math.round(n * 100) / 100; }
+  function selfSizes() { var s = st().shopSelfSizes; return Array.isArray(s) && s.length ? s : X.SELF_SIZES; }
+  function printfulAuto() { return st().shopPrintfulAuto !== false; }
+  function zoneOf(country) { return country === 'AU' ? 'AU' : country === 'NZ' ? 'NZ' : 'WORLD'; }
+  function country(c) { c = String(c || '').toUpperCase(); return X.COUNTRIES.some(function (x) { return x[0] === c; }) ? c : ''; }
+  function practice() { return typeof HOST !== 'undefined' && HOST.practice === true; }
+
+  // ---------------------------------------------------------------- what's for sale, from what the website shows
+  /** Is this print size one she posts herself? */
+  function selfSize(size) {
+    var z = String(size || '').toUpperCase().replace(/\s+/g, '');
+    return selfSizes().some(function (s) { return String(s).toUpperCase().replace(/\s+/g, '') === z; });
+  }
+  function catalog() {
+    var d = t.siteData('live'), by = {};
+    d.artworks.forEach(function (a) { by[a.id] = a; });
+    return by;
+  }
+  /** One line of the cart, checked against what's for sale: { a, p, o, q, frame, gift }. */
+  function readLine(cat, l) {
+    var a = cat[String(l.a || '')];
+    if (!a) return { error: 'One of the pieces in your cart isn’t for sale any more.' };
+    var p = (a.products || []).filter(function (x) { return x.id === String(l.p || ''); })[0];
+    var o = p && (p.options || []).filter(function (x) { return x.id === String(l.o || ''); })[0];
+    if (!p || !o) return { error: a.title + ': that option isn’t for sale any more.' };
+    var q = Math.max(1, Math.min(X.MAX_QTY, Math.round(Number(l.q) || 1)));
+    if (p.type === 'Original') {
+      if (a.ogSold) return { error: a.title + ': the original has found its home.' };
+      q = 1;
+    }
+    if (p.type === 'Print' && a.ed && a.ed.mode === 'headstart') return { error: a.title + ': prints open once the original has had its time.' };
+    if (p.type === 'Print' && a.ed && (a.ed.mode === 'limited' || a.ed.mode === 'soldout') && !(a.ed.left >= q)) return { error: a.title + ': ' + (a.ed.left > 0 ? 'only ' + a.ed.left + ' left.' : 'the prints have all gone.') };
+    var unit = o.price + (l.frame && o.frame > 0 ? o.frame : 0) + (l.gift ? X.GIFT_WRAP : 0);
+    var kind = o.ship || (p.type === 'Original' ? 'original' : p.type === 'Download' ? 'download' : 'self');
+    return { a: a, p: p, o: o, q: q, unit: r2(unit), kind: kind, frame: !!(l.frame && o.frame > 0), gift: !!l.gift,
+      title: a.title, detail: (p.type === 'Print' ? o.label : p.name + (p.options.length > 1 ? ', ' + o.label : '')) + (l.frame && o.frame > 0 ? ', framed' : '') + (l.gift ? ', gift wrapped' : '') };
+  }
+  var RATE_CACHE = {};
+  function printfulRate(to, items) {
+    if (!env.printful || !env.printful.linked()) throw new Error('Printed-to-order pieces can’t be priced right now.');
+    var key = JSON.stringify([to.country, to.state || '', items]);
+    var c = RATE_CACHE[key];
+    if (c && Date.now() - c.at < X.RATE_MINUTES * 60000) return c.r;
+    var list = env.printful.rates({ country: to.country, state: to.state || '', zip: to.zip || '' }, items);
+    if (!list.length) throw new Error('Printful doesn’t post these to ' + to.country + '.');
+    RATE_CACHE[key] = { at: Date.now(), r: list[0] };
+    return list[0];
+  }
+  /** The price of a cart, worked out here: lines, the set discount, postage by parcel, and the total. */
+  function quote(cart, to, code) {
+    to = to || {};
+    var cc = country(to.country);
+    var out = { lines: [], discount: 0, shipping: [], total: 0, currency: 'AUD', errors: [], country: cc, state: String(to.state || '').toUpperCase().slice(0, 3) };
+    if (!cc) { out.errors.push('Choose where it’s going.'); return out; }
+    var items = t.list(cart).slice(0, X.MAX_LINES);
+    if (!items.length) { out.errors.push('Your cart is empty.'); return out; }
+    var cat = catalog();
+    items.forEach(function (l) { var r = readLine(cat, l || {}); if (r.error) out.errors.push(r.error); else out.lines.push(r); });
+    var sub = out.lines.reduce(function (n, l) { return n + l.unit * l.q; }, 0);
+    // any 3 A4 prints: 15% off the dearest of each 3
+    var a4 = []; out.lines.forEach(function (l) { if (l.p.type === 'Print' && l.o.id === 'a4') for (var i = 0; i < l.q; i++) a4.push(l.o.price); });
+    a4.sort(function (x, y) { return x - y; });
+    var off = 0; for (var i = 0; i < Math.floor(a4.length / X.BUNDLE_N) * X.BUNDLE_N; i++) off += a4[a4.length - 1 - i] * X.BUNDLE_OFF;
+    out.discount = r2(off);
+    var R = rates(), zone = zoneOf(cc), freeCode = X.CODES[String(code || '').trim().toUpperCase()] ? String(code).trim().toUpperCase() : '';
+    var selfL = out.lines.filter(function (l) { return l.kind === 'self'; }), ogs = out.lines.filter(function (l) { return l.kind === 'original'; }), pfL = out.lines.filter(function (l) { return l.kind === 'printful'; });
+    if (selfL.length) {
+      var free = zone === 'AU' && (freeCode || (R.freeOverAU > 0 && sub - off >= R.freeOverAU));   // 0: never free
+      out.shipping.push({ kind: 'self', label: 'Posted by Denise', amount: free ? 0 : R.self[zone], note: free ? (freeCode ? 'Free with your code' : 'Free over ' + money(R.freeOverAU) + ' in Australia') : '' });
+    }
+    ogs.forEach(function (l) { out.shipping.push({ kind: 'original', label: 'The original, posted insured', amount: R.original[zone], note: l.title }); });
+    if (pfL.length) {
+      if (X.NEEDS_STATE.indexOf(cc) >= 0 && !out.state) out.errors.push('Choose the state it’s going to.');
+      else {
+        try {
+          var pr = printfulRate({ country: cc, state: out.state }, pfL.map(function (l) { return { variant_id: l.o.pf, quantity: l.q }; }));
+          out.shipping.push({ kind: 'printful', label: 'Printed to order and posted', amount: r2(pr.rate), note: pr.min && pr.max ? pr.min + ' to ' + pr.max + ' days after printing' : '' });
+        } catch (e) { out.errors.push(String(e.message || e)); }
+      }
+    }
+    out.code = freeCode;
+    out.subtotal = r2(sub);
+    out.total = r2(sub - off + out.shipping.reduce(function (n, s) { return n + s.amount; }, 0));
+    return out;
+  }
+  function money(n) { return '$' + (n % 1 ? n.toFixed(2) : String(n)); }
+  function publicQuote(q) {
+    return { lines: q.lines.map(function (l) { return { title: l.title, detail: l.detail, unit: l.unit, q: l.q, kind: l.kind }; }), subtotal: q.subtotal, discount: q.discount,
+      shipping: q.shipping, total: q.total, currency: q.currency, errors: q.errors, code: q.code };
+  }
+
+  // ---------------------------------------------------------------- the website's checkout (public: called by the PC server)
+  function open() {
+    if (!env.stripe || !env.stripe.linked()) return { open: false, why: 'Checkout isn’t set up yet.' };
+    if (practice() && env.stripe.mode() === 'live') return { open: false, why: 'Checkout is off in the practice copy.' };
+    return { open: true, test: env.stripe.mode() !== 'live' };
+  }
+  function siteQuote(p) { p = p || {}; return publicQuote(quote(p.cart, { country: p.country, state: p.state }, p.code)); }
+  /** Starts a Stripe checkout for the cart: priced here, the address locked to the country it was priced for. */
+  function startCheckout(p, back) {
+    p = p || {};
+    var o = open();
+    if (!o.open) t.fail(o.why);
+    var q = quote(p.cart, { country: p.country, state: p.state }, p.code);
+    if (q.errors.length) t.fail(q.errors[0]);
+    if (!q.lines.length) t.fail('Your cart is empty.');
+    var origin = String(back || '').replace(/#.*$/, '');
+    var now = t.nowIso(), id = env.nextId('CK', 5);
+    var body = {
+      mode: 'payment', locale: 'auto',
+      line_items: q.lines.map(function (l) { return { quantity: l.q, price_data: { currency: 'aud', unit_amount: Math.round(l.unit * 100), product_data: { name: l.title, description: l.detail } } }; }),
+      shipping_address_collection: { allowed_countries: [q.country] },
+      shipping_options: [{ shipping_rate_data: { type: 'fixed_amount', display_name: q.shipping.map(function (s) { return s.label; }).join(' + ') || 'Postage',
+        fixed_amount: { amount: Math.round(q.shipping.reduce(function (n, s) { return n + s.amount; }, 0) * 100), currency: 'aud' } } }],
+      phone_number_collection: { enabled: true },
+      success_url: origin + '#/thanks/{CHECKOUT_SESSION_ID}', cancel_url: origin + '#/cart',
+      metadata: { tidebook: id }, payment_intent_data: { description: 'Denise Duffy · ' + id }
+    };
+    if (q.discount > 0) body.discounts = [{ coupon: env.stripe.coupon(Math.round(q.discount * 100), 'Set of 3 A4 prints, 15% off') }];
+    var s = env.stripe.session(body);
+    env.lock(function () {
+      env.table('checkouts').append({ id: id, created: now, session: s.id, status: 'Open', cart: t.list(p.cart).slice(0, X.MAX_LINES), quote: publicQuote(q),
+        country: q.country, state: q.state, code: q.code, orderId: '', updated: now });
+    });
+    return { url: s.url };
+  }
+
+  // ---------------------------------------------------------------- paid: the order, its parcels, the money records
+  function catOf(l) { return l.p.type === 'Print' ? 'Prints' : l.p.type === 'Original' ? 'Originals' : l.p.type === 'Apparel' ? 'Clothing' : l.p.type === 'Download' ? 'Digital downloads' : 'Other income'; }
+  function makeOrder(ck, s) {
+    var cat = catalog(), lines = [], now = t.nowIso();
+    // priced as the buyer saw it; the artworks are read again only for their ids and Printful sizes
+    t.list(ck.cart).forEach(function (l) {
+      var r = readLine(cat, l || {});
+      var a = cat[String((l || {}).a || '')] || {}, ql = (ck.quote.lines || [])[lines.length] || {};
+      lines.push({ art: String(l.a || ''), printId: a.printId || (r.a && r.a.printId) || '', title: ql.title || (r.title || 'A piece'), detail: ql.detail || (r.detail || ''),
+        q: ql.q || (r.q || 1), unit: ql.unit || (r.unit || 0), kind: ql.kind || (r.kind || 'self'), type: r.p ? r.p.type : '', pf: r.o ? r.o.pf || '' : '', size: r.o ? r.o.label : '', cat: r.p ? catOf(r) : 'Other income' });
+    });
+    var parts = [];
+    ['self', 'original', 'printful', 'download'].forEach(function (k) {
+      var idx = []; lines.forEach(function (l, i) { if (l.kind === k) idx.push(i); });
+      if (!idx.length) return;
+      parts.push({ kind: k, items: idx, status: k === 'printful' ? 'Sending to Printful' : k === 'download' ? 'To send' : 'To post', tracking: '', carrier: '', trackUrl: '', postedAt: '', pfOrderId: '', pfStatus: '', pfCost: 0, error: '' });
+    });
+    var a = s.address || {}, id = env.nextId('OR', 4);
+    var order = { id: id, created: now, session: s.id, checkout: ck.id, status: 'Paid', buyer: { name: s.name || '', email: s.email || '', phone: s.phone || '' },
+      address: { name: s.name || '', line1: a.line1 || '', line2: a.line2 || '', city: a.city || '', state: a.state || '', postcode: a.postal_code || '', country: a.country || ck.country },
+      items: lines, parts: parts, shipping: (ck.quote.shipping || []).reduce(function (n, x) { return n + x.amount; }, 0), discount: ck.quote.discount || 0, total: s.total || ck.quote.total,
+      currency: 'AUD', notes: '', updated: now };
+    env.lock(function () {
+      env.table('orders').append(order);
+      env.table('checkouts').update(ck.id, { status: 'Paid', orderId: id, updated: now });
+    });
+    // the money: each piece as a sale against its artwork (so the originals and editions count), the postage too
+    var sales = [], today = env.today(), offLeft = order.discount;
+    lines.forEach(function (l, i) {
+      var amount = l.unit * l.q;
+      if (offLeft > 0 && l.type === 'Print' && /A4/i.test(l.size)) { var take = Math.min(offLeft, amount - 0.01); amount -= take; offLeft -= take; }
+      sales.push({ ref: s.id + ':' + i, date: today, amount: r2(amount), category: l.cat, printId: l.printId, qty: l.q, description: l.title + ' · ' + l.detail + ' (website order ' + id + ')' });
+    });
+    if (order.shipping > 0) sales.push({ ref: s.id + ':post', date: today, amount: r2(order.shipping), category: 'Other income', description: 'Postage charged (website order ' + id + ')' });
+    t.recordSales(sales);
+    // Printful's part goes straight away (her setting), paid by her Printful card
+    var pi = parts.map(function (p) { return p.kind; }).indexOf('printful');
+    if (pi >= 0) sendToPrintful(id, pi, printfulAuto());
+    var bits = parts.map(function (p) { return p.kind === 'self' ? 'a parcel to post' : p.kind === 'original' ? 'an original to post insured' : p.kind === 'printful' ? 'prints at Printful' : 'a download to send'; });
+    if (t.push) t.push('both', 'New order ' + id + ': ' + money(order.total), (order.buyer.name || 'Someone') + ' in ' + (order.address.city || order.address.country) + '. ' + bits.join(', ').replace(/^./, function (c) { return c.toUpperCase(); }) + '.');
+    return order;
+  }
+  function orderRow(id) { var o = t.rows('orders').filter(function (x) { return x.id === id; })[0]; if (!o) t.fail('That order can’t be found.'); return o; }
+  function savePart(id, i, ch) {
+    env.lock(function () {
+      var o = orderRow(id), parts = t.list(o.parts).map(function (p, j) { return j === i ? Object.assign({}, p, ch) : p; });
+      env.table('orders').update(id, { parts: parts, updated: t.nowIso() });
+    });
+  }
+  /** Printful's part of an order: made, and (if she said so) confirmed, so Printful prints and posts it. */
+  function sendToPrintful(id, i, confirm) {
+    var o = orderRow(id), part = t.list(o.parts)[i];
+    if (!part || part.kind !== 'printful') t.fail('That part isn’t printed by Printful.');
+    try {
+      if (!env.printful || !env.printful.linked()) throw new Error('Printful isn’t linked.');
+      var pr = {}; t.rows('prints').forEach(function (x) { pr[x.id] = x; });
+      var items = part.items.map(function (k) {
+        var l = o.items[k], art = pr[l.printId] || {}, f = ((art.printful || {}).file) || {};
+        if (!f.id) throw new Error(l.title + ' has no print file at Printful yet.');
+        return { variant_id: Number(l.pf), quantity: l.q, files: [{ id: Number(f.id) }], retail_price: String(l.unit), name: l.title + ' · ' + l.size };
+      });
+      var a = o.address;
+      var r = env.printful.placeOrder({ external_id: o.id, shipping: 'STANDARD',
+        recipient: { name: a.name, address1: a.line1, address2: a.line2 || undefined, city: a.city, state_code: a.state || undefined, country_code: a.country, zip: a.postcode, email: o.buyer.email || undefined, phone: o.buyer.phone || undefined },
+        items: items }, confirm === true);
+      savePart(id, i, { status: confirm === true ? 'At Printful' : 'Needs your OK', pfOrderId: String(r.id), pfStatus: r.status, pfCost: r.total, pfCurrency: r.currency, error: '' });
+      if (confirm === true && r.total > 0 && t.recordExpense) t.recordExpense({ ref: 'printful:' + r.id, date: env.today(), amount: r.total, category: 'Printing', description: 'Printful: printing and posting website order ' + id + (r.currency && r.currency !== 'AUD' ? ' (' + r.currency + ')' : '') });
+      return { ok: true };
+    } catch (e) {
+      savePart(id, i, { status: 'Needs you', error: String(e.message || e).slice(0, 300) });
+      if (t.push) t.push('both', 'Order ' + id + ': Printful needs a hand', String(e.message || e).slice(0, 140));
+      return { ok: false, error: String(e.message || e) };
+    }
+  }
+
+  // ---------------------------------------------------------------- the timer: checkouts paid, Printful's progress
+  function sync(onlySession) {
+    var out = { paid: 0, shipped: 0 };
+    if (!env.stripe || !env.stripe.linked()) return out;
+    var since = Date.now() - 26 * 3600000;
+    t.rows('checkouts').filter(function (c) { return c.status === 'Open' && (onlySession ? c.session === onlySession : Date.parse(c.created) > since); }).forEach(function (c) {
+      var s; try { s = env.stripe.get(c.session); } catch (e) { return; }
+      if (s.paid) { makeOrder(c, s); out.paid++; }
+      else if (s.status === 'expired') env.lock(function () { env.table('checkouts').update(c.id, { status: 'Expired', updated: t.nowIso() }); });
+    });
+    t.rows('checkouts').filter(function (c) { return c.status === 'Open' && Date.parse(c.created) <= since; }).forEach(function (c) {
+      env.lock(function () { env.table('checkouts').update(c.id, { status: 'Expired', updated: t.nowIso() }); });
+    });
+    if (!onlySession && env.printful && env.printful.linked()) {
+      t.rows('orders').forEach(function (o) {
+        t.list(o.parts).forEach(function (p, i) {
+          if (p.kind !== 'printful' || !p.pfOrderId || p.status === 'Shipped' || p.status === 'Needs your OK') return;
+          if (p.pfChecked && Date.now() - Date.parse(p.pfChecked) < X.PF_CHECK_MINUTES * 60000) return;
+          try {
+            var r = env.printful.orderByRef(o.id), sh = (r.shipments || [])[0];
+            var ch = { pfStatus: r.status, pfChecked: t.nowIso() };
+            if (sh && (sh.number || sh.url)) { ch.status = 'Shipped'; ch.tracking = sh.number; ch.trackUrl = sh.url; ch.carrier = sh.carrier; ch.postedAt = sh.shipped || t.nowIso(); out.shipped++;
+              if (t.push) t.push('both', 'Order ' + o.id + ' is on its way', 'Printful posted it' + (sh.carrier ? ' with ' + sh.carrier : '') + '. Let ' + (o.buyer.name || 'the buyer') + ' know: it’s in Orders.'); }
+            else if (/failed|canceled|cancelled|onhold/i.test(r.status)) { ch.status = 'Needs you'; ch.error = 'Printful says the order is ' + r.status + '.'; }
+            savePart(o.id, i, ch);
+          } catch (e) { savePart(o.id, i, { pfChecked: t.nowIso() }); }
+        });
+      });
+    }
+    return out;
+  }
+  /** The buyer, back from Stripe: is it paid? (Public; says nothing about the order beyond its number.) */
+  function thanks(sessionId) {
+    sessionId = String(sessionId || '');
+    if (!/^cs_(test|live)_[A-Za-z0-9]{10,}$/.test(sessionId)) return { ok: false };
+    var c = t.rows('checkouts').filter(function (x) { return x.session === sessionId; })[0];
+    if (!c) return { ok: false };
+    if (c.status === 'Open') sync(sessionId);
+    c = t.rows('checkouts').filter(function (x) { return x.session === sessionId; })[0];
+    return { ok: c.status === 'Paid', ref: c.orderId || '' };
+  }
+
+  // ---------------------------------------------------------------- her side: orders to post, tracking, settings
+  var CARRIERS = { 'Australia Post': 'https://auspost.com.au/mypost/track/details/', 'Sendle': 'https://track.sendle.com/tracking?ref=', 'Aramex': 'https://www.aramex.com.au/tools/track?l=' };
+  function markPosted(id, i, p) {
+    t.need(['admin', 'artist']); p = p || {};
+    var o = orderRow(id), part = t.list(o.parts)[i];
+    if (!part || part.kind === 'printful') t.fail('That parcel is Printful’s to post.');
+    var carrier = Object.prototype.hasOwnProperty.call(CARRIERS, p.carrier) ? p.carrier : String(p.carrier || '').slice(0, 40) || 'Australia Post';
+    var num = t.text(p.tracking, 60).replace(/\s+/g, '');
+    savePart(id, i, { status: part.kind === 'download' ? 'Sent' : 'Posted', carrier: carrier, tracking: num, trackUrl: num && CARRIERS[carrier] ? CARRIERS[carrier] + encodeURIComponent(num) : '', postedAt: t.nowIso() });
+    return { ok: true };
+  }
+  function undoPosted(id, i) {
+    t.need(['admin', 'artist']);
+    var part = t.list(orderRow(id).parts)[i];
+    if (!part || part.kind === 'printful') t.fail('That parcel is Printful’s to post.');
+    savePart(id, i, { status: part.kind === 'download' ? 'To send' : 'To post', tracking: '', trackUrl: '', postedAt: '' });
+    return { ok: true };
+  }
+  function retryPrintful(id, i) { t.need(['admin', 'artist']); return sendToPrintful(id, Number(i), true); }
+  function orderNote(id, text) { t.need(['admin', 'artist']); env.lock(function () { orderRow(id); env.table('orders').update(id, { notes: t.text(text, 1000), updated: t.nowIso() }); }); return { ok: true }; }
+  function saveShopSettings(p) {
+    t.need(['admin', 'artist']); p = p || {};
+    var ch = {};
+    if (p.rates) { var cur = rates(), r = p.rates; ch.shopRates = JSON.stringify({ self: Object.assign({}, cur.self, r.self || {}), original: Object.assign({}, cur.original, r.original || {}), freeOverAU: r.freeOverAU != null ? r.freeOverAU : cur.freeOverAU }); }
+    if (p.selfSizes) ch.shopSelfSizes = t.list(p.selfSizes).map(function (s) { return t.text(s, 20); }).filter(String).slice(0, 12);
+    if ('printfulAuto' in p) ch.shopPrintfulAuto = p.printfulAuto === true;
+    env.settings.set(ch);
+    return { ok: true };
+  }
+  function linkStripe(key) { t.need(['admin']); if (!env.stripe) t.fail('Stripe works on the PC version of Tide Book.'); return env.stripe.link(key); }
+  function unlinkStripe() { t.need(['admin']); if (env.stripe) env.stripe.unlink(); return { ok: true }; }
+  function snapshot(role) {
+    if (role !== 'admin' && role !== 'artist') return null;
+    var orders = t.rows('orders').slice().sort(function (a, b) { return a.created < b.created ? 1 : -1; }).slice(0, 200);
+    var todo = 0; orders.forEach(function (o) { t.list(o.parts).forEach(function (p) { if (/^(To post|To send|Needs you|Needs your OK)$/.test(p.status)) todo++; }); });
+    var o = open();
+    return { orders: orders, todo: todo, rates: rates(), selfSizes: selfSizes(), printfulAuto: printfulAuto(), stripe: env.stripe ? { linked: env.stripe.linked(), mode: env.stripe.mode(), name: env.stripe.name() } : null,
+      open: o.open, why: o.why || '', zones: X.ZONE_NAMES, carriers: Object.keys(CARRIERS) };
+  }
+  /** The pages allowed to ask for prices and checkouts: her website (both addresses), plus what the PC adds (its preview). */
+  function origins(extra) {
+    var out = t.list(extra).slice(), s = st();
+    function add(u) { try { var o = new URL(u).origin; if (out.indexOf(o) < 0) out.push(o); } catch (e) {} }
+    if (env.site && env.site.liveUrl) add(env.site.liveUrl());
+    if (s.siteDomain) { ['https://', 'http://'].forEach(function (p) { add(p + s.siteDomain + '/'); add(p + 'www.' + s.siteDomain + '/'); }); }
+    return out;
+  }
+  return { quote: quote, siteQuote: siteQuote, origins: origins, open: open, startCheckout: startCheckout, sync: sync, thanks: thanks, snapshot: snapshot, selfSize: selfSize, COUNTRIES: X.COUNTRIES, AU_STATES: X.AU_STATES, NEEDS_STATE: X.NEEDS_STATE,
+    api: { checkShop: function () { t.need(['admin']); return sync(); }, shopSiteData: function (w) { t.need(['admin']); return t.siteData(w === 'draft' ? 'draft' : 'live'); }, markPosted: markPosted, undoPosted: undoPosted, retryPrintful: retryPrintful, orderNote: orderNote, saveShopSettings: saveShopSettings, linkStripe: linkStripe, unlinkStripe: unlinkStripe } };
 }
 
 </script>
@@ -10065,9 +10529,9 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ navigation
   var NAV = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']]
+    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
   // Settings is a button at the bottom of Home, so the bottom bar stays at five. The back-end parts are admin-only.
   function homeGear() {
     return h('div', { class: 'home-gear' }, btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
@@ -10138,7 +10602,7 @@ var Kit = (function () {
   /** On a phone: one round button, bottom left, says where she is. Tap it for every section. */
   function navCount(k) {
     var waiting = needsList().length, toReview = S.data.ideas.filter(function (x) { return x.stage === 'New' && x.researchStatus !== 'Queued' && x.researchStatus !== 'Researching'; }).length;
-    return (!ADMIN && k === 'home') ? waiting : (ADMIN && k === 'ideas') ? toReview : k === 'content' ? studioCount() : 0;
+    return k === 'orders' ? ((S.data.shop || {}).todo || 0) : (!ADMIN && k === 'home') ? waiting : (ADMIN && k === 'ideas') ? toReview : k === 'content' ? studioCount() : 0;
   }
   function menuBubble() {
     var b = document.getElementById('menu-bubble');
@@ -10329,6 +10793,234 @@ var Kit = (function () {
         ctl.foot.appendChild(foot);
         // a first look straight away, once per address, when it hasn't been checked
         if (!c2 && S.domainLooked !== D.name) { S.domainLooked = D.name; setTimeout(function () { if (!ctl.gone()) call(chk, 'checkSiteDomain'); }, 600); }
+      }
+    });
+  }
+  /** Printful's paper for an artwork's bigger sizes, and which of its sizes is each of hers (with what Printful charges). */
+  function openPrintPaper(p, podS, after) {
+    var picked = (p.printful || {}).productId || 0, prod = null, map = {};
+    Object.keys((p.printful || {}).sizes || {}).forEach(function (z) { map[z] = p.printful.sizes[z].id; });
+    K.sheet({
+      title: 'Printful’s paper for ' + p.title, tall: true,
+      build: function (ctl) {
+        var B = ctl.body, list = h('div'), sizesBox = h('div');
+        B.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Pick the paper Printful prints on, then match each of your sizes to one of its sizes. What Printful charges is shown, so your price covers it.' }));
+        function showProduct(id) {
+          sizesBox.textContent = ''; sizesBox.appendChild(note('Loading its sizes…', 'hourglass_top'));
+          api('printfulProduct', id).then(function (pr) {
+            prod = pr; picked = pr.id; sizesBox.textContent = '';
+            sizesBox.appendChild(h('div', { class: 'title-s', style: 'margin:14px 0 6px', text: pr.title }));
+            podS.forEach(function (z) {
+              var opts = [{ value: '', label: 'Not this size' }].concat(pr.variants.map(function (v) { return { value: String(v.id), label: v.name.replace(pr.title + ' / ', '') + ' · ' + (pr.currency === 'AUD' ? '$' : pr.currency + ' ') + Number(v.cost).toFixed(2) }; }));
+              sizesBox.appendChild(K.pickField({ label: 'Your ' + z, value: map[z] ? String(map[z]) : '', options: opts, onChange: function (v) { if (v) map[z] = Number(v); else delete map[z]; } }));
+            });
+            if (pr.currency !== 'AUD') sizesBox.appendChild(h('p', { class: 'tf-help', text: 'Printful shows its charges in ' + pr.currency + '. Set your cost on each size above in dollars, so “You keep” is right.' }));
+          }).catch(fail);
+        }
+        var q = K.textField({ label: 'Search Printful', value: 'poster', onEnter: function (v) { search(v); } });
+        function search(v) {
+          list.textContent = ''; list.appendChild(note('Searching…', 'hourglass_top'));
+          api('printfulSearch', v || 'poster').then(function (r) {
+            list.textContent = '';
+            r.results.forEach(function (x) { list.appendChild(h('button', { type: 'button', class: 'next-opt' + (x.id === picked ? ' main' : ''), style: 'width:100%;margin-bottom:6px', onclick: function () { showProduct(x.id); } },
+              h('span', { class: 'next-opt-ic' }, icon('description')), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: x.title }), h('span', { class: 'next-opt-why', text: x.type })))); });
+            if (!r.results.length) list.appendChild(note('Nothing found. Try “poster” or “canvas”.', 'search'));
+          }).catch(fail);
+        }
+        B.append(q, h('div', { style: 'height:8px' }), list, sizesBox);
+        search('poster');
+        if (picked) showProduct(picked);
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
+          if (!prod) { toast('Pick Printful’s paper first.'); return; }
+          K.setBusy(save, true);
+          api('printfulForPrint', p.id, prod.id, map).then(refresh).then(function () { K.haptic('success'); ctl.close(); after(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+        } });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
+  /** The print file for an artwork's Printful sizes: an upload, or one of its photos. */
+  function openPrintFile(p, after) {
+    K.sheet({
+      title: 'The print file', tall: true,
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'The bigger and sharper the file, the better the print. Tide Book shares it with Printful for a few minutes so it can collect it, then takes it down.' }));
+        function send(fileId, b) {
+          K.setBusy(b, true);
+          api('printfulPrintFile', p.id, fileId).then(refresh).then(function () { K.haptic('success'); ctl.close(); toast('Sending it to Printful. It usually takes a few minutes.'); after(); }).catch(function (e) { K.setBusy(b, false); fail(e); });
+        }
+        var up = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/tiff', hidden: true }), upB = btn('filled', 'Upload the scan', { icon: 'upload', block: true, onclick: function () { up.click(); } });
+        up.addEventListener('change', function () {
+          var file = up.files[0]; if (!file) return;
+          K.setBusy(upB, true);
+          fetch('upload?name=' + encodeURIComponent(file.name) + '&folder=' + encodeURIComponent('Print files'), { method: 'PUT', headers: { 'Content-Type': file.type || 'image/jpeg' }, body: file, credentials: 'same-origin' })
+            .then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw new Error(j.error); send(j.id, upB); }).catch(function (e) { K.setBusy(upB, false); fail(e); });
+        });
+        ctl.body.append(up, upB);
+        var fid = (p.photoIds || [])[0];
+        if (fid) ctl.body.append(h('div', { style: 'height:8px' }), btn('outlined', 'Use its first photo instead', { icon: 'image', block: true, onclick: function (e) { send(fid, e.currentTarget); } }),
+          h('p', { class: 'tf-help', text: 'Fine to start with. A proper scan prints better at A3 and up.' }));
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------ orders: from her website to the buyer's door
+  function shopData() { return S.data.shop || { orders: [], todo: 0, rates: { self: {}, original: {} }, selfSizes: [], zones: {}, carriers: [], stripe: null }; }
+  var PART = {
+    self: { ic: 'package_2', label: 'You post this' }, original: { ic: 'workspace_premium', label: 'The original: post it insured' },
+    printful: { ic: 'local_shipping', label: 'Printful prints and posts this' }, download: { ic: 'download', label: 'Send the download' } };
+  var TODO = /^(To post|To send|Needs you|Needs your OK|Sending to Printful)$/;
+  function orderState(o) {
+    var ps = o.parts || [];
+    if (ps.some(function (p) { return TODO.test(p.status); })) return 'todo';
+    if (ps.some(function (p) { return p.status === 'At Printful' || ((p.status === 'Posted' || p.status === 'Shipped') && Date.now() - Date.parse(p.postedAt || o.created) < 21 * 86400000); })) return 'way';
+    return 'done';
+  }
+  function tellBuyer(o, part) {
+    var first = String((o.buyer || {}).name || '').split(' ')[0] || 'there';
+    var body = 'Hi ' + first + ',\n\nYour order ' + o.id + ' is on its way' + (part.carrier ? ' with ' + part.carrier : '') + '.' +
+      (part.trackUrl ? '\nYou can follow it here: ' + part.trackUrl : part.tracking ? '\nTracking number: ' + part.tracking : '') + '\n\nThank you so much for bringing a piece of my work home.\n\nDenise';
+    return 'mailto:' + encodeURIComponent((o.buyer || {}).email || '') + '?subject=' + encodeURIComponent('Your order from Denise Duffy is on its way') + '&body=' + encodeURIComponent(body);
+  }
+  function packingSlip(o, part) {
+    var a = o.address || {}, items = (part.items || []).map(function (i) { return o.items[i]; });
+    var html = '<!doctype html><meta charset="utf-8"><title>' + o.id + '</title><style>body{font:16px/1.45 Georgia,serif;margin:28px;color:#222}h1{font:600 14px system-ui;letter-spacing:.12em;text-transform:uppercase;color:#777}' +
+      '.to{border:2px solid #222;padding:18px 22px;font-size:22px;line-height:1.35;max-width:420px;margin:12px 0 28px}li{margin:6px 0}.from{color:#666;font-size:13px;margin-top:32px}@media print{button{display:none}}</style>' +
+      '<button onclick="print()">Print</button><h1>Deliver to</h1><div class="to">' + [a.name, a.line1, a.line2, [a.city, a.state, a.postcode].filter(Boolean).join(' '), a.country !== 'AU' ? a.country : ''].filter(Boolean).map(function (x) { return String(x).replace(/[<&]/g, ''); }).join('<br>') + '</div>' +
+      '<h1>Order ' + o.id + ' · ' + new Date(o.created).toLocaleDateString('en-AU') + '</h1><ul>' + items.map(function (l) { return '<li>' + String(l.title).replace(/[<&]/g, '') + ' · ' + String(l.detail).replace(/[<&]/g, '') + ' × ' + l.q + '</li>'; }).join('') + '</ul>' +
+      (part.kind === 'original' ? '<p><b>Post it insured, with a signature on delivery.</b></p>' : '') + '<p class="from">From Denise Duffy · Port Stephens NSW · Thank you for supporting my art.</p>';
+    var w = window.open('', '_blank'); if (!w) { toast('Allow pop-ups to print the packing slip.'); return; }
+    w.document.write(html); w.document.close();
+  }
+  function openPosted(o, i) {
+    var part = o.parts[i], SH = shopData(), f = { carrier: 'Australia Post', tracking: '' };
+    K.sheet({
+      title: part.kind === 'download' ? 'Sent the download?' : 'Posted it?',
+      build: function (ctl) {
+        if (part.kind !== 'download') {
+          ctl.body.append(K.choices({ label: 'Who’s taking it', value: f.carrier, options: (SH.carriers || ['Australia Post']).concat(['Someone else']), onChange: function (v) { f.carrier = v || 'Australia Post'; } }), h('div', { style: 'height:12px' }),
+            K.textField({ label: 'Tracking number (if it has one)', value: '', maxlength: 60, help: 'On the label or the receipt. The buyer can follow it with this.', onInput: function (v) { f.tracking = v; } }));
+        } else ctl.body.appendChild(h('p', { class: 'body-m', text: 'Tap Done once you’ve emailed ' + ((o.buyer || {}).name || 'the buyer') + ' the file.' }));
+        var go = btn('filled', 'Done', { icon: 'check', lg: true, block: true, onclick: function () {
+          K.setBusy(go, true);
+          api('markPosted', o.id, i, f).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast(part.kind === 'download' ? 'Marked as sent.' : 'Marked as posted. Now let ' + (((o.buyer || {}).name || '').split(' ')[0] || 'the buyer') + ' know: the button is on the order.'); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+        } });
+        ctl.foot.appendChild(go);
+      }
+    });
+  }
+  function orderCard(o) {
+    var a = o.address || {}, b = o.buyer || {};
+    var card = h('div', { class: 'card pad order-card' });
+    card.appendChild(h('div', { class: 'order-h' }, h('div', { class: 'grow' }, h('b', { text: (b.name || 'A buyer') + ' · ' + K.money(o.total) }),
+      h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: o.id + ' · ' + K.dateLabel(o.created) + ' · ' + [a.city, a.state, a.country].filter(Boolean).join(', ') }))));
+    (o.parts || []).forEach(function (part, i) {
+      var P = PART[part.kind] || PART.self, items = (part.items || []).map(function (k) { var l = o.items[k] || {}; return l.title + ' · ' + l.detail + (l.q > 1 ? ' × ' + l.q : ''); });
+      var tone = TODO.test(part.status) ? (/Needs/.test(part.status) ? 'warn' : 'pending') : 'approved';
+      var row = h('div', { class: 'order-part' }, h('div', { class: 'order-part-h' }, icon(P.ic), h('span', { class: 'grow', text: P.label }), h('span', { class: 'chip ' + tone, text: part.status === 'At Printful' && part.pfStatus ? 'At Printful · ' + part.pfStatus : part.status })),
+        h('ul', { class: 'order-items' }, items.map(function (t2) { return h('li', { text: t2 }); })));
+      if (part.error) row.appendChild(note(part.error, 'error', 'warn'));
+      var acts = h('div', { class: 'btn-row', style: 'flex-wrap:wrap;margin-top:6px' });
+      if (part.kind !== 'printful') {
+        if (/^To (post|send)$/.test(part.status)) {
+          if (part.kind !== 'download') acts.appendChild(btn('outlined', 'Packing slip', { sm: true, icon: 'print', onclick: function () { packingSlip(o, part); } }));
+          acts.appendChild(btn('filled', part.kind === 'download' ? 'I’ve sent it' : 'It’s posted', { sm: true, icon: 'check', onclick: function () { openPosted(o, i); } }));
+        } else {
+          if (part.trackUrl) acts.appendChild(h('a', { class: 'btn text sm press', href: part.trackUrl, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Follow it' })));
+          if (b.email) acts.appendChild(h('a', { class: 'btn tonal sm press', href: tellBuyer(o, part) }, icon('mail'), h('span', { text: 'Tell ' + ((b.name || '').split(' ')[0] || 'the buyer') })));
+          acts.appendChild(btn('text', 'Not yet', { sm: true, icon: 'undo', onclick: function (e) { K.setBusy(e.currentTarget, true); api('undoPosted', o.id, i).then(refresh).then(render).catch(fail); } }));
+        }
+      } else {
+        if (/^Needs/.test(part.status)) acts.appendChild(btn('filled', part.status === 'Needs your OK' ? 'Send it to Printful' : 'Try again', { sm: true, icon: 'send', onclick: function (e) { var x = e.currentTarget; K.setBusy(x, true); api('retryPrintful', o.id, i).then(function (r) { if (r && r.ok === false) throw new Error(r.error); }).then(refresh).then(render).catch(function (er) { K.setBusy(x, false); fail(er); refresh().then(render); }); } }));
+        if (part.trackUrl) acts.appendChild(h('a', { class: 'btn text sm press', href: part.trackUrl, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Follow it' })));
+        if (part.status === 'Shipped' && b.email) acts.appendChild(h('a', { class: 'btn tonal sm press', href: tellBuyer(o, part) }, icon('mail'), h('span', { text: 'Tell ' + ((b.name || '').split(' ')[0] || 'the buyer') })));
+        if (part.status === 'At Printful') acts.appendChild(h('p', { class: 'tf-help', style: 'margin:0', text: 'Printful is printing it. Tide Book checks on it and tells you when it’s posted.' }));
+      }
+      if (acts.childNodes.length) row.appendChild(acts);
+      card.appendChild(row);
+    });
+    var addr = [a.name, a.line1, a.line2, [a.city, a.state, a.postcode].filter(Boolean).join(' '), a.country].filter(Boolean).join('\n');
+    card.appendChild(h('details', { class: 'order-more' }, h('summary', { text: 'Address and contact' }),
+      h('pre', { class: 'order-addr', text: addr + (b.email ? '\n' + b.email : '') + (b.phone ? '\n' + b.phone : '') }),
+      btn('text', 'Copy the address', { sm: true, icon: 'content_copy', onclick: function () { (navigator.clipboard ? navigator.clipboard.writeText(addr) : Promise.reject()).then(function () { toast('Address copied.'); }).catch(function () { toast(addr); }); } })));
+    return card;
+  }
+  function viewOrders(main) {
+    var SH = shopData();
+    pageTitle(main, 'Orders', 'From your website to the buyer’s door: what to post, what Printful is making, and where each one is.');
+    if (!SH.open || !(S.data.website || {}).checkout) {
+      var why = !SH.stripe || !SH.stripe.linked ? (ADMIN ? 'Link Stripe to open checkout: buyers pay on Stripe’s own page, and paid orders land here by themselves.' : adminName() + ' is setting up the payments. Until then your website’s Check out button says it opens soon.')
+        : !SH.open ? SH.why : (ADMIN ? 'Checkout works from the preview. The published website needs its public address set (shopUrl in the PC’s config) to reach checkout.' : 'Checkout is nearly ready: ' + adminName() + ' has one last step to do.');
+      var box = h('div', { class: 'card pad', style: 'margin-bottom:14px' }, h('div', { class: 'title-m', text: 'Checkout isn’t open yet' }), h('p', { class: 'body-m', style: 'margin:6px 0 10px', text: why }));
+      if (ADMIN) box.appendChild(btn(SH.stripe && SH.stripe.linked ? 'outlined' : 'filled', SH.stripe && SH.stripe.linked ? 'Stripe: ' + SH.stripe.name + (SH.stripe.mode === 'test' ? ' (test)' : '') : 'Link Stripe', { sm: true, icon: 'credit_card', onclick: openStripeLink }));
+      main.appendChild(rise(box, 1));
+    } else if (SH.stripe && SH.stripe.mode === 'test') main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('Stripe is in test mode: checkouts are pretend, with Stripe’s test cards.', 'science', 'warn')), 1));
+    var orders = SH.orders || [], tab = S.orderTab || (orders.some(function (o) { return orderState(o) === 'todo'; }) ? 'todo' : 'way');
+    var count = function (k) { return orders.filter(function (o) { return orderState(o) === k; }).length; };
+    main.appendChild(rise(K.segmented({ label: 'Show', value: tab, fit: true, onChange: function (v) { S.orderTab = v; render(); },
+      options: [{ value: 'todo', label: 'To do' + (count('todo') ? ' ' + count('todo') : '') }, { value: 'way', label: 'On the way' }, { value: 'done', label: 'Done' }] }), 2));
+    var shown = orders.filter(function (o) { return orderState(o) === tab; });
+    var list = h('div', { class: 'order-list' });
+    if (!shown.length) list.appendChild(emptyState('local_shipping', tab === 'todo' ? 'Nothing to post' : tab === 'way' ? 'Nothing on its way' : 'No finished orders yet', tab === 'todo' ? 'New orders from your website show here, with the address and what’s in them.' : 'Orders move here as they go out.'));
+    shown.forEach(function (o, i) { list.appendChild(rise(orderCard(o), 3 + i)); });
+    main.appendChild(list);
+    // postage: what checkout charges
+    var R = SH.rates || { self: {}, original: {} };
+    main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-top:18px' }, h('div', { class: 'title-m', text: 'Postage at checkout' }),
+      h('p', { class: 'body-m', style: 'margin:6px 0 10px;color:var(--on-surface-variant)', text: 'Your parcels (' + (SH.selfSizes || []).join(', ') + ' prints, cards and anything from stock): $' + R.self.AU + ' in Australia, free over $' + R.freeOverAU + '; $' + R.self.NZ + ' to New Zealand; $' + R.self.WORLD + ' elsewhere. Originals, insured: $' + R.original.AU + ' / $' + R.original.NZ + ' / $' + R.original.WORLD + '. Bigger prints: what Printful charges for that order.' }),
+      btn('tonal', 'Change postage', { sm: true, icon: 'tune', onclick: openShopSettings })), 4));
+  }
+  function openShopSettings() {
+    var SH = shopData(), R = JSON.parse(JSON.stringify(SH.rates)), sizes = (SH.selfSizes || []).slice(), auto = SH.printfulAuto !== false;
+    K.sheet({
+      title: 'Postage and orders', tall: true,
+      build: function (ctl) {
+        var B = ctl.body;
+        function money(label, get, set, help) { return K.textField({ label: label, prefix: '$', inputmode: 'decimal', value: get(), help: help, onInput: function (v) { set(K.num(v)); } }); }
+        B.append(h('div', { class: 'title-s', text: 'Your own parcels' }), h('p', { class: 'tf-help', text: 'One parcel per order, whatever’s in it. Check Australia Post’s prices for a tube or a stiff envelope, then set these.' }),
+          money('In Australia', function () { return R.self.AU; }, function (v) { R.self.AU = v; }), money('To New Zealand', function () { return R.self.NZ; }, function (v) { R.self.NZ = v; }),
+          money('Everywhere else', function () { return R.self.WORLD; }, function (v) { R.self.WORLD = v; }),
+          money('Free in Australia over', function () { return R.freeOverAU; }, function (v) { R.freeOverAU = v; }, 'Put 0 for never free.'),
+          h('div', { class: 'title-s', style: 'margin-top:16px', text: 'Originals, posted insured' }),
+          money('In Australia', function () { return R.original.AU; }, function (v) { R.original.AU = v; }), money('To New Zealand', function () { return R.original.NZ; }, function (v) { R.original.NZ = v; }),
+          money('Everywhere else', function () { return R.original.WORLD; }, function (v) { R.original.WORLD = v; }),
+          h('div', { class: 'title-s', style: 'margin-top:16px', text: 'Print sizes you post yourself' }), h('p', { class: 'tf-help', text: 'Bigger sizes are printed and posted by Printful.' }));
+        var sz = h('div', { class: 'filter-row' });
+        ['A6', 'A5', 'A4', 'A3'].forEach(function (z) {
+          var b2 = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(sizes.indexOf(z) >= 0), onclick: function () { var i = sizes.indexOf(z); if (i >= 0) sizes.splice(i, 1); else sizes.push(z); b2.setAttribute('aria-pressed', String(i < 0)); } }, z);
+          sz.appendChild(b2);
+        });
+        var sw = K.switchBtn({ checked: auto, label: 'Send Printful orders straight away', onChange: function (on) { auto = on; } });
+        B.append(sz, h('div', { class: 'switch-row', style: 'margin-top:16px' }, h('div', {}, h('div', { class: 'title-m', text: 'Send Printful orders straight away' }),
+          h('div', { class: 'body-s', text: 'Printful charges your Printful card for each one. Off: each waits for your tap.' })), sw));
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
+          if (!sizes.length) { toast('Pick at least one size you post, or A4 if unsure.'); return; }
+          K.setBusy(save, true);
+          api('saveShopSettings', { rates: R, selfSizes: sizes, printfulAuto: auto }).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast('Saved. Checkout uses these now.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+        } });
+        ctl.foot.appendChild(save);
+      }
+    });
+  }
+  function openStripeLink() {
+    var SH = shopData();
+    K.sheet({
+      title: 'Stripe', tall: true,
+      build: function (ctl) {
+        var B = ctl.body;
+        if (SH.stripe && SH.stripe.linked) {
+          B.appendChild(note('Linked: ' + SH.stripe.name + (SH.stripe.mode === 'test' ? ' (test mode)' : ''), 'check_circle', 'good'));
+          ctl.foot.appendChild(btn('text', 'Unlink Stripe', { icon: 'link_off', onclick: function (e) { K.setBusy(e.currentTarget, true); api('unlinkStripe').then(refresh).then(function () { ctl.close(); render(); }).catch(fail); } }));
+          return;
+        }
+        B.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'In Stripe: Developers › API keys › Secret key. Copy it and paste it here. It’s kept on this PC and never shown again. A test key (sk_test_…) makes pretend checkouts to try it first.' }));
+        var k = K.textField({ label: 'Secret key', value: '', autocomplete: 'off', onInput: function () {} });
+        B.appendChild(k);
+        var go = btn('filled', 'Link it', { icon: 'link', lg: true, block: true, onclick: function () {
+          K.setBusy(go, true);
+          api('linkStripe', k.input.value).then(function (r) { return refresh().then(function () { K.haptic('success'); ctl.close(); render(); toast('Stripe linked' + (r.mode === 'test' ? ', in test mode.' : '.')); }); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+        } });
+        ctl.foot.appendChild(go);
       }
     });
   }
@@ -10662,7 +11354,7 @@ var Kit = (function () {
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
     if (S.view === 'home' || !S.view) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -13657,6 +14349,17 @@ var Kit = (function () {
     });
   }
 
+  /** A new series: a name and a line about it. It gets a page of its own on her website, laid out like the others. */
+  function newSeries() {
+    return K.ask({ title: 'A new series', label: 'Its name', options: ['Mind Garden', 'Coastal Light', 'Small Wonders'], maxlength: 40, confirmLabel: 'Next' }).then(function (name) {
+      name = String(name || '').trim(); if (!name) return '';
+      return K.ask({ title: 'About “' + name + '”', label: 'A line for the top of its page (you can change it later)', maxlength: 240, confirmLabel: 'Make the series' }).then(function (sub) {
+        if (sub == null) return '';
+        return api('addSeries', name, sub || '').then(function (r) { return refresh().then(function () { toast('“' + r.name + '” is a series now. It gets its own page on your website once a piece in it is published.'); return r.name; }); })
+          .catch(function (e) { fail(e); return ''; });
+      });
+    });
+  }
   function openPrint(id, after) {
     var p = id ? byId(S.data.prints, id) : null;
     if (id && !p) return;
@@ -13669,6 +14372,7 @@ var Kit = (function () {
       title: p ? p.title : 'New artwork', tall: true, guard: function () { return dirty; },
       onClose: function () { if (after) refresh().then(after).catch(function () {}); },
       build: function (ctl) {
+        var ctlRef0 = ctl;
         var checklist = h('div', { class: 'checklist' });
         function gaps() {
           var photos = (p ? p.thumbIds.length : 0) + f.files.length;
@@ -13702,8 +14406,21 @@ var Kit = (function () {
         s2.appendChild(h('div', { class: 'field-gap' }, title,
           K.textField({ label: 'The story behind it', value: f.description, multiline: true, maxlength: 3000, onInput: function (v) { f.description = v; touch(); },
             help: 'Shown to buyers. What inspired it, and how it was made.' }),
-          K.pickField({ label: 'Where it sits on the website', value: f.series, options: (S.data.options.series || []).map(function (x) { return { value: x, label: x }; }),
-            onChange: function (v) { f.series = v; touch(); } })));
+          seriesPick()));
+        function seriesPick() {
+          var holder = h('div');
+          function draw() {
+            holder.textContent = '';
+            holder.appendChild(K.pickField({ label: 'Where it sits on the website', value: f.series,
+              options: (S.data.options.series || []).map(function (x) { return { value: x, label: x }; }).concat([{ value: '__new', label: 'A new series…' }]),
+              onChange: function (v) {
+                if (v !== '__new') { f.series = v; touch(); return; }
+                newSeries().then(function (name) { if (name) { f.series = name; touch(); } draw(); });
+              } }));
+          }
+          draw();
+          return holder;
+        }
 
         var s3 = sheetSection('As prints');
         var cards = h('div');
@@ -13730,7 +14447,43 @@ var Kit = (function () {
             else done(picked);
           });
         } });
-        s3.append(cards, h('div', { style: 'margin-top:12px' }, addSize));
+        var whoWrap = h('div');
+        s3.append(cards, h('div', { style: 'margin-top:12px' }, addSize), whoWrap);
+        var drawVariants0 = drawVariants;
+        drawVariants = function () { drawVariants0(); drawWho(); };
+        function drawWho() {
+          whoWrap.textContent = '';
+          var SH = S.data.shop || {}, mine = (SH.selfSizes || ['A6', 'A5', 'A4']).map(function (z) { return z.toUpperCase().replace(/\s+/g, ''); });
+          var sizes = f.variants.map(function (v) { return v.size; }).filter(String);
+          if (!sizes.length) return;
+          var selfS = sizes.filter(function (z) { return mine.indexOf(z.toUpperCase().replace(/\s+/g, '')) >= 0; }), podS = sizes.filter(function (z) { return selfS.indexOf(z) < 0; });
+          var box = h('div', { class: 'card pad who-makes' });
+          if (selfS.length) box.appendChild(h('div', { class: 'who-row' }, icon('package_2'), h('span', {}, h('b', { text: selfS.join(', ') + ': ' }), 'you post these yourself. Orders show in Orders, with the address and a packing slip.')));
+          if (podS.length) {
+            var pfm = (p && p.printful) || {}, mapped = podS.filter(function (z) { return pfm.sizes && pfm.sizes[z]; }), file = pfm.file || {};
+            box.appendChild(h('div', { class: 'who-row' }, icon('local_shipping'), h('span', {}, h('b', { text: podS.join(', ') + ': ' }), 'Printful prints and posts these, straight to the buyer.')));
+            var ready = mapped.length === podS.length && file.id;
+            var line = !p ? 'Save the artwork first, then choose Printful’s paper for these sizes.'
+              : !(S.data.printful || {}).linked ? 'Link Printful first. Until then these sizes aren’t on your website.'
+              : !mapped.length ? 'Choose Printful’s paper and match its sizes to yours. Until then these sizes aren’t on your website.'
+              : mapped.length < podS.length ? podS.filter(function (z) { return mapped.indexOf(z) < 0; }).join(', ') + ' isn’t matched to a Printful size yet, so it isn’t on your website.'
+              : file.status === 'sending' ? 'Sending the print file to Printful…'
+              : !file.id ? (file.error ? 'Printful couldn’t take the file: ' + file.error + ' ' : '') + 'Send Printful the print file: the biggest, sharpest scan you have.'
+              : 'Ready: these sizes are on your website, printed to order on ' + (pfm.title || 'Printful paper') + '.';
+            box.appendChild(note(line, ready ? 'check_circle' : 'info', ready ? 'good' : ''));
+            if (p) {
+              var row = h('div', { class: 'btn-row', style: 'flex-wrap:wrap;margin-top:8px' });
+              var again = function () { K.swap(ctlRef0, function () { openPrint(p.id, after); }, true); };
+              if (!(S.data.printful || {}).linked) row.appendChild(btn('tonal', 'Link Printful', { sm: true, icon: 'link', onclick: function () { openPrintfulLink(function () { refresh().then(again); }); } }));
+              else {
+                row.appendChild(btn(mapped.length ? 'outlined' : 'tonal', mapped.length ? 'Change the paper or sizes' : 'Choose Printful’s paper', { sm: true, icon: 'tune', onclick: function () { openPrintPaper(p, podS, again); } }));
+                if (mapped.length) row.appendChild(btn(file.id ? 'outlined' : 'filled', file.id ? 'Send a new print file' : 'Send the print file', { sm: true, icon: 'upload', onclick: function () { openPrintFile(p, again); } }));
+              }
+              box.appendChild(row);
+            }
+          }
+          whoWrap.appendChild(box);
+        }
         s3.appendChild(h('p', { class: 'tf-help', style: 'margin-left:4px', text: '“You keep” is the price less ' + ['your cost'].concat(s.paymentFeePct ? ['a ' + s.paymentFeePct + '% card fee'] : [], S.data.gstRegistered ? ['GST'] : [])
           .join(', ').replace(/, ([^,]*)$/, ' and $1') + '.' }));
 
