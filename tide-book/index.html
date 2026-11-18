@@ -1397,6 +1397,14 @@ body.map-full { overflow: hidden; }
 .site-card .btn-row a.btn { text-decoration: none; }
 /* the Website tab's buttons under the page: one row that slides, so the menu bubble never sits on them */
 @media (max-width: 839px) { .site-tools { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; } .site-tools .btn { flex: none; } }
+/* her own web address: the lines to copy to where she bought it */
+.dom-step { font: 500 16px/22px var(--font); color: var(--primary); }
+.dns-rows { border-radius: 16px; background: var(--surface-lowest); box-shadow: 0 0 0 1px var(--outline-variant); overflow: hidden; }
+.dns-row { display: grid; grid-template-columns: 56px 52px 1fr 40px; align-items: center; gap: 6px; padding: 4px 4px 4px 12px; border-top: 1px solid var(--outline-variant); font: 400 14px/20px var(--font); }
+.dns-row:first-child { border-top: 0; }
+.dns-row.head { padding: 8px 12px; font: 500 12px/16px var(--font); color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: .04em; }
+.dns-t { font-weight: 600; }
+.dns-v { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; word-break: break-all; }
 </style>
 
   <script>
@@ -1554,7 +1562,8 @@ var TIDE_SETTING_DEFAULTS = {
   setupBasicsDone: false, starterLoaded: false, stripeDone: false, artistWelcomed: false,
   seenChangesArtist: [], seenChangesAdmin: [],   // what's new (TIDE_CHANGES in LogicSetup.gs): the changes each has seen
   sitePublishedAt: '',      // when the website was last published from Tide Book
-  sitePublishedSig: ''      // what the shop looked like then, to tell when it has changes that aren't on the website yet
+  sitePublishedSig: '',     // what the shop looked like then, to tell when it has changes that aren't on the website yet
+  siteDomain: '', siteDomainOn: false, siteDomainCheck: ''   // her own web address (LogicSite.gs): the name, in use or not, the last check
 };
 
 /**
@@ -3007,7 +3016,7 @@ function createTideLogic(env) {
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
-      website: env.site ? { preview: env.site.previewUrl(), live: env.site.liveUrl ? env.site.liveUrl() : '', pending: shopPending(), lastPublished: String(settings().sitePublishedAt || '') } : null,
+      website: env.site ? { preview: env.site.previewUrl(), live: siteEditor.liveUrl(), pending: shopPending(), lastPublished: String(settings().sitePublishedAt || '') } : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
         kinds: T.KINDS, timelines: T.TIMELINES, priorities: T.PRIORITIES, stages: T.STAGES, sizes: T.SIZES,
@@ -7152,6 +7161,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-own-address', on: '2026-11-19', to: 'all', icon: 'link', title: 'Your website at your own address',
+    say: 'If you own a web address, your website can live there. Tide Book shows what to copy to where you bought it, checks it, then switches.',
+    steps: ['Open the menu (bottom left) and tap Website.', 'Tap “Your own address” under your website, and type it.', 'Copy the lines shown into the DNS settings where you bought the address. Or tap “Ask Jye to do this part”.', 'Tap Check. When it says it points here, tap Switch. You can go back to the old address any time.'],
+    go: { view: 'site', find: '.site-tools .btn', tip: 'Your own address is here.' } },
   { id: '2026-11-18-calendar-own', on: '2026-11-18', to: 'artist', icon: 'event', title: 'Add your own things to the calendar',
     say: 'You asked for this: anything of your own can go on a day now, like a call to make or something to chase up.',
     steps: ['Open the menu (bottom left) and tap Calendar.', 'Tap a day, then “Add”, then “Your own thing”.', 'Write it in a few words. If it’s for one of your goals, tap the goal and it takes that goal’s colour.', 'Tap it later to tick it off, move it or remove it. You get a nudge the day before and on the day.'],
@@ -8171,14 +8184,117 @@ function tideSiteEditor(env, t) {
     var asks = t.rows('siteasks').filter(function (r) { return r.status !== 'Withdrawn' && (role === 'admin' || r.by === 'artist'); }).map(function (r) {
       return { id: r.id, created: r.created, by: r.by, text: r.text, route: r.route, kind: r.kind, elText: r.elText, status: r.status, doneAt: r.doneAt || '', prompt: role === 'admin' ? r.prompt : '', file: role === 'admin' ? r.file : '' };
     }).sort(function (a, b) { return a.created < b.created ? 1 : -1; }).slice(0, 30);
-    return { draft: d, urls: urls, changed: JSON.stringify(d) !== JSON.stringify(l), shopPending: t.shopPending ? t.shopPending() : false, canUndo: hist > 0, artworks: t.liveArtworks ? t.liveArtworks() : -1, publishedAt: s.sitePublishedAt || '', asks: asks,
+    return { draft: d, urls: urls, changed: JSON.stringify(d) !== JSON.stringify(l), domain: domainInfo(), shopPending: t.shopPending ? t.shopPending() : false, canUndo: hist > 0, artworks: t.liveArtworks ? t.liveArtworks() : -1, publishedAt: s.sitePublishedAt || '', asks: asks,
       colours: X.COLOURS, fonts: X.FONTS, blocks: X.BLOCKS, available: !!env.site };
   }
   /** For the build: the live layer (or the draft, for the preview), and the pictures it uses. */
   function layerFor(which) { var L = which === 'draft' ? draft() : live(); return { edits: L, editFiles: filesOf(L) }; }
 
-  return { snapshot: snapshot, layerFor: layerFor,
-    api: { saveSiteEdit: saveSiteEdit, undoSiteEdit: undoSiteEdit, discardSiteDraft: discardSiteDraft, publishSiteDraft: publishSiteDraft, askSiteChange: askSiteChange, siteAskDone: siteAskDone, withdrawSiteAsk: withdrawSiteAsk } };
+  // ---------------------------------------------------------------- her own web address (a domain she owns)
+  // She types it, copies the settings to where she bought it, Tide Book checks it points here, then switches.
+  // The switch (a CNAME file in the hosting repo) only happens once the address points to GitHub Pages: before that,
+  // switching would take the website offline, because the GitHub address starts sending visitors to hers.
+  var PAGES_IPS = ['185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153'];
+  var TWO_PART = /\.(com|net|org|id|asn)\.au$|\.(co|org|net|me)\.(uk|nz)$/;
+  function practice() { return typeof HOST !== 'undefined' && HOST.practice === true; }
+  function readDomain(s) {
+    var n = String(s || '').trim().toLowerCase().replace(/^[a-z]+:\/\//, '').split(/[\/?#:\s]/)[0].replace(/\.$/, '');
+    if (n.indexOf('www.') === 0) n = n.slice(4);
+    if (!/^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(n)) t.fail('That doesn’t look like a web address. It’s usually like yourname.com.au.');
+    if (/(^|\.)github\.io$/.test(n)) t.fail('That’s the address your website has now. Type the one you own.');
+    var parts = n.split('.'), apex = TWO_PART.test(n) ? 3 : 2;
+    return { name: n, sub: parts.length > apex ? parts.slice(0, parts.length - apex).join('.') : '' };
+  }
+  function pagesHost() { return env.site && env.site.pagesHost ? env.site.pagesHost() : 'am0letical.github.io'; }
+  function lowerList(v) { return Array.isArray(v) ? v.map(function (x) { return String(x).toLowerCase().replace(/\.$/, ''); }) : []; }
+  function records(d) {
+    if (d.sub) return [{ type: 'CNAME', name: d.sub, value: pagesHost() }];
+    return PAGES_IPS.map(function (ip) { return { type: 'A', name: '@', value: ip }; }).concat([{ type: 'CNAME', name: 'www', value: pagesHost() }]);
+  }
+  var SPREAD = ' Changes there can take a few minutes, sometimes up to a day, to reach everywhere.';
+  function verdict(d, c) {
+    if (!c || c.error) return { ok: false, say: (c && c.error) || 'The check didn’t finish. Try again in a minute.' };
+    var host = pagesHost();
+    if (d.sub) {
+      var cn = lowerList(c.cname);
+      if (cn.indexOf(host) >= 0) return { ok: true, say: 'It points to your website. Ready to switch.' };
+      return { ok: false, say: (cn.length ? 'It still points somewhere else (' + cn[0] + '). Change that line to the one above.' : 'It doesn’t point here yet. Add the line above where you bought the address.') + SPREAD };
+    }
+    var a = Array.isArray(c.a) ? c.a : [], ours = a.filter(function (ip) { return PAGES_IPS.indexOf(ip) >= 0; }), other = a.filter(function (ip) { return PAGES_IPS.indexOf(ip) < 0; });
+    var wwwOk = lowerList(c.www).indexOf(host) >= 0;
+    if (ours.length && !other.length) return { ok: true, www: wwwOk, say: 'It points to your website. Ready to switch.' + (wwwOk ? '' : ' (The www line isn’t there yet. It’s worth adding, so www.' + d.name + ' works too.)') };
+    if (ours.length) return { ok: false, say: 'Nearly. It points here, and somewhere else too (' + other.join(', ') + '). Remove the other A line for @, so only these four are left.' + SPREAD };
+    return { ok: false, say: (a.length ? 'It still points where it did before (' + a.join(', ') + '). Change those A lines to the four above.' : 'It doesn’t point anywhere yet. Add the lines above where you bought the address.') + SPREAD };
+  }
+  function lastCheck() { try { return JSON.parse(st().siteDomainCheck || 'null'); } catch (e) { return null; } }
+  function domainInfo() {
+    var s = st(), name = String(s.siteDomain || '');
+    if (!name) return { name: '', on: false, now: env.site && env.site.liveUrl ? env.site.liveUrl() : '' };
+    var d = readDomain(name), c = lastCheck();
+    return { name: name, sub: d.sub, on: s.siteDomainOn === true, records: records(d), check: c, url: liveUrl(), github: env.site && env.site.liveUrl ? env.site.liveUrl() : '' };
+  }
+  /** Where the website is: her own address once it's switched (https once it's secured), else the GitHub address. */
+  function liveUrl() {
+    var s = st(), c = lastCheck();
+    if (s.siteDomainOn === true && s.siteDomain) return (c && c.secure ? 'https://' : 'http://') + s.siteDomain + '/';
+    return env.site && env.site.liveUrl ? env.site.liveUrl() : '';
+  }
+  /** The address she owns (or '' to forget it, while it isn't in use). */
+  function setSiteDomain(input) {
+    t.need(['admin', 'artist']);
+    var s = st();
+    if (s.siteDomainOn === true) t.fail('Your website is using ' + s.siteDomain + '. Stop using it first, then add another.');
+    if (!String(input || '').trim()) { env.settings.set({ siteDomain: '', siteDomainCheck: '' }); return { ok: true }; }
+    var d = readDomain(input);
+    env.settings.set({ siteDomain: d.name, siteDomainCheck: '' });
+    return { ok: true, name: d.name };
+  }
+  function runCheck() {
+    var s = st();
+    if (!s.siteDomain) t.fail('Type your address first.');
+    if (!env.site || !env.site.checkDomain) t.fail('Checking an address works on the PC version of Tide Book.');
+    var d = readDomain(s.siteDomain), c = env.site.checkDomain(d.name), v = verdict(d, c);
+    var https = c && c.https || {}, http = c && c.http || {};
+    v.secure = https.ok === true && https.status < 500;
+    v.serving = /github/i.test(String(http.server || '') + String(https.server || ''));
+    v.at = t.nowIso();
+    env.settings.set({ siteDomainCheck: JSON.stringify(v) });
+    return v;
+  }
+  /** Does it point here yet (and once it's in use, is it secure)? */
+  function checkSiteDomain() { t.need(['admin', 'artist']); return { ok: true, check: runCheck() }; }
+  /** The switch: checked again first, and only when it points here. */
+  function useSiteDomain() {
+    var role = t.need(['admin', 'artist']), s = st();
+    var v = runCheck();
+    if (!v.ok) t.fail('Not yet. ' + v.say);
+    if (practice()) { env.settings.set({ siteDomainOn: true }); return { ok: true, message: 'Switched, in the practice copy only: the real website hasn’t changed.' }; }
+    env.site.setDomain(s.siteDomain);
+    env.settings.set({ siteDomainOn: true });
+    if (role === 'artist' && t.push) t.push('admin', 'Denise switched her website to ' + s.siteDomain, 'In GitHub, Settings › Pages: tick “Enforce HTTPS” once it’s offered.');
+    return { ok: true, message: 'Done. Your website moves to ' + s.siteDomain + ' in a few minutes. The padlock (https) follows, usually within an hour.' };
+  }
+  /** Back to the GitHub address. The address stays hers, ready to switch again. */
+  function dropSiteDomain() {
+    t.need(['admin', 'artist']);
+    var s = st();
+    if (!practice() && env.site && env.site.setDomain) env.site.setDomain('');
+    env.settings.set({ siteDomainOn: false });
+    return { ok: true, message: 'Your website is going back to its old address. It takes a few minutes.' + (s.siteDomain ? ' ' + s.siteDomain + ' is still yours.' : '') };
+  }
+  /** For when she'd rather someone else does the settings: they go to the admin, ready to copy. */
+  function sendSiteDomainSteps() {
+    t.need(['artist']);
+    var s = st();
+    if (!s.siteDomain) t.fail('Type your address first.');
+    var rs = records(readDomain(s.siteDomain));
+    if (t.push) t.push('admin', 'Denise’s web address: ' + s.siteDomain, 'Add at her registrar: ' + rs.map(function (r) { return r.type + ' ' + r.name + ' ' + r.value; }).join(' · ') + '. Then Website › Your own address › Switch.');
+    return { ok: true };
+  }
+
+  return { snapshot: snapshot, layerFor: layerFor, liveUrl: liveUrl,
+    api: { setSiteDomain: setSiteDomain, checkSiteDomain: checkSiteDomain, useSiteDomain: useSiteDomain, dropSiteDomain: dropSiteDomain, sendSiteDomainSteps: sendSiteDomainSteps,
+      saveSiteEdit: saveSiteEdit, undoSiteEdit: undoSiteEdit, discardSiteDraft: discardSiteDraft, publishSiteDraft: publishSiteDraft, askSiteChange: askSiteChange, siteAskDone: siteAskDone, withdrawSiteAsk: withdrawSiteAsk } };
 }
 
 </script>
@@ -10130,6 +10246,92 @@ var Kit = (function () {
       api('publishSiteDraft').then(function (r) { return refresh().then(function () { K.haptic('success'); if (S.view === 'site') paintSiteBar(); else render(); toast((r && r.message) || 'Published.'); }); }).catch(fail);
     });
   }
+  /** Her own web address: type it, copy the settings to where she bought it, check it points here, then switch. */
+  function openSiteDomain() {
+    var D = siteEd().domain || {}, ctlRef = null;
+    function again() { return refresh().then(function () { if (S.view === 'site') render(); if (ctlRef && !ctlRef.gone()) K.swap(ctlRef, openSiteDomain, true); }); }
+    function call(b, fn, args, after) {
+      K.setBusy(b, true);
+      return api.apply(null, [fn].concat(args || [])).then(function (r) { K.haptic('success'); if (after) after(r); return again(); }).catch(function (e) { K.setBusy(b, false); fail(e); });
+    }
+    function copyBtn(text) {
+      return K.iconBtn('content_copy', 'Copy ' + text, function () {
+        (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { K.haptic(); toast('Copied: ' + text); }).catch(function () { toast(text); });
+      });
+    }
+    function checkLine(c) {
+      if (!c) return null;
+      return note(c.say + ' Checked ' + K.dateLabel(c.at) + '.', c.ok ? 'check_circle' : 'schedule', c.ok ? 'good' : '');
+    }
+    K.sheet({
+      title: D.on ? 'Your web address' : 'Your own address', tall: !!D.name,
+      build: function (ctl) {
+        ctlRef = ctl;
+        var B = ctl.body;
+        // 1. no address yet: type it
+        if (!D.name) {
+          B.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'Right now your website is at ' + String(D.now || '').replace(/^https?:\/\//, '').replace(/\/$/, '') + '. If you own an address, like yourname.com.au, your website can live there instead.' }));
+          B.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 14px;color:var(--on-surface-variant)', text: 'It stays yours, wherever you bought it. Tide Book only points it at your website, and you can switch back any time.' }));
+          var f = K.textField({ label: 'Your address', placeholder: 'yourname.com.au', autocomplete: 'off', onInput: function () {} });
+          B.appendChild(f);
+          var next = btn('filled', 'Next', { icon: 'arrow_forward', lg: true, block: true, onclick: function () {
+            if (!f.input.value.trim()) { f.input.focus(); return; }
+            call(next, 'setSiteDomain', [f.input.value]);
+          } });
+          ctl.foot.appendChild(next);
+          setTimeout(function () { f.input.focus(); }, 350);
+          return;
+        }
+        // 3. in use
+        if (D.on) {
+          var c = D.check || {};
+          B.appendChild(note('Your website is at ' + D.name + '.', 'check_circle', 'good'));
+          B.appendChild(h('p', { class: 'body-m', style: 'margin:12px 0', text: c.secure ? 'It’s secure, with the padlock (https).' : 'Securing it: the padlock (https) usually comes within an hour of switching. Your website works in the meantime.' }));
+          B.appendChild(h('div', { class: 'btn-row', style: 'flex-wrap:wrap' },
+            h('a', { class: 'btn tonal press', href: D.url, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Visit it' })),
+            (function () { var b = btn('outlined', 'Check again', { icon: 'refresh', onclick: function () { call(b, 'checkSiteDomain'); } }); return b; })()));
+          var stop = btn('text', 'Go back to the old address', { icon: 'link_off', onclick: function () {
+            K.confirm({ title: 'Stop using ' + D.name + '?', text: 'Your website goes back to its old address in a few minutes. ' + D.name + ' stays yours, and you can switch back any time.', confirmLabel: 'Go back' }).then(function (yes) {
+              if (yes) call(stop, 'dropSiteDomain', [], function (r) { toast(r.message); });
+            });
+          } });
+          ctl.foot.appendChild(stop);
+          return;
+        }
+        // 2. point it here, check, switch
+        B.appendChild(h('div', { class: 'title-s dom-step', text: '1. Point ' + D.name + ' here' }));
+        B.appendChild(h('p', { class: 'body-m', style: 'margin:4px 0 10px', text: 'Sign in where you bought it (like GoDaddy, Crazy Domains or VentraIP) and open its DNS settings. They may be called “DNS records” or “Manage DNS”. Add ' + (D.records.length === 1 ? 'this line' : 'these lines') + ':' }));
+        var rows = h('div', { class: 'dns-rows' }, h('div', { class: 'dns-row head' }, h('span', { text: 'Type' }), h('span', { text: 'Name' }), h('span', { text: 'Value' }), h('span')));
+        D.records.forEach(function (r) { rows.appendChild(h('div', { class: 'dns-row' }, h('span', { class: 'dns-t', text: r.type }), h('span', { text: r.name }), h('span', { class: 'dns-v', text: r.value }), copyBtn(r.value))); });
+        B.appendChild(rows);
+        B.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 2px 0', text: (D.sub ? '' : '“@” means the address itself. Some places want that box left empty instead. ') + 'If there’s already a line with the same type and name, change it to this. Leave everything else as it is, like email.' }));
+        if (!ADMIN) {
+          var ask = btn('text', 'Ask ' + adminName() + ' to do this part', { icon: 'forum', sm: true, onclick: function () { call(ask, 'sendSiteDomainSteps', [], function () { toast('Sent to ' + adminName() + ', with the lines to add.'); }); } });
+          B.appendChild(h('div', { style: 'margin-top:6px' }, ask));
+        }
+        B.appendChild(h('div', { class: 'title-s dom-step', style: 'margin-top:18px', text: '2. Check it, then switch' }));
+        var c2 = D.check, line = checkLine(c2);
+        if (line) B.appendChild(line);
+        else B.appendChild(h('p', { class: 'body-m', style: 'margin:4px 0', text: 'Once the lines are in, tap Check. Tide Book only switches once your address points here, so your website never goes missing.' }));
+        var chk = btn(c2 && c2.ok ? 'outlined' : 'tonal', c2 ? 'Check again' : 'Check it now', { icon: 'refresh', onclick: function () { call(chk, 'checkSiteDomain'); } });
+        var foot = h('div', { style: 'display:flex;flex-direction:column;gap:6px' });
+        if (c2 && c2.ok) {
+          var go = btn('filled', 'Switch to ' + D.name, { icon: 'link', lg: true, block: true, onclick: function () {
+            K.confirm({ title: 'Switch your website to ' + D.name + '?', text: 'Visitors to the old address are sent to ' + D.name + '. It takes a few minutes, and the padlock (https) usually follows within an hour. You can switch back any time.', confirmLabel: 'Switch' }).then(function (yes) {
+              if (yes) call(go, 'useSiteDomain', [], function (r) { toast(r.message); });
+            });
+          } });
+          foot.appendChild(go);
+        }
+        B.appendChild(h('div', { style: 'margin-top:10px' }, chk));
+        var other = btn('text', 'Use a different address', { sm: true, onclick: function () { call(other, 'setSiteDomain', ['']); } });
+        foot.appendChild(other);
+        ctl.foot.appendChild(foot);
+        // a first look straight away, once per address, when it hasn't been checked
+        if (!c2 && S.domainLooked !== D.name) { S.domainLooked = D.name; setTimeout(function () { if (!ctl.gone()) call(chk, 'checkSiteDomain'); }, 600); }
+      }
+    });
+  }
   function viewSite(main) {
     var E = siteEd();
     pageTitle(main, 'Website', ADMIN ? 'Her website, with her changes on a draft. Tap anything to change it.' : 'Tap anything on your website to change it. Nothing goes live until you publish.');
@@ -10149,7 +10351,9 @@ var Kit = (function () {
     SITE.frame = h('iframe', { class: 'site-frame', title: 'Your website', src: 'site-preview/?edit=1' + (SITE.route && SITE.route !== '#/' ? SITE.route : ''), style: 'height:' + H + 'px' });
     SITE.ready = false;
     main.appendChild(rise(h('div', { class: 'site-frame-wrap' }, SITE.frame), 2));
+    var DM = E.domain || {};
     main.appendChild(rise(h('div', { class: 'site-tools' },
+      btn('tonal', DM.on ? DM.name : 'Your own address', { icon: 'link', sm: true, onclick: openSiteDomain }),
       btn('tonal', 'Colours and fonts', { icon: 'palette', sm: true, onclick: openSiteStyle }),
       btn('tonal', 'Pages', { icon: 'description', sm: true, onclick: openSitePages }),
       btn('tonal', 'Ask for something bigger', { icon: 'forum', sm: true, onclick: function () { openSiteAsk(null); } })), 3));
