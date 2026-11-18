@@ -2520,6 +2520,7 @@ function createTideLogic(env) {
     if (role === 'artist') talkData.pipeline.forEach(function (p) {
       // one line per product, so the list stays short: the first job, and how many more
       var now = (p.hands || []).filter(function (x) { return x.state === 'now'; });
+      if (p.planWaits || p.parked) return;   // waiting for a later step of her plan, or paused: not on her list yet
       if (now.length) publishData.todo.push({ key: 'pp-' + p.id, productId: p.id, text: p.title + ': ' + (now.length === 1 ? 'one thing for you' : now.length + ' things for you'),
         why: 'First: ' + now[0].text, where: 'Products' });
     });
