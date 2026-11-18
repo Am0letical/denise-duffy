@@ -5022,6 +5022,20 @@ function tideTalk(env, t) {
       aiWhy: route === 'claude' ? t.text(opts.why || (needsFacts ? 'Needs current facts' : ''), 200) : '' });
     return route;
   }
+  /** While the PC's own model is still thinking: hand it to Claude for a quicker answer (a small cost). */
+  function askClaudeNow(id) {
+    t.need(['admin', 'artist']);
+    if (!env.features.research) t.fail(env.user.role === 'admin' ? 'Claude isn’t switched on yet (setup guide, step 8).' : 'Not available right now.');
+    var go = env.lock(function () {
+      var r = rowOf(id);
+      if (!r || !(r.aiStatus === 'Queued' || r.aiStatus === 'Working')) return false;
+      if (r.aiRoute === 'claude') return true;
+      escalate(r, 'Asked for a quicker answer');
+      return true;
+    });
+    if (go && env.talkNow) env.talkNow(id);
+    return { ok: true };
+  }
   function escalate(r, why) {
     env.table(tableOf(r.id)).update(r.id, { aiStatus: 'Queued', aiRoute: 'claude', aiQueued: t.nowIso(), aiTries: 0, aiWhy: t.text(why, 200) });
   }
@@ -5807,7 +5821,7 @@ function tideTalk(env, t) {
       var r = item(id);
       if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') t.fail(r.aiJob === 'help' ? 'Still thinking about the last one.' : 'Tide Book is busy on this product. Try again in a minute.');
       env.table('pipeline').update(id, { aiTarget: cid });
-      queue(id, 'help', { claude: true, why: 'A conversation, so it answers straight away' });
+      queue(id, 'help');   // local first; she can ask for a quicker answer from Claude while it thinks
     });
     if (env.talkNow) env.talkNow(id);
     return { ok: true };
@@ -6199,7 +6213,7 @@ function tideTalk(env, t) {
   return {
     ai: ai, local: local, snapshot: snapshot, wakePaused: wakePaused, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
-      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, parkItem: setParked, deleteItem: deleteItem, laterHand: laterHand, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
+      createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, askClaudeNow: askClaudeNow, parkItem: setParked, deleteItem: deleteItem, laterHand: laterHand, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
       takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, helpStart: helpStart, helpPick: helpPick }
   };
 }
@@ -9874,6 +9888,7 @@ var Kit = (function () {
           ctl.body.appendChild(btn('tonal', 'Try again', { icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('retryTopic', id).then(refresh).then(reopen).catch(fail); } }));
         } else if (tp.status === 'Thinking' || tp.status === 'Wrapping') {
           ctl.body.appendChild(note(tp.status === 'Wrapping' ? 'Writing it all up… You can close this; it’ll be filed when it’s done.' : 'Thinking of the next questions… You can close this; they’ll be waiting on Home.', 'hourglass_top'));
+          if (tp.aiRoute === 'local') ctl.body.appendChild(quickerBtn(id));
           poll = setInterval(function () {
             refresh().then(function () { var now = byId(talkData().topics, id); if (now && (now.status !== tp.status || now.aiStatus !== tp.aiStatus)) { clearInterval(poll); poll = null; reopen(); } });
           }, 3000);
@@ -10211,6 +10226,7 @@ var Kit = (function () {
     }
     if (hv.state === 'thinking') {
       box.appendChild(h('div', { class: 'help-msg tb thinking' }, icon('hourglass_top'), ' Thinking…'));
+      box.appendChild(quickerBtn(p.id));
       var was = JSON.stringify(hv.turns.length);
       var poll = setInterval(function () {
         if (!document.body.contains(box)) { clearInterval(poll); return; }
@@ -12217,6 +12233,13 @@ var Kit = (function () {
       h('div', { class: 'body-s', style: 'margin-top:4px;color:var(--primary);font-weight:600', text: 'Tap for what you need: ' + toolsFor(cur.text).filter(function (k) { return k !== 'talk'; }).map(function (k) { return STEP_TOOLS[k].label.toLowerCase(); }).slice(0, 2).join(', ') }));
     return h('div', { class: 'card pad plan-card' }, head, dots,
       h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })));
+  }
+  /** While the PC's own model works on something: a quicker answer from Claude, for a small cost. */
+  function quickerBtn(id) {
+    return h('div', { style: 'margin-top:8px' }, btn('text', 'Quicker answer with Claude · about 1c', { sm: true, icon: 'auto_awesome', onclick: function (e) {
+      var b = e.currentTarget; K.setBusy(b, true);
+      api('askClaudeNow', id).then(function () { toast('Asked Claude. It’s usually a few seconds.'); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+    } }));
   }
   /** After a delete: a card with Undo that puts it straight back. */
   function binUndo(msg, kind, id) { undoCard(msg, function () { return api('undoDelete', kind, id); }, 'Put back.', 12); }
