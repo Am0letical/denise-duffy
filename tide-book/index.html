@@ -6846,9 +6846,9 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
-  { id: '2026-11-18-decide-row', on: '2026-11-18', to: 'artist', icon: 'delete', title: 'Park for now, or Delete, on everything',
+  { id: '2026-11-18-decide-row', on: '2026-11-18', to: 'artist', icon: 'delete', title: 'Park for now, or Remove, on everything',
     say: 'Every idea, product, post, conversation and request now has the same two buttons, each with Undo.',
-    steps: ['Park for now: it goes out of the way until a day you pick, and comes back by itself.', 'Delete asks one thing: just delete it, or “I’m not interested”, so Tide Book never suggests anything like it again.', 'Tap Undo straight after if you didn’t mean it.', 'Parked things are in a list at the bottom of each page, with Bring back.'],
+    steps: ['Park for now: it goes out of the way until a day you pick, and comes back by itself.', 'Remove asks one thing: just remove it, or “I’m not interested”, so Tide Book never suggests anything like it again.', 'Tap Undo straight after if you didn’t mean it.', 'Parked things are in a list at the bottom of each page, with Bring back.'],
     go: { view: 'content', state: { contentTab: 'review' }, find: '.decide-row', tip: 'The same three buttons are on every decision.' } },
   { id: '2026-11-18-website-controls', on: '2026-11-18', to: 'artist', icon: 'tune', title: 'Adjust things right on your website',
     say: 'Tap a picture to move it in its frame, zoom, brighten it or round its corners. Tap words or a button for size, font, colour and where it goes.',
@@ -10879,7 +10879,7 @@ var Kit = (function () {
         if (o.ctl) { o.ctl.close(); }
         render();
         if (o.after) o.after();
-        undoCard(action === 'park' ? 'Parked' + (day ? ' until ' + K.dayLabel(day, true) : '') + ': ' + shortWhat + '.' : action === 'never' ? 'Deleted: ' + shortWhat + '. Tide Book won’t suggest anything like it.' : action === 'not' ? 'No thanks: ' + shortWhat + '.' : 'Deleted: ' + shortWhat + '.',
+        undoCard(action === 'park' ? 'Parked' + (day ? ' until ' + K.dayLabel(day, true) : '') + ': ' + shortWhat + '.' : action === 'never' ? 'Removed: ' + shortWhat + '. Tide Book won’t suggest anything like it.' : action === 'not' ? 'No thanks: ' + shortWhat + '.' : 'Removed: ' + shortWhat + '.',
           function () { return api('undoDecision', kind, x.id, action); }, action === 'park' ? 'Back on.' : action === 'not' ? 'Back again.' : 'Put back.', 12);
       }).catch(function (e) { if (b) K.setBusy(b, false); fail(e); });
     }
@@ -10891,11 +10891,11 @@ var Kit = (function () {
     /** Delete asks one thing: just this one, or not interested in anything like it ever again. */
     function askDelete() {
       K.sheet({
-        title: 'Delete “' + shortWhat + '”?',
+        title: 'Remove “' + shortWhat + '”?',
         build: function (ctl) {
           var l = h('div', { class: 'next-opts' });
-          [['never', 'thumb_down', 'Delete, and I’m not interested', 'Gone, and Tide Book won’t suggest anything like it again.'],
-           ['del', 'delete', 'Just delete it', 'Gone from here. Something like it could still come up another time.']].forEach(function (c, i) {
+          [['never', 'thumb_down', 'Remove it, I’m not interested', 'Gone, and Tide Book won’t suggest anything like it again.'],
+           ['del', 'delete', 'Just remove it', 'Gone from here. Something like it could still come up another time.']].forEach(function (c, i) {
             l.appendChild(h('button', { type: 'button', class: 'next-opt' + (i === 0 ? ' main' : ''), onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); act(c[0], '', null).then(function () { ctl.close(); }); } },
               h('span', { class: 'next-opt-ic' }, icon(c[1])), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: c[2] }), h('span', { class: 'next-opt-why', text: c[3] }))));
           });
@@ -10903,10 +10903,10 @@ var Kit = (function () {
         }
       });
     }
-    return h('div', { class: 'decide-row' + (o.compact ? ' compact' : ''), role: 'group', 'aria-label': 'Park for now, or delete' },
+    return h('div', { class: 'decide-row' + (o.compact ? ' compact' : ''), role: 'group', 'aria-label': 'Park for now, or remove' },
       o.noPark ? null : one('park', 'calendar_month', 'Park for now', 'Back on a day you pick', function () { openPause(what, function (day) { return act('park', day); }); }),
       o.noDelete ? one('not', 'thumb_down', 'No thanks', 'Say no to this one', function (b) { act('not', '', b); })
-        : one('del', 'delete', 'Delete', 'Just this, or for good', function () { askDelete(); }));
+        : one('del', 'delete', 'Remove', 'Just this, or for good', function () { askDelete(); }));
   }
   /** Where something she parked or put away is, with one tap to bring it back. */
   function decidedNote(kind, x, how, o) {
@@ -11114,9 +11114,9 @@ var Kit = (function () {
         inspoPreview(i, 'inspo-img'),
         h('div', { class: 'inspo-cap' }, h('div', { class: 'body-s inspo-tldr' + (i.note || i.tags.length ? '' : ' empty'), text: inspoTldr(i) }),
           h('div', { class: 'label-s', text: [i.source, i.tags[0]].filter(Boolean).join(' · ') || ago(i.created) })));
-      var del = h('button', { class: 'inspo-del press', type: 'button', 'aria-label': 'Delete', title: 'Delete', onclick: function (e) {
+      var del = h('button', { class: 'inspo-del press', type: 'button', 'aria-label': 'Remove', title: 'Remove', onclick: function (e) {
         e.stopPropagation(); del.disabled = true;
-        api('deleteInspiration', i.id).then(refresh).then(function () { render(); binUndo('Deleted from your inspo.', 'inspiration', i.id); }).catch(function (er) { del.disabled = false; fail(er); });
+        api('deleteInspiration', i.id).then(refresh).then(function () { render(); binUndo('Removed from your inspo.', 'inspiration', i.id); }).catch(function (er) { del.disabled = false; fail(er); });
       } }, icon('delete'));
       grid.appendChild(rise(h('div', { class: 'inspo-wrap' }, card, del), 3 + Math.min(n, 8)));
     });
@@ -11160,7 +11160,7 @@ var Kit = (function () {
             } }),
             btn('text', 'Remove', { icon: 'delete', danger: true, onclick: function () {
               Promise.resolve(true).then(function (yes) {
-                if (!yes) return; api('deleteInspiration', it.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Deleted from your inspo.', 'inspiration', it.id); }).catch(fail);
+                if (!yes) return; api('deleteInspiration', it.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Removed from your inspo.', 'inspiration', it.id); }).catch(fail);
               });
             } })));
         }
@@ -12358,8 +12358,8 @@ var Kit = (function () {
           if (!n.ideaId) more.appendChild(btn('outlined', 'Make it an idea', { icon: 'lightbulb', block: true, onclick: function (e) { makeIdea(n, e.currentTarget, ctl); } }));
           else more.appendChild(btn('text', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { K.swap(ctl, function () { openIdea(n.ideaId); }); } }));
           more.appendChild(btn('text', 'Earlier versions', { icon: 'history', block: true, onclick: function () { openHistory(n, ctl); } }));
-          more.appendChild(btn('text', 'Delete note', { icon: 'delete', block: true, danger: true, onclick: function () {
-            K.confirm({ title: 'Delete this note?', text: ADMIN ? 'Links to it will show as not made yet. The earlier versions are kept in the Sheet.' : 'It will be gone from your notebook.', confirmLabel: 'Delete', danger: true })
+          more.appendChild(btn('text', 'Remove note', { icon: 'delete', block: true, danger: true, onclick: function () {
+            K.confirm({ title: 'Remove this note?', text: ADMIN ? 'Links to it will show as not made yet. The earlier versions are kept in the Sheet.' : 'It will be gone from your notebook.', confirmLabel: 'Remove', danger: true })
               .then(function (yes) { if (yes) api('deleteNote', n.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Note deleted.', 'note', n.id); }).catch(fail); });
           } }));
           s4.appendChild(more);
@@ -13894,7 +13894,7 @@ var Kit = (function () {
         ctl.body.appendChild(fold(sx, 'gl:' + id + ':fits', 'link', [par ? 'Part of “' + par.title + '”' : '', (g.group || []).length ? 'In a group with ' + g.group.map(function (l) { var o = goalById(l); return o ? '“' + o.title + '”' : ''; }).filter(String).join(', ') : '', kids ? kids + ' smaller ' + (kids === 1 ? 'goal' : 'goals') + ' inside' : ''].filter(String).join(' · ') || 'On its own for now', false));
         ctl.body.appendChild(h('div', { style: 'margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:4px' },
           btn('text', g.status === 'Done' ? 'Open it again' : 'Mark it reached', { icon: g.status === 'Done' ? 'restore' : 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', id, { status: g.status === 'Done' ? 'Open' : 'Done' }).then(refresh).then(function () { render(); again(); }).catch(fail); } }),
-          btn('text', 'Delete this goal', { icon: 'delete', danger: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('deleteGoal', id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Goal deleted.', 'goal', id); }).catch(fail); } })));
+          btn('text', 'Remove this goal', { icon: 'delete', danger: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('deleteGoal', id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Goal deleted.', 'goal', id); }).catch(fail); } })));
         var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           K.setBusy(save, true);
@@ -14443,7 +14443,7 @@ var Kit = (function () {
           ? note('Linked to ' + (S.data.printful.store || 'Printful') + '. Products can be made with Printful from their Products page.', 'check_circle', 'good')
           : h('div', {}, note('Link Printful, and your products go from idea to production right here: what it makes, prices, mockups and samples.', 'link'),
             h('div', { style: 'margin-top:8px' }, btn('filled', 'Link Printful', { icon: 'link', onclick: function () { back = false; K.swap(ctl, function () { openPrintfulLink(); }); } })))));
-        if (x) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Delete this supplier', { icon: 'delete', danger: true, onclick: function (e) {
+        if (x) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Remove this supplier', { icon: 'delete', danger: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
           api('deleteSupplier', x.id).then(refresh).then(function () { toBusiness(); binUndo('Supplier deleted.', 'supplier', x.id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
         } })));
@@ -14611,7 +14611,7 @@ var Kit = (function () {
     if (aside && c.clash) return h('div', {}, h('div', { class: 'btn-row', style: 'flex-wrap:wrap' }, fix), row);
     var ask = aside
       ? note('Suggested: don’t post this one. It was marked to be set aside. Tap “Don’t post it”, or “Post it anyway” if that’s changed.', 'lightbulb')
-      : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Approve posts it. Needs changes has it redone. Or park it for now, or delete it.' });
+      : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Approve posts it. Needs changes has it redone. Or park it for now, or remove it.' });
     return h('div', {}, ask, h('div', { class: 'btn-row', style: 'flex-wrap:wrap;margin-top:8px' }, yes, fix, c.type === 'Post' ? null : no), row);
   }
   function shotButtons(c) {
