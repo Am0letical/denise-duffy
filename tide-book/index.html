@@ -10255,6 +10255,17 @@ var Kit = (function () {
       var b = e.target.closest('button'); if (b) K.setBusy(b, true);
       saveFirst().then(function () { return api('researchItem', p.id); }).then(refresh).then(function () { toast('Researching. It’s usually here within the hour.'); reopen(); }).catch(fail);
     }
+    // a deeper look searches the web with Claude: it costs a little, so it's offered with the cost, never run by itself
+    var DEEPER_COST = 'about 30c';
+    function deeper(label) {
+      return h('div', { style: 'margin-top:10px' }, btn(label ? 'tonal' : 'filled', (label || 'Deeper look') + ' · searches the web · ' + DEEPER_COST, { icon: 'travel_explore', onclick: ask }),
+        h('p', { class: 'tf-help', style: 'margin:4px 4px 0', text: 'Real suppliers, prices and similar things for sale, checked online. Usually ready within the hour.' }));
+    }
+    if (!R && p.researchStatus === 'First look') {
+      sec.appendChild(note('Taking a first look from what Tide Book already knows. It’s free, and usually ready within a few minutes.', 'hourglass_top'));
+      sec.appendChild(deeper('Or go straight to a deeper look'));
+      return sec;
+    }
     if (!R) {
       var waiting = p.researchStatus === 'Queued' || p.researchStatus === 'Researching';
       if (waiting) sec.appendChild(note(window.TIDE_DEMO ? 'In the real app, market research appears here: suppliers, costing, projected demand and viability.' : 'Market research is on its way: suppliers, costing, projected demand and viability. Usually here within the hour.', 'travel_explore'));
@@ -10262,6 +10273,10 @@ var Kit = (function () {
       if (!waiting) sec.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', p.researchStatus === 'Failed' ? 'Try again' : 'Research it', { icon: 'travel_explore', onclick: ask })));
       return sec;
     }
+    if (p.firstLook && !(p.researchStatus === 'Queued' || p.researchStatus === 'Researching')) {
+      sec.appendChild(h('div', { style: 'margin-bottom:10px' }, note('A first look, from what Tide Book already knows. It hasn’t searched online, so prices and other sellers are a rough guide.', 'info')));
+      sec.appendChild(h('div', { style: 'margin-bottom:12px' }, deeper()));
+    } else if (p.firstLook) sec.appendChild(h('div', { style: 'margin-bottom:10px' }, note('A deeper look is on its way. This first look stays until it’s in.', 'hourglass_top')));
     var money2 = function (n) { return n ? money(n, { cents: n < 20 }) : '?'; };
     var head = h('div', { class: 'row', style: 'gap:14px;align-items:center;margin-bottom:10px' }, K.ring(R.viability),
       h('div', { class: 'grow' }, h('div', { class: 'title-m', text: R.verdict + ' · ' + R.viability + '/100' }), h('p', { class: 'body-m', text: R.summary })));
