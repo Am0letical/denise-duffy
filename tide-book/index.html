@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1209,6 +1209,32 @@ img, video { max-width: 100%; }
 .spot-ok { all: unset; padding: 6px 14px; border-radius: var(--r-full); background: var(--primary-container); color: var(--on-primary-container); font: 600 14px/20px var(--font); cursor: pointer; }
 .view-pill { transition: opacity 0.2s var(--ease), transform 0.25s var(--ease); }
 .view-pill.away { opacity: 0; transform: translate(-50%, -56px); pointer-events: none; }
+/* the Website tab */
+.nav-ind { width: 56px; }
+.site-top { position: sticky; top: calc(env(safe-area-inset-top) + 4px); z-index: 5; padding: 8px; margin: 0 -8px 10px; border-radius: var(--r-l); background: rgba(252, 249, 244, 0.92); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.site-bar { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.site-page { all: unset; box-sizing: border-box; flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 10px; border-radius: var(--r-m); background: var(--surface-lowest); box-shadow: inset 0 0 0 1px var(--outline-variant); cursor: pointer; font: 500 14px/20px var(--font); }
+.site-page .grow { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.site-page .ms { font-size: 20px; color: var(--on-surface-variant); }
+.site-live { flex: none; }
+.site-frame-wrap { border-radius: 20px; overflow: hidden; background: #fff; box-shadow: var(--shadow-2); }
+.site-frame { display: block; width: 100%; border: 0; background: #FBF7F0; }
+.site-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+.site-pics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.site-pic { all: unset; box-sizing: border-box; aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer; background: var(--surface-high); display: grid; place-items: center; }
+.site-pic .site-pic-img, .site-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.site-pic.add { flex-direction: column; gap: 4px; color: var(--primary); font: 500 12px/16px var(--font); text-align: center; background: var(--primary-container); }
+.site-pic.add .ms { font-size: 26px; }
+.site-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.site-sw { all: unset; box-sizing: border-box; position: relative; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15); display: grid; place-items: center; }
+.site-sw.on { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary); }
+.site-sw.none, .site-sw.own { background: var(--surface-high); color: var(--on-surface-variant); }
+.site-sw .ms { font-size: 18px; }
+.site-sw.own input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.site-pages .li { gap: 2px; padding-right: 4px; }
+.site-pages .li.hid .li-head { color: var(--on-surface-variant); text-decoration: line-through; }
+.site-pages .li.here { background: var(--secondary-container); }
+.site-pg { all: unset; box-sizing: border-box; display: flex; flex-direction: column; min-width: 0; cursor: pointer; padding: 6px 0; }
 </style>
 
   <script>
@@ -1357,6 +1383,7 @@ var TIDE_SETTING_DEFAULTS = {
   adAccountId: '',
   metaLoginState: '',       // the one Facebook sign-in under way (a random check value, kept 30 minutes)           // the Meta ad account number, for starting ads from Tide Book
   siteWishDone: '', siteWishLater: '',   // the website's wish list (LogicSite.gs), kept as JSON text
+  siteDraft: '', siteLive: '', siteHistory: '',   // the website editor's layer: her draft, what's live, and Undo (LogicSite.gs)
   lastBackupAt: '',         // set when the PC finishes a local backup (Backup.gs)
   // local models on the PC first, Claude when it escalates (LogicNotes.gs)
   localFirst: false, localFallbackMins: 60, localSeenAt: '', localModel: '',
@@ -1372,6 +1399,14 @@ var TIDE_SETTING_DEFAULTS = {
  * day (calendar date), list (comma separated), json.
  */
 var TIDE_SCHEMAS = {
+  siteasks: {
+    sheet: 'Website Asks',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['by', 'By', 'text'], ['text', 'Asked for', 'text'], ['route', 'Page', 'text'],
+      ['kind', 'What she tapped', 'text'], ['elText', 'Its words', 'text'], ['label', 'Part of the page', 'text'], ['key', 'Edit key', 'text'],
+      ['status', 'Status', 'text'], ['prompt', 'Prompt', 'text'], ['file', 'Prompt file', 'text'], ['doneAt', 'Done', 'date'], ['updated', 'Updated', 'date']
+    ]
+  },
   sitecontent: {
     sheet: 'Website Content',
     columns: [
@@ -2280,7 +2315,7 @@ function createTideLogic(env) {
     return r;
   }
 
-  function siteData() {
+  function siteData(which) {
     var s = settings(), today = env.today(), sales = salesByArtwork(), FULFIL = {
       'From stock': 'From stock · posted in 2 to 3 days', 'Print on demand': 'Printed to order · 5 to 7 days',
       'Digital download': 'Instant download', 'One-off': 'Signed · ships insured in 3 to 5 days' };
@@ -2308,8 +2343,9 @@ function createTideLogic(env) {
     }).sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
     // an original is for sale only when "The original" has a price. Live pieces with nothing to buy are still shown in the
     // gallery, as part of Denise's own collection; pieces with prints show there too, marked as hers.
+    var lay = siteEditor.layerFor(which === 'draft' ? 'draft' : 'live');
     return { at: nowIso(), artworks: art.filter(function (a) { return a.products.length; }),
-      keeps: art.filter(function (a) { return !a.products.length; }) };
+      keeps: art.filter(function (a) { return !a.products.length; }), edits: lay.edits, editFiles: lay.editFiles };
   }
 
   // ---------- money
@@ -2736,7 +2772,7 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
@@ -2820,6 +2856,8 @@ function createTideLogic(env) {
 
   // ---------- what the website needs from her (LogicSite.gs)
   var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push });
+  var siteEditor = tideSiteEditor(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push, publishWebsite: function () { return publishWebsite(); },
+    liveArtworks: function () { return rows('prints').filter(function (pr) { return pr.status === 'Live' && list(pr.photoIds).length; }).length; } });
 
   // ---------- her private writing: locked with her passphrase (the PC server's vault; elsewhere there's no lock to show)
   function privacyState() {
@@ -3378,6 +3416,7 @@ function createTideLogic(env) {
   Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
   out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock;
   Object.keys(siteWishes.api).forEach(function (k) { out.api[k] = siteWishes.api[k]; });
+  Object.keys(siteEditor.api).forEach(function (k) { out.api[k] = siteEditor.api[k]; });
   return out;
 }
 
@@ -6647,6 +6686,18 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-18-website-tab', on: '2026-11-18', to: 'artist', icon: 'language', title: 'Change your website yourself',
+    say: 'The new Website tab shows your website. Tap any words, picture or part of a page to change it, then publish when you’re happy.',
+    steps: ['Tap Website in the bar at the bottom.', 'Tap any words or picture on your website to change them.', 'Tap a part of a page to move it, hide it, or add a new section below it.', 'Colours and fonts, and Pages, are just under your website.', 'Nothing goes live until you tap Publish.'],
+    go: { view: 'site', find: '.site-frame', tip: 'Tap anything here to change it.' } },
+  { id: '2026-11-18-website-ask', on: '2026-11-18', to: 'artist', icon: 'forum', title: 'Ask for something bigger on your website',
+    say: 'For a new kind of section or a different layout, tap the spot and ask in your own words. You’ll see it in the preview before it goes live.',
+    steps: ['In the Website tab, tap the part you mean.', 'Tap “Ask for something bigger here”.', 'Say what you’d like, or tap a suggestion, then Send it.', 'It shows under your website until it’s done.'],
+    go: { view: 'site', find: '.site-tools', tip: '“Ask for something bigger” is here.' } },
+  { id: '2026-11-18-website-admin', on: '2026-11-18', to: 'admin', icon: 'language', title: 'Website tab: her editor, and her asks',
+    say: 'Denise edits her site as a layer (words, pictures, looks, sections, pages, colours) and publishes it herself. Bigger asks come to you as ready prompts.',
+    steps: ['Her edits: settings siteDraft and siteLive, put on by site/edits.js. The editor helper (site/edit-agent.js) is only added to the preview.', 'Her asks: under her website, with “Copy the prompt” and “It’s done”. The prompt is also saved in website-requests/.', 'Publishing still runs the privacy check, and you get a buzz when she publishes.'],
+    go: { view: 'site', find: '.site-tools', tip: 'Her asks show below the website.' } },
   { id: '2026-11-18-idea-folds', on: '2026-11-18', to: 'artist', icon: 'unfold_less', title: 'Idea pages are shorter too',
     say: 'Like products, each part of an idea now folds away under a heading that says what’s inside.',
     steps: ['Go to Ideas and open an idea.', 'Tap a heading, like “What’s included”, to open it.', 'Tap it again to fold it away.'],
@@ -7404,6 +7455,199 @@ function tideSiteWishes(env, t) {
     return { wishes: role === 'artist' ? current() : [], sent: role === 'admin' ? sent : [] };
   }
   return { snapshot: snapshot, api: { sendSiteContent: sendSiteContent, laterSiteWish: laterSiteWish, doneSiteWish: doneSiteWish, usedSiteContent: usedSiteContent } };
+}
+
+/**
+ * Tide Book: the website editor (the Website tab). Her own changes to the website, kept as a layer over the pages
+ * (site/edits.js puts it on): words, pictures, looks, sections moved, hidden or added from ready-made blocks, pages renamed,
+ * hidden, reordered or added, and the site's colours and heading font. Every change lands on a draft she sees straight
+ * away in the preview; Publish makes the draft the live website. Anything bigger (a new layout, a new kind of section)
+ * is asked for in her words, with what she tapped, and becomes a ready prompt for the admin.
+ */
+var TIDE_SITE_EDITOR = {
+  HISTORY: 30,
+  BLOCKS: ['text', 'story', 'quote', 'gallery', 'button'],
+  COLOURS: ['ocean', 'pink-deep', 'teal', 'paper', 'ink', 'sun', 'night'],
+  FONTS: ['Lora', 'Playfair Display', 'Cormorant Garamond', 'DM Serif Display', 'Fraunces']
+};
+
+function tideSiteEditor(env, t) {
+  var X = TIDE_SITE_EDITOR;
+  function blank() { return { v: 1, words: {}, pics: {}, looks: {}, theme: {}, sections: {}, pages: { names: {}, hidden: [], order: [], added: [] } }; }
+  function parse(s) { try { var o = s ? JSON.parse(s) : null; return o && o.v === 1 ? o : blank(); } catch (e) { return blank(); } }
+  function st() { return env.settings.get(); }
+  function draft() { return parse(st().siteDraft); }
+  function live() { return parse(st().siteLive); }
+  function key(k) { k = String(k || ''); if (!k || k.length > 400 || !/^[wpb]\|/.test(k)) t.fail('Tap the thing you want to change first.'); return k; }
+  function route(r) { r = String(r || ''); if (!/^(#\/[^\s"'<>]{0,160}|\*)$/.test(r)) t.fail('That page wasn’t found.'); return r; }
+  function hex(c) { c = String(c || '').toLowerCase(); return /^#[0-9a-f]{6}$/.test(c) ? c : ''; }
+  function file(f) { f = String(f || ''); if (!/^f[0-9a-f]{6,40}$/.test(f)) t.fail('Pick a picture first.'); return f; }
+  function id() { return Math.random().toString(36).slice(2, 8); }
+  /** Saves a new draft, keeping the one before it for Undo. */
+  function save(next) {
+    var s = st(), hist = [];
+    try { hist = JSON.parse(s.siteHistory || '[]'); } catch (e) { hist = []; }
+    hist.push(s.siteDraft || '');
+    env.settings.set({ siteDraft: JSON.stringify(next), siteHistory: JSON.stringify(hist.slice(-X.HISTORY)) });
+    return snapshot(env.user.role);
+  }
+  function move(listIn, item, dir) {
+    var l = listIn.slice(), i = l.indexOf(item), j = i + (dir === 'up' ? -1 : 1);
+    if (i < 0 || j < 0 || j >= l.length) return l;
+    l[i] = l[j]; l[j] = item; return l;
+  }
+
+  /** One change from the editor. */
+  function saveSiteEdit(op) {
+    t.need(['admin', 'artist']);
+    op = op || {};
+    var d = draft();
+    if (op.words) {
+      var wk = key(op.words.key), txt = op.words.text == null ? null : t.text(op.words.text, 2000);
+      if (txt === null || txt === '') delete d.words[wk]; else d.words[wk] = txt;
+    } else if (op.pic) {
+      var pk = key(op.pic.key);
+      if (!op.pic.file) delete d.pics[pk]; else d.pics[pk] = file(op.pic.file);
+    } else if (op.look) {
+      var lk = key(op.look.key), p = op.look.props, out = {};
+      if (p) {
+        var size = Number(p.size); if (size && Math.abs(size - 1) > 0.01) out.size = Math.max(0.6, Math.min(2.2, Math.round(size * 100) / 100));
+        var width = Number(p.width); if (width && width < 1) out.width = Math.max(0.3, Math.round(width * 100) / 100);
+        if (X.COLOURS.indexOf(p.color) >= 0) out.color = p.color;
+        if (p.bold) out.bold = true;
+        if (['left', 'center', 'right'].indexOf(p.align) >= 0) out.align = p.align;
+        if (p.hide) out.hide = true;
+      }
+      if (Object.keys(out).length) d.looks[lk] = out; else delete d.looks[lk];
+    } else if ('theme' in op) {
+      if (!op.theme) d.theme = {};
+      else {
+        X.COLOURS.forEach(function (c) { if (c in op.theme) { var v = hex(op.theme[c]); if (v) d.theme[c] = v; else delete d.theme[c]; } });
+        if ('font' in op.theme) { if (X.FONTS.indexOf(op.theme.font) >= 0 && op.theme.font !== 'Lora') d.theme.font = op.theme.font; else delete d.theme.font; }
+      }
+    } else if (op.section) {
+      var sr = route(op.section.route), S = d.sections[sr] = d.sections[sr] || { order: [], hidden: [], added: [] }, sk = String(op.section.key || '').slice(0, 60);
+      if (!sk) t.fail('Tap a part of the page first.');
+      if (op.section.act === 'hide') { if (S.hidden.indexOf(sk) < 0) S.hidden.push(sk); }
+      else if (op.section.act === 'show') S.hidden = S.hidden.filter(function (x) { return x !== sk; });
+      else if (op.section.act === 'up' || op.section.act === 'down') {
+        var cur = t.list(op.section.keys).map(function (x) { return String(x).slice(0, 60); }).filter(String).slice(0, 80);
+        if (cur.indexOf(sk) < 0) t.fail('That part of the page has moved. Tap it again.');
+        S.order = move(cur, sk, op.section.act);
+      } else t.fail('Pick what to do with it.');
+    } else if (op.block) {
+      var br = route(op.block.route), B = d.sections[br] = d.sections[br] || { order: [], hidden: [], added: [] };
+      if (X.BLOCKS.indexOf(op.block.type) < 0) t.fail('Pick a kind of section.');
+      if (B.added.length >= 20) t.fail('That page has plenty of new sections already.');
+      var nb = { id: 'tb' + id(), type: op.block.type, after: String(op.block.after || '').slice(0, 60) };
+      B.added.push(nb);
+      if (B.order.length && op.block.after) { var at = B.order.indexOf(nb.after); B.order.splice(at < 0 ? B.order.length : at + 1, 0, 'b:' + nb.id); }
+    } else if (op.unblock) {
+      var ur = route(op.unblock.route), U = d.sections[ur];
+      if (U) { U.added = U.added.filter(function (b) { return b.id !== op.unblock.id; }); U.order = U.order.filter(function (k) { return k !== 'b:' + op.unblock.id; }); }
+      Object.keys(d.words).concat(Object.keys(d.pics), Object.keys(d.looks)).forEach(function (k) { if (k.indexOf('b|' + op.unblock.id + ':') === 0) { delete d.words[k]; delete d.pics[k]; delete d.looks[k]; } });
+    } else if (op.page) {
+      var P = d.pages, href = String(op.page.href || '').slice(0, 80), act = op.page.act;
+      if (act === 'add') {
+        var title = t.text(op.page.name, 40); if (!title) t.fail('Give the page a name.');
+        if (P.added.length >= 10) t.fail('That’s plenty of new pages.');
+        var pid = (title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24) || 'page') + '-' + id().slice(0, 3);
+        P.added.push({ id: pid, title: title });
+        var nr = '#/p/' + pid; d.sections[nr] = { order: [], hidden: [], added: [{ id: 'tb' + id(), type: 'text', after: '' }] };
+        return Object.assign(save(d), { added: nr });
+      }
+      if (!/^#\/[a-z0-9\/-]{0,60}$/.test(href)) t.fail('Pick a page first.');
+      if (act === 'rename') { var nm = t.text(op.page.name, 40); if (nm) P.names[href] = nm; else delete P.names[href]; P.added.forEach(function (a) { if ('#/p/' + a.id === href && nm) a.title = nm; }); }
+      else if (act === 'hide') { if (href === '#/') t.fail('The home page always stays.'); if (P.hidden.indexOf(href) < 0) P.hidden.push(href); }
+      else if (act === 'show') P.hidden = P.hidden.filter(function (x) { return x !== href; });
+      else if (act === 'up' || act === 'down') P.order = move(t.list(op.page.hrefs).map(String).slice(0, 40), href, act);
+      else if (act === 'remove') {
+        P.added = P.added.filter(function (a) { return '#/p/' + a.id !== href; }); delete d.sections[href];
+        P.order = P.order.filter(function (x) { return x !== href; }); P.hidden = P.hidden.filter(function (x) { return x !== href; });
+      } else t.fail('Pick what to do with the page.');
+    } else if (op.reset) {
+      var rk = key(op.reset); delete d.words[rk]; delete d.pics[rk]; delete d.looks[rk];
+    } else t.fail('Nothing to change.');
+    return save(d);
+  }
+  function undoSiteEdit() {
+    t.need(['admin', 'artist']);
+    var hist = []; try { hist = JSON.parse(st().siteHistory || '[]'); } catch (e) { hist = []; }
+    if (!hist.length) t.fail('Nothing to undo.');
+    var prev = hist.pop();
+    env.settings.set({ siteDraft: prev, siteHistory: JSON.stringify(hist) });
+    return snapshot(env.user.role);
+  }
+  /** Back to what's on the live website: the draft's changes go (and can be undone). */
+  function discardSiteDraft() { t.need(['admin', 'artist']); return save(live()); }
+  /** The draft becomes the website. In the practice copy it's only pretend. */
+  function publishSiteDraft() {
+    var role = t.need(['admin', 'artist']), s = st(), before = s.siteLive || '';
+    // the website's shop comes from her live artworks: with none yet, a publish would leave it empty
+    if (t.liveArtworks && t.liveArtworks() === 0) t.fail(role === 'admin' ? 'No artworks are live in Tide Book yet, so publishing would replace the sample shop with an empty one. Set at least one artwork live first.' : 'Your shop needs at least one artwork first. Set one live in Artworks, then publish. Your changes are kept.');
+    env.settings.set({ siteLive: s.siteDraft || '' });
+    if (typeof HOST !== 'undefined' && HOST.practice === true) return { ok: true, message: 'Published, in the practice copy only: the real website hasn’t changed.' };
+    var r;
+    try { r = t.publishWebsite(); } catch (e) { env.settings.set({ siteLive: before }); throw e; }
+    if (role === 'artist' && t.push) t.push('admin', 'Denise published her website', 'Her changes are live.');
+    return r;
+  }
+
+  // ---------------------------------------------------------------- bigger changes: in her words, as a ready prompt
+  function promptFor(r) {
+    return [
+      'Website change for Denise Duffy’s website, asked in Tide Book’s Website tab (' + r.id + ', ' + String(r.created).slice(0, 10) + ').',
+      '', 'What she asked for, in her words:', '“' + r.text + '”',
+      r.elText || r.kind ? '\nWhat she tapped: ' + (r.kind || 'the page') + ' on the page ' + (r.route === '*' ? 'menu or footer' : r.route) + (r.elText ? ': “' + r.elText + '”' : '') + (r.label ? ' (in the part headed “' + r.label + '”)' : '') + '.' : '',
+      '', 'How the site is made:',
+      '- The source is in site/: site.html draws every page (views in its script), site.css styles it; originals.js, browse.js and hall3d.js are the gallery. Build: python site/build_site.py.',
+      '- Her own small changes (words, pictures, looks, sections moved/hidden/added, pages, colours) are a layer kept in Tide Book (settings siteDraft and siteLive) and put on by site/edits.js. Keep that working.',
+      '- Her word changes are matched by the original words. If you change words she has already edited, say which, so they can be redone.',
+      '', 'When you’re done:',
+      '- Don’t publish. Denise publishes from the Website tab once she has looked at the preview.',
+      '- Mark ' + r.id + ' as done in Tide Book (Website tab, the admin’s list).',
+      '- Never publish family names or her health details. Private words are checked again when she publishes.'
+    ].join('\n');
+  }
+  function askSiteChange(p) {
+    var role = t.need(['admin', 'artist']); p = p || {};
+    var text = t.text(p.text, 2000); if (!text) t.fail('Say what you’d like, or tap one of the suggestions.');
+    var it = p.it || {};
+    var r = { id: '', created: t.nowIso(), by: role, text: text, route: /^(#\/\S{0,160}|\*)$/.test(it.route || '') ? it.route : '', kind: t.text(it.kind, 20), elText: t.text(it.text, 300), label: t.text(it.label, 100), key: t.text(it.key, 400), status: 'Asked', prompt: '', file: '', doneAt: '', updated: '' };
+    env.lock(function () {
+      r.id = env.nextId('SA', 4); r.prompt = promptFor(r);
+      if (env.site && env.site.saveRequest) { try { r.file = env.site.saveRequest(r.id, r.prompt); } catch (e) { r.file = ''; } }
+      r.updated = r.created;
+      env.table('siteasks').append(r);
+    });
+    if (role === 'artist' && t.push) t.push('admin', 'Website: Denise asked for a change', text.slice(0, 140));
+    return { ok: true, id: r.id };
+  }
+  function siteAskDone(id, done) {
+    t.need(['admin']);
+    return env.lock(function () { t.find('siteasks', id); env.table('siteasks').update(id, { status: done === false ? 'Asked' : 'Done', doneAt: done === false ? '' : t.nowIso(), updated: t.nowIso() }); return { ok: true }; });
+  }
+  function withdrawSiteAsk(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () { t.find('siteasks', id); env.table('siteasks').update(id, { status: 'Withdrawn', updated: t.nowIso() }); return { ok: true }; });
+  }
+
+  function filesOf(L) { var f = {}; Object.keys(L.pics || {}).forEach(function (k) { f[L.pics[k]] = 1; }); return Object.keys(f); }
+  function snapshot(role) {
+    var d = draft(), l = live(), s = st(), hist = 0;
+    try { hist = JSON.parse(s.siteHistory || '[]').length; } catch (e) { hist = 0; }
+    var urls = {}; filesOf(d).forEach(function (f) { urls[f] = env.files.viewUrl(f); });
+    var asks = t.rows('siteasks').filter(function (r) { return r.status !== 'Withdrawn' && (role === 'admin' || r.by === 'artist'); }).map(function (r) {
+      return { id: r.id, created: r.created, by: r.by, text: r.text, route: r.route, kind: r.kind, elText: r.elText, status: r.status, doneAt: r.doneAt || '', prompt: role === 'admin' ? r.prompt : '', file: role === 'admin' ? r.file : '' };
+    }).sort(function (a, b) { return a.created < b.created ? 1 : -1; }).slice(0, 30);
+    return { draft: d, urls: urls, changed: JSON.stringify(d) !== JSON.stringify(l), canUndo: hist > 0, artworks: t.liveArtworks ? t.liveArtworks() : -1, publishedAt: s.sitePublishedAt || '', asks: asks,
+      colours: X.COLOURS, fonts: X.FONTS, blocks: X.BLOCKS, available: !!env.site };
+  }
+  /** For the build: the live layer (or the draft, for the preview), and the pictures it uses. */
+  function layerFor(which) { var L = which === 'draft' ? draft() : live(); return { edits: L, editFiles: filesOf(L) }; }
+
+  return { snapshot: snapshot, layerFor: layerFor,
+    api: { saveSiteEdit: saveSiteEdit, undoSiteEdit: undoSiteEdit, discardSiteDraft: discardSiteDraft, publishSiteDraft: publishSiteDraft, askSiteChange: askSiteChange, siteAskDone: siteAskDone, withdrawSiteAsk: withdrawSiteAsk } };
 }
 
 </script>
@@ -9174,9 +9418,9 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ navigation
   var NAV = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['money', 'Money', 'account_balance_wallet']]
+    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
   // Settings is a button at the bottom of Home, so the bottom bar stays at five. The back-end parts are admin-only.
   function homeGear() {
     return h('div', { class: 'home-gear' }, btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
@@ -9254,12 +9498,307 @@ var Kit = (function () {
     }
   }
 
+  // ------------------------------------------------------------------ the Website tab: her website, to change by tapping it
+  // The preview is her website with her draft on top (site/edits.js) and a small helper (site/edit-agent.js) that tells this
+  // page what she tapped. Every change is saved to the draft and sent straight back into the preview; Publish makes it live.
+  // Anything bigger is asked for in her words and becomes a ready prompt for the admin (LogicSite.gs, tideSiteEditor).
+  var SITE = { frame: null, ready: false, route: '#/', title: 'Home', pages: [], sections: [], bar: null };
+  var SITE_COLOURS = { ocean: ['Main colour', '#1B4F86'], 'pink-deep': ['Accent', '#A3426A'], teal: ['Second accent', '#1D6F79'], ink: ['Words', '#14181d'], paper: ['Background', '#FBF7F0'] };
+  var SITE_SWATCHES = ['#1B4F86', '#2D6A8F', '#1D6F79', '#3E7C59', '#A3426A', '#C0566E', '#B5651D', '#7D5700', '#6B4E8F', '#14181d', '#FBF7F0', '#FFFFFF', '#F4EDE4', '#EAF2F2'];
+  var SITE_BLOCKS = { text: ['notes', 'Words', 'A heading and a few lines.'], story: ['image', 'A picture and its story', 'A photo beside a heading and words.'],
+    quote: ['format_quote', 'A quote', 'A line in large writing, like your bio.'], gallery: ['grid_view', 'Three pictures', 'Three of your pictures in a row.'],
+    button: ['ads_click', 'A button', 'A heading and a button to another page.'] };
+  function siteEd() { return S.data.siteEd || { draft: {}, urls: {}, asks: [], colours: [], fonts: [], blocks: [] }; }
+  function sitePost(m) { if (SITE.frame && SITE.frame.contentWindow) { m.to = 'tide-site'; SITE.frame.contentWindow.postMessage(m, location.origin); } }
+  function siteLayer() {
+    var d = JSON.parse(JSON.stringify(siteEd().draft || {})), u = siteEd().urls || {};
+    d.urls = {}; Object.keys(u).forEach(function (f) { d.urls[f] = new URL(u[f], location.href).href; });
+    return d;
+  }
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.from !== 'tide-site') return;
+    var m = e.data;
+    if (m.type === 'ready') { SITE.ready = true; SITE.pages = m.pages || []; SITE.sections = m.sections || []; sitePost({ type: 'layer', layer: siteLayer() }); sitePost({ type: 'mode', edit: S.siteMode !== 'look' }); }
+    if (m.type === 'route') { SITE.route = m.route; SITE.title = pageName(m.route, m.title); SITE.pages = m.pages || SITE.pages; paintSiteBar(); }
+    if (m.type === 'drawn') { SITE.sections = m.sections || SITE.sections; SITE.pages = m.pages || SITE.pages; }
+    if (m.type === 'pick') { K.haptic(); openSitePick(m.it); }
+  });
+  function pageName(route, h1) {
+    var p = SITE.pages.filter(function (x) { return x.href === route; })[0];
+    return p ? p.now || p.label : route === '#/' ? 'Home' : h1 || 'This page';
+  }
+  /** After a change: the new draft goes into the preview at once, and the bar shows it's not published yet. */
+  function siteAfter(snap, msg) {
+    if (snap && snap.draft) S.data.siteEd = snap;
+    sitePost({ type: 'layer', layer: siteLayer() });
+    paintSiteBar();
+    if (msg) toast(msg);
+  }
+  function siteOp(op, msg) { return api('saveSiteEdit', op).then(function (snap) { K.haptic('success'); siteAfter(snap, msg); return snap; }).catch(function (e) { fail(e); throw e; }); }
+  function paintSiteBar() {
+    var b = SITE.bar; if (!b || !document.contains(b)) return;
+    var E = siteEd();
+    b.textContent = '';
+    b.append(
+      h('button', { type: 'button', class: 'site-page press soft', onclick: openSitePages }, icon('description'), h('span', { class: 'grow', text: SITE.title || 'Home' }), icon('expand_more')),
+      btn('text', 'Undo', { sm: true, icon: 'undo', disabled: !E.canUndo, onclick: function (e) { var x = e.currentTarget; K.setBusy(x, true); api('undoSiteEdit').then(function (snap) { siteAfter(snap, 'Undone.'); }).catch(function (er) { K.setBusy(x, false); fail(er); }); } }),
+      !E.changed ? h('span', { class: 'chip approved site-live' }, icon('check_circle'), 'Live')
+        : E.artworks === 0 ? btn('tonal', 'Publish', { sm: true, icon: 'rocket_launch', onclick: function () {
+          K.confirm({ single: true, title: 'Your shop needs an artwork first', text: ADMIN ? 'No artworks are live in Tide Book yet, so publishing would swap the sample shop for an empty one. Set at least one artwork live, then publish. The changes are kept on the draft.' : 'Your website’s shop shows your artworks from Tide Book, and none are live yet. Set one live in Artworks, then publish. Your changes are kept.', confirmLabel: 'OK' });
+        } })
+        : btn('filled', 'Publish', { sm: true, icon: 'rocket_launch', onclick: publishSite }));
+  }
+  function publishSite() {
+    K.confirm({ title: 'Publish your changes?', text: 'Your website updates in about a minute. You can keep changing it afterwards, and nothing you’ve kept private goes out.', confirmLabel: 'Publish' }).then(function (yes) {
+      if (!yes) return;
+      toast('Publishing…');
+      api('publishSiteDraft').then(function (r) { return refresh().then(function () { K.haptic('success'); paintSiteBar(); toast((r && r.message) || 'Published.'); }); }).catch(fail);
+    });
+  }
+  function viewSite(main) {
+    var E = siteEd();
+    pageTitle(main, 'Website', ADMIN ? 'Her website, with her changes on a draft. Tap anything to change it.' : 'Tap anything on your website to change it. Nothing goes live until you publish.');
+    if (window.TIDE_DEMO || !E.available) {
+      main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('In the real app, your website opens here. Tap any words, picture or part of a page to change it, then publish when you’re happy.', 'language')), 1));
+      return;
+    }
+    var mode = K.segmented({ label: 'Mode', value: S.siteMode === 'look' ? 'look' : 'edit', onChange: function (v) { S.siteMode = v; sitePost({ type: 'mode', edit: v === 'edit' }); hint.textContent = v === 'edit' ? 'Tap anything to change it.' : 'Look around: links work as they will for visitors.'; },
+      options: [{ value: 'edit', label: 'Change things' }, { value: 'look', label: 'Look around' }] });
+    var hint = h('p', { class: 'tf-help', style: 'margin:6px 4px 0', text: S.siteMode === 'look' ? 'Look around: links work as they will for visitors.' : 'Tap anything to change it.' });
+    SITE.bar = h('div', { class: 'site-bar' });
+    main.appendChild(rise(h('div', { class: 'site-top' }, mode, hint, SITE.bar), 1));
+    paintSiteBar();
+    var H = Math.max(460, window.innerHeight - 330);
+    SITE.frame = h('iframe', { class: 'site-frame', title: 'Your website', src: 'site-preview/?edit=1' + (SITE.route && SITE.route !== '#/' ? SITE.route : ''), style: 'height:' + H + 'px' });
+    SITE.ready = false;
+    main.appendChild(rise(h('div', { class: 'site-frame-wrap' }, SITE.frame), 2));
+    main.appendChild(rise(h('div', { class: 'site-tools' },
+      btn('tonal', 'Colours and fonts', { icon: 'palette', sm: true, onclick: openSiteStyle }),
+      btn('tonal', 'Pages', { icon: 'description', sm: true, onclick: openSitePages }),
+      btn('tonal', 'Ask for something bigger', { icon: 'forum', sm: true, onclick: function () { openSiteAsk(null); } })), 3));
+    if (E.changed) main.appendChild(rise(h('div', { style: 'text-align:center;margin-top:4px' }, btn('text', 'Start over from the live website', { sm: true, icon: 'restart_alt', onclick: function () {
+      K.confirm({ title: 'Start over?', text: 'The changes you haven’t published go, and the preview shows the live website again. You can undo this.', confirmLabel: 'Start over' }).then(function (yes) {
+        if (yes) api('discardSiteDraft').then(function (snap) { siteAfter(snap, 'Back to the live website.'); render(); }).catch(fail);
+      });
+    } })), 3));
+    // what she's asked for: the bigger changes, and where each is up to
+    var asks = E.asks || [];
+    if (asks.length) {
+      var sec = section(ADMIN ? 'Website asks' : 'What you’ve asked for'), l = h('div', { class: 'list' });
+      asks.forEach(function (a) {
+        var row = h('div', { class: 'li', style: 'align-items:flex-start' }, h('span', { class: 'ic' }, icon(a.status === 'Done' ? 'check_circle' : 'forum')),
+          h('div', { class: 'grow' }, h('div', { class: 'li-head', text: a.text }),
+            h('div', { class: 'li-sup wrap2', text: (a.status === 'Done' ? 'Done ' + ago(a.doneAt) : 'Asked ' + ago(a.created)) + (a.elText ? ' · about “' + a.elText.slice(0, 60) + '”' : '') }),
+            ADMIN && a.status !== 'Done' ? h('div', { class: 'btn-row', style: 'margin-top:8px;flex-wrap:wrap' },
+              btn('tonal', 'Copy the prompt', { sm: true, icon: 'content_copy', onclick: function () { (navigator.clipboard ? navigator.clipboard.writeText(a.prompt) : Promise.reject()).then(function () { toast('Copied. Paste it into Claude Code' + (a.file ? ', or say “Do website ask ' + a.id + '”' : '') + '.'); }).catch(function () { toast('Couldn’t copy. It’s saved in ' + (a.file || 'the website asks') + '.'); }); } }),
+              btn('text', 'It’s done', { sm: true, icon: 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('siteAskDone', a.id, true).then(refresh).then(render).catch(fail); } })) : null,
+            !ADMIN && a.status !== 'Done' ? h('div', { style: 'margin-top:4px' }, btn('text', 'Never mind', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('withdrawSiteAsk', a.id).then(refresh).then(function () { render(); toast('Taken back.'); }).catch(fail); } })) : null),
+          chip(a.status === 'Done' ? 'Done' : 'Asked', a.status === 'Done' ? 'approved' : 'pending'));
+        l.appendChild(row);
+      });
+      sec.appendChild(l);
+      main.appendChild(rise(sec, 4));
+    }
+  }
+
+  /** She tapped something on her website: change its words or picture, how it looks, or the part of the page it's in. */
+  function openSitePick(it) {
+    var E = siteEd(), D = E.draft || {}, look = Object.assign({}, (D.looks || {})[it.key] || {}), edited = it.key && ((D.words || {})[it.key] != null || (D.pics || {})[it.key] || (D.looks || {})[it.key]);
+    var title = it.kind === 'picture' ? 'This picture' : it.kind === 'words' ? (/^h[1-4]$/.test(it.tag) ? 'This heading' : it.isLink ? 'This button' : 'These words') : 'This part of the page';
+    K.sheet({
+      title: title,
+      onClose: function () { sitePost({ type: 'unpick' }); },
+      build: function (ctl) {
+        function done(p) { return p.then(function () { ctl.close(); }).catch(function () {}); }
+        function lookOp(change) { Object.assign(look, change); Object.keys(look).forEach(function (k) { if (look[k] === null || look[k] === false || look[k] === '') delete look[k]; }); return siteOp({ look: { key: it.key, props: Object.keys(look).length ? look : null } }); }
+        if (it.kind === 'words') {
+          var val = it.text;
+          var tf = K.textField({ label: /^h[1-4]$/.test(it.tag) ? 'The heading' : 'The words', value: val, multiline: true, maxlength: 2000, onInput: function (v) { val = v; } });
+          ctl.body.appendChild(tf);
+          ctl.foot.appendChild(btn('filled', 'Save the words', { icon: 'check', lg: true, block: true, onclick: function (e) {
+            var b = e.currentTarget;
+            if (!val.trim()) { toast('Write something, or tap “Hide it” below to take it away.'); return; }
+            if (val.trim() === it.text) { ctl.close(); return; }
+            K.setBusy(b, true); done(siteOp({ words: { key: it.key, text: val.trim() } }, 'Changed on your draft.'));
+          } }));
+        }
+        if (it.kind === 'picture') {
+          var arts = S.data.prints.map(function (x) { return { title: x.title, thumbIds: x.thumbIds, fid: (x.photoIds || [])[0] || String((x.photoUrls || [])[0] || '').replace(/^files\//, '') }; }).filter(function (x) { return /^f[0-9a-f]+$/.test(x.fid); });
+          var grid = h('div', { class: 'site-pics' });
+          var up = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', hidden: true });
+          up.addEventListener('change', function () {
+            var f = up.files[0]; if (!f) return;
+            toast('Adding your photo…');
+            fetch('upload?name=' + encodeURIComponent(f.name) + '&folder=' + encodeURIComponent('Website'), { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg' }, body: f, credentials: 'same-origin' })
+              .then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw new Error(j.error); return done(siteOp({ pic: { key: it.key, file: j.id } }, 'Picture changed on your draft.')); }).catch(fail);
+          });
+          grid.appendChild(h('button', { type: 'button', class: 'site-pic add press soft', onclick: function () { up.click(); } }, icon('add_a_photo'), h('span', { text: 'A new photo' })));
+          arts.forEach(function (a) {
+            grid.appendChild(h('button', { type: 'button', class: 'site-pic press soft', 'aria-label': a.title, onclick: function (e) { K.setBusy(e.currentTarget, true); done(siteOp({ pic: { key: it.key, file: a.fid } }, 'Picture changed on your draft.')); } },
+              a.thumbIds && a.thumbIds.length ? thumbImg(a.thumbIds[0], 'site-pic-img') : h('span', { class: 'site-pic-img' }, icon('image'))));
+          });
+          ctl.body.append(up, h('div', { class: 'label-s', style: 'margin:0 0 8px', text: 'Swap it for one of your artworks, or a new photo' }), grid);
+          setTimeout(loadThumbs, 0);
+        }
+        // how it looks
+        if (it.key) {
+          var ls = sheetSection('How it looks');
+          if (it.kind === 'words') {
+            ls.appendChild(h('div', { class: 'label-s', text: 'Size' }));
+            ls.appendChild(K.choices({ row: true, label: 'Size', value: String(look.size || 1), options: [{ value: '0.85', label: 'Smaller' }, { value: '1', label: 'As it was' }, { value: '1.2', label: 'Bigger' }, { value: '1.45', label: 'Biggest' }],
+              onChange: function (v) { lookOp({ size: Number(v) === 1 ? null : Number(v) }); } }));
+            var sw = h('div', { class: 'site-swatches' });
+            sw.appendChild(h('button', { type: 'button', class: 'site-sw none' + (!look.color ? ' on' : ''), 'aria-label': 'As it was', onclick: function () { lookOp({ color: null }); ctl.close(); } }, icon('format_color_reset')));
+            Object.keys(SITE_COLOURS).forEach(function (c) {
+              var hex = ((D.theme || {})[c]) || SITE_COLOURS[c][1];
+              sw.appendChild(h('button', { type: 'button', class: 'site-sw' + (look.color === c ? ' on' : ''), style: 'background:' + hex, 'aria-label': SITE_COLOURS[c][0], onclick: function () { lookOp({ color: c }); ctl.close(); } }));
+            });
+            ls.append(h('div', { class: 'label-s', style: 'margin-top:10px', text: 'Colour' }), sw,
+              h('div', { class: 'label-s', style: 'margin-top:10px', text: 'Line up' }),
+              K.choices({ row: true, label: 'Line up', value: look.align || '', allowNone: true, options: [{ value: 'left', label: 'Left' }, { value: 'center', label: 'Centre' }, { value: 'right', label: 'Right' }], onChange: function (v) { lookOp({ align: v || null }); } }),
+              h('div', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' },
+                btn(look.bold ? 'tonal' : 'outlined', look.bold ? 'Bold: on' : 'Bold', { sm: true, icon: 'format_bold', onclick: function (e) { lookOp({ bold: !look.bold }); e.currentTarget.lastChild.textContent = look.bold ? 'Bold: on' : 'Bold'; } })));
+          } else if (it.kind === 'picture') {
+            ls.append(h('div', { class: 'label-s', text: 'Size' }),
+              K.choices({ row: true, label: 'Size', value: String(look.width || 1), options: [{ value: '1', label: 'Full' }, { value: '0.75', label: 'Three quarters' }, { value: '0.5', label: 'Half' }], onChange: function (v) { lookOp({ width: Number(v) === 1 ? null : Number(v) }); } }));
+          }
+          ls.appendChild(h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' },
+            btn('text', look.hide ? 'Show it again' : 'Hide it', { sm: true, icon: look.hide ? 'visibility' : 'visibility_off', onclick: function () { done(lookOp({ hide: !look.hide })); } }),
+            edited ? btn('text', 'Put it back as it was', { sm: true, icon: 'restart_alt', onclick: function () { done(siteOp({ reset: it.key }, 'Back as it was.')); } }) : null));
+          ctl.body.appendChild(ls);
+        }
+        // the part of the page it's in
+        if (it.section) {
+          var ss = sheetSection(it.kind === 'section' ? 'Move, hide or add' : 'The part of the page it’s in'), sx = it.section;
+          if (it.kind !== 'section') ss.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 8px;color:var(--on-surface-variant)', text: '“' + sx.label + '”' }));
+          function secOp(act) { return siteOp({ section: { route: it.route, key: sx.key, act: act, keys: SITE.sections } }); }
+          ss.appendChild(h('div', { class: 'btn-row', style: 'flex-wrap:wrap' },
+            sx.index > 0 ? btn('outlined', 'Move up', { sm: true, icon: 'arrow_upward', onclick: function () { done(secOp('up')); } }) : null,
+            sx.index < sx.count - 1 ? btn('outlined', 'Move down', { sm: true, icon: 'arrow_downward', onclick: function () { done(secOp('down')); } }) : null,
+            sx.added ? btn('text', 'Remove it', { sm: true, icon: 'delete', danger: true, onclick: function () { done(siteOp({ unblock: { route: it.route, id: sx.block } }, 'Removed. Undo is at the top.')); } })
+              : btn('text', 'Hide this part', { sm: true, icon: 'visibility_off', onclick: function () { done(secOp('hide')).then(function () { toast('Hidden on your draft. Undo is at the top.'); }); } })));
+          ss.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a new section below', { sm: true, icon: 'add', onclick: function () { K.swap(ctl, function () { openSiteBlocks(it.route, sx.key); }); } })));
+          ctl.body.appendChild(ss);
+        }
+        ctl.body.appendChild(h('div', { style: 'margin-top:18px;text-align:center' }, btn('text', 'Ask for something bigger here', { icon: 'forum', onclick: function () { K.swap(ctl, function () { openSiteAsk(it); }); } })));
+        if (it.kind === 'section' && !ctl.foot.firstChild) ctl.foot.appendChild(btn('filled', 'Done', { icon: 'check', lg: true, block: true, onclick: function () { ctl.close(); } }));
+      }
+    });
+  }
+  function openSiteBlocks(route, after) {
+    K.sheet({
+      title: 'Add a section',
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'It goes in below, ready for your words and pictures: tap them on the page to fill them in.' }));
+        var l = h('div', { class: 'next-opts' });
+        Object.keys(SITE_BLOCKS).forEach(function (k, i) {
+          var b = SITE_BLOCKS[k];
+          l.appendChild(h('button', { type: 'button', class: 'next-opt' + (i === 0 ? ' main' : ''), onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            siteOp({ block: { route: route, after: after, type: k } }, 'Added. Tap its words and pictures to fill it in.').then(function () { ctl.close(); }).catch(function () {});
+          } }, h('span', { class: 'next-opt-ic' }, icon(b[0])), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: b[1] }), h('span', { class: 'next-opt-why', text: b[2] }))));
+        });
+        ctl.body.appendChild(l);
+      }
+    });
+  }
+  /** Colours and the heading font, for the whole website. */
+  function openSiteStyle() {
+    K.sheet({
+      title: 'Colours and fonts', tall: true,
+      build: function (ctl) {
+        function draw() {
+          ctl.body.textContent = '';
+          var T = (siteEd().draft || {}).theme || {};
+          ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 6px;color:var(--on-surface-variant)', text: 'For the whole website. Each change shows in the preview straight away.' }));
+          Object.keys(SITE_COLOURS).forEach(function (c) {
+            var sec = sheetSection(SITE_COLOURS[c][0]), sw = h('div', { class: 'site-swatches' }), cur = T[c] || SITE_COLOURS[c][1];
+            sw.appendChild(h('button', { type: 'button', class: 'site-sw none' + (!T[c] ? ' on' : ''), 'aria-label': 'As it was', onclick: function () { var o = {}; o[c] = ''; siteOp({ theme: o }).then(draw).catch(function () {}); } }, icon('format_color_reset')));
+            SITE_SWATCHES.forEach(function (hex) {
+              sw.appendChild(h('button', { type: 'button', class: 'site-sw' + (T[c] && T[c].toLowerCase() === hex.toLowerCase() ? ' on' : ''), style: 'background:' + hex, 'aria-label': hex, onclick: function () { var o = {}; o[c] = hex; siteOp({ theme: o }).then(draw).catch(function () {}); } }));
+            });
+            var own = h('input', { type: 'color', value: cur, class: 'site-own', 'aria-label': 'Your own colour' });
+            own.addEventListener('change', function () { var o = {}; o[c] = own.value; siteOp({ theme: o }).then(draw).catch(function () {}); });
+            sw.appendChild(h('label', { class: 'site-sw own', title: 'Your own' }, icon('colorize'), own));
+            sec.appendChild(sw);
+            ctl.body.appendChild(sec);
+          });
+          var fs = sheetSection('Headings');
+          fs.appendChild(K.choices({ label: 'Heading font', value: T.font || 'Lora', options: (siteEd().fonts || []).map(function (f) { return { value: f, label: f }; }),
+            onChange: function (v) { siteOp({ theme: { font: v } }).then(draw).catch(function () {}); } }));
+          ctl.body.appendChild(fs);
+          if (Object.keys(T).length) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Back to the original look', { icon: 'restart_alt', onclick: function () { siteOp({ theme: null }, 'Back to the original look.').then(draw).catch(function () {}); } })));
+        }
+        draw();
+        ctl.foot.appendChild(btn('filled', 'Done', { icon: 'check', lg: true, block: true, onclick: function () { ctl.close(); } }));
+      }
+    });
+  }
+  /** The pages in the menu: go to one, rename, hide, reorder, add or remove. */
+  function openSitePages() {
+    K.sheet({
+      title: 'Pages', tall: true,
+      build: function (ctl) {
+        function draw() {
+          ctl.body.textContent = '';
+          var P = ((siteEd().draft || {}).pages) || {}, hidden = P.hidden || [], pages = SITE.pages.slice();
+          if (!pages.length) { ctl.body.appendChild(note('The pages show once your website has opened above.', 'hourglass_top')); return; }
+          ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 10px;color:var(--on-surface-variant)', text: 'Tap a page to go to it. The arrows change the order in the menu.' }));
+          var l = h('div', { class: 'list site-pages' }), hrefs = pages.map(function (p) { return p.href; });
+          pages.forEach(function (p, i) {
+            var hid = hidden.indexOf(p.href) >= 0;
+            function op(act, extra) { return siteOp(Object.assign({ page: { act: act, href: p.href, hrefs: hrefs } }, extra || {})).then(draw).catch(function () {}); }
+            l.appendChild(h('div', { class: 'li' + (hid ? ' hid' : '') + (p.href === SITE.route ? ' here' : '') },
+              h('button', { type: 'button', class: 'site-pg grow', onclick: function () { sitePost({ type: 'go', hash: p.href }); ctl.close(); } },
+                h('span', { class: 'li-head', text: p.now || p.label }), h('span', { class: 'li-sup', text: hid ? 'Hidden from the menu' : p.href === SITE.route ? 'You’re here' : p.added ? 'A page you added' : '' })),
+              K.iconBtn('edit', 'Rename ' + (p.now || p.label), function () {
+                K.ask({ title: 'Rename the page', label: 'The name in the menu', value: p.now || p.label, maxlength: 40, confirmLabel: 'Rename' }).then(function (v) { if (v != null) op('rename', { page: { act: 'rename', href: p.href, name: v } }); });
+              }),
+              p.href === '#/' ? null : K.iconBtn(hid ? 'visibility' : 'visibility_off', (hid ? 'Show ' : 'Hide ') + (p.now || p.label), function () { op(hid ? 'show' : 'hide'); }),
+              i > 0 ? K.iconBtn('arrow_upward', 'Move up', function () { op('up'); }) : null,
+              i < pages.length - 1 ? K.iconBtn('arrow_downward', 'Move down', function () { op('down'); }) : null,
+              p.added ? K.iconBtn('delete', 'Remove ' + (p.now || p.label), function () { op('remove'); }) : null));
+          });
+          ctl.body.appendChild(l);
+          ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, btn('tonal', 'Add a page', { icon: 'add', onclick: function () {
+            K.ask({ title: 'Add a page', label: 'Its name in the menu', options: ['Workshops', 'Commissions', 'Stockists'], maxlength: 40, confirmLabel: 'Add it' }).then(function (v) {
+              if (!v) return;
+              api('saveSiteEdit', { page: { act: 'add', name: v } }).then(function (snap) { siteAfter(snap, 'Added. Tap its words to fill it in.'); ctl.close(); setTimeout(function () { sitePost({ type: 'go', hash: snap.added }); }, 300); }).catch(fail);
+            });
+          } })));
+        }
+        draw();
+      }
+    });
+  }
+  /** Something bigger than words and pictures: in her words, about what she tapped. A ready prompt goes to the admin. */
+  function openSiteAsk(it) {
+    var text = '';
+    K.sheet({
+      title: 'Ask for something bigger',
+      build: function (ctl) {
+        if (it) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('About ' + (it.kind === 'picture' ? 'this picture' : it.kind === 'words' ? '“' + it.text.slice(0, 80) + '”' : 'the part “' + ((it.section || {}).label || '') + '”') + ' on ' + (SITE.title || 'this page') + '.', 'touch_app')));
+        else ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Tip: tap the part of your website first, then “Ask for something bigger here”, so it’s clear which bit you mean.' }));
+        ctl.body.appendChild(K.textField({ label: 'What would you like?', multiline: true, maxlength: 2000, onInput: function (v) { text = v; },
+          suggest: it ? ['Make this part look different', 'Add something new here', 'Lay this page out differently', 'Something isn’t working here'] : ['A new kind of page', 'Change how the home page is laid out', 'Add a way to book a workshop', 'Something isn’t working'] }));
+        ctl.body.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px 0', text: (ADMIN ? 'It' : adminName() + ' gets it, ready to go, and') + ' it shows here until it’s done. You’ll see it in the preview before it goes live.' }));
+        var send = btn('filled', 'Send it', { icon: 'send', lg: true, block: true, onclick: function () {
+          if (!text.trim()) { toast('Say what you’d like, or tap a suggestion.'); return; }
+          K.setBusy(send, true);
+          api('askSiteChange', { text: text, it: it ? { route: it.route, kind: it.kind, text: it.text, key: it.key, label: (it.section || {}).label } : { route: SITE.route } })
+            .then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast(ADMIN ? 'Saved, with the prompt.' : 'Sent to ' + adminName() + '.'); }).catch(function (e) { K.setBusy(send, false); fail(e); });
+        } });
+        ctl.foot.appendChild(send);
+      }
+    });
+  }
+
   function render() {
     renderNav();
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, settings: viewAdmin }[S.view] || viewHome)(main);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, settings: viewAdmin }[S.view] || viewHome)(main);
     if (S.view === 'home' || !S.view) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -9569,9 +10108,9 @@ var Kit = (function () {
     if (fcA) main.appendChild(rise(fcA, n++));
     mark('todo');
     if (S.data.website && S.data.website.live) {
-      main.appendChild(rise(h('a', { class: 'card pad press soft drafts', href: S.data.website.live, target: '_blank', rel: 'noopener' },
+      main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { go('site'); } },
         h('span', { class: 'ic' }, icon('language')),
-        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'Have a wander. It shows the latest every time you open it.' })), icon('open_in_new')), n++));
+        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'Have a look, and tap anything on it to change it.' })), icon('chevron_right')), n++));
     }
 
     mark('website');
@@ -13014,7 +13553,7 @@ var Kit = (function () {
       go: function () { S.contentTab = 'review'; go('content'); } },
     art: { ic: 'brush', short: 'Add the artwork', label: 'Add the artwork', why: 'Photos, the story behind it, and its sizes and prices for the shop.', go: function () { openPrint(null); } },
     prices: { ic: 'sell', short: 'Sizes and prices', label: 'Sizes and prices', why: 'Open your artworks to set the sizes and prices.', go: function () { go('prints'); } },
-    website: { ic: 'language', short: 'The website', label: 'Change the website', why: 'Tell Tide Book what to add or change on your website.', go: function () { var t0 = (S.data.website && S.data.website.wishes || [])[0]; if (t0) openSiteWish(t0); else go('settings'); } },
+    website: { ic: 'language', short: 'The website', label: 'Change the website', why: 'Tap anything on your website to change it, or ask for something bigger.', go: function () { go('site'); } },
     product: { ic: 'storefront', short: 'The product', label: 'Work on the product', why: 'Find it in Products, or start it there. Each one has its own steps.', go: function () { S.ideasTab = 'products'; go('ideas'); } },
     sale: { ic: 'point_of_sale', short: 'Record a sale', label: 'Record a sale', why: 'Note what sold, and where.', go: function () { openTxn('Sale'); } },
     inspo: { ic: 'favorite', label: 'Save something that inspires you', why: '', go: function () { openInspo(null); } },

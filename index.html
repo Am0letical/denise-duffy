@@ -4315,5 +4315,241 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 })();
 
 </script>
+<script>
+/* Tide Book's edit layer for the website.
+ * Denise's own changes, made in Tide Book's Website tab, are kept as a layer over the pages: words, pictures, looks,
+ * sections (moved, hidden, added) and pages (renamed, hidden, reordered, added), and the site's colours and heading font.
+ * The pages are drawn by site.html as before; this puts her changes on top each time a page draws.
+ * It does nothing at all unless Tide Book gave it a layer (window.TIDE_EDITS). window.TideEdits is for Tide Book's editor.
+ */
+(function () {
+  'use strict';
+  var L = window.TIDE_EDITS || null;
+  var WORDS = 'h1,h2,h3,h4,p,li,blockquote,.lbl,.plede,.chipbtn,figcaption';
+  // drawn from her records (artworks, prices, the cart): changed in Tide Book's Artworks, not here
+  var SKIP = '.pc,.pcw,.tabs,#price,.price,.room-price,.qa,[data-qa],.edn,.cart,#cart,.crumbs,.drawer,.mock,script,style,svg,.te-tools';
+  var FONTS = { Lora: 'Lora:ital,wght@0,400;0,500;1,400', 'Playfair Display': 'Playfair+Display:ital,wght@0,400;0,600;1,400',
+    'Cormorant Garamond': 'Cormorant+Garamond:ital,wght@0,400;0,600;1,400', 'DM Serif Display': 'DM+Serif+Display:ital@0;1', Fraunces: 'Fraunces:ital,wght@0,400;0,600;1,400' };
+  var BLOCKS = {
+    text: function (b) {
+      return '<section class="sec wrap te-block"><h2 data-tek="' + b.id + ':h">A few words</h2><p data-tek="' + b.id + ':p">Tap here to write something. Keep it short and in your own voice.</p></section>';
+    },
+    story: function (b) {
+      return '<section class="sec wrap te-block"><div class="split"><div class="ph"><img data-tek="' + b.id + ':img" alt="" src="' + pic(b.id + ':img', '') + '"></div><div>' +
+        '<h2 data-tek="' + b.id + ':h">The story behind it</h2><p data-tek="' + b.id + ':p">Tap here to tell it. Where it began, what you noticed, how it was made.</p></div></div></section>';
+    },
+    quote: function (b) {
+      return '<section class="sec wrap te-block te-quote"><blockquote data-tek="' + b.id + ':q">“Finding hope and magic in the soft moments.”</blockquote><p class="lbl" data-tek="' + b.id + ':by">Denise</p></section>';
+    },
+    gallery: function (b) {
+      return '<section class="sec wrap te-block"><h2 data-tek="' + b.id + ':h">A few favourites</h2><div class="te-grid">' +
+        [1, 2, 3].map(function (n) { return '<img data-tek="' + b.id + ':img' + n + '" alt="" src="' + pic(b.id + ':img' + n, '') + '">'; }).join('') + '</div></section>';
+    },
+    button: function (b) {
+      return '<section class="sec wrap te-block te-cta"><h2 data-tek="' + b.id + ':h">Have a look around</h2><p><a class="chipbtn" data-tek="' + b.id + ':a" href="' + (b.href || '#/gallery') + '">Enter the gallery +</a></p></section>';
+    }
+  };
+
+  function hash(s) { s = String(s || ''); var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  function route() { var h = location.hash.replace(/^#\/?/, ''); return '#/' + h.replace(/\/+$/, ''); }
+  function routeOf(el) { return el.closest('#menu,#footer,.pill') ? '*' : route(); }
+  function srcOf(el) {
+    if (el.tagName === 'IMG') return el.getAttribute('data-teo-src') || el.getAttribute('src') || '';
+    var bg = el.getAttribute('data-teo-src') || (el.style && el.style.backgroundImage || '');
+    return bg.replace(/^url\(["']?|["']?\)$/g, '');
+  }
+  function shortSrc(s) { s = String(s || ''); return s.length > 400 ? s.length + ':' + s.slice(-200) : s; }
+  function skipped(el) { return !!el.closest(SKIP); }
+  function isWords(el) { return el.matches && el.matches(WORDS) && !skipped(el) && !el.querySelector(WORDS) && /\S/.test(el.textContent); }
+  function isPic(el) { return !!el && !skipped(el) && (el.tagName === 'IMG' || (el.style && /url\(/.test(el.style.backgroundImage || ''))); }
+  /** A thing's key: kept with it, so her change finds it again however the page draws. */
+  function keyOf(el) {
+    if (!el) return '';
+    if (el.dataset.tek) return 'b|' + el.dataset.tek;
+    if (isPic(el)) { if (!el.dataset.teoSrc) el.setAttribute('data-teo-src', el.tagName === 'IMG' ? el.getAttribute('src') : el.style.backgroundImage); return 'p|' + routeOf(el) + '|' + hash(shortSrc(srcOf(el))); }
+    if (el.dataset.teo == null) el.dataset.teo = el.textContent;
+    return 'w|' + routeOf(el) + '|' + el.tagName.toLowerCase() + '|' + hash(el.dataset.teo.replace(/\s+/g, ' ').trim());
+  }
+  function pic(key, fallback) {
+    var v = L && L.pics && L.pics['b|' + key];
+    return v ? url(v) : fallback || 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450"><rect width="600" height="450" fill="#F2EBDF"/><text x="300" y="235" font-family="sans-serif" font-size="22" fill="#5d6168" text-anchor="middle">Tap to choose a picture</text></svg>');
+  }
+  function url(v) {
+    if (!v) return '';
+    if (L && L.urls && L.urls[v]) return L.urls[v];
+    var im = (window.TIDE_SITE && window.TIDE_SITE.images) || {};
+    return im[v] || v;
+  }
+  /** The page's sections: the blocks it is made of, one level down from the page itself. */
+  function container() {
+    var m = document.getElementById('main'), c = m;
+    if (!c) return null;
+    while (c && c.children.length === 1 && c.firstElementChild.children.length) c = c.firstElementChild;
+    return c;
+  }
+  function sections() {
+    var c = container();
+    if (!c) return [];
+    return [].slice.call(c.children).filter(function (x) { return !x.matches('script,style,.crumbs,.te-hidden-mark') && x.offsetParent !== undefined; });
+  }
+  function sectionKey(s) {
+    if (s.dataset.teb) return 'b:' + s.dataset.teb;
+    if (!s.dataset.tes) {
+      var h = s.querySelector('h1,h2,h3,.lbl'), base = s.tagName + '.' + (s.className || '').split(' ')[0] + ':' + (h ? h.textContent : s.textContent).replace(/\s+/g, ' ').trim().slice(0, 60);
+      s.dataset.tes = hash(base);
+    }
+    return s.dataset.tes;
+  }
+  function sectionOf(el) { var ss = sections(); for (var i = 0; i < ss.length; i++) if (ss[i] === el || ss[i].contains(el)) return ss[i]; return null; }
+  function sectionLabel(s) { var h = s && s.querySelector('h1,h2,h3,blockquote,.lbl,p'); return h ? h.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) : 'This part'; }
+
+  // ---------------------------------------------------------------- applying the layer
+  var busy = false;
+  function applyTheme() {
+    var t = (L && L.theme) || {}, r = document.documentElement.style;
+    ['ocean', 'pink-deep', 'teal', 'paper', 'ink', 'sun', 'night'].forEach(function (k) { if (t[k]) r.setProperty('--' + k, t[k]); else r.removeProperty('--' + k); });
+    if (t.font && FONTS[t.font]) {
+      if (!document.getElementById('te-font')) { var ln = document.createElement('link'); ln.id = 'te-font'; ln.rel = 'stylesheet'; document.head.appendChild(ln); }
+      var want = 'https://fonts.googleapis.com/css2?family=' + FONTS[t.font] + '&display=swap', ln2 = document.getElementById('te-font');
+      if (ln2.getAttribute('href') !== want) ln2.setAttribute('href', want);
+      r.setProperty('--display', "'" + t.font + "', Georgia, serif");
+    } else r.removeProperty('--display');
+  }
+  function applyPages() {
+    var P = (L && L.pages) || {}, nav = document.querySelector('#menu nav');
+    if (!nav) return;
+    [].slice.call(nav.querySelectorAll('a[data-te-added]')).forEach(function (a) { a.remove(); });
+    (P.added || []).forEach(function (pg) {
+      var a = document.createElement('a'); a.href = '#/p/' + pg.id; a.setAttribute('data-te-added', '1');
+      a.innerHTML = '<small></small><span></span>'; a.querySelector('span').textContent = pg.title; nav.appendChild(a);
+    });
+    var links = [].slice.call(nav.querySelectorAll('a'));
+    links.forEach(function (a) {
+      var href = a.getAttribute('href'), sp = a.querySelector('span') || a;
+      if (a.dataset.teo == null) a.dataset.teo = sp.textContent;
+      var name = (P.names || {})[href];
+      sp.textContent = name || (a.dataset.teAdded ? sp.textContent : a.dataset.teo);
+      a.style.display = (P.hidden || []).indexOf(href) >= 0 ? 'none' : '';
+    });
+    var order = P.order || [];
+    if (order.length) links.slice().sort(function (a, b) {
+      var ia = order.indexOf(a.getAttribute('href')), ib = order.indexOf(b.getAttribute('href'));
+      return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+    }).forEach(function (a) { nav.appendChild(a); });
+    var n = 0;
+    [].slice.call(nav.querySelectorAll('a')).forEach(function (a) { if (a.style.display !== 'none') { var sm = a.querySelector('small'); if (sm) sm.textContent = (n < 10 ? '0' : '') + n; n++; } });
+    // the footer's links follow: a hidden page isn't linked from there either
+    [].slice.call(document.querySelectorAll('#footer a')).forEach(function (a) { a.style.display = (P.hidden || []).indexOf(a.getAttribute('href')) >= 0 ? 'none' : ''; });
+  }
+  function customPage() {
+    var r = route(), m = /^#\/p\/([a-z0-9-]+)$/.exec(r), main = document.getElementById('main');
+    if (!m || !main) return;
+    var pg = ((L && L.pages && L.pages.added) || []).filter(function (x) { return x.id === m[1]; })[0];
+    if (!pg || main.querySelector('[data-te-page="' + pg.id + '"]')) return;
+    main.innerHTML = '<div class="page wrap" data-te-page="' + pg.id + '"><div class="crumbs"><a href="#/">Home</a> · <span></span></div><h1 class="ptitle" data-tek="pg-' + pg.id + ':title"></h1></div>';
+    main.querySelector('.crumbs span').textContent = pg.title; main.querySelector('h1').textContent = pg.title;
+    document.body.classList.add('ready');
+  }
+  function applySections() {
+    var S = ((L && L.sections) || {})[route()] || {}, c = container();
+    if (!c) return;
+    // added blocks first, so they can be moved and hidden like the rest
+    [].slice.call(c.querySelectorAll(':scope > [data-teb]')).forEach(function (x) { if (!(S.added || []).some(function (b) { return 'b:' + b.id === 'b:' + x.dataset.teb; })) x.remove(); });
+    (S.added || []).forEach(function (b) {
+      if (c.querySelector(':scope > [data-teb="' + b.id + '"]') || !BLOCKS[b.type]) return;
+      var wrap = document.createElement('div'); wrap.innerHTML = BLOCKS[b.type](b);
+      var el = wrap.firstElementChild; el.dataset.teb = b.id;
+      var after = b.after ? sections().filter(function (s) { return sectionKey(s) === b.after; })[0] : null;
+      if (after && after.parentNode === c) c.insertBefore(el, after.nextSibling); else c.appendChild(el);
+    });
+    var ss = sections(), order = S.order || [];
+    if (order.length) {
+      var keyed = ss.map(function (s, i) { return { s: s, k: sectionKey(s), i: i }; });
+      keyed.sort(function (a, b) {
+        var ia = order.indexOf(a.k), ib = order.indexOf(b.k);
+        if (ia >= 0 && ib >= 0) return ia - ib;
+        return a.i - b.i;
+      });
+      // only the sections named in the order move; the rest keep their places around them
+      var named = keyed.filter(function (x) { return order.indexOf(x.k) >= 0; }), namedSlots = named.map(function (x) { return x.i; }).sort(function (a, b) { return a - b; });
+      var place = ss.slice(); named.forEach(function (x, j) { place[namedSlots[j]] = x.s; });
+      place.forEach(function (s) { c.appendChild(s); });
+    }
+    sections().forEach(function (s) { var hid = (S.hidden || []).indexOf(sectionKey(s)) >= 0; s.classList.toggle('te-hide', hid); });
+  }
+  function applyThings(root) {
+    var W = (L && L.words) || {}, Pi = (L && L.pics) || {}, Lk = (L && L.looks) || {};
+    [].slice.call(root.querySelectorAll(WORDS + ',[data-tek]')).forEach(function (el) {
+      if (!isWords(el) && !el.dataset.tek) return;
+      if (isPic(el)) return;
+      var k = keyOf(el);
+      if (W[k] != null) { if (el.textContent !== W[k]) el.textContent = W[k]; }
+      else if (el.dataset.teo != null && el.dataset.teEdited) { el.textContent = el.dataset.teo; delete el.dataset.teEdited; }
+      if (W[k] != null) el.dataset.teEdited = '1';
+      look(el, Lk[k]);
+    });
+    [].slice.call(root.querySelectorAll('img,[style*="background-image"]')).forEach(function (el) {
+      if (!isPic(el)) return;
+      var k = keyOf(el), v = Pi[k];
+      var want = v ? url(v) : null, orig = el.getAttribute('data-teo-src');
+      if (el.tagName === 'IMG') { var to = want || orig; if (to && el.getAttribute('src') !== to) el.setAttribute('src', to); }
+      else { var bg = want ? 'url(' + want + ')' : orig; if (bg && el.style.backgroundImage !== bg) el.style.backgroundImage = bg; }
+      look(el, Lk[k]);
+    });
+  }
+  function look(el, p) {
+    var was = el.dataset.teLook || '';
+    var now = p ? JSON.stringify(p) : '';
+    if (was === now) return;
+    if (el.dataset.teFs == null) el.dataset.teFs = parseFloat(getComputedStyle(el).fontSize) || 16;
+    el.style.fontSize = p && p.size ? Math.round(el.dataset.teFs * p.size) + 'px' : '';
+    el.style.color = p && p.color ? 'var(--' + p.color + ')' : '';
+    el.style.fontWeight = p && p.bold ? '700' : '';
+    el.style.textAlign = p && p.align ? p.align : '';
+    el.classList.toggle('te-hide', !!(p && p.hide));
+    if (el.tagName === 'IMG') el.style.width = p && p.width ? Math.round(p.width * 100) + '%' : '';
+    el.dataset.teLook = now;
+  }
+  function apply() {
+    if (busy) return;
+    busy = true;
+    if (obs) obs.disconnect();
+    try {
+      applyTheme(); applyPages(); customPage(); applySections();
+      ['main', 'menu', 'footer'].forEach(function (id) { var r = document.getElementById(id); if (r) applyThings(r); });
+    } catch (e) { if (window.console) console.warn('Tide Book edits:', e); }
+    busy = false;
+    watch();
+    if (window.TideEditsChanged) window.TideEditsChanged();
+  }
+  var obs = null, timer = 0;
+  function watch() {
+    var m = document.getElementById('main');
+    if (!m || !window.MutationObserver) return;
+    if (!obs) obs = new MutationObserver(function () { clearTimeout(timer); timer = setTimeout(apply, 30); });
+    obs.observe(m, { childList: true, subtree: true });
+  }
+  var css = document.createElement('style');
+  css.textContent = '.te-hide{display:none!important}.te-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.te-grid img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px}' +
+    '.te-quote blockquote{font-family:var(--display);font-size:clamp(24px,4vw,40px);line-height:1.25;margin:0 0 12px;font-style:italic}.te-block .split .ph img{width:100%;border-radius:6px}.te-cta{text-align:center}';
+  document.head.appendChild(css);
+
+  window.TideEdits = {
+    set: function (layer) { L = layer || null; window.TIDE_EDITS = L; [].slice.call(document.querySelectorAll('[data-te-look]')).forEach(function (el) { el.dataset.teLook = '_'; }); hook(); apply(); },
+    get: function () { return L; },
+    apply: apply, keyOf: keyOf, isWords: isWords, isPic: isPic, srcOf: srcOf, route: route,
+    sections: sections, sectionOf: sectionOf, sectionKey: sectionKey, sectionLabel: sectionLabel, words: WORDS, skip: SKIP,
+    pages: function () {
+      var nav = document.querySelector('#menu nav');
+      return nav ? [].slice.call(nav.querySelectorAll('a')).map(function (a) { var sp = a.querySelector('span') || a; return { href: a.getAttribute('href'), label: a.dataset.teo || sp.textContent, now: sp.textContent, added: !!a.dataset.teAdded }; }) : [];
+    }
+  };
+  var hooked = false;
+  function hook() { if (hooked) return; hooked = true; window.addEventListener('hashchange', function () { setTimeout(apply, 520); }); }
+  if (!L) return;          // nothing changed: the site is exactly as built
+  hook(); apply();
+})();
+
+</script>
 </body>
 </html>
