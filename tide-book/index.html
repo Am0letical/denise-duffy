@@ -8775,7 +8775,9 @@ var Kit = (function () {
     slider: slider, pickField: pickField, ring: ring, meter: meter, countUp: countUp, toast: toast,
     sheet: sheet, swap: swap, confirm: confirm, ask: ask, pickFromList: pickFromList,
     prepareImage: prepareImage, videoFrames: videoFrames, driveUpload: driveUpload, photoStrip: photoStrip, monthChart: monthChart, monthTable: monthTable, rankedBars: rankedBars,
-    openSheets: function () { return stack.length; }
+    openSheets: function () { return stack.length; },
+    /** The sheet in front, if any. A sheet can carry a redraw function (ctl.redraw) for when what it shows has changed under it. */
+    topSheet: function () { return stack[stack.length - 1] || null; }
   };
 })();
 </script>
@@ -10240,7 +10242,7 @@ var Kit = (function () {
             tp.detail ? firstBit(tp.detail, 80) : ''
           ]));
         })();
-        ctlRef = ctl;
+        ctlRef = ctl; ctl.redraw = reopen;
         var pct = Math.min(100, Math.round(tp.answered / tp.max * 100));
         ctl.body.appendChild(h('div', { style: 'margin-bottom:14px' },
           h('div', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: tp.answered + ' answered' + (tp.status === 'Done' ? '' : tp.max <= tp.min ? ' of ' + tp.max : ' · usually ' + tp.min + ' to ' + tp.max) + (ADMIN ? ' · started by ' + tp.by : '') }),
@@ -10545,7 +10547,7 @@ var Kit = (function () {
           lead.disabled = true; row.classList.add('ticked'); lead.firstChild.textContent = 'check_circle'; K.haptic('success');
           saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () {
             reopen();
-            undoCard('Ticked off.', function () { return api('untickHand', p.id, x.key).then(refresh).then(function () { reopen(); }); }, 'Back on your list.');
+            undoCard('Ticked off.', function () { return api('untickHand', p.id, x.key); }, 'Back on your list.');
           }).catch(function (er) { lead.disabled = false; row.classList.remove('ticked'); lead.firstChild.textContent = 'radio_button_unchecked'; fail(er); });
         });
       } else lead = h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'schedule' : isQ ? 'edit_note' : 'pending'));
@@ -10563,7 +10565,7 @@ var Kit = (function () {
           e.stopPropagation(); var b = e.currentTarget; K.setBusy(b, true);
           saveFirst().then(function () { return api('laterHand', p.id, x.key, !x.snoozed); }).then(refresh).then(function () {
             reopen();
-            if (!x.snoozed) undoCard('Put off for later. It’s under “for later”.', function () { return api('laterHand', p.id, x.key, false).then(refresh).then(function () { reopen(); }); }, 'Back on your list.');
+            if (!x.snoozed) undoCard('Put off for later. It’s under “for later”.', function () { return api('laterHand', p.id, x.key, false); }, 'Back on your list.');
           }).catch(function (er) { K.setBusy(b, false); fail(er); });
         } }));
         body.appendChild(acts);
@@ -10767,7 +10769,7 @@ var Kit = (function () {
   function tldrItem(p) {
     var R = p.research, todo = (p.checks || []).filter(function (c) { return c.status !== 'OK'; }).length, need = (p.gate || []).filter(function (r) { return !((p.approvals || {})[p.stage] || {})[r]; });
     return tldr([
-      p.stage + (p.parked ? ' · paused' : need.length ? ' · needs ' + need.map(function (r) { return r === 'artist' ? cap(artist()) : adminName(); }).join(' and ') + '’s OK' : ''),
+      p.stage + (p.parked ? ' · paused' : need.length ? ' · needs ' + need.map(function (r) { return r === 'artist' ? (ADMIN ? cap(artist()) + '’s' : 'your') : adminName() + '’s'; }).join(' and ') + ' OK' : ''),
       R ? R.verdict + ' ' + R.viability + '/100 · about ' + R.demand.low + (R.demand.high > R.demand.low ? '–' + R.demand.high : '') + ' sales a month' + (R.costing.price ? ' at ' + money(R.costing.price) : '')
         : p.researchStatus === 'Queued' || p.researchStatus === 'Researching' ? 'Market research is on its way' : '',
       todo ? todo + ' check' + (todo === 1 ? '' : 's') + ' still to do' + (p.unitCost ? ' · costs ' + money(p.unitCost, { cents: true }) + ' to make' : '') : 'All checks done'
@@ -10799,7 +10801,7 @@ var Kit = (function () {
     K.sheet({
       title: p.title, tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
       build: function (ctl) {
-        ctlRef = ctl;
+        ctlRef = ctl; ctl.redraw = reopen;
         var si = T.stages.indexOf(p.stage);
         ctl.body.appendChild(tldrItem(p));
         ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
@@ -10923,9 +10925,10 @@ var Kit = (function () {
         if (p.clash) s8.appendChild(h('div', { style: 'margin-bottom:8px' }, note('Needs ' + adminName() + '’s OK too: ' + p.clash, 'gavel', 'warn')));
         p.gate.forEach(function (role) {
           var nm = role === 'artist' ? cap(artist()) : adminName(), ok = ap[role];
-          s8.appendChild(h('div', { style: 'margin-bottom:8px' }, note(ok ? nm + ' approved this stage.' : 'Needs ' + nm + '’s OK.', ok ? 'check_circle' : 'hourglass_top', ok ? 'good' : '')));
+          var mine = role === 'artist' && !ADMIN;
+          s8.appendChild(h('div', { style: 'margin-bottom:8px' }, note(ok ? (mine ? 'You' : nm) + ' approved this stage.' : 'Needs ' + (mine ? 'your' : nm + '’s') + ' OK.', ok ? 'check_circle' : 'hourglass_top', ok ? 'good' : '')));
         });
-        if (p.blockers.length) s8.appendChild(h('p', { class: 'body-m', style: 'margin:6px 4px 10px', text: 'Before it moves on: ' + p.blockers.join(', ') + '.' }));
+        if (p.blockers.length) s8.appendChild(h('p', { class: 'body-m', style: 'margin:6px 4px 10px', text: 'Before it moves on: ' + p.blockers.map(function (b) { return ADMIN ? b : String(b).split(cap(artist()) + '’s OK').join('your OK'); }).join(', ') + '.' }));
         var row = h('div', { class: 'field-gap' });
         if (p.needsMe) row.appendChild(btn('filled', 'I approve this stage', { icon: 'verified', block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('approveItem', id); }).then(refresh).then(function () { K.haptic('success'); toast('Approved.'); reopen(); }).catch(fail); } }));
         if (p.stage !== 'Live') row.appendChild(btn(p.needsMe ? 'outlined' : 'filled', 'Move on to ' + T.stages[si + 1], { icon: 'arrow_forward', block: true, onclick: function (e) {
@@ -11498,6 +11501,7 @@ var Kit = (function () {
       build: function (ctl) {
         function touch() { dirty = true; }
         var reo = function () { K.swap(ctl, function () { openIdea(x.id); }, true); };
+        ctl.redraw = reo;
         var ipl = planLine('idea', x, reo); if (ipl) ctl.body.appendChild(ipl);
         var isPlan = S.data.plan && S.data.plan.ideaId === x.id;
         if (isPlan) ctl.body.appendChild(h('div', { style: 'margin:4px 0 12px' }, note('This is your plan. Its steps set the order for everything: anything for a later step waits until you get there.', 'flag')));
@@ -12530,6 +12534,7 @@ var Kit = (function () {
       build: function (ctl) {
         function touch() { dirty = true; }
         function again() { K.swap(ctl, function () { openGoal(id); }, true); }
+        ctl.redraw = again;
         if (g.active) ctl.body.appendChild(h('div', { style: 'margin-bottom:4px' }, note('This is your most important goal, so its plan sets the order of everything. Anything for a later step waits.', 'flag')));
         // the plan first: it is what she comes here for
         var sp = sheetSection('The plan'), nd = g.steps.filter(function (s) { return s.done; }).length, here = -1;
@@ -13153,7 +13158,11 @@ var Kit = (function () {
     var b = h('button', { type: 'button', class: 'undo-btn press' }, icon('undo'), 'Undo');
     b.addEventListener('click', function () {
       b.disabled = true;
-      undo().then(refresh).then(function () { card.remove(); K.haptic('success'); render(); toast(undoneMsg || 'Undone.'); })
+      undo().then(refresh).then(function () {
+        card.remove(); K.haptic('success'); render();
+        var top = K.topSheet(); if (top && top.redraw) top.redraw();
+        toast(undoneMsg || 'Undone.');
+      })
         .catch(function (e) { b.disabled = false; fail(e); });
     });
     card.appendChild(b);
