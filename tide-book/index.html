@@ -2206,7 +2206,7 @@ function createTideLogic(env) {
   function voidTransaction(id, reason) {
     need(['admin', 'artist']);
     var why = text(reason, 300);
-    if (!why) fail('Say briefly why this record is being cancelled.');
+    if (!why) why = 'No reason given';   // optional: the record is still kept, marked cancelled
     return env.lock(function () {
       var tx = find('ledger', id);
       if (tx.status === 'Void') fail('That record is already cancelled.');
@@ -3257,14 +3257,14 @@ function tideContent(env, t) {
     var role = t.need(['admin', 'artist']);
     if (decision !== 'approve' && decision !== 'reject') t.fail('Unknown answer.');
     var why = t.text(reason, 500);
-    if (decision === 'reject' && !why) t.fail('Say briefly why, so the next suggestions are better.');
+    // a reason helps the next suggestions, but it's never required: plans and preferences change
     return env.lock(function () {
       var c = t.find('content', id), now = t.nowIso();
       if (c.status !== 'Suggested') t.fail('This one has already been decided.');
       var mine = role === 'admin' ? 'adminDecision' : 'artistDecision', out = { updated: now };
       if (decision === 'reject') {
         out[mine] = 'Rejected'; out.status = 'Rejected'; out.rejectedBy = role; out.rejectReason = why; out.decided = now;
-        learn((c.type === 'Shot' ? 'Not wanted to film: ' : 'Discarded "' + c.title + '": ') + why, c.id);
+        if (why) learn((c.type === 'Shot' ? 'Not wanted to film: ' : 'Discarded "' + c.title + '": ') + why, c.id);
       } else {
         out[mine] = 'Approved';
         var after = { artist: c.artistDecision, admin: c.adminDecision };
@@ -8116,7 +8116,7 @@ var Kit = (function () {
       yes.focus();
     });
   }
-  /** Asks for a short piece of text. Resolves the text, or null if cancelled. */
+  /** Asks for a short piece of text. Resolves the text, or null if cancelled. optional: an empty answer is fine ('' comes back). */
   function ask(o) {
     return new Promise(function (resolve) {
       var wrap = h('div', { class: 'dialog-wrap' });
@@ -8128,7 +8128,7 @@ var Kit = (function () {
         h('h2', { text: o.title }), o.text ? h('p', { text: o.text }) : null, picks, field,
         h('div', { class: 'actions' }, btn('text', 'Cancel', { onclick: function () { done(null); } }),
           btn('filled', o.confirmLabel || 'OK', { danger: o.danger, onclick: function () {
-            if (!field.input.value.trim()) { field.input.focus(); return; }
+            if (!field.input.value.trim() && !o.optional) { field.input.focus(); return; }
             done(field.input.value.trim());
           } }))));
       wrap.addEventListener('click', function (e) { if (e.target === wrap) done(null); });
@@ -11799,9 +11799,9 @@ var Kit = (function () {
         }
         if (t && !voided) {
           ctl.body.appendChild(h('div', { style: 'margin-top:24px;text-align:center' }, btn('text', 'Cancel this record', { danger: true, icon: 'block', onclick: function () {
-            K.ask({ title: 'Cancel this record?', text: 'It stays in the ledger, marked as cancelled, so the books keep a full history.', label: 'Why is it being cancelled?', options: ['Entered by mistake', 'The sale fell through', 'Entered twice'], confirmLabel: 'Cancel record', danger: true })
+            K.ask({ title: 'Cancel this record?', text: 'It stays in the ledger, marked as cancelled, so the books keep a full history.', optional: true, label: 'Why? (optional)', options: ['Entered by mistake', 'The sale fell through', 'Entered twice'], confirmLabel: 'Cancel record', danger: true })
               .then(function (why) {
-                if (!why) return;
+                if (why === null) return;
                 api('voidTransaction', t.id, why).then(refresh).then(function () { dirty = false; render(); toast('Record cancelled.'); ctl.close(); }).catch(fail);
               });
           } })));
@@ -12441,9 +12441,9 @@ var Kit = (function () {
         .catch(function (e) { buttons.forEach(function (b) { b.disabled = false; }); fail(e); });
     }
     if (decision === 'approve') { send(''); return; }
-    K.ask({ title: c.type === 'Shot' ? 'Why not this one?' : 'Discard this post?', text: c.type === 'Shot' ? 'A short reason helps the next suggestions fit better.' : 'It won’t be redrafted. A short reason helps the next ones fit better.',
-      label: 'Reason', options: c.type === 'Shot' ? ['Not my style', 'Posted something like it', 'Not this season'] : ['It’s an older photo', 'Doesn’t sound like me', 'Wrong time for it', 'Already said this'],
-      confirmLabel: c.type === 'Shot' ? 'Not this' : 'Don’t post it', danger: true }).then(function (why) { if (why) send(why); });
+    K.ask({ optional: true, label: 'Reason (optional)', title: c.type === 'Shot' ? 'Not this one?' : 'Don’t post this one?', text: c.type === 'Shot' ? 'A reason is optional. If you give one, the next suggestions fit better.' : 'It won’t be redrafted. A reason is optional; if you give one, the next ones fit better.',
+      options: c.type === 'Shot' ? ['Not my style', 'Posted something like it', 'Not this season'] : ['It’s an older photo', 'Doesn’t sound like me', 'Wrong time for it', 'Already said this'],
+      confirmLabel: c.type === 'Shot' ? 'Not this' : 'Don’t post it', danger: true }).then(function (why) { if (why !== null) send(why); });
   }
 
   /** Verify: tick the checks it fails, add a note, and it goes back to be redrafted. */
