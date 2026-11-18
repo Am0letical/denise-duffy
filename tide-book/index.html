@@ -7583,8 +7583,7 @@ function tideSiteEditor(env, t) {
   /** The draft becomes the website. In the practice copy it's only pretend. */
   function publishSiteDraft() {
     var role = t.need(['admin', 'artist']), s = st(), before = s.siteLive || '';
-    // the website's shop comes from her live artworks: with none yet, a publish would leave it empty
-    if (t.liveArtworks && t.liveArtworks() === 0) t.fail(role === 'admin' ? 'No artworks are live in Tide Book yet, so publishing would replace the sample shop with an empty one. Set at least one artwork live first.' : 'Your shop needs at least one artwork first. Set one live in Artworks, then publish. Your changes are kept.');
+    // (with no artworks live in Tide Book yet, the site keeps its sample shop: site.html)
     env.settings.set({ siteLive: s.siteDraft || '' });
     if (typeof HOST !== 'undefined' && HOST.practice === true) return { ok: true, message: 'Published, in the practice copy only: the real website hasn’t changed.' };
     var r;
@@ -9543,9 +9542,6 @@ var Kit = (function () {
       h('button', { type: 'button', class: 'site-page press soft', onclick: openSitePages }, icon('description'), h('span', { class: 'grow', text: SITE.title || 'Home' }), icon('expand_more')),
       btn('text', 'Undo', { sm: true, icon: 'undo', disabled: !E.canUndo, onclick: function (e) { var x = e.currentTarget; K.setBusy(x, true); api('undoSiteEdit').then(function (snap) { siteAfter(snap, 'Undone.'); }).catch(function (er) { K.setBusy(x, false); fail(er); }); } }),
       !E.changed ? h('span', { class: 'chip ' + (E.publishedAt ? 'approved' : 'plain') + ' site-live' }, icon(E.publishedAt ? 'check_circle' : 'edit_off'), E.publishedAt ? 'Up to date' : 'No changes')
-        : E.artworks === 0 ? btn('tonal', 'Publish', { sm: true, icon: 'rocket_launch', onclick: function () {
-          K.confirm({ single: true, title: 'Your shop needs an artwork first', text: ADMIN ? 'No artworks are live in Tide Book yet, so publishing would swap the sample shop for an empty one. Set at least one artwork live, then publish. The changes are kept on the draft.' : 'Your website’s shop shows your artworks from Tide Book, and none are live yet. Set one live in Artworks, then publish. Your changes are kept.', confirmLabel: 'OK' });
-        } })
         : btn('filled', 'Publish', { sm: true, icon: 'rocket_launch', onclick: publishSite }));
   }
   function publishSite() {

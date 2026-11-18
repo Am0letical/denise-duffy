@@ -3259,12 +3259,16 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         // optional, for the originals: a 3D scan (.glb, or { glb, usdz }), the medium and the size, when Tide Book has them
         scan: a.scan ? (REAL.images[a.scan] || (/[./]/.test(a.scan) ? a.scan : null)) : null, medium: a.medium || '', dims: a.size || a.dimensions || '' };
     };
-    ARTWORKS = REAL.artworks.map(fromTide);
-    // Denise's own collection: in the originals gallery only, never in the shop
-    KEPT = (REAL.keeps || []).map(function (a, i) { var k = fromTide(a, 'k' + i); k.isNew = false; return k; });
-    SETS = SETS.filter(function (x) { return !x.items || x.items.every(function (id) { return art(id); }); });
+    // until an artwork is live in Tide Book, the sample catalogue stays, so the shop is never empty
+    var hasReal = (REAL.artworks || []).length + (REAL.keeps || []).length > 0;
+    if (hasReal) {
+      ARTWORKS = REAL.artworks.map(fromTide);
+      // Denise's own collection: in the originals gallery only, never in the shop
+      KEPT = (REAL.keeps || []).map(function (a, i) { var k = fromTide(a, 'k' + i); k.isNew = false; return k; });
+      SETS = SETS.filter(function (x) { return !x.items || x.items.every(function (id) { return art(id); }); });
+    }
     var bar = document.querySelector('.mock');
-    if (bar) bar.textContent = REAL.preview ? 'Preview from Tide Book · not published yet' : 'Published from Tide Book · test run · nothing is for sale yet';
+    if (bar && hasReal) bar.textContent = REAL.preview ? 'Preview from Tide Book · not published yet' : 'Published from Tide Book · test run · nothing is for sale yet';
   }
   var COLS = {
     ocean: { title: 'Ocean', sub: 'In collaboration with Irukandji Shark and Ray Centre at Port Stephens: originals and prints inspired by resident rays and sharks, and my own passion for the ocean and marine life. 20% of every marine print supports Sea Shelter.', img: 'sharkTall', link: ['#/centre', 'About the Irukandji collaboration'] },
