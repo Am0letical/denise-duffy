@@ -2063,6 +2063,8 @@ function createTideLogic(env) {
     else if (kind === 'note') { notebook.expand.sent([id]); notebook.expand.save(id, result, by); }
     else if (kind === 'ad') { ads.research.sent([id]); ads.research.save(id, result, by); }
     else fail('Unknown kind of job: ' + kind);
+    // done in Claude chat: no API cost; what it would have cost is counted for the savings tally
+    if (env.setup && env.setup.meterChat) try { env.setup.meterChat(kind, JSON.stringify(result || {}).length); } catch (e) {}
     return { ok: true };
   }
 
@@ -2573,6 +2575,7 @@ function createTideLogic(env) {
       notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
+      aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
       website: env.site ? { preview: env.site.previewUrl(), live: env.site.liveUrl ? env.site.liveUrl() : '', lastPublished: String(settings().sitePublishedAt || '') } : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
@@ -11798,6 +11801,26 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { class: 'tiles', style: 'margin-top:12px' },
       h('button', { class: 'action press g', type: 'button', onclick: function () { openTxn('Sale'); } }, h('span', { class: 'ic' }, icon('point_of_sale')), h('b', { text: 'Record a sale' })),
       h('button', { class: 'action press w', type: 'button', onclick: function () { openTxn('Expense'); } }, h('span', { class: 'ic' }, icon('receipt_long')), h('b', { text: 'Record an expense' }))), n++));
+
+    // the AI savings tally (admin): what it would have cost on Claude, what it did cost, and the difference
+    var sv = ADMIN && S.data.aiSavings;
+    if (sv) {
+      var usd = function (n) { return 'US$' + (n < 10 ? n.toFixed(2) : Math.round(n)); };
+      var asec = section('AI costs: Claude or the PC');
+      function row(label, t) {
+        return h('div', { class: 'card pad', style: 'margin-bottom:10px' }, h('div', { class: 'label-s', text: label }),
+          h('div', { class: 'stats', style: 'margin-top:8px' },
+            h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'All on Claude' }), h('div', { class: 'v', text: usd(t.would) })),
+            h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'Actually cost' }), h('div', { class: 'v', text: usd(t.actual) })),
+            h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'Saved' }), h('div', { class: 'v', style: 'color:var(--good, #1b7a3a)', text: usd(t.saved) }),
+              h('div', { class: 'd' }, t.would ? Math.round(t.saved / t.would * 100) + '% less' : ''))),
+          h('p', { class: 'body-s', style: 'margin:8px 0 0;color:var(--on-surface-variant)', text: t.jobs + ' jobs: ' + t.local + ' on the PC, ' + t.claude + ' on Claude' + (t.chat ? ', ' + t.chat + ' in Claude chat' : '') + '.' }));
+      }
+      asec.appendChild(row('This month', sv.month));
+      asec.appendChild(row('Since ' + (sv.since ? K.dayLabel(sv.since.slice(0, 10), true) : 'the start'), sv.total));
+      asec.appendChild(h('p', { class: 'tf-help', text: 'Claude jobs count what Claude charged. Jobs on the PC, or in Claude chat, cost nothing; what they would have cost is estimated from their size at Claude’s prices.' }));
+      main.appendChild(rise(asec, n++));
+    }
 
     // GST
     var g = m.gst, gsec = section('GST');
