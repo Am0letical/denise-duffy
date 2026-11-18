@@ -1180,6 +1180,7 @@ var TIDE_SETTING_DEFAULTS = {
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
   // how she likes to work (the business setup): fed into every plan, question round and draft
   workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
+  electricityKwhAud: 0.35,   // what the PC's electricity costs, per kWh (a typical NSW rate: change it to the rate on the power bill)
   sampleAddress: null,   // where samples are posted (her name and address), kept once she has entered it
   planIdeaId: '',  // her plan: the idea whose steps set the order of work (what happens now, what waits)
   priceRounding: 'dollar',   // 'dollar', 'five' or 'none'
@@ -2486,6 +2487,7 @@ function createTideLogic(env) {
     pct('editionSize', 'Prints after an original sells', 2000);
     pct('quickEditionPct', 'Run for a quick buyer', 100);
     pct('incomeGoalWeekly', 'The weekly income goal', 100000);
+    pct('electricityKwhAud', 'The electricity rate', 5);
     if ('priceRounding' in ch) out.priceRounding = oneOf(ch.priceRounding, ['dollar', 'five', 'none'], 'how to round prices');
     env.settings.set(out);
     return { ok: true };
@@ -11814,9 +11816,20 @@ var Kit = (function () {
             h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'Actually cost' }), h('div', { class: 'v', text: usd(t.actual) })),
             h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'Saved' }), h('div', { class: 'v', style: 'color:var(--good, #1b7a3a)', text: usd(t.saved) }),
               h('div', { class: 'd' }, t.would ? Math.round(t.saved / t.would * 100) + '% less' : ''))),
-          h('p', { class: 'body-s', style: 'margin:8px 0 0;color:var(--on-surface-variant)', text: t.jobs + ' jobs: ' + t.local + ' on the PC, ' + t.claude + ' on Claude' + (t.chat ? ', ' + t.chat + ' in Claude chat' : '') + '.' }));
+          h('p', { class: 'body-s', style: 'margin:8px 0 0;color:var(--on-surface-variant)', text: t.jobs + ' jobs: ' + t.local + ' on the PC, ' + t.claude + ' on Claude' + (t.chat ? ', ' + t.chat + ' in Claude chat' : '') + '.' +
+            (t.measured ? ' ' + t.measured + ' measured to the token' + (t.estimated ? ', ' + t.estimated + ' estimated' : '') + '.' : t.estimated ? ' The PC and chat jobs are estimated.' : '') }),
+          t.pcMetered ? h('p', { class: 'body-s', style: 'margin:4px 0 0;color:var(--on-surface-variant)', text: 'PC electricity, measured on the graphics card: ' + (t.pcWh < 1 ? t.pcWh.toFixed(2) : Math.round(t.pcWh)) + ' Wh over ' +
+            Math.round(t.pcSeconds / 60) + ' min, about A$' + (t.pcWh / 1000 * (S.data.settings.electricityKwhAud || 0)).toFixed(3) + ' (' + t.pcMetered + ' job' + (t.pcMetered === 1 ? '' : 's') + ').' }) : null);
       }
       asec.appendChild(row('This month', sv.month));
+      var rate = S.data.settings.electricityKwhAud;
+      asec.appendChild(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:-2px 0 10px' }, h('span', { class: 'body-s grow', text: 'Electricity: A$' + rate + ' a kWh' }),
+        btn('text', 'Change', { sm: true, onclick: function () {
+          K.ask({ title: 'Electricity rate', text: 'What your power bill charges per kWh, in dollars (e.g. 0.33).', label: 'Dollars per kWh', value: String(rate), confirmLabel: 'Save', maxlength: 8 }).then(function (v) {
+            if (v == null) return; var n = parseFloat(v); if (!(n >= 0 && n <= 5)) { toast('That rate doesn’t look right.'); return; }
+            api('saveSettings', { electricityKwhAud: n }).then(refresh).then(render).catch(fail);
+          });
+        } })));
       asec.appendChild(row('Since ' + (sv.since ? K.dayLabel(sv.since.slice(0, 10), true) : 'the start'), sv.total));
       asec.appendChild(h('p', { class: 'tf-help', text: 'Claude jobs count what Claude charged. Jobs on the PC, or in Claude chat, cost nothing; what they would have cost is estimated from their size at Claude’s prices.' +
         (sv.earlier ? ' The ' + sv.earlier + ' PC job' + (sv.earlier === 1 ? '' : 's') + ' from before the tally began were found in the records and estimated the same way.' : '') }));
