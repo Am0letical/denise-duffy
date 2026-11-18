@@ -7153,7 +7153,7 @@ var TIDE_BACKLOG = [
  */
 var TIDE_CHANGES = [
   { id: '2026-11-18-calendar-own', on: '2026-11-18', to: 'artist', icon: 'event', title: 'Add your own things to the calendar',
-    say: 'You asked for this: anything of your own can go on a day now, like chasing up the photographer about prints.',
+    say: 'You asked for this: anything of your own can go on a day now, like a call to make or something to chase up.',
     steps: ['Open the menu (bottom left) and tap Calendar.', 'Tap a day, then “Add”, then “Your own thing”.', 'Write it in a few words. If it’s for one of your goals, tap the goal and it takes that goal’s colour.', 'Tap it later to tick it off, move it or remove it. You get a nudge the day before and on the day.'],
     go: { view: 'calendar', state: { calMode: 'month' }, find: '.cal-panel-h .btn', tip: 'Tap Add to put your own thing on this day.' } },
   { id: '2026-11-18-idea-to-website', on: '2026-11-18', to: 'artist', icon: 'storefront', title: 'From an idea all the way to your website',
@@ -14362,7 +14362,7 @@ var Kit = (function () {
       title: d ? 'On your calendar' : 'Add your own', tall: goals.length > 3,
       build: function (ctl) {
         var today = ymd(new Date());
-        var what = K.textField({ label: 'What is it?', value: f.text, maxlength: 200, placeholder: 'For example: chase the photographer about prints', onInput: function (v) { f.text = v; } });
+        var what = K.textField({ label: 'What is it?', value: f.text, maxlength: 200, placeholder: 'For example: order more mailing tubes', onInput: function (v) { f.text = v; } });
         var dateF = K.textField({ label: 'Which day?', type: 'date', value: f.day, onInput: function (v) { f.day = v; } });
         ctl.body.append(what, h('div', { style: 'height:12px' }),
           K.choices({ row: true, label: 'Quick picks', value: '', options: [{ value: today, label: 'Today' }, { value: addDays(today, 1), label: 'Tomorrow' }, { value: addDays(today, 7 - dow(today)), label: 'Next Monday' }, { value: addDays(today, 7), label: 'In a week' }],
