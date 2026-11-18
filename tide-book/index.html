@@ -1427,7 +1427,7 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'From', 'text'], ['kind', 'Kind', 'text'], ['text', 'What they said', 'text'],
       ['screen', 'Screen', 'text'], ['device', 'Device', 'text'], ['clientLog', 'App log', 'json'], ['serverLog', 'Server log', 'text'],
       ['photoIds', 'Photo IDs', 'list'], ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['status', 'Status', 'text'],
-      ['triage', 'Triage', 'json'], ['reply', 'Reply', 'text'], ['adminNotes', 'Admin notes', 'text'], ['closed', 'Closed', 'date'], ['updated', 'Updated', 'date'],
+      ['triage', 'Triage', 'json'], ['reply', 'Reply', 'text'], ['adminNotes', 'Admin notes', 'text'], ['closed', 'Closed', 'date'], ['updated', 'Updated', 'date'], ['clarifyAnswers', 'Their answers', 'json'],
       ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'], ['aiQueued', 'AI asked', 'date'],
       ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
     ]
@@ -5045,7 +5045,7 @@ function tideTalk(env, t) {
     var r = rowOf(id);
     if (!r) t.fail('Not found.');
     if (tableOf(id) === 'reports') {
-      return { kind: 'report', job: 'triage', type: r.kind || '', text: r.text || '', screen: r.screen || '', by: who(r.createdBy),
+      return { kind: 'report', job: 'triage', answers: t.list(r.clarifyAnswers), type: r.kind || '', text: r.text || '', screen: r.screen || '', by: who(r.createdBy),
         clientLog: t.list(r.clientLog).slice(-25), serverLog: String(r.serverLog || '').slice(-3000), device: r.device || '', screenshots: t.list(r.photoIds).length };
     }
     if (tableOf(id) === 'topics') {
@@ -5171,10 +5171,14 @@ function tideTalk(env, t) {
           summary: clean(res.summary, 600), type: ['Bug', 'Idea', 'Question', 'Confusing'].indexOf(res.type) >= 0 ? res.type : 'Bug',
           severity: ['Blocking', 'Annoying', 'Minor', 'Nice to have'].indexOf(res.severity) >= 0 ? res.severity : 'Minor',
           area: clean(res.area, 120), likelyCause: clean(res.likely_cause, 600), steps: cleanList(res.steps, 8, 300),
-          fixBrief: clean(res.fix_brief, 4000), replyDraft: clean(res.reply_draft, 600), by: by2, at: now
+          fixBrief: clean(res.fix_brief, 4000), replyDraft: clean(res.reply_draft, 600), by: by2, at: now,
+          // asked only when it's unclear, and only once: after her answers, no more questions
+          clarify: t.list(r.clarifyAnswers).length ? [] : t.list(res.clarify).slice(0, 3).map(function (q) { return { question: clean(q && q.question, 200), options: cleanList(q && q.options, 4, 80) }; })
+            .filter(function (q) { return q.question && q.options.length >= 2; })
         };
         env.table('reports').update(id, { triage: tri, status: r.status === 'New' ? 'Triaged' : r.status, aiStatus: '', aiNote: '', updated: now });
-        pushOut = ['admin', (tri.severity === 'Blocking' ? 'Blocking: ' : '') + tri.summary.slice(0, 80), 'From ' + who(r.createdBy) + '. ' + (tri.steps[0] || '')];
+        pushOut = tri.clarify.length && r.createdBy === 'artist' ? ['artist', 'A quick question about your suggestion', 'A tap or two, so it’s done the way you mean.']
+          : ['admin', (tri.severity === 'Blocking' ? 'Blocking: ' : '') + tri.summary.slice(0, 80), 'From ' + who(r.createdBy) + '. ' + (tri.steps[0] || '')];
       } else if (tb === 'pipeline' && r.aiJob === 'help') {
         var cid = r.aiTarget, H = Object.assign({}, r.help || {}), cur = H[cid] || { turns: [] };
         var hopts = t.list(res.options).slice(0, 4).map(function (o) {
@@ -6524,12 +6528,27 @@ function tideReports(env, t) {
     return { ok: true };
   }
 
+  /** Her answers to the questions about her report (any she skipped are left out). Then it's looked at again. */
+  function answerReport(id, answers) {
+    var role = t.need(['admin', 'artist']);
+    var r = get(id);
+    if (r.createdBy !== role && role !== 'admin') t.fail('That one isn\u2019t yours.');
+    var qs = t.list((r.triage || {}).clarify);
+    var got = qs.map(function (q, i) { var a = t.text((t.list(answers)[i] || ''), 400); return a ? { q: q.question, a: a } : null; }).filter(Boolean);
+    env.lock(function () {
+      var tri = Object.assign({}, r.triage || {}, { clarify: [] });
+      env.table('reports').update(id, { clarifyAnswers: got.length ? got : [{ q: 'Questions', a: '(skipped)' }], triage: tri, updated: t.nowIso() });
+    });
+    if (got.length) { t.queueJob(id, 'triage'); if (env.talkNow) env.talkNow(id); }
+    return { ok: true };
+  }
   function snapshot(role) {
     return t.rows('reports').filter(function (r) { return role === 'admin' || r.createdBy === role; }).map(function (r) {
       var out = { id: r.id, created: r.created, by: who(r.createdBy), mine: r.createdBy === role, kind: r.kind, text: r.text, screen: r.screen,
         thumbIds: t.list(r.thumbIds), photoUrls: t.list(r.photoIds).map(function (x) { return env.files.viewUrl(x); }),
         status: r.status, reply: r.reply || '', open: R.OPEN.indexOf(r.status) >= 0, updated: r.updated,
-        severity: r.triage ? r.triage.severity : '', summary: r.triage ? r.triage.summary : '', aiStatus: r.aiStatus || '' };
+        severity: r.triage ? r.triage.severity : '', summary: r.triage ? r.triage.summary : '', aiStatus: r.aiStatus || '',
+        questions: r.createdBy === role ? t.list((r.triage || {}).clarify) : [], answers: t.list(r.clarifyAnswers) };
       if (role === 'admin') {
         out.triage = r.triage || null; out.adminNotes = r.adminNotes || ''; out.device = r.device || '';
         out.clientLog = t.list(r.clientLog); out.serverLog = r.serverLog || '';
@@ -6543,7 +6562,7 @@ function tideReports(env, t) {
     });
   }
 
-  return { snapshot: snapshot, kinds: R.KINDS, statuses: R.STATUS, api: { sendReport: sendReport, updateReport: updateReport, retriageReport: retriage } };
+  return { snapshot: snapshot, kinds: R.KINDS, statuses: R.STATUS, api: { sendReport: sendReport, updateReport: updateReport, retriageReport: retriage, answerReport: answerReport } };
 }
 
 /**
@@ -8993,6 +9012,12 @@ var Kit = (function () {
     }
 
     mark('rest');
+    // a quick question about something she suggested, only when it wasn't clear
+    (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }).slice(0, 1).forEach(function (r) {
+      main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openReportQuestions(r); } },
+        h('span', { class: 'ic' }, icon('help')), h('span', { class: 'grow' }, h('b', { text: 'A quick question about your suggestion' }),
+          h('span', { class: 'body-m', text: '“' + String(r.text || '').slice(0, 70) + (String(r.text || '').length > 70 ? '…' : '') + '”. A tap or two, so it’s done the way you mean.' })), icon('chevron_right')), n++));
+    });
     if (needs.length) {
       var sec = section(needs.length === 1 ? 'A question from ' + adminName() : needs.length + ' questions from ' + adminName());
       needs.forEach(function (e) { sec.appendChild(needsCard(e)); });
@@ -12233,6 +12258,30 @@ var Kit = (function () {
       h('div', { class: 'body-s', style: 'margin-top:4px;color:var(--primary);font-weight:600', text: 'Tap for what you need: ' + toolsFor(cur.text).filter(function (k) { return k !== 'talk'; }).map(function (k) { return STEP_TOOLS[k].label.toLowerCase(); }).slice(0, 2).join(', ') }));
     return h('div', { class: 'card pad plan-card' }, head, dots,
       h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })));
+  }
+  /** Questions about her report: a tap each, her own words, or skip. All optional. */
+  function openReportQuestions(r) {
+    var answers = r.questions.map(function () { return ''; });
+    K.sheet({
+      title: 'About your suggestion', tall: true,
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: '“' + r.text + '”' }));
+        r.questions.forEach(function (q, i) {
+          var card = h('div', { class: 'card pad', style: 'margin-bottom:12px' }, h('div', { class: 'title-m', text: q.question }));
+          card.appendChild(h('div', { style: 'margin-top:10px' }, K.choices({ label: q.question, value: '', allowNone: true, options: q.options, own: 'Your own words', onChange: function (v) { answers[i] = v || ''; } })));
+          ctl.body.appendChild(card);
+        });
+        ctl.body.appendChild(h('p', { class: 'tf-help', text: 'Leave any you’d rather skip.' }));
+        var send = btn('filled', 'Send', { icon: 'send', lg: true, block: true });
+        send.addEventListener('click', function () {
+          K.setBusy(send, true);
+          api('answerReport', r.id, answers).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast('Thanks. That’s gone with your suggestion.'); }).catch(function (e) { K.setBusy(send, false); fail(e); });
+        });
+        ctl.foot.appendChild(h('div', {}, send, h('div', { style: 'text-align:center;margin-top:6px' }, btn('text', 'Skip these', { onclick: function (e) {
+          K.setBusy(e.currentTarget, true); api('answerReport', r.id, []).then(refresh).then(function () { ctl.close(); render(); }).catch(fail);
+        } }))));
+      }
+    });
   }
   /** While the PC's own model works on something: a quicker answer from Claude, for a small cost. */
   function quickerBtn(id) {
