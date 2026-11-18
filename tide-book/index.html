@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1171,6 +1171,44 @@ img, video { max-width: 100%; }
 .research-row:has(> .choice) { flex-wrap: wrap; }
 .research-row:has(> .choice) > .grow { flex: 1 1 100%; }
 .research-row > .choice { margin: 2px 0 2px auto; }
+/* the goal map: zoom and pan */
+.goal-map { touch-action: none; }
+.goal-world { position: absolute; inset: 0; transform-origin: 0 0; }
+.goal-bubble.target { box-shadow: 0 0 0 3px var(--tertiary), 0 6px 18px rgba(163, 66, 106, 0.3); }
+.goal-bubble.alongside { background: var(--secondary-container); color: var(--on-secondary-container); box-shadow: 0 0 0 2px var(--secondary), 0 4px 14px rgba(29, 111, 121, 0.25); }
+.goal-bubble.alongside .gb-now { background: var(--secondary); color: var(--on-secondary); display: inline-flex; align-items: center; gap: 3px; }
+.gb-now .ms { font-size: 13px; }
+.goal-lines line.link { stroke: var(--secondary); stroke-width: 3; stroke-dasharray: none; opacity: 0.75; }
+.gz { position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: var(--r-full); background: var(--surface-lowest); box-shadow: var(--shadow-2); z-index: 3; }
+.gz-btn { all: unset; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--on-surface); -webkit-tap-highlight-color: transparent; }
+.gz-btn:active { background: var(--surface-high); }
+.gz-btn:focus-visible { outline: 2px solid var(--primary); }
+.gz-btn .ms { font-size: 20px; }
+.gz-level { min-width: 40px; text-align: center; font: 500 12px/16px var(--font); color: var(--on-surface-variant); }
+/* Home: a goal worked on together with the top one */
+.plan-also { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hairline); }
+.plan-also .label-s { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary); }
+.plan-also .label-s .ms { font-size: 15px; }
+.plan-also .plan-tool { background: var(--secondary-container); color: var(--on-secondary-container); }
+/* what's new */
+.news-card { padding: 12px 14px 12px; margin-bottom: 10px; border-radius: var(--r-l); background: var(--surface-lowest); box-shadow: var(--shadow-1); }
+.news-head { all: unset; box-sizing: border-box; display: flex; gap: 12px; align-items: flex-start; width: 100%; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.news-head:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
+.news-head > .ms:last-child { color: var(--on-surface-variant); padding-top: 6px; }
+.news-t { display: block; font: 500 16px/22px var(--font); }
+.news-say { display: block; font: 400 14px/20px var(--font); color: var(--on-surface-variant); margin-top: 2px; }
+.news-more { all: unset; display: inline-flex; align-items: center; gap: 2px; margin: 8px 0 0 48px; font: 600 14px/20px var(--font); color: var(--primary); cursor: pointer; }
+.news-more .ms { font-size: 18px; }
+.news-steps { margin: 10px 0 0 48px; padding-left: 18px; font: 400 15px/22px var(--font); }
+.news-steps li + li { margin-top: 4px; }
+.news-card .btn { margin-left: 48px; }
+.spot-ring { position: absolute; z-index: 60; border-radius: 18px; pointer-events: none; box-shadow: 0 0 0 3px var(--tertiary), 0 0 0 9999px rgba(10, 16, 24, 0.32); animation: spot 1.4s var(--ease) infinite; }
+@keyframes spot { 0%, 100% { box-shadow: 0 0 0 3px var(--tertiary), 0 0 0 9999px rgba(10, 16, 24, 0.32); } 50% { box-shadow: 0 0 0 7px var(--tertiary), 0 0 0 9999px rgba(10, 16, 24, 0.32); } }
+.spot-tip { position: absolute; z-index: 61; left: 16px; right: 16px; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border-radius: var(--r-l); background: var(--inverse-surface); color: var(--inverse-on-surface); font: 400 15px/21px var(--font); box-shadow: var(--shadow-3); }
+.spot-tip.above { transform: translateY(-100%); }
+.spot-ok { all: unset; padding: 6px 14px; border-radius: var(--r-full); background: var(--primary-container); color: var(--on-primary-container); font: 600 14px/20px var(--font); cursor: pointer; }
+.view-pill { transition: opacity 0.2s var(--ease), transform 0.25s var(--ease); }
+.view-pill.away { opacity: 0; transform: translate(-50%, -56px); pointer-events: none; }
 </style>
 
   <script>
@@ -1325,6 +1363,7 @@ var TIDE_SETTING_DEFAULTS = {
   incomeGoalWeekly: 200,   // the first weekly income goal; the product pipeline shows sales needed to reach it
   // getting set up in the app (LogicSetup.gs)
   setupBasicsDone: false, starterLoaded: false, stripeDone: false, artistWelcomed: false,
+  seenChangesArtist: [], seenChangesAdmin: [],   // what's new (TIDE_CHANGES in LogicSetup.gs): the changes each has seen
   sitePublishedAt: ''       // when the website was last published from Tide Book
 };
 
@@ -2697,7 +2736,7 @@ function createTideLogic(env) {
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
@@ -2876,7 +2915,37 @@ function createTideLogic(env) {
       if ('status' in ch) out.status = ch.status === 'Done' ? 'Done' : 'Open';
       if ('steps' in ch) out.steps = cleanSteps(ch.steps);
       env.table('goals').update(id, out);
+      if (out.links) syncLinks(id, out.links);
       return { ok: true };
+    });
+  }
+  /** Goals worked on together are linked both ways: what one says, the other says too. */
+  function syncLinks(id, mine) {
+    goalList().forEach(function (o) {
+      if (o.id === id) return;
+      var has = list(o.links).indexOf(id) >= 0, want = mine.indexOf(o.id) >= 0;
+      if (has === want) return;
+      env.table('goals').update(o.id, { links: want ? list(o.links).concat([id]).slice(0, 12) : list(o.links).filter(function (l) { return l !== id; }) });
+    });
+  }
+  /** Links two goals (or unlinks them): they're worked on together, each keeping its own steps. */
+  function linkGoals(a, b, on) {
+    need(['admin', 'artist']);
+    return env.lock(function () {
+      var g = goalRow(a); goalRow(b);
+      if (a === b) fail('Pick two different goals.');
+      var links = list(g.links).filter(function (l) { return l !== b; });
+      if (on !== false) links.push(b);
+      env.table('goals').update(a, { links: links.slice(0, 12), updated: nowIso() });
+      syncLinks(a, links);
+      return { ok: true };
+    });
+  }
+  /** The goals worked on together with this one: linked either way, still open, with steps left. */
+  function togetherWith(g) {
+    return goalList().filter(function (o) {
+      return o.id !== g.id && o.status !== 'Done' && !o.parentId && list(o.steps).some(function (s) { return !s.done; }) &&
+        (list(g.links).indexOf(o.id) >= 0 || list(o.links).indexOf(g.id) >= 0);
     });
   }
   function orderGoals(ids) {
@@ -2912,6 +2981,7 @@ function createTideLogic(env) {
       var tp = g.topicId ? rows('topics').filter(function (x) { return x.id === g.topicId && !x.deleted; })[0] : null;
       return { id: g.id, title: g.title, why: g.why || '', x: Number(g.x), y: Number(g.y), links: list(g.links), parentId: g.parentId || '', rank: Number(g.rank) || 0,
         status: g.status || 'Open', steps: steps, next: next ? next.text : '', active: !!(top && top.id === g.id),
+        alongside: !!(top && top.id !== g.id && togetherWith(top).some(function (o) { return o.id === g.id; })),
         planning: tp ? { id: tp.id, status: tp.status } : null };
     });
   }
@@ -2933,7 +3003,11 @@ function createTideLogic(env) {
     if (ag) {
       var gsteps = list(ag.steps).map(function (s, i) { return { n: i + 1, id: s.id, text: s.text, done: !!s.done }; });
       var gcur = gsteps.filter(function (s) { return !s.done; })[0];
-      return { goalId: ag.id, ideaId: '', title: ag.title, steps: gsteps, current: gcur ? gcur.n : 0 };
+      var together = togetherWith(ag).map(function (o) {
+        var os = list(o.steps).map(function (s, i) { return { n: i + 1, id: s.id, text: s.text, done: !!s.done }; }), oc = os.filter(function (s) { return !s.done; })[0];
+        return { goalId: o.id, title: o.title, steps: os, current: oc ? oc.n : 0 };
+      });
+      return { goalId: ag.id, ideaId: '', title: ag.title, steps: gsteps, current: gcur ? gcur.n : 0, together: together };
     }
     var p = planIdea();
     if (!p) return null;
@@ -2946,6 +3020,19 @@ function createTideLogic(env) {
       .map(function (w) { return w.replace(/ies$/, 'y').replace(/s$/, ''); }).filter(function (w) { return w.length > 2 && PLAN_STOP.indexOf(w) < 0; });
   }
   /** Where something fits in the plan: the step that names it, else the step it has most in common with, else the last. */
+  /** How well something fits a list of steps: the best step and its score (0 = nothing in common). */
+  function fitSteps(title, summary, steps) {
+    var tl = String(title || '').toLowerCase().trim();
+    for (var i = 0; i < steps.length; i++) if (tl.length > 3 && steps[i].text.toLowerCase().indexOf(tl) >= 0) return { n: steps[i].n, score: 99 };
+    var named = planWords(title), more = planWords(String(summary || '').slice(0, 200)), best = 0, top = 0;
+    steps.forEach(function (s) {
+      var sw = planWords(s.text), sc = 0;
+      named.forEach(function (w) { if (sw.indexOf(w) >= 0) sc += 3; });
+      if (sc) more.forEach(function (w) { if (sw.indexOf(w) >= 0) sc += 1; });
+      if (sc > top) { top = sc; best = s.n; }
+    });
+    return { n: best, score: top };
+  }
   function placeFor(title, summary, st) {
     st = st || planState();
     if (!st) return 0;
@@ -2976,7 +3063,15 @@ function createTideLogic(env) {
     if (!st || !st.current) return false;
     // finished things never wait
     if (row.stage === 'Live' || row.stage === 'Retired' || row.retired === true) return false;
-    return planStepOf(row, st) > st.current;
+    var step = planStepOf(row, st);
+    if (step <= st.current) return false;
+    // placed by her on a later step of this plan: it waits, as she chose
+    var mine = row.planPlacedBy && row.planPlacedBy !== 'auto' && (!row.planOf || row.planOf === (st.goalId || st.ideaId));
+    if (mine) return true;
+    // it belongs to a goal worked on alongside this one, at or before where that goal is up to: it goes ahead
+    var title = row.title, summary = row.summary || row.description || '';
+    var here = fitSteps(title, summary, st.steps).score;
+    return !list(st.together).some(function (o) { var f = fitSteps(title, summary, o.steps); return f.score > 0 && f.score >= here && f.n <= o.current; });
   }
   function setPlanStep(kind, id, step) {
     var role = need(['admin', 'artist']);
@@ -3229,7 +3324,7 @@ function createTideLogic(env) {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -6519,6 +6614,69 @@ var TIDE_BACKLOG = [
  * Google-only parts (Script Properties, sharing, the app's address) come through env.setup.
  */
 
+/**
+ * What's new. EVERY change someone will notice gets an entry here, newest first, in the same pass as the change.
+ * Each says what changed in one plain sentence, then a short how-to, and where to see it. For the artist: no jargon
+ * (no Claude, AI, PC, prompt or API), every step something she can tap. The test file checks the shape and the words.
+ *   id:    unique and never reused (date + a word)
+ *   on:    the day it went live (YYYY-MM-DD)
+ *   to:    'artist' (her screens), 'admin' (the admin's), or 'all'
+ *   icon:  a Material Symbols name that is in Index.html's icon list
+ *   title, say: the headline, and one sentence
+ *   steps: how to use it, a few short steps
+ *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
+ */
+var TIDE_CHANGES = [
+  { id: '2026-11-18-goals-together', on: '2026-11-18', to: 'artist', icon: 'link', title: 'Work on two goals together',
+    say: 'Link two goals and both move forward at once, each with its own steps, instead of one waiting for the other.',
+    steps: ['Go to Ideas, then Goals.', 'Drag one goal and drop it on another.', 'Tap “Work on them together”.', 'Both goals’ next steps now show on Home. To undo it, drop them together again.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.goal-map', tip: 'Drag one goal onto another to link them.' } },
+  { id: '2026-11-18-map-zoom', on: '2026-11-18', to: 'artist', icon: 'zoom_in', title: 'Zoom in and out on your goals map',
+    say: 'Pinch the map with two fingers to zoom, or use the buttons in its corner.',
+    steps: ['Go to Ideas, then Goals.', 'Pinch with two fingers to zoom in or out.', 'Drag an empty spot to move around.', 'Tap the square button in the corner to see the whole map again.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gz', tip: 'Zoom here, or pinch the map.' } },
+  { id: '2026-11-18-plan-buttons', on: '2026-11-18', to: 'artist', icon: 'flag', title: 'Your plan has its buttons on Home',
+    say: 'The step you’re on now shows the buttons you need, right on the plan card.',
+    steps: ['On Home, find your plan card near the top.', 'Tap a button under the step, like “Upload and post”.', 'When the step is finished, tap “This step is done”.'],
+    go: { view: 'home', find: '.plan-tools', tip: 'These buttons are what this step needs. Tap one to start.' } },
+  { id: '2026-11-18-checklist', on: '2026-11-18', to: 'artist', icon: 'check_circle', title: 'Tick off your checklist with the circle',
+    say: 'Tap the circle beside a job to tick it off. Ticked one by mistake? Tap Undo.',
+    steps: ['Open a product: Ideas, then Products.', 'In “Your checklist”, tap the circle beside a job when it’s done.', 'Tap “How do I do this?” for a one-line answer and choices.', 'Not now? Tap Later and it moves out of the way.'],
+    go: { view: 'ideas', state: { ideasTab: 'products' }, find: 'main .li', tip: 'Open a product. Your checklist is near the top.' } },
+  { id: '2026-11-18-short-products', on: '2026-11-18', to: 'artist', icon: 'unfold_less', title: 'Product pages are shorter',
+    say: 'Each part of a product folds away under a heading that says what’s inside.',
+    steps: ['Open any product.', 'Each heading has a short line, like “Checks · 3 a go”.', 'Tap a heading to open it. Tap again to fold it away.'],
+    go: { view: 'ideas', state: { ideasTab: 'products' }, find: 'main .li', tip: 'Open a product to see the new folding sections.' } },
+  { id: '2026-11-18-goals', on: '2026-11-18', to: 'artist', icon: 'flag', title: 'Your launch plan is now under Goals',
+    say: 'Ideas has a Goals tab. The goal at the top decides what comes next, and anything for a later step waits its turn.',
+    steps: ['Go to Ideas, then Goals.', 'Tap a goal to see its steps and tick them off.', 'Tap an empty spot on the map to add a goal there.', 'Under “In order”, drag the most important goal to the top.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.goal-map', tip: 'Tap a goal to open it, or an empty spot to add one.' } },
+  { id: '2026-11-18-pause', on: '2026-11-18', to: 'artist', icon: 'calendar_month', title: 'Pause something until a day you choose',
+    say: 'Pause a product or idea until a date. You get a reminder the day before, and it comes back by itself.',
+    steps: ['Open a product or an idea.', 'Tap “Pause it” near the bottom.', 'Pick a day, like “In a month”. Changed your mind? Tap Undo.'],
+    go: { view: 'ideas', state: { ideasTab: 'products' }, find: 'main .li', tip: 'Open a product. “Pause it” is near the bottom.' } },
+  { id: '2026-11-18-business', on: '2026-11-18', to: 'artist', icon: 'tune', title: 'Business setup is in sections',
+    say: 'Your suppliers, money, how you like to work and your brand each have their own section.',
+    steps: ['Tap Settings at the bottom of Home.', 'Tap “Business setup”.', 'Tap a section to open it, then Save.'],
+    go: { view: 'settings', state: { adminTab: 'settings' }, find: 'main button', text: 'Business setup', tip: 'Tap here for your business setup.' } },
+  { id: '2026-11-18-instagram', on: '2026-11-18', to: 'artist', icon: 'photo_camera', title: 'Some Instagram posts open on Instagram',
+    say: 'A few posts can’t be shown inside Tide Book. They now show a tidy “On Instagram” tile instead of a broken box.',
+    steps: ['Go to Ideas, then Inspo.', 'A pink “On Instagram” tile means it can only be seen there.', 'Tap it, then “Open it on Instagram”.'],
+    go: { view: 'ideas', state: { ideasTab: 'inspo' }, find: '.ig-only', tip: 'Tap this one, then “Open it on Instagram”.' } },
+  { id: '2026-11-18-whats-new', on: '2026-11-18', to: 'artist', icon: 'campaign', title: 'This “What’s new” list',
+    say: 'When something changes, it shows here the next time you open Tide Book, with how to use it.',
+    steps: ['Tap “Show me” on any change to be taken straight to it.', 'Tap “Got it” to put the list away.', 'To see it again, tap “What’s new” at the bottom of Home.'],
+    go: { view: 'home', find: 'main button', text: 'What’s new', tip: 'The list is here whenever you want it.' } },
+  { id: '2026-11-18-savings-card', on: '2026-11-18', to: 'admin', icon: 'savings', title: 'AI costs: one card on Money',
+    say: 'The Claude-or-PC tally is one card now: this month or since the start, with a bar for each side.',
+    steps: ['Open Money.', 'Scroll to “AI costs: Claude or the PC”.', 'Switch between “This month” and “Since …” at the top of the card.'],
+    go: { view: 'money', find: '.ai-cost', tip: 'Switch the period at the top of the card.' } },
+  { id: '2026-11-18-whats-new-admin', on: '2026-11-18', to: 'admin', icon: 'campaign', title: 'What’s new, for Denise and for you',
+    say: 'Every change now comes with an entry in TIDE_CHANGES (LogicSetup.gs). Denise sees hers the next time she opens Tide Book.',
+    steps: ['Add an entry to TIDE_CHANGES with every change she’ll notice, newest first.', 'View as Denise (the practice copy) to see what she’ll get.', 'The tests check each entry’s shape, and that hers have no jargon.'],
+    go: { view: 'home', find: 'main button', text: 'What’s new', tip: 'The list lives here too.' } }
+];
+
 function tideSetup(env, t) {
   function s() { return env.settings.get(); }
   function on(v) { return v === true || v === 'true' || v === 'TRUE'; }
@@ -6607,7 +6765,25 @@ function tideSetup(env, t) {
     if (key === 'stripe') env.settings.set({ stripeDone: true });
     return { ok: true };
   }
-  function welcomed() { t.need(['artist']); env.settings.set({ artistWelcomed: true }); return { ok: true }; }
+  // nothing has "changed" for someone opening Tide Book for the first time: the list starts from today
+  function welcomed() { t.need(['artist']); env.settings.set({ artistWelcomed: true, seenChangesArtist: TIDE_CHANGES.map(function (c) { return c.id; }) }); return { ok: true }; }
+
+  // ---------------------------------------------------------------- what's new since you were last here
+  function seenKey(role) { return role === 'admin' ? 'seenChangesAdmin' : 'seenChangesArtist'; }
+  function forRole(role) { return TIDE_CHANGES.filter(function (c) { return c.to === 'all' || c.to === role; }); }
+  /** The changes for this person: the ones they haven't seen yet, and the latest few to look back on. */
+  function news(role) {
+    var seen = t.list(s()[seenKey(role)]), mine = forRole(role);
+    var cut = new Date(Date.now() - 60 * 864e5).toISOString().slice(0, 10);   // anything older than two months isn't news
+    return { unseen: mine.filter(function (c) { return seen.indexOf(c.id) < 0 && c.on >= cut; }).map(function (c) { return c.id; }), list: mine.slice(0, 16) };
+  }
+  function seenChanges(ids) {
+    var role = t.need(['admin', 'artist']), key = seenKey(role), known = TIDE_CHANGES.map(function (c) { return c.id; });
+    var seen = t.list(s()[key]).filter(function (x) { return known.indexOf(x) >= 0; });
+    t.list(ids).map(String).forEach(function (id) { if (known.indexOf(id) >= 0 && seen.indexOf(id) < 0) seen.push(id); });
+    var ch = {}; ch[key] = seen; env.settings.set(ch);
+    return { ok: true, seen: seen.length };
+  }
   /** Admin only, and only when asked: the addresses and keys the PC tools and the Everygen task need. */
   /** Admin: this month's Claude spending, and the monthly cap (US dollars; 0 = Claude off). */
   function spend() { t.need(['admin']); return env.setup.spend ? env.setup.spend() : null; }
@@ -6625,7 +6801,7 @@ function tideSetup(env, t) {
   }
   function connections() { t.need(['admin']); return env.setup.connections(); }
 
-  return { status: status, spend: spend, api: { saveClaudeBudget: saveClaudeBudget, saveClaudeUpgrade: saveClaudeUpgrade, saveClaudeVia: saveClaudeVia, setupStatus: status, savePeople: savePeople, saveClaudeKey: saveClaudeKey, saveBasics: saveBasics, loadStarter: loadStarter, markSetupStep: markStep, artistWelcomed: welcomed, setupConnections: connections } };
+  return { status: status, spend: spend, news: news, api: { seenChanges: seenChanges, saveClaudeBudget: saveClaudeBudget, saveClaudeUpgrade: saveClaudeUpgrade, saveClaudeVia: saveClaudeVia, setupStatus: status, savePeople: savePeople, saveClaudeKey: saveClaudeKey, saveBasics: saveBasics, loadStarter: loadStarter, markSetupStep: markStep, artistWelcomed: welcomed, setupConnections: connections } };
 }
 
 /**
@@ -9069,6 +9245,7 @@ var Kit = (function () {
   window.addEventListener('scroll', function () {
     var y = window.scrollY, fb = document.getElementById('report-btn');
     if (fb) fb.classList.toggle('away', y > 80 && y > lastY);
+    var vb = document.getElementById('view-btn'); if (vb) vb.classList.toggle('away', y > 80 && y > lastY);
     lastY = y;
   }, { passive: true });
 
@@ -9424,6 +9601,7 @@ var Kit = (function () {
 
     main.appendChild(rise(h('div', { style: 'margin-top:20px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center' },
       btn('text', 'Arrange your home page', { icon: 'swap_vert', onclick: openHomeOrder }),
+      btn('text', 'What’s new' + (newsList(false).length ? ' (' + newsList(false).length + ')' : ''), { icon: 'campaign', onclick: function () { whatsNew(!newsList(false).length); } }),
       rest ? null : btn('text', 'Taking it easy for a bit?', { icon: 'spa', onclick: openRest })), n++));
   }
   var HOME_SECTIONS = { cover: 'Your artwork, up top', plan: 'Your plan', inspo: 'Inspiration', needs: 'Questions for you', waiting: 'Waiting for you', todo: 'Your to do list',
@@ -9761,6 +9939,76 @@ var Kit = (function () {
     });
   }
 
+  // ------------------------------------------------------------------ what's new since she was last here (TIDE_CHANGES, LogicSetup.gs)
+  function newsList(all) {
+    var N = S.data.news || { unseen: [], list: [] };
+    return all ? N.list : N.list.filter(function (c) { return N.unseen.indexOf(c.id) >= 0; });
+  }
+  /** Opens by itself once she's in, when there's something she hasn't seen. Never over another sheet. */
+  function whatsNewSoon(n) {
+    if (window.TIDE_DEMO || !newsList(false).length) return;
+    if (K.openSheets() || document.querySelector('.dialog-wrap')) { if ((n || 0) < 120) setTimeout(function () { whatsNewSoon((n || 0) + 1); }, 1000); return; }
+    whatsNew(false);
+  }
+  function whatsNew(all) {
+    var items = newsList(all), shown = items.map(function (c) { return c.id; }), open = {};
+    if (!items.length) { toast('Nothing new right now.'); return; }
+    function seen() { if (!all || newsList(false).length) { api('seenChanges', shown).then(refresh).then(render).catch(function () {}); S.data.news.unseen = S.data.news.unseen.filter(function (x) { return shown.indexOf(x) < 0; }); } }
+    K.sheet({
+      title: all ? 'What’s new' : 'What’s new since you were last here', tall: items.length > 3,
+      onClose: function (how) { if (how !== 'later') seen(); },
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: items.length === 1 ? 'One thing has changed. Tap “Show me how” for a quick how-to.' : items.length + ' things have changed. Tap any of them for a quick how-to.' }));
+        items.forEach(function (c) {
+          var card = h('div', { class: 'news-card' });
+          function draw() {
+            card.textContent = '';
+            var head = h('button', { type: 'button', class: 'news-head', 'aria-expanded': String(!!open[c.id]) },
+              h('span', { class: 'fold-ic' }, icon(c.icon || 'campaign')),
+              h('span', { class: 'grow' }, h('span', { class: 'news-t', text: c.title }), h('span', { class: 'news-say', text: c.say })), icon(open[c.id] ? 'expand_less' : 'expand_more'));
+            head.addEventListener('click', function () { open[c.id] = !open[c.id]; K.haptic(); draw(); });
+            card.appendChild(head);
+            if (!open[c.id]) { card.appendChild(h('button', { type: 'button', class: 'news-more', onclick: function () { open[c.id] = true; draw(); } }, 'Show me how', icon('expand_more'))); return; }
+            var ol = h('ol', { class: 'news-steps' });
+            (c.steps || []).forEach(function (s) { ol.appendChild(h('li', { text: s })); });
+            card.appendChild(ol);
+            if (c.go) card.appendChild(h('div', { style: 'margin-top:10px' }, btn('tonal', 'Show me', { icon: 'touch_app', sm: true, onclick: function () {
+              api('seenChanges', [c.id]).then(refresh).catch(function () {}); S.data.news.unseen = S.data.news.unseen.filter(function (x) { return x !== c.id; });
+              ctl.close('later'); setTimeout(function () { showMe(c.go); }, 320);
+            } })));
+          }
+          draw();
+          ctl.body.appendChild(card);
+        });
+        var got = btn('filled', 'Got it', { icon: 'check', lg: true, block: true, onclick: function () { K.haptic('success'); ctl.close(); } });
+        ctl.foot.appendChild(h('div', {}, got, all ? null : h('div', { style: 'text-align:center;margin-top:6px' }, btn('text', 'Show me again next time', { onclick: function () { ctl.close('later'); } }))));
+      }
+    });
+  }
+  /** "Show me": takes her to the place, and rings the thing with a short tip. A tap anywhere puts it away. */
+  function showMe(g) {
+    Object.keys(g.state || {}).forEach(function (k) { S[k] = g.state[k]; });
+    go(g.view || 'home');
+    var tries = 0;
+    (function find() {
+      var el = [].slice.call(document.querySelectorAll(g.find || 'main')).filter(function (x) { return x.offsetParent && (!g.text || x.textContent.indexOf(g.text) >= 0); })[0];
+      if (!el) { if (++tries < 12) setTimeout(find, 250); else if (g.tip) toast(g.tip); return; }
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      setTimeout(function () {
+        var r = el.getBoundingClientRect(), y = window.scrollY;
+        var ring = h('div', { class: 'spot-ring', style: 'left:' + (r.left - 6) + 'px;top:' + (r.top + y - 6) + 'px;width:' + (r.width + 12) + 'px;height:' + (r.height + 12) + 'px' });
+        var below = r.bottom + 140 < window.innerHeight;
+        var tip = h('div', { class: 'spot-tip' + (below ? '' : ' above'), role: 'status', style: (below ? 'top:' + (r.bottom + y + 14) : 'top:' + (r.top + y - 14)) + 'px' },
+          h('span', { class: 'grow', text: g.tip || '' }), h('button', { type: 'button', class: 'spot-ok' }, 'OK'));
+        document.body.append(ring, tip);
+        K.haptic();
+        function away() { ring.remove(); tip.remove(); document.removeEventListener('pointerdown', away, true); }
+        setTimeout(function () { document.addEventListener('pointerdown', away, true); }, 300);
+        setTimeout(away, 12000);
+      }, 450);
+    })();
+  }
+
   /** The artist's first time: what's here, in a few lines. */
   function artistWelcome() {
     if (ADMIN || !S.data.setup || S.data.setup.welcomed || window.TIDE_DEMO) return;
@@ -9775,7 +10023,7 @@ var Kit = (function () {
             h('div', { class: 'grow' }, h('div', { class: 'title-m', text: r[1] }), h('p', { class: 'body-m', style: 'margin-top:2px', text: r[2] }))));
         });
         ctl.body.appendChild(h('p', { class: 'tf-help', text: 'Tip: in your browser’s menu, Add to Home Screen, so it opens like an app.' }));
-        ctl.foot.appendChild(btn('filled', 'Let’s go', { icon: 'arrow_forward', lg: true, block: true, onclick: function () { api('artistWelcomed').catch(function () {}); S.data.setup.welcomed = true; ctl.close(); } }));
+        ctl.foot.appendChild(btn('filled', 'Let’s go', { icon: 'arrow_forward', lg: true, block: true, onclick: function () { api('artistWelcomed').catch(function () {}); S.data.setup.welcomed = true; if (S.data.news) S.data.news.unseen = []; ctl.close(); } }));
       }
     });
   }
@@ -12369,7 +12617,10 @@ var Kit = (function () {
     var active = goals.filter(function (g) { return g.active; })[0];
     if (active) main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openGoal(active.id); } },
       h('span', { class: 'ic' }, icon('flag')), h('span', { class: 'grow' }, h('b', { text: 'Now: ' + active.title }),
-        h('span', { class: 'body-m', text: 'Next step: ' + (active.next || 'all done') + '. This goal sets the order of everything else.' })), icon('chevron_right')), 1));
+        h('span', { class: 'body-m', text: 'Next step: ' + (active.next || 'all done') + '. This goal sets the order of everything else.' + (function () {
+          var tog = goals.filter(function (g) { return g.alongside; }).map(function (g) { return '“' + g.title + '”'; });
+          return tog.length ? ' Worked on together with ' + tog.join(' and ') + '.' : '';
+        })() })), icon('chevron_right')), 1));
     main.appendChild(rise(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 12px;flex-wrap:wrap' },
       h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }] })),
       btn('filled', 'Add a goal', { icon: 'add', sm: true, onclick: function () { addGoalAsk(null); } })), 1));
@@ -12392,17 +12643,35 @@ var Kit = (function () {
       api('addGoal', Object.assign({ title: title, parentId: parentId || '' }, at || {})).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
     });
   }
-  /** The map: goals as bubbles she drags about. Lines show links and what is part of what. Bubbles make room for
-   *  each other, so none hides another; a tap on an empty spot offers to add a goal there. */
+  /** The map: goals as bubbles she drags about. Pinch (or the buttons) to zoom; drag an empty spot to move around.
+   *  Drop one goal on another to work on them together, or to make it part of it. Lines show what goes with what. */
+  var GZ = { s: 1, x: 0, y: 0 };
   function goalMap(main, goals) {
     var H = Math.max(400, Math.min(560, window.innerHeight - 440));
     var board = h('div', { class: 'goal-map', style: 'height:' + H + 'px' });
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); board.appendChild(svg);
-    var els = {}, ghost = null;
+    var world = h('div', { class: 'goal-world' });
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); world.appendChild(svg);
+    board.appendChild(world);
+    var els = {}, ghost = null, pinching = false;
+    function W() { return board.clientWidth; }
+    function paintZoom() {
+      var w = W(), lo = Math.min(0, w - w * GZ.s), hi = Math.max(0, w - w * GZ.s), lo2 = Math.min(0, H - H * GZ.s), hi2 = Math.max(0, H - H * GZ.s);
+      GZ.x = Math.max(lo - 40, Math.min(hi + 40, GZ.x)); GZ.y = Math.max(lo2 - 40, Math.min(hi2 + 40, GZ.y));
+      world.style.transform = 'translate(' + GZ.x + 'px,' + GZ.y + 'px) scale(' + GZ.s + ')';
+      zl.textContent = Math.round(GZ.s * 100) + '%';
+    }
+    function zoomAt(s, cx, cy) {         // cx, cy: a point on the board that stays still
+      s = Math.max(0.5, Math.min(2.5, s));
+      var wx = (cx - GZ.x) / GZ.s, wy = (cy - GZ.y) / GZ.s;
+      GZ.s = s; GZ.x = cx - wx * s; GZ.y = cy - wy * s; paintZoom();
+    }
     function lines() {
       svg.textContent = '';
+      var done = {};
       goals.forEach(function (g) {
         [].concat(g.parentId ? [[g.parentId, 'part']] : [], g.links.map(function (l) { return [l, 'link']; })).forEach(function (pair) {
+          var key = [g.id, pair[0]].sort().join() + pair[1];
+          if (done[key]) return; done[key] = 1;
           var o = goalById(pair[0]), a = els[g.id], b = o && els[o.id];
           if (!a || !b) return;
           var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -12412,12 +12681,12 @@ var Kit = (function () {
         });
       });
     }
-    /** Every bubble inside the board and clear of the others. keep = the one she just put down stays where it is. */
+    /** Every bubble inside the map and clear of the others. keep = the one she just put down stays where it is. */
     function makeRoom(keep) {
-      var W = board.clientWidth, PAD = 8;
-      if (!W) return;
+      var w = W(), PAD = 8;
+      if (!w) return;
       var R = goals.map(function (g) { var el = els[g.id]; return { g: g, el: el, w: el.offsetWidth, h: el.offsetHeight, x: el.offsetLeft, y: el.offsetTop, fixed: g.id === keep }; });
-      function inside(r) { r.x = Math.max(PAD, Math.min(W - r.w - PAD, r.x)); r.y = Math.max(PAD, Math.min(H - r.h - PAD, r.y)); }
+      function inside(r) { r.x = Math.max(PAD, Math.min(w - r.w - PAD, r.x)); r.y = Math.max(PAD, Math.min(H - r.h - PAD, r.y)); }
       R.forEach(inside);
       for (var it = 0; it < 80; it++) {
         var moved = false;
@@ -12426,7 +12695,7 @@ var Kit = (function () {
           var ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) + PAD, oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) + PAD;
           if (ox <= 0 || oy <= 0) continue;
           moved = true;
-          var sa = a.fixed ? 0 : b.fixed ? 1 : 0.5, sb = 1 - sa;      // the one she placed doesn't move; the other steps aside
+          var sa = a.fixed ? 0 : b.fixed ? 1 : 0.5, sb = 1 - sa;
           if (oy <= ox) { var dy = (a.y + a.h / 2 <= b.y + b.h / 2 ? -1 : 1) * oy; a.y += dy * sa; b.y -= dy * sb; }
           else { var dx = (a.x + a.w / 2 <= b.x + b.w / 2 ? -1 : 1) * ox; a.x += dx * sa; b.x -= dx * sb; }
         }
@@ -12435,55 +12704,144 @@ var Kit = (function () {
       }
       R.forEach(function (r) {
         r.el.style.left = r.x + 'px'; r.el.style.top = r.y + 'px';
-        var nx = r.x / W, ny = r.y / H;
+        var nx = r.x / w, ny = r.y / H;
         if (Math.abs(nx - r.g.x) > 0.015 || Math.abs(ny - r.g.y) > 0.015) { r.g.x = nx; r.g.y = ny; api('updateGoal', r.g.id, { x: nx, y: ny }).catch(function () {}); }
       });
       lines();
     }
+    /** Dropped one goal on another: work on them together, make it part of it, or just put it down. */
+    function dropped(g, o) {
+      var linked = g.links.indexOf(o.id) >= 0;
+      K.sheet({
+        title: '“' + g.title + '” and “' + o.title + '”',
+        build: function (ctl) {
+          var list = h('div', { class: 'next-opts' });
+          function opt(ic, label, why, main, fn) {
+            list.appendChild(h('button', { class: 'next-opt' + (main ? ' main' : ''), type: 'button', onclick: function (e) {
+              var b = e.currentTarget; K.setBusy(b, true);
+              fn().then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+            } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), h('span', { class: 'next-opt-why', text: why }))));
+          }
+          if (linked) opt('link_off', 'Stop working on them together', 'Each goes back to waiting its own turn.', true, function () { return api('linkGoals', g.id, o.id, false); });
+          else opt('link', 'Work on them together', 'Each keeps its own steps. Both show what’s next on Home, and neither waits for the other.', true, function () { return api('linkGoals', g.id, o.id, true); });
+          if (!o.parentId && g.parentId !== o.id) opt('subdirectory_arrow_right', 'Make it part of “' + o.title + '”', 'A smaller goal inside the bigger one.', false, function () { return api('updateGoal', g.id, { parentId: o.id }); });
+          opt('open_with', 'Just put it here', 'Nothing changes but where it sits.', false, function () { return Promise.resolve(); });
+          ctl.body.appendChild(list);
+        },
+        onClose: function () { makeRoom(g.id); }
+      });
+    }
     goals.forEach(function (g) {
       var nd = g.steps.filter(function (s) { return s.done; }).length, isDone = g.status === 'Done';
-      var el = h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
+      var el = h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (g.alongside ? ' alongside' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
         g.parentId ? null : isDone ? h('span', { class: 'gb-rank' }, icon('check')) : h('span', { class: 'gb-rank', text: String(g.rank) }),
-        h('span', { class: 'gb-main' }, g.active ? h('span', { class: 'gb-now', text: 'Now' }) : null, h('span', { class: 'gb-t', text: g.title }),
+        h('span', { class: 'gb-main' }, g.active || g.alongside ? h('span', { class: 'gb-now' }, g.alongside ? icon('link') : null, g.alongside ? 'Now, together' : 'Now') : null, h('span', { class: 'gb-t', text: g.title }),
           h('span', { class: 'gb-s', text: isDone ? 'Reached' : g.steps.length ? nd + ' of ' + g.steps.length + ' steps' : 'No plan yet' })));
       el.style.left = (g.x * 100) + '%'; el.style.top = (g.y * 100) + '%';
-      els[g.id] = el; board.appendChild(el);
-      // drag to move; a tap opens it
+      els[g.id] = el; world.appendChild(el);
       var sx = 0, sy = 0, ox = 0, oy = 0, moved = false, down = false;
-      el.addEventListener('pointerdown', function (e) { down = true; moved = false; sx = e.clientX; sy = e.clientY; ox = el.offsetLeft; oy = el.offsetTop; el.setPointerCapture(e.pointerId); });
+      el.addEventListener('pointerdown', function (e) { if (pinching) return; down = true; moved = false; sx = e.clientX; sy = e.clientY; ox = el.offsetLeft; oy = el.offsetTop; el.setPointerCapture(e.pointerId); e.stopPropagation(); track(e); });
       el.addEventListener('pointermove', function (e) {
-        if (!down) return;
-        var dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!down || pinching) return;
+        var dx = (e.clientX - sx) / GZ.s, dy = (e.clientY - sy) / GZ.s;
         if (!moved && Math.abs(dx) + Math.abs(dy) < 8) return;
         if (!moved) { moved = true; el.classList.add('lifted'); K.haptic(); }
-        var W = board.clientWidth, x = Math.max(0, Math.min(W - el.offsetWidth, ox + dx)), y = Math.max(0, Math.min(H - el.offsetHeight, oy + dy));
+        var x = Math.max(0, Math.min(W() - el.offsetWidth, ox + dx)), y = Math.max(0, Math.min(H - el.offsetHeight, oy + dy));
         el.style.left = x + 'px'; el.style.top = y + 'px'; lines();
+        // over another goal: it lights up, ready to be dropped on
+        var over = overOf(g, x + el.offsetWidth / 2, y + el.offsetHeight / 2);
+        goals.forEach(function (o) { els[o.id].classList.toggle('target', !!over && o.id === over.id); });
       });
-      function up() {
+      function up(e) {
+        untrack(e);
         if (!down) return; down = false;
+        if (pinching) { el.style.left = ox + 'px'; el.style.top = oy + 'px'; el.classList.remove('lifted'); lines(); return; }
         if (!moved) { openGoal(g.id); return; }
         el.classList.remove('lifted');
+        var over = overOf(g, el.offsetLeft + el.offsetWidth / 2, el.offsetTop + el.offsetHeight / 2);
+        goals.forEach(function (o) { els[o.id].classList.remove('target'); });
+        if (over) { dropped(g, over); return; }
         makeRoom(g.id);
       }
       el.addEventListener('pointerup', up);
-      el.addEventListener('pointercancel', function () { down = false; el.classList.remove('lifted'); makeRoom(); });
+      el.addEventListener('pointercancel', function (e) { untrack(e); down = false; el.classList.remove('lifted'); el.style.left = ox + 'px'; el.style.top = oy + 'px'; lines(); });
       el.addEventListener('keydown', function (e) { if (e.key === 'Enter') openGoal(g.id); });
     });
+    function overOf(g, cx, cy) {
+      return goals.filter(function (o) {
+        if (o.id === g.id) return false;
+        var b = els[o.id];
+        return cx > b.offsetLeft && cx < b.offsetLeft + b.offsetWidth && cy > b.offsetTop && cy < b.offsetTop + b.offsetHeight;
+      })[0] || null;
+    }
+    // two fingers anywhere: pinch to zoom. One finger on an empty spot: move the map about (or the page, at 100%).
+    var ptrs = {}, pin = null, pan = null;
+    function track(e) { ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; startPinch(); }
+    function untrack(e) { delete ptrs[e.pointerId]; if (Object.keys(ptrs).length < 2 && pin) { pin = null; setTimeout(function () { pinching = false; }, 0); } }
+    function startPinch() {
+      var k = Object.keys(ptrs);
+      if (k.length !== 2) return;
+      var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect();
+      pinching = true; pan = null;
+      pin = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: GZ.s, mx: (a.x + b.x) / 2 - r.left, my: (a.y + b.y) / 2 - r.top, gx: GZ.x, gy: GZ.y };
+    }
+    board.addEventListener('pointerdown', function (e) {
+      track(e);
+      if (pinching) return;
+      if (e.target === board || e.target === world || e.target === svg) { pan = { x: e.clientX, y: e.clientY, gx: GZ.x, gy: GZ.y, sy: window.scrollY, moved: false }; board.setPointerCapture(e.pointerId); }
+    });
+    board.addEventListener('pointermove', function (e) {
+      if (ptrs[e.pointerId]) ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
+      if (pin) {
+        var k = Object.keys(ptrs); if (k.length < 2) return;
+        var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect();
+        var s = Math.max(0.5, Math.min(2.5, pin.s * Math.hypot(a.x - b.x, a.y - b.y) / pin.d));
+        var mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
+        var wx = (pin.mx - pin.gx) / pin.s, wy = (pin.my - pin.gy) / pin.s;
+        GZ.s = s; GZ.x = mx - wx * s; GZ.y = my - wy * s; paintZoom();
+        return;
+      }
+      if (!pan) return;
+      var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+      if (!pan.moved && Math.abs(dx) + Math.abs(dy) < 6) return;
+      pan.moved = true;
+      if (GZ.s === 1 && Math.abs(dy) > Math.abs(dx)) window.scrollTo(0, pan.sy - dy);   // at 100%, up and down scroll the page
+      else { GZ.x = pan.gx + dx; GZ.y = pan.gy + dy; paintZoom(); }
+    });
+    function endPan(e) { untrack(e); if (pan && pan.moved) board.dataset.panned = '1'; pan = null; }
+    board.addEventListener('pointerup', endPan); board.addEventListener('pointercancel', endPan);
+    board.addEventListener('wheel', function (e) {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault(); var r = board.getBoundingClientRect();
+      zoomAt(GZ.s * (e.deltaY < 0 ? 1.1 : 0.9), e.clientX - r.left, e.clientY - r.top);
+    }, { passive: false });
     // tap an empty spot: an offer to add a goal right there
     board.addEventListener('click', function (e) {
-      if (e.target !== board) return;
+      if (board.dataset.panned) { delete board.dataset.panned; return; }
+      if (e.target !== board && e.target !== world && e.target !== svg) return;
       var r = board.getBoundingClientRect();
+      var wx = (e.clientX - r.left - GZ.x) / GZ.s, wy = (e.clientY - r.top - GZ.y) / GZ.s;
+      if (wx < 0 || wy < 0 || wx > W() || wy > H) return;
       if (ghost) ghost.remove();
       var mine = ghost = h('button', { type: 'button', class: 'goal-ghost' }, icon('add'), 'Add a goal here');
-      board.appendChild(mine);
-      var gx = Math.max(8, Math.min(r.width - mine.offsetWidth - 8, e.clientX - r.left - mine.offsetWidth / 2)), gy = Math.max(8, Math.min(H - mine.offsetHeight - 8, e.clientY - r.top - mine.offsetHeight / 2));
+      world.appendChild(mine);
+      var gx = Math.max(8, Math.min(W() - mine.offsetWidth - 8, wx - mine.offsetWidth / 2)), gy = Math.max(8, Math.min(H - mine.offsetHeight - 8, wy - mine.offsetHeight / 2));
       mine.style.left = gx + 'px'; mine.style.top = gy + 'px';
-      mine.addEventListener('click', function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: gx / r.width, y: gy / H }); });
+      mine.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });
+      mine.addEventListener('click', function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: gx / W(), y: gy / H }); });
       setTimeout(function () { if (ghost === mine) { mine.remove(); ghost = null; } }, 5000);
     });
+    // zoom buttons, for one hand or a mouse
+    var zl = h('span', { class: 'gz-level', 'aria-live': 'polite' });
+    function zb(ic, label, fn) { var b = h('button', { type: 'button', class: 'gz-btn', 'aria-label': label }, icon(ic)); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); b.addEventListener('click', function (e) { e.stopPropagation(); fn(); K.haptic(); }); return b; }
+    board.appendChild(h('div', { class: 'gz' },
+      zb('zoom_out', 'Zoom out', function () { zoomAt(GZ.s / 1.25, W() / 2, H / 2); }), zl,
+      zb('zoom_in', 'Zoom in', function () { zoomAt(GZ.s * 1.25, W() / 2, H / 2); }),
+      zb('fit_screen', 'Show the whole map', function () { GZ = { s: 1, x: 0, y: 0 }; paintZoom(); })));
     main.appendChild(rise(board, 2));
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Tap one to open its plan. Tap an empty spot to add a goal there. Put them in order of importance under “In order”.' }));
-    setTimeout(function () { makeRoom(); }, 0); setTimeout(function () { makeRoom(); }, 450);
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Drop one on another to work on them together. Pinch to zoom. Tap an empty spot to add a goal there.' }));
+    paintZoom();
+    setTimeout(function () { makeRoom(); paintZoom(); }, 0); setTimeout(function () { makeRoom(); }, 450);
   }
   /** In order: drag the goal cards into order of importance. The top one sets the order of work. */
   function goalOrder(main, goals) {
@@ -12494,7 +12852,7 @@ var Kit = (function () {
       var card = h('div', { class: 'ho-card goal-card' + (g.active ? ' active' : ''), dataset: { k: g.id } },
         g.status === 'Done' ? h('span', { class: 'ho-ic' }, icon('check')) : h('span', { class: 'ho-ic num', text: String(i + 1) }),
         h('span', { class: 'grow' }, h('span', { class: 'ho-t', style: 'display:block', text: g.title }),
-          h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: g.status === 'Done' ? 'Done' : g.active ? 'Sets the order now · next: ' + g.next : g.steps.length ? g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : 'No plan yet' }),
+          h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: g.status === 'Done' ? 'Done' : g.active ? 'Sets the order now · next: ' + g.next : g.alongside ? 'Together with the top goal · next: ' + g.next : g.steps.length ? g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : 'No plan yet' }),
           subs.length ? h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: 'Includes: ' + subs.map(function (x) { return x.title; }).join(', ') }) : null),
         h('span', { class: 'ho-grip' }, icon('drag_indicator')));
       card.addEventListener('click', function () { if (!card.dragged) openGoal(g.id); card.dragged = false; });
@@ -12536,6 +12894,7 @@ var Kit = (function () {
         function again() { K.swap(ctl, function () { openGoal(id); }, true); }
         ctl.redraw = again;
         if (g.active) ctl.body.appendChild(h('div', { style: 'margin-bottom:4px' }, note('This is your most important goal, so its plan sets the order of everything. Anything for a later step waits.', 'flag')));
+        else if (g.alongside) ctl.body.appendChild(h('div', { style: 'margin-bottom:4px' }, note('You’re working on this together with your most important goal, so its next step shows on Home too and nothing for it waits.', 'link')));
         // the plan first: it is what she comes here for
         var sp = sheetSection('The plan'), nd = g.steps.filter(function (s) { return s.done; }).length, here = -1;
         g.steps.some(function (s, i) { if (!s.done) { here = i; return true; } return false; });
@@ -12583,7 +12942,8 @@ var Kit = (function () {
         var others = (S.data.goals || []).filter(function (x) { return x.id !== id; });
         var sx = sheetSection('How it fits with the others');
         if (others.length) {
-          sx.appendChild(h('div', { class: 'label-s', style: 'margin:0 0 6px', text: 'Linked to' }));
+          sx.appendChild(h('div', { class: 'label-s', style: 'margin:0 0 2px', text: 'Work on it together with' }));
+          sx.appendChild(h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Each goal keeps its own steps. Both show what’s next on Home, and neither waits for the other.' }));
           sx.appendChild(multiChips(others.map(function (x) { return x.title; }), others.filter(function (x) { return f.links.indexOf(x.id) >= 0; }).map(function (x) { return x.title; }),
             function (v) { f.links = others.filter(function (x) { return v.indexOf(x.title) >= 0; }).map(function (x) { return x.id; }); touch(); }));
           var tops = others.filter(function (x) { return !x.parentId; });
@@ -12594,7 +12954,7 @@ var Kit = (function () {
         }
         sx.appendChild(h('div', { style: 'margin-top:10px' }, btn('text', 'Add a smaller goal inside this one', { icon: 'add', sm: true, onclick: function () { ctl.close(); setTimeout(function () { addGoalAsk(id); }, 280); } })));
         var kids = (S.data.goals || []).filter(function (x) { return x.parentId === id; }).length, par = g.parentId ? goalById(g.parentId) : null;
-        ctl.body.appendChild(fold(sx, 'gl:' + id + ':fits', 'link', [par ? 'Part of “' + par.title + '”' : '', g.links.length ? 'Linked to ' + g.links.length : '', kids ? kids + ' smaller ' + (kids === 1 ? 'goal' : 'goals') + ' inside' : ''].filter(String).join(' · ') || 'On its own for now', false));
+        ctl.body.appendChild(fold(sx, 'gl:' + id + ':fits', 'link', [par ? 'Part of “' + par.title + '”' : '', g.links.length ? 'Together with ' + g.links.map(function (l) { var o = goalById(l); return o ? '“' + o.title + '”' : ''; }).filter(String).join(', ') : '', kids ? kids + ' smaller ' + (kids === 1 ? 'goal' : 'goals') + ' inside' : ''].filter(String).join(' · ') || 'On its own for now', false));
         ctl.body.appendChild(h('div', { style: 'margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:4px' },
           btn('text', g.status === 'Done' ? 'Open it again' : 'Mark it reached', { icon: g.status === 'Done' ? 'restore' : 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', id, { status: g.status === 'Done' ? 'Open' : 'Done' }).then(refresh).then(function () { render(); again(); }).catch(fail); } }),
           btn('text', 'Delete this goal', { icon: 'delete', danger: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('deleteGoal', id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Goal deleted.', 'goal', id); }).catch(fail); } })));
@@ -12731,8 +13091,23 @@ var Kit = (function () {
       var tl = STEP_TOOLS[k];
       return h('button', { type: 'button', class: 'plan-tool press soft', onclick: function () { tl.go(cur); } }, icon(tl.ic), tl.short || tl.label);
     }));
+    // goals worked on together with this one: their next step, with its buttons
+    var also = (pl.together || []).filter(function (o) { return o.current; }).map(function (o) {
+      var oc = o.steps[o.current - 1];
+      var ot = h('div', { class: 'plan-tools' }, toolsFor(oc.text).filter(function (k) { return k !== 'talk'; }).slice(0, 3).map(function (k) {
+        var tl = STEP_TOOLS[k];
+        return h('button', { type: 'button', class: 'plan-tool press soft', onclick: function () { tl.go(oc); } }, icon(tl.ic), tl.short || tl.label);
+      }));
+      function otick() { return api('tickGoalStep', o.goalId, oc.id, true).then(refresh).then(function () { K.haptic('success'); render(); undoCard('Step ' + o.current + ' of “' + o.title + '” done.', function () { return api('tickGoalStep', o.goalId, oc.id, false); }, 'Back on that step.'); }); }
+      return h('div', { class: 'plan-also' },
+        h('button', { class: 'plan-head', type: 'button', onclick: function () { openStepTools(oc, otick); } },
+          h('div', { class: 'label-s' }, icon('link'), ' Together: ' + o.title + ' · step ' + o.current + ' of ' + o.steps.length),
+          h('div', { class: 'row', style: 'gap:8px;align-items:flex-start;margin-top:4px' }, h('div', { class: 'title-s grow', text: oc.text }), icon('chevron_right'))),
+        ot);
+    });
     return h('div', { class: 'card pad plan-card' }, head, dots, tools,
-      h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })));
+      h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })),
+      also.length ? h('div', {}, also) : null);
   }
   /** Questions about her report: a tap each, her own words, or skip. All optional. */
   function openReportQuestions(r) {
@@ -15269,7 +15644,7 @@ var Kit = (function () {
     return true;
   }
 
-  refresh().then(render).then(function () { if (!takeShare() && !takeLinkReturn()) setTimeout(artistWelcome, 600); }).catch(function (e) {
+  refresh().then(render).then(function () { if (!takeShare() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); setTimeout(whatsNewSoon, 900); }, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
