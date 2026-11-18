@@ -14726,7 +14726,8 @@ var Kit = (function () {
         K.choices({ row: true, label: 'Back and forth', value: String(hf), options: [{ value: '1', label: 'One message each' }, { value: '2', label: 'A little' }, { value: '4', label: 'A lot' }], onChange: function (v) { S.handTalk = Number(v) || 2; render(); } }),
         h('p', { class: 'body-s ai-line', text: 'The same ' + t.jobs + ' job' + (t.jobs === 1 ? '' : 's') + ', each prompted by hand on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' at full price' + (hf > 1 ? ', with the conversation sent again ' + (hf === 2 ? 'once more' : 'a few more times') + ' as you go back and forth' : '') + '. Tide Book saves by doing jobs on the PC or in Claude chat for nothing, using the cheapest model that does the job well, sending research in half-price batches, reusing its saved instructions, and asking once with everything Claude needs.' }),
         h('p', { class: 'body-s ai-line', text: 'An estimate, on the low side: it leaves out the work Tide Book does with no AI at all (prices, postage, orders, the website), and your time.' +
-          (t.estimatedJobs ? ' The ' + t.estimatedJobs + ' job' + (t.estimatedJobs === 1 ? '' : 's') + ' from before it counted tokens are sized from what they cost.' : '') }));
+          (t.estimatedJobs ? ' The ' + t.estimatedJobs + ' job' + (t.estimatedJobs === 1 ? '' : 's') + ' from before it counted tokens are sized from what they cost.' : '') }),
+        handUsd < t.actual ? note('Prompting everything on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' yourself would have cost ' + usd(t.actual - handUsd) + ' less. Tide Book spends more where it matters: research and the rules checks use Sonnet, because Haiku’s answers weren’t good enough for them.', 'info') : null);
       asec.appendChild(hcard);
       main.appendChild(rise(asec, n++));
     }
