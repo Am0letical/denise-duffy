@@ -479,6 +479,11 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .inspo-tldr.empty { opacity: .65; font-style: italic; }
 .inspo-full { margin-top: 10px; border-radius: 16px; overflow: hidden; background: var(--surface-highest); }
 .inspo-full iframe { display: block; width: 100%; height: 640px; border: 0; }
+/* her plan on the home page: where she's up to */
+.plan-dots { display: flex; gap: 6px; margin-top: 10px; }
+.plan-dots i { flex: 1; height: 6px; border-radius: 3px; background: var(--outline-variant); }
+.plan-dots i.done { background: var(--primary); }
+.plan-dots i.on { background: var(--primary); opacity: .45; }
 /* arranging the home page: cards to pick up and put down */
 .ho-list { display: flex; flex-direction: column; gap: 8px; }
 .ho-card { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; border-radius: 16px; background: var(--surface, #fff);
@@ -1151,6 +1156,7 @@ var TIDE_SETTING_DEFAULTS = {
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
   // how she likes to work (the business setup): fed into every plan, question round and draft
   workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
+  planIdeaId: '',  // her plan: the idea whose steps set the order of work (what happens now, what waits)
   priceRounding: 'dollar',   // 'dollar', 'five' or 'none'
   gstThreshold: 75000,
   // the brand brief the studio writes to (edited in the app)
@@ -1201,7 +1207,8 @@ var TIDE_SCHEMAS = {
       ['summary', 'Summary', 'text'], ['research', 'Research', 'json'], ['researchedAt', 'Researched', 'date'],
       ['researchTries', 'Research tries', 'number'], ['researchNote', 'Research note', 'text'],
       ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date'], ['website', 'Website change', 'json'],
-      ['deleted', 'Removed', 'bool'], ['resumeOn', 'Paused until', 'day'], ['resumeStage', 'Stage before the pause', 'text'], ['remindedAt', 'Reminded', 'date']
+      ['deleted', 'Removed', 'bool'], ['resumeOn', 'Paused until', 'day'], ['resumeStage', 'Stage before the pause', 'text'], ['remindedAt', 'Reminded', 'date'],
+      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text']
     ]
   },
   // who makes what for her (the business setup): the default for each kind is what plans start from
@@ -1382,7 +1389,8 @@ var TIDE_SCHEMAS = {
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'],
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
       ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number'],
-      ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list'], ['resumeOn', 'Paused until', 'day'], ['remindedAt', 'Reminded', 'date']
+      ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list'], ['resumeOn', 'Paused until', 'day'], ['remindedAt', 'Reminded', 'date'],
+      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text']
     ]
   },
   // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
@@ -1535,6 +1543,8 @@ function createTideLogic(env) {
       var now = nowIso();
       row.id = env.nextId('TB', 4);
       row.created = row.updated = row.stageChanged = now;
+      var pst = planState();
+      if (pst) { row.planStep = placeFor(title, row.note, pst); row.planPlacedBy = 'auto'; }
       row.folderUrl = env.files.folder(['Ideas', now.slice(0, 7), row.id + ' ' + cleanName(title)]);
       env.table('ideas').append(row);
       return { id: row.id };
@@ -2409,7 +2419,7 @@ function createTideLogic(env) {
 
   // ---------- settings
   /** The order of the sections on her home page: hers to arrange. */
-  var HOME_KEYS = ['cover', 'inspo', 'needs', 'waiting', 'todo', 'website', 'review', 'actions', 'glance'];
+  var HOME_KEYS = ['cover', 'plan', 'inspo', 'needs', 'waiting', 'todo', 'website', 'review', 'actions', 'glance'];
   function saveHomeOrder(order) {
     need(['admin', 'artist']);
     var clean = list(order).map(String).filter(function (k, i, a) { return HOME_KEYS.indexOf(k) >= 0 && a.indexOf(k) === i; });
@@ -2449,6 +2459,7 @@ function createTideLogic(env) {
     var photoIds = list(it.photoIds);
     var out = {
       id: it.id, created: it.created, updated: it.updated, kind: it.kind, title: it.title, note: it.note || '', resumeOn: it.stage === 'Parked' ? it.resumeOn || '' : '',
+      planStep: planStepOf(it), planWaits: planWaits(it),
       timeline: it.timeline, priority: it.priority, scope: list(it.scope), stage: it.stage,
       status: T.ARTIST_STATUS[it.stage] || 'Received', thumbIds: list(it.thumbIds),
       day: tideDay({ stage: it.stage, since: it.stageChanged }, env.now().getTime()),
@@ -2537,7 +2548,8 @@ function createTideLogic(env) {
       settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, practice: env.practice === true,
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
-      bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS }, homeOrder: list(env.settings.get().homeOrder),
+      bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
+      plan: planState(), homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -2546,7 +2558,7 @@ function createTideLogic(env) {
   // ---------- research hand-off (called by the research job, never by the screens)
   var research = {
     pending: function () {
-      return rows('ideas').filter(function (it) { return it.researchStatus === 'Queued' && !it.deleted; });
+      return rows('ideas').filter(function (it) { return it.researchStatus === 'Queued' && !it.deleted && !planWaits(it); });
     },
     /** Marks ideas as out for research, so an edit made meanwhile (back to Queued) is not overwritten. */
     sent: function (ids) {
@@ -2636,7 +2648,7 @@ function createTideLogic(env) {
 
   // ---------- talk it through and the product pipeline (LogicTalk.gs)
   var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf,
-    createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push });
+    createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push, planState: planState, planStepOf: planStepOf, planWaits: planWaits, placeFor: placeFor });
 
   // ---------- suggestions and problems (LogicReports.gs)
   var reports = tideReports(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, oneOf: oneOf, queueJob: talk.queueJob, push: publish.push });
@@ -2650,6 +2662,84 @@ function createTideLogic(env) {
   // ---------- getting set up in the app (LogicSetup.gs)
   var setup = tideSetup(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
     loadBacklog: talk.api.loadBacklog, addNote: notebook.addNote });
+
+  // ---------- her plan: the order of work. One idea's steps (her launch plan) decide what happens now; anything that
+  // belongs to a later step waits quietly (no asking, no buzzes, no background spending) until she reaches that step.
+  var PLAN_STOP = ['the', 'and', 'with', 'for', 'your', 'you', 'from', 'then', 'more', 'one', 'time', 'small', 'batch', 'batche', 'art', 'see',
+    'product', 'into', 'that', 'this', 'her', 'its', 'all', 'any', 'new', 'make', 'pack', 'set', 'kit', 'free'];
+  function planIdea() {
+    var id = settings().planIdeaId;
+    if (!id) return null;
+    var x = rows('ideas').filter(function (r) { return r.id === id && !r.deleted; })[0];
+    return x && list(x.scope).length ? x : null;
+  }
+  function planState() {
+    var p = planIdea();
+    if (!p) return null;
+    var steps = list(p.scope).map(function (s, i) { return { n: i + 1, text: s.text, done: !!s.done }; });
+    var cur = steps.filter(function (s) { return !s.done; })[0];
+    return { ideaId: p.id, title: p.title, steps: steps, current: cur ? cur.n : 0 };
+  }
+  function planWords(s) {
+    return String(s || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/)
+      .map(function (w) { return w.replace(/ies$/, 'y').replace(/s$/, ''); }).filter(function (w) { return w.length > 2 && PLAN_STOP.indexOf(w) < 0; });
+  }
+  /** Where something fits in the plan: the step that names it, else the step it has most in common with, else the last. */
+  function placeFor(title, summary, st) {
+    st = st || planState();
+    if (!st) return 0;
+    var tl = String(title || '').toLowerCase().trim();
+    for (var i = 0; i < st.steps.length; i++) if (tl.length > 3 && st.steps[i].text.toLowerCase().indexOf(tl) >= 0) return st.steps[i].n;
+    var named = planWords(title), more = planWords(String(summary || '').slice(0, 200)), best = 0, top = 0;
+    st.steps.forEach(function (s) {
+      var sw = planWords(s.text), sc = 0;
+      named.forEach(function (w) { if (sw.indexOf(w) >= 0) sc += 3; });
+      more.forEach(function (w) { if (sw.indexOf(w) >= 0) sc += 1; });
+      if (sc > top) { top = sc; best = s.n; }
+    });
+    return best || st.steps[st.steps.length - 1].n;
+  }
+  /** Its step: the one she or Tide Book chose, or where it fits. -1 means "not in the plan": it never waits. */
+  function planStepOf(row, st) {
+    st = st || planState();
+    if (!st || row.id === st.ideaId) return 0;
+    var n = Number(row.planStep) || 0;
+    if (n === -1) return -1;
+    return n >= 1 && n <= st.steps.length ? n : placeFor(row.title, row.summary || row.note, st);
+  }
+  function planWaits(row, st) {
+    st = st || planState();
+    if (!st || !st.current) return false;
+    return planStepOf(row, st) > st.current;
+  }
+  function setPlanStep(kind, id, step) {
+    var role = need(['admin', 'artist']);
+    var st = planState();
+    if (!st) fail('There\u2019s no plan yet.');
+    var n = Math.round(Number(step));
+    if (!(n === -1 || (n >= 1 && n <= st.steps.length))) fail('Pick a step from the plan.');
+    var tb = kind === 'idea' ? 'ideas' : 'pipeline';
+    return env.lock(function () {
+      if (!rows(tb).some(function (r) { return r.id === id; })) fail('That has been removed.');
+      env.table(tb).update(id, { planStep: n, planPlacedBy: role, updated: nowIso() });
+      return { ok: true };
+    });
+  }
+  function setPlanIdea(id) {
+    need(['admin', 'artist']);
+    var it = id ? ideaRow(id) : null;
+    if (it && !list(it.scope).length) fail('Give it some steps first.');
+    env.settings.set({ planIdeaId: it ? it.id : '' });
+    return { ok: true };
+  }
+  function planLines() {
+    var st = planState();
+    if (!st) return '';
+    return ['Her plan, the order she wants to work in (one step at a time; anything that belongs to a later step waits until she gets there):']
+      .concat(st.steps.map(function (s) { return s.n + '. ' + s.text + (s.done ? ' (done)' : s.n === st.current ? ' (she is on this step now)' : ''); }))
+      .concat([st.current ? 'Focus suggestions, posts and next steps on the current step. Don\u2019t push products or ideas that belong to a later step.' : 'Every step is done.'])
+      .join('\n');
+  }
 
   // ---------- the business setup: suppliers, money, how she likes to work. Everything else uses it as the default.
   function supplierList() { return rows('suppliers').filter(function (x) { return !x.deleted; }); }
@@ -2708,7 +2798,8 @@ function createTideLogic(env) {
     if (list(s.askFirst).length) how.push('always check with her first before: ' + list(s.askFirst).join(', ').toLowerCase());
     if (s.workNotes) how.push('in her words: ' + s.workNotes);
     if (how.length) out.push('How she likes to work: ' + how.join('; ') + '.');
-    return out.length ? 'The business setup (her defaults):\n' + out.join('\n') : '';
+    var pl = planLines();
+    return [out.length ? 'The business setup (her defaults):\n' + out.join('\n') : '', pl].filter(String).join('\n\n');
   }
 
   // ---------- pause: anything in progress can stop for a while, with a day to come back to it
@@ -2780,7 +2871,7 @@ function createTideLogic(env) {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -5281,7 +5372,11 @@ function tideTalk(env, t) {
     t.need(['admin', 'artist']);
     p = p || {};
     if (!t.text(p.title, 120)) t.fail('Give it a name.');
-    return env.lock(function () { return { id: addItem(p) }; });
+    return env.lock(function () {
+      var nid = addItem(p), st = t.planState ? t.planState() : null;
+      if (st) env.table('pipeline').update(nid, { planStep: t.placeFor(p.title, p.summary, st), planPlacedBy: 'auto' });
+      return { id: nid };
+    });
   }
   /** Edits. Either side can edit; the log records who. */
   function updateItem(id, ch) {
@@ -5823,6 +5918,7 @@ function tideTalk(env, t) {
         private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated,
         next: x.locked ? null : topicNext(x, role) };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
+    var planSt = t.planState ? t.planState() : null;
     var items = t.rows('pipeline').filter(function (r) { return !r.deleted; }).map(function (r) {
       var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
       var price = Number((r.pricing || {}).price) || 0;
@@ -5833,7 +5929,8 @@ function tideTalk(env, t) {
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
         sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: gateFor(r), clash: clashOf(r), blockers: blockers(r),
-        needsMe: gateFor(r).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked,
+        needsMe: gateFor(r).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked && !(t.planWaits && t.planWaits(r, planSt)),
+        planStep: t.planStepOf ? t.planStepOf(r, planSt) : 0, planWaits: !!(t.planWaits && t.planWaits(r, planSt)),
         next: nextOf(Object.assign({}, r, { clash: clashOf(r) }), role), ready: readyOf(r), goAnyway: r.goAnyway === true,
         hands: r.parked === true || r.retired === true ? [] : checklistOf(r, nextOf(Object.assign({}, r, { clash: clashOf(r) }), role)),
         research: r.research || null, researchStatus: r.researchStatus || '', researchAt: r.researchAt || '', researchNote: r.researchNote || '',
@@ -5847,7 +5944,7 @@ function tideTalk(env, t) {
   var research = {
     standardChecks: standardChecks,
     pending: function () {
-      return t.rows('pipeline').filter(function (r) { return r.researchStatus === 'Queued' && r.parked !== true && !r.deleted; }).map(function (r) {
+      return t.rows('pipeline').filter(function (r) { return r.researchStatus === 'Queued' && r.parked !== true && !r.deleted && !(t.planWaits && t.planWaits(r)); }).map(function (r) {
         return { id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, decisions: t.list(r.decisions), parts: t.list(r.parts), price: Number((r.pricing || {}).price) || 0 };
       });
     },
@@ -5910,7 +6007,7 @@ function tideTalk(env, t) {
   function autoClear() {
     var n = 0;
     t.rows('pipeline').forEach(function (r) {
-      if (n >= 3 || r.deleted === true || r.parked === true || r.retired === true || r.aiStatus === 'Queued' || r.aiStatus === 'Working') return;
+      if (n >= 3 || r.deleted === true || r.parked === true || r.retired === true || (t.planWaits && t.planWaits(r)) || r.aiStatus === 'Queued' || r.aiStatus === 'Working') return;
       if (!t.list(r.checks).some(function (c) { return c.status === 'To check'; })) return;
       if (r.aiJob === 'clear' && r.aiStatus === 'Failed' && Date.parse(r.updated || '') > env.now().getTime() - 6 * 3600000) return;   // give a failed one a rest
       clearSoon(r.id); n++;
@@ -8701,6 +8798,9 @@ var Kit = (function () {
     }
 
     mark('cover');
+    var plc = rest ? null : planCard();
+    if (plc) main.appendChild(rise(plc, n++));
+    mark('plan');
     // inspiration, right on the home page: save it, and see the last few
     var ins = (S.data.inspiration || []).slice(0, 3);
     var insCard = h('div', { class: 'card pad', style: 'margin-bottom:14px' },
@@ -8802,12 +8902,13 @@ var Kit = (function () {
       btn('text', 'Arrange your home page', { icon: 'swap_vert', onclick: openHomeOrder }),
       rest ? null : btn('text', 'Taking it easy for a bit?', { icon: 'spa', onclick: openRest })), n++));
   }
-  var HOME_SECTIONS = { cover: 'Your artwork, up top', inspo: 'Inspiration', needs: 'Questions for you', waiting: 'Waiting for you', todo: 'Your to do list',
+  var HOME_SECTIONS = { cover: 'Your artwork, up top', plan: 'Your plan', inspo: 'Inspiration', needs: 'Questions for you', waiting: 'Waiting for you', todo: 'Your to do list',
     website: 'Your website', review: 'Posts to look at', actions: 'What would you like to do?', glance: 'Your work lately' };
-  var HOME_DEFAULT = ['cover', 'inspo', 'needs', 'waiting', 'todo', 'website', 'review', 'actions', 'glance'];
+  var HOME_DEFAULT = ['cover', 'plan', 'inspo', 'needs', 'waiting', 'todo', 'website', 'review', 'actions', 'glance'];
   function homeOrder() {
     var o = (S.data.homeOrder || []).filter(function (k) { return HOME_DEFAULT.indexOf(k) >= 0; });
-    HOME_DEFAULT.forEach(function (k) { if (o.indexOf(k) < 0) o.push(k); });
+    // a section she hasn't placed yet goes where it sits by default, after the one before it
+    HOME_DEFAULT.forEach(function (k, i) { if (o.indexOf(k) >= 0) return; var before = i > 0 ? o.indexOf(HOME_DEFAULT[i - 1]) : -1; o.splice(before + 1, 0, k); });
     return o;
   }
   /** Her home page, in her order: move any section up or down. */
@@ -8818,7 +8919,7 @@ var Kit = (function () {
       build: function (ctl) {
         ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Press and drag a card to where you want it. Sections with nothing in them stay hidden.' }));
         var list = h('div', { class: 'ho-list' });
-        var HO_ICON = { cover: 'palette', inspo: 'favorite', needs: 'help', waiting: 'hourglass_top', todo: 'fact_check', website: 'language', review: 'perm_media', actions: 'add', glance: 'insights' };
+        var HO_ICON = { plan: 'flag', cover: 'palette', inspo: 'favorite', needs: 'help', waiting: 'hourglass_top', todo: 'fact_check', website: 'language', review: 'perm_media', actions: 'add', glance: 'insights' };
         function draw() {
           list.textContent = '';
           order.forEach(function (k) {
@@ -8911,7 +9012,7 @@ var Kit = (function () {
           dayChip(x.day),
           chip(x.priority + ' priority', x.priority === 'High' ? 'high' : 'outline', x.priority === 'High' ? 'flag' : null),
           chip(x.timeline, 'outline', 'schedule'),
-          x.stage === 'Parked' ? chip(pauseLabel(x.resumeOn), 'outline', 'calendar_month') : ADMIN ? chip(stageLabel(x.stage), K.slug(x.stage)) : null,
+          x.stage === 'Parked' ? chip(pauseLabel(x.resumeOn), 'outline', 'calendar_month') : x.planWaits ? chip('Waits · step ' + x.planStep, 'outline', 'hourglass_top') : ADMIN ? chip(stageLabel(x.stage), K.slug(x.stage)) : null,
           x.approvalState === 'Change requested' ? chip('Changes asked', 'change-requested') : null,
           x.health ? chip('Sensitive', 'high') : null)));
   }
@@ -9735,6 +9836,7 @@ var Kit = (function () {
   // ------------------------------------------------------------------ Products: the pipeline from idea to live
   function itemChip(p) {
     if (p.parked) return chip(pauseLabel(p.resumeOn), 'outline', 'calendar_month');
+    if (p.planWaits) return chip('Waits · step ' + p.planStep, 'outline', 'hourglass_top');
     if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') return chip('Drafting', 'pending', 'auto_awesome');
     if (p.needsMe) return chip('Needs your OK', 'approved', 'verified');
     if (p.stage === 'Live') return chip('Live', 'approved', 'rocket_launch');
@@ -10124,7 +10226,8 @@ var Kit = (function () {
         var si = T.stages.indexOf(p.stage);
         ctl.body.appendChild(tldrItem(p));
         ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
-        var nc = nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
+        var pln = planLine('product', p, reopen); if (pln) ctl.body.appendChild(pln);
+        var nc = p.planWaits ? null : nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
         var hl = handList(p, saveFirst, reopen); if (hl) ctl.body.appendChild(hl);
         ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.resumeOn ? 'Paused. It comes back by itself on ' + K.dayLabel(p.resumeOn, true) + ', with a reminder the day before.' : 'Paused. Bring it back when you’re ready.', 'calendar_month')));
@@ -10810,6 +10913,14 @@ var Kit = (function () {
       title: x.title, tall: true, guard: function () { return dirty; },
       build: function (ctl) {
         function touch() { dirty = true; }
+        var reo = function () { ctl.close(); setTimeout(function () { openIdea(x.id); }, 280); };
+        var ipl = planLine('idea', x, reo); if (ipl) ctl.body.appendChild(ipl);
+        var isPlan = S.data.plan && S.data.plan.ideaId === x.id;
+        if (isPlan) ctl.body.appendChild(h('div', { style: 'margin:4px 0 12px' }, note('This is your plan. Its steps set the order for everything: anything for a later step waits until you get there.', 'flag')));
+        else if (x.scope.length >= 2) ctl.body.appendChild(h('div', { style: 'margin:0 0 10px' }, btn('text', 'Use this as my plan for the order of things', { sm: true, icon: 'flag', onclick: function (e) {
+          K.setBusy(e.currentTarget, true);
+          api('setPlanIdea', x.id).then(refresh).then(function () { K.haptic('success'); toast('Your plan now sets the order of things.'); reo(); render(); }).catch(fail);
+        } })));
         ctl.body.appendChild(tldr([
           [x.kind, x.priority + ' priority', stageLabel(x.stage)].filter(Boolean).join(' · '),
           x.website ? 'Website change · ' + x.website.status.toLowerCase() : x.viability != null ? (x.research && x.research.verdict ? x.research.verdict + ' · ' : '') + x.viability + '/100 viability' : '',
@@ -11628,6 +11739,66 @@ var Kit = (function () {
           btn('text', 'Pause with no date', { onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); onPick('').then(function () { ctl.close(); }).catch(function (er) { K.setBusy(b, false); fail(er); }); } })));
       }
     });
+  }
+  // ------------------------------------------------------------------ her plan: the order of work
+  function planStepText(n) { var pl = S.data.plan; var s = pl && pl.steps[n - 1]; return s ? s.text : ''; }
+  function openPlanStep(kind, x, after) {
+    var pl = S.data.plan;
+    K.sheet({
+      title: 'Where does it fit?',
+      build: function (ctl) {
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: '“' + x.title + '” follows your plan. Pick the step it belongs to. Anything for a later step waits until you get there.' }));
+        var list = h('div', { class: 'next-opts' });
+        function pick(n, label, why) {
+          list.appendChild(h('button', { class: 'next-opt' + (x.planStep === n ? ' main' : ''), type: 'button', onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            api('setPlanStep', kind, x.id, n).then(refresh).then(function () { K.haptic('success'); ctl.close(); if (after) after(); else render(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); });
+          } }, h('span', { class: 'next-opt-ic' }, icon(n === -1 ? 'arrow_forward' : n < pl.current || (pl.steps[n - 1] || {}).done ? 'check' : n === pl.current ? 'flag' : 'hourglass_top')),
+            h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null)));
+        }
+        pl.steps.forEach(function (s) { pick(s.n, 'Step ' + s.n + ': ' + s.text, s.done ? 'Done' : s.n === pl.current ? 'You’re here now' : 'Waits until you get there'); });
+        pick(-1, 'Not part of the plan', 'It goes ahead now, whatever step you’re on.');
+        ctl.body.appendChild(list);
+      }
+    });
+  }
+  /** On a product or idea: which step it belongs to, and (if it waits) a way to bring it forward. */
+  function planLine(kind, x, after) {
+    var pl = S.data.plan;
+    if (!pl || !x.planStep || x.id === pl.ideaId) return null;
+    var move = btn('text', 'Move', { sm: true, icon: 'swap_vert', onclick: function () { openPlanStep(kind, x, after); } });
+    if (x.planWaits) {
+      var fwd = btn('tonal', 'Bring it forward now', { sm: true, icon: 'arrow_forward', onclick: function (e) {
+        K.setBusy(e.currentTarget, true);
+        api('setPlanStep', kind, x.id, pl.current).then(refresh).then(function () { K.haptic('success'); if (after) after(); else render(); }).catch(fail);
+      } });
+      var n = note('Waits for step ' + x.planStep + ' of your plan: ' + planStepText(x.planStep) + '. You’re on step ' + pl.current + ': ' + planStepText(pl.current) + '.', 'hourglass_top');
+      n.lastElementChild.appendChild(h('div', { class: 'btn-row', style: 'margin-top:8px;flex-wrap:wrap' }, fwd, move));
+      return h('div', { style: 'margin:10px 0 14px' }, n);
+    }
+    return h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 10px' }, icon('flag'),
+      h('span', { class: 'body-s grow', text: x.planStep === -1 ? 'Not part of your plan: it goes ahead now.' : 'Step ' + x.planStep + ' of your plan: ' + planStepText(x.planStep) }), move);
+  }
+  /** Home: where she's up to in her plan, and one tap when a step is done. */
+  function planCard() {
+    var pl = S.data.plan;
+    if (!pl || !pl.current) return null;
+    var idea = byId(S.data.ideas, pl.ideaId);
+    var cur = pl.steps[pl.current - 1];
+    var dots = h('div', { class: 'plan-dots' }, pl.steps.map(function (s) { return h('i', { class: s.done ? 'done' : s.n === pl.current ? 'on' : '' }); }));
+    var done = btn('filled', 'Done, on to the next step', { icon: 'check', sm: true, onclick: function (e) {
+      if (!idea) return;
+      var b = e.currentTarget; K.setBusy(b, true);
+      var scope = idea.scope.map(function (s, i) { return { id: s.id, text: s.text, done: s.done || i === pl.current - 1 }; });
+      api('updateIdea', idea.id, { scope: scope }).then(refresh).then(function () {
+        K.haptic('success'); render();
+        undoCard('Step ' + pl.current + ' done. On to the next.', function () { return api('updateIdea', idea.id, { scope: idea.scope }); }, 'Back on that step.');
+      }).catch(function (er) { K.setBusy(b, false); fail(er); });
+    } });
+    return h('div', { class: 'card pad plan-card' },
+      h('div', { class: 'label-s', text: 'Your plan · step ' + pl.current + ' of ' + pl.steps.length }),
+      h('div', { class: 'title-m', style: 'margin-top:4px', text: cur.text }), dots,
+      h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { openIdea(pl.ideaId); } })));
   }
   /** After a delete: a card with Undo that puts it straight back. */
   function binUndo(msg, kind, id) { undoCard(msg, function () { return api('undoDelete', kind, id); }, 'Put back.', 12); }
