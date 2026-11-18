@@ -2694,7 +2694,8 @@ function createTideLogic(env) {
     st.steps.forEach(function (s) {
       var sw = planWords(s.text), sc = 0;
       named.forEach(function (w) { if (sw.indexOf(w) >= 0) sc += 3; });
-      more.forEach(function (w) { if (sw.indexOf(w) >= 0) sc += 1; });
+      // the description only breaks a tie between steps its name already fits
+      if (sc) more.forEach(function (w) { if (sw.indexOf(w) >= 0) sc += 1; });
       if (sc > top) { top = sc; best = s.n; }
     });
     return best || st.steps[st.steps.length - 1].n;
@@ -2710,6 +2711,8 @@ function createTideLogic(env) {
   function planWaits(row, st) {
     st = st || planState();
     if (!st || !st.current) return false;
+    // finished things never wait
+    if (row.stage === 'Live' || row.stage === 'Retired' || row.retired === true) return false;
     return planStepOf(row, st) > st.current;
   }
   function setPlanStep(kind, id, step) {
