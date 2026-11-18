@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1319,6 +1319,39 @@ body.inspecting .site-top { visibility: hidden; }
 .step-day.set { background: var(--primary-container); color: var(--on-primary-container); }
 .plan-week { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 12px; padding: 10px 12px; border-radius: var(--r-m); background: var(--surface-low); cursor: pointer; font: 500 14px/20px var(--font); }
 .plan-week .ms { color: var(--primary); }
+/* ---------- the menu bubble (phones): the bottom bar's job, in one round button, bottom left ---------- */
+.menu-bubble { display: none; }
+@media (max-width: 839px) {
+  :root { --nav-h: 0px; }
+  body { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+  .nav { display: none; }
+  .menu-bubble { all: unset; box-sizing: border-box; position: fixed; z-index: 31; left: 14px; bottom: calc(14px + env(safe-area-inset-bottom));
+    display: inline-flex; align-items: center; gap: 8px; height: 56px; padding: 0 20px 0 16px; border-radius: 28px; cursor: pointer;
+    background: var(--primary); color: var(--on-primary); font: 600 15px/20px var(--font); box-shadow: 0 6px 18px rgba(16, 40, 70, 0.28), 0 1px 3px rgba(16, 40, 70, 0.2);
+    -webkit-tap-highlight-color: transparent; transition: transform .15s var(--ease); }
+  .menu-bubble:active { transform: scale(0.95); }
+  .menu-bubble:focus-visible { outline: 3px solid var(--secondary); outline-offset: 3px; }
+  .menu-bubble .ms { font-size: 24px; }
+  .mb-badge { position: absolute; top: -4px; right: -4px; left: auto; box-shadow: 0 0 0 2px var(--surface); }
+  .toast, .undo-card { left: 16px; right: 16px; bottom: calc(80px + env(safe-area-inset-bottom)); }
+  .fab { bottom: calc(14px + env(safe-area-inset-bottom)); }
+}
+.menu-scrim { position: fixed; inset: 0; z-index: 40; background: rgba(10, 16, 24, 0.3); animation: mfade .16s var(--ease); }
+.menu-pop { position: fixed; z-index: 41; left: 12px; bottom: calc(80px + env(safe-area-inset-bottom)); width: min(340px, calc(100vw - 24px)); padding: 12px; border-radius: 26px;
+  background: var(--surface); box-shadow: var(--shadow-3); transform-origin: 30px 100%; animation: mpop .22s var(--spring); }
+.menu-pop.out, .menu-scrim.out { opacity: 0; transition: opacity .15s; }
+.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.menu-item { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px 10px; border-radius: 18px; cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent; }
+.menu-item:active { background: var(--surface-mid); }
+.menu-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.menu-item.here { background: var(--secondary-container); color: var(--on-secondary-container); }
+.menu-ic { position: relative; width: 48px; height: 40px; display: grid; place-items: center; border-radius: 14px; background: var(--surface-high); }
+.menu-item.here .menu-ic { background: var(--surface-lowest); }
+.menu-ic .ms { font-size: 24px; }
+.menu-ic .nav-badge { top: -6px; left: auto; right: -8px; }
+.menu-l { font: 500 13px/16px var(--font); }
+@keyframes mpop { from { opacity: 0; transform: scale(.6) translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes mfade { from { opacity: 0; } to { opacity: 1; } }
 </style>
 
   <script>
@@ -6930,10 +6963,14 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-18-menu-bubble', on: '2026-11-18', to: 'all', icon: 'apps', title: 'The menu is a bubble now',
+    say: 'The bar along the bottom is now one round button, bottom left. It says where you are; tap it for every part of Tide Book.',
+    steps: ['Tap the button in the bottom-left corner.', 'Tap where you want to go: Home, Posts, Artworks, Ideas, Calendar, Website, Money or Settings.', 'A red number means something is waiting there.', 'More of each page fits on your screen now.'],
+    go: { view: 'home', find: '#menu-bubble', tip: 'Your menu lives here.' } },
   { id: '2026-11-18-calendar', on: '2026-11-18', to: 'artist', icon: 'calendar_month', title: 'A calendar for your goals',
     say: 'See your month or your week, with each goal’s steps in its own colour, plus posts going out and things you parked coming back.',
-    steps: ['On Home, tap “This week” under your plan, or go to Ideas › Goals › Calendar.', 'Switch between Month and Week at the top.', 'Tap a day, then “Plan a step” to give one of your goal steps that day.', 'You get a reminder the day before. Tap a goal’s colour to see only that goal.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'cal', calMode: 'week' }, find: '.cal-top', tip: 'Month or week, and your goals in colour.' } },
+    steps: ['On Home, tap “This week” under your plan, or open the menu (bottom left) and tap Calendar.', 'Switch between Month and Week at the top.', 'Tap a day, then “Plan a step” to give one of your goal steps that day.', 'You get a reminder the day before. Tap a goal’s colour to see only that goal.'],
+    go: { view: 'calendar', state: { calMode: 'week' }, find: '.cal-top', tip: 'Month or week, and your goals in colour.' } },
   { id: '2026-11-18-decide-row', on: '2026-11-18', to: 'artist', icon: 'delete', title: 'Park for now, or Remove, on everything',
     say: 'Every idea, product, post, conversation and request now has the same two buttons, each with Undo.',
     steps: ['Park for now: it goes out of the way until a day you pick, and comes back by itself.', 'Remove asks one thing: just remove it, or “I’m not interested”, so Tide Book never suggests anything like it again.', 'Tap Undo straight after if you didn’t mean it.', 'Parked things are in a list at the bottom of each page, with Bring back.'],
@@ -6944,7 +6981,7 @@ var TIDE_CHANGES = [
     go: { view: 'site', find: '.site-frame', tip: 'Tap a picture on your website to try it.' } },
   { id: '2026-11-18-website-tab', on: '2026-11-18', to: 'artist', icon: 'language', title: 'Change your website yourself',
     say: 'The new Website tab shows your website. Tap any words, picture or part of a page to change it, then publish when you’re happy.',
-    steps: ['Tap Website in the bar at the bottom.', 'Tap any words or picture on your website to change them.', 'Tap a part of a page to move it, hide it, or add a new section below it.', 'Colours and fonts, and Pages, are just under your website.', 'Nothing goes live until you tap Publish.'],
+    steps: ['Open the menu (bottom left) and tap Website.', 'Tap any words or picture on your website to change them.', 'Tap a part of a page to move it, hide it, or add a new section below it.', 'Colours and fonts, and Pages, are just under your website.', 'Nothing goes live until you tap Publish.'],
     go: { view: 'site', find: '.site-frame', tip: 'Tap anything here to change it.' } },
   { id: '2026-11-18-website-ask', on: '2026-11-18', to: 'artist', icon: 'forum', title: 'Ask for something bigger on your website',
     say: 'For a new kind of section or a different layout, tap the spot and ask in your own words. You’ll see it in the preview before it goes live.',
@@ -9711,9 +9748,9 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ navigation
   var NAV = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']]
+    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
   // Settings is a button at the bottom of Home, so the bottom bar stays at five. The back-end parts are admin-only.
   function homeGear() {
     return h('div', { class: 'home-gear' }, btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
@@ -9779,6 +9816,46 @@ var Kit = (function () {
         onclick: function () { if (S.view !== n[0]) { K.haptic(); go(n[0]); } else window.scrollTo({ top: 0, behavior: 'smooth' }); } },
         ind, h('span', { text: n[1] })));
     });
+    menuBubble();
+  }
+  /** On a phone: one round button, bottom left, says where she is. Tap it for every section. */
+  function navCount(k) {
+    var waiting = needsList().length, toReview = S.data.ideas.filter(function (x) { return x.stage === 'New' && x.researchStatus !== 'Queued' && x.researchStatus !== 'Researching'; }).length;
+    return (!ADMIN && k === 'home') ? waiting : (ADMIN && k === 'ideas') ? toReview : k === 'content' ? studioCount() : 0;
+  }
+  function menuBubble() {
+    var b = document.getElementById('menu-bubble');
+    if (!b) {
+      b = h('button', { type: 'button', id: 'menu-bubble', class: 'menu-bubble press', 'aria-haspopup': 'dialog' });
+      b.addEventListener('click', function () { K.haptic(); openMenu(); });
+      document.body.appendChild(b);
+    }
+    var cur = NAV.filter(function (n) { return n[0] === S.view; })[0] || (S.view === 'settings' ? ['settings', 'Settings', 'settings'] : NAV[0]);
+    var total = NAV.reduce(function (t, n) { return t + (n[0] === S.view ? 0 : navCount(n[0])); }, 0);
+    b.textContent = '';
+    b.append(icon('apps'), h('span', { class: 'mb-t', text: cur[1] }));
+    if (total) b.appendChild(h('span', { class: 'nav-badge mb-badge', text: String(total), 'aria-label': total + ' waiting elsewhere' }));
+    b.setAttribute('aria-label', 'Menu. You’re on ' + cur[1] + (total ? '. ' + total + ' waiting elsewhere' : ''));
+  }
+  function openMenu() {
+    var old = document.getElementById('menu-pop'); if (old) { old.remove(); return; }
+    var items = NAV.concat([['settings', 'Settings', 'settings']]);
+    var pop = h('div', { id: 'menu-pop', class: 'menu-pop', role: 'dialog', 'aria-label': 'Sections' });
+    var scrim = h('div', { class: 'menu-scrim' });
+    function close() { pop.classList.add('out'); scrim.classList.add('out'); setTimeout(function () { pop.remove(); scrim.remove(); }, 160); document.removeEventListener('keydown', esc); }
+    function esc(e) { if (e.key === 'Escape') close(); }
+    scrim.addEventListener('click', close);
+    var grid = h('div', { class: 'menu-grid' });
+    items.forEach(function (n) {
+      var c = navCount(n[0]), here = S.view === n[0];
+      grid.appendChild(h('button', { type: 'button', class: 'menu-item press soft' + (here ? ' here' : ''), 'aria-current': here ? 'page' : null,
+        onclick: function () { close(); K.haptic(); if (!here) go(n[0]); else window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+        h('span', { class: 'menu-ic' }, icon(n[2], here), c ? h('span', { class: 'nav-badge', text: String(c) }) : null), h('span', { class: 'menu-l', text: n[1] })));
+    });
+    pop.appendChild(grid);
+    document.body.append(scrim, pop);
+    document.addEventListener('keydown', esc);
+    var first = pop.querySelector('.menu-item.here') || pop.querySelector('.menu-item'); if (first) first.focus({ preventScroll: true });
   }
   function go(view) {
     var from = NAV.map(function (n) { return n[0]; }).indexOf(S.view), to = NAV.map(function (n) { return n[0]; }).indexOf(view);
@@ -10176,7 +10253,7 @@ var Kit = (function () {
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, settings: viewAdmin }[S.view] || viewHome)(main);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
     if (S.view === 'home' || !S.view) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -10933,7 +11010,7 @@ var Kit = (function () {
     go(g.view || 'home');
     var tries = 0;
     (function find() {
-      var el = [].slice.call(document.querySelectorAll(g.find || 'main')).filter(function (x) { return x.offsetParent && (!g.text || x.textContent.indexOf(g.text) >= 0); })[0];
+      var el = [].slice.call(document.querySelectorAll(g.find || 'main')).filter(function (x) { return (x.offsetParent || getComputedStyle(x).position === 'fixed') && (!g.text || x.textContent.indexOf(g.text) >= 0); })[0];
       if (!el) { if (++tries < 12) setTimeout(find, 250); else if (g.tip) toast(g.tip); return; }
       el.scrollIntoView({ block: 'center', behavior: 'smooth' });
       setTimeout(function () {
@@ -13633,7 +13710,7 @@ var Kit = (function () {
   var GOAL_STARTERS = ['Open my online shop', 'Sell at markets and events', 'Grow my Instagram', 'Release small batches of originals', 'Finish a new collection', 'Keep my energy steady'];
   function goalById(id) { return byId(S.data.goals || [], id); }
   function viewGoals(main) {
-    var goals = S.data.goals || [], mode = S.goalMode === 'order' || S.goalMode === 'cal' ? S.goalMode : 'map';
+    var goals = S.data.goals || [], mode = S.goalMode === 'order' ? 'order' : 'map';
     var active = goals.filter(function (g) { return g.active; })[0];
     if (active) main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openGoal(active.id); } },
       h('span', { class: 'ic' }, icon('flag')), h('span', { class: 'grow' }, h('b', { text: 'Now: ' + active.title }),
@@ -13642,7 +13719,7 @@ var Kit = (function () {
           return tog.length ? ' Worked on together with ' + tog.join(' and ') + '.' : '';
         })() })), icon('chevron_right')), 1));
     main.appendChild(rise(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 12px;flex-wrap:wrap' },
-      h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }, { value: 'cal', label: 'Calendar' }] })),
+      h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }] })),
       btn('filled', 'Add a goal', { icon: 'add', sm: true, onclick: function () { addGoalAsk(null); } })), 1));
     if (!goals.length) {
       var start = h('div', { class: 'card pad' }, h('div', { class: 'title-m', text: 'Where would you like to get to?' }),
@@ -13655,7 +13732,6 @@ var Kit = (function () {
       return;
     }
     if (mode === 'order') return goalOrder(main, goals);
-    if (mode === 'cal') return goalCalendar(main);
     goalMap(main, goals);
   }
   function addGoalAsk(parentId, at) {
@@ -13963,6 +14039,10 @@ var Kit = (function () {
         });
       }
     });
+  }
+  function viewCalendar(main) {
+    pageTitle(main, 'Calendar', 'Your goals’ steps in their colours, with your posts and plans, day by day.');
+    goalCalendar(main);
   }
   function goalCalendar(main) {
     var today = ymd(new Date()), mode = S.calMode === 'week' ? 'week' : 'month', at = S.calAt || today, sel = S.calSel || today;
@@ -14291,7 +14371,7 @@ var Kit = (function () {
         ot);
     });
     var wkFrom = ymd(new Date()), wkTo = addDays(wkFrom, 6), wkN = calEvents().filter(function (e) { return e.day >= wkFrom && e.day <= wkTo && !e.done; }).length;
-    var week = h('button', { type: 'button', class: 'plan-week press soft', onclick: function () { S.ideasTab = 'goals'; S.goalMode = 'cal'; S.calMode = 'week'; S.calAt = wkFrom; S.calGoal = ''; go('ideas'); } },
+    var week = h('button', { type: 'button', class: 'plan-week press soft', onclick: function () { S.calMode = 'week'; S.calAt = wkFrom; S.calGoal = ''; go('calendar'); } },
       icon('calendar_month'), h('span', { class: 'grow', text: wkN ? 'This week: ' + wkN + (wkN === 1 ? ' thing' : ' things') + ' on your calendar' : 'Your calendar: nothing this week yet' }), icon('chevron_right'));
     return h('div', { class: 'card pad plan-card' }, head, dots, tools,
       h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })),
