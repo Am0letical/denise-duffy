@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,bar_chart,bedtime,block,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,key,language,light_mode,lightbulb,link,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,palette,pause_circle,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,text_fields,thumb_up,travel_explore,trending_down,trending_flat,trending_up,tune,undo,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1049,6 +1049,124 @@ img, video { max-width: 100%; }
 .priv-sent { display: flex; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #e3f3e7; }
 .priv-sent > .ms { color: #2e7d45; }
 .priv-sent p { margin: 4px 0 0; font: 400 14px/1.5 var(--font); }
+/* ---- the full pass (18 Nov): folds, the compact checklist, fitted tabs, sheet swaps */
+.seg.fit { overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
+.seg.fit::-webkit-scrollbar { display: none; }
+.seg.fit button { flex: 1 0 auto; padding: 0 11px; overflow: visible; }
+.sheet-body.swap-in { animation: swap-in 0.22s var(--ease); }
+@keyframes swap-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.fold-group { font: 500 13px/18px var(--font); letter-spacing: 0.4px; text-transform: uppercase; color: var(--on-surface-variant); margin: 26px 4px 2px; }
+.sheet-section.fold { margin-top: 8px; border-radius: var(--r-l); background: var(--surface-lowest); box-shadow: var(--shadow-1); }
+.fold-head { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 10px 12px 10px 14px; cursor: pointer; border-radius: var(--r-l); -webkit-tap-highlight-color: transparent; }
+.fold-head:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.fold-head:active { background: var(--surface-low); }
+.fold-head > .grow { min-width: 0; }
+.fold-ic { flex: none; width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; background: var(--primary-container); color: var(--on-primary-container); }
+.fold-ic .ms { font-size: 20px; }
+.fold-t { display: block; font: 500 16px/22px var(--font); }
+.fold-s { display: block; font: 400 13px/18px var(--font); color: var(--on-surface-variant); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fold-s:empty { display: none; }
+.fold-head > .ms:last-child { color: var(--on-surface-variant); transition: transform 0.2s var(--ease); }
+.fold.open > .fold-head > .ms:last-child { transform: rotate(180deg); }
+.fold.open > .fold-head .fold-ic { background: var(--primary); color: var(--on-primary); }
+.fold-body { display: none; padding: 6px 14px 16px; }
+.fold.open > .fold-body { display: block; animation: swap-in 0.2s var(--ease); }
+.fold-body .card { box-shadow: none; background: var(--surface-low); }
+.hand-list .hand-row { padding: 12px 0 6px; border-top: 1px solid var(--hairline); }
+.hand-tick { all: unset; flex: none; width: 44px; height: 44px; margin: -10px -8px -10px -10px; display: grid; place-items: center; border-radius: 50%; color: var(--primary); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.15s var(--ease), color 0.15s; }
+.hand-tick .ms { font-size: 26px; }
+.hand-tick:active { transform: scale(0.88); background: var(--surface-low); }
+.hand-tick:focus-visible { outline: 2px solid var(--primary); }
+.hand-row.ticked .hand-tick { color: var(--success); }
+.hand-row.ticked .hand-tick .ms { font-variation-settings: 'FILL' 1; }
+.hand-row.ticked .hand-text { text-decoration: line-through; color: var(--on-surface-variant); }
+.hand-row .hand-ic .ms { font-size: 24px; }
+.hand-row.now .hand-ic { color: var(--on-surface-variant); }
+.hand-acts { display: flex; align-items: center; gap: 8px; min-height: 36px; margin-top: 2px; }
+.hand-acts .hand-more { margin-top: 0; }
+.hand-acts .btn.text { margin-right: -8px; color: var(--on-surface-variant); }
+.hand-count { font: 500 13px/18px var(--font); padding: 3px 10px; border-radius: var(--r-full); background: var(--warn-container); color: var(--on-warn-container); }
+.hand-count.none { background: var(--success-container); color: var(--on-success-container); }
+.hand-bar { height: 6px; border-radius: 3px; background: var(--surface-high); overflow: hidden; margin-top: 12px; }
+.hand-bar i { display: block; height: 100%; border-radius: 3px; background: var(--success); }
+.li-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.li > .ms:last-child { color: var(--on-surface-variant); flex: none; }
+.seg.fit.more { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); }
+.li-sup.wrap2 { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.hand-count.wait { background: var(--surface-high); color: var(--on-surface-variant); }
+/* the goal map */
+.goal-map { touch-action: pan-y; background-color: var(--surface-lowest); background-image: radial-gradient(rgba(27, 79, 134, 0.13) 1.2px, transparent 1.2px); background-size: 22px 22px; box-shadow: var(--shadow-1); }
+.goal-lines line { stroke: var(--outline-variant); stroke-width: 2; }
+.goal-lines line.part { stroke: var(--primary); opacity: 0.45; }
+.goal-bubble { flex-direction: row; align-items: center; gap: 10px; max-width: 58%; padding: 10px 14px 10px 10px; border-radius: 22px; background: var(--surface-lowest); color: var(--on-surface);
+  box-shadow: 0 0 0 1.5px var(--outline-variant), 0 2px 8px rgba(16, 24, 40, 0.08); transition: box-shadow 0.15s, left 0.25s var(--ease), top 0.25s var(--ease); }
+.goal-bubble.lifted { transition: box-shadow 0.15s; box-shadow: 0 0 0 2px var(--primary), 0 14px 28px rgba(16, 24, 40, 0.22); }
+.goal-bubble.active { background: var(--primary); color: var(--on-primary); box-shadow: 0 4px 14px rgba(27, 79, 134, 0.35); }
+.goal-bubble.sub { padding: 8px 12px; border-radius: 16px; background: var(--surface-low); color: var(--on-surface); }
+.goal-bubble.done { opacity: 0.6; }
+.gb-rank { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font: 600 13px/1 var(--font); opacity: 1; background: var(--secondary-container); color: var(--on-secondary-container); }
+.gb-rank .ms { font-size: 16px; }
+.goal-bubble.active .gb-rank { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.gb-main { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.gb-now { align-self: flex-start; font: 600 10px/14px var(--font); letter-spacing: 0.6px; text-transform: uppercase; padding: 0 6px; border-radius: 7px; background: rgba(255, 255, 255, 0.22); margin-bottom: 2px; }
+.gb-t { font: 600 15px/19px var(--font); }
+.gb-s { font: 400 12px/16px var(--font); opacity: 0.72; }
+.goal-ghost { position: absolute; display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px 10px 10px; border-radius: 22px; border: 2px dashed var(--primary); background: var(--primary-container); color: var(--on-primary-container);
+  font: 500 14px/20px var(--font); cursor: pointer; animation: swap-in 0.18s var(--ease); z-index: 2; }
+.ho-ic.num { font: 600 15px/1 var(--font); color: var(--on-secondary-container); }
+.goal-card.active .ho-ic.num { background: var(--primary); color: var(--on-primary); }
+/* a goal's steps */
+.goal-steps .hand-row { align-items: center; padding: 10px 0; }
+.goal-steps .hand-row > .ms:last-child { color: var(--on-surface-variant); }
+.goal-step { all: unset; box-sizing: border-box; display: block; flex: 1; min-width: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.goal-step:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 6px; }
+.goal-step .hand-text, .goal-step .hand-why { display: block; }
+.goal-steps .hand-row.here .hand-why { color: var(--primary); font-weight: 500; }
+/* the plan card's tools */
+.plan-tools { display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+.plan-tools::-webkit-scrollbar { display: none; }
+.plan-tool { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px 0 10px; border: 0; border-radius: var(--r-m); background: var(--primary-container); color: var(--on-primary-container); font: 500 14px/20px var(--font); white-space: nowrap; }
+.plan-tool .ms { font-size: 20px; }
+.sheet-body { padding-top: 10px; }
+/* Printful on a product: four steps down a line */
+.pf-card { margin: 14px 0 0; }
+.pf-card .pf-step { position: relative; border-top: 0; padding: 0 0 18px; }
+.pf-card .pf-step:last-child { padding-bottom: 0; }
+.pf-card .pf-step:not(:last-child)::before { content: ''; position: absolute; left: 13px; top: 32px; bottom: 4px; width: 2px; border-radius: 1px; background: var(--outline-variant); }
+.pf-card .pf-step.done:not(:last-child)::before { background: var(--primary); }
+.pf-card .pf-n { background: var(--surface-high); color: var(--on-surface-variant); }
+.pf-card .pf-step.on .pf-n { background: var(--primary-container); color: var(--on-primary-container); box-shadow: 0 0 0 2px var(--primary); }
+.pf-card .pf-step.done .pf-n { background: var(--primary); color: var(--on-primary); }
+.pf-card .pf-step.todo { opacity: 0.55; }
+.pf-card .pf-step.todo .title-s { font-weight: 400; }
+.pf-card .pf-step > .grow { padding-top: 3px; }
+.pf-card .pf-step .btn { margin-top: 8px; }
+.pf-card .pf-step .btn + .btn { margin-left: 4px; }
+.list.pad { padding: 14px 16px 16px; }
+/* the savings tally (admin) */
+.ai-cost .ai-head { display: flex; align-items: flex-end; gap: 12px; margin: 16px 0 14px; }
+.ai-big { font: 500 34px/40px var(--font); letter-spacing: -0.5px; margin-top: 2px; }
+.ai-bar { margin-top: 10px; }
+.ai-bar-top { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.ai-bar-top span { color: var(--on-surface-variant); }
+.ai-track { height: 10px; border-radius: 5px; background: var(--surface-high); overflow: hidden; }
+.ai-track i { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+.ai-track i.would { background: var(--axis); }
+.ai-track i.actual { background: var(--series-in); }
+.ai-line { margin: 12px 0 0; color: var(--on-surface-variant); }
+.ai-line + .ai-line { margin-top: 4px; }
+.ai-rate { gap: 8px; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--hairline); color: var(--on-surface-variant); }
+.ai-rate .ms { font-size: 18px; }
+/* an Instagram post that can only be seen there */
+.ig-only { flex-direction: column; gap: 4px; text-align: center; background: linear-gradient(160deg, var(--tertiary-container), var(--primary-container)); color: var(--on-surface); }
+.ig-only .ms { font-size: 30px; }
+.ig-only small { font: 400 12px/16px var(--font); color: var(--on-surface-variant); }
+.plan-line { gap: 10px; align-items: center; margin: 2px 0 12px; padding: 6px 4px 6px 12px; border-radius: var(--r-m); background: var(--surface-low); color: var(--on-surface-variant); }
+.plan-line > .ms { font-size: 20px; }
+.ig-open { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 14px 16px; border-radius: var(--r-l); background: linear-gradient(160deg, var(--tertiary-container), var(--primary-container)); color: var(--on-surface); text-decoration: none; }
+.ig-open b, .ig-open .body-s { display: block; }
+.ig-open .body-s { color: var(--on-surface-variant); }
+.seg.fit button { padding: 0 9px; }
 </style>
 
   <script>
@@ -1457,6 +1575,7 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Saved by', 'text'], ['url', 'Link', 'text'],
       ['source', 'From', 'text'], ['note', 'What caught her eye', 'text'], ['tags', 'Tags', 'list'], ['photoIds', 'Photo IDs', 'list'],
       ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['topicId', 'Talked through', 'text'], ['ideaId', 'Idea', 'text'],
+      ['embed', 'Shows here', 'text'], ['embedTries', 'Embed checks', 'number'],
       ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
@@ -2775,7 +2894,7 @@ function createTideLogic(env) {
     var g = goalRow(id);
     if (g.topicId && rows('topics').some(function (x) { return x.id === g.topicId && !x.deleted && x.status !== 'Done'; })) return { topicId: g.topicId, existing: true };
     var others = goalList().filter(function (x) { return x.id !== id; }).map(function (x) { return x.title; });
-    var detail = ['This is a goal she wants to reach: ' + g.title + (g.why ? '. Why it matters: ' + g.why : '') + '.',
+    var detail = ['A goal to reach: ' + g.title + (g.why ? '. Why it matters: ' + g.why : '') + '.',
       'Ask what you need to know to plan the steps to get there: where she is now, what she has, her time and energy, what has to happen first, and what done looks like.',
       others.length ? 'Her other goals, for context: ' + others.join('; ') + '.' : ''].filter(String).join('\n');
     var made = talk.api.startTopic({ title: 'Plan: ' + g.title, detail: detail, goalId: id });
@@ -3118,7 +3237,7 @@ function createTideLogic(env) {
     studio: content.studio,
     publish: publish,
     notebook: notebook,
-    talk: talk, wakePaused: wakePaused, setupContext: setupContext, printfulFileDone: printfulFileDone,
+    talk: talk, wakePaused: wakePaused, setupContext: setupContext, printfulFileDone: printfulFileDone, checkEmbeds: inspo.checkEmbeds,
     direction: direction,
     recordOnlineSales: recordOnlineSales,
     siteData: siteData,
@@ -5824,7 +5943,7 @@ function tideTalk(env, t) {
     if (blocksHere) return { wait: true, label: JOB_WAIT[r.aiJob] || 'Working on it…' };
     if (r.stage === 'Live') return { kind: 'done', done: true, label: r.retired ? 'Retired' : 'On sale', why: 'Set up, checked and live.' };
     if (r.researchStatus === 'Queued' || r.researchStatus === 'Researching') return { wait: true, label: 'Researching whether it’s worth making, who makes it and what to charge…' };
-    if (pl && pl.go === 'No go' && !r.goAnyway && r.stage !== 'Live') return { kind: 'park', who: 'auto', no: 'goanyway', noLabel: 'No go: carry on anyway', label: 'Park it for now', why: pl.goWhy + (pl.fix ? ' What would make it a go: ' + pl.fix : '') };
+    if (pl && pl.go === 'No go' && !r.goAnyway && r.stage !== 'Live') return { kind: 'park', who: 'auto', no: 'goanyway', noLabel: 'No go: carry on anyway', label: 'Pause it for now', why: pl.goWhy + (pl.fix ? ' What would make it a go: ' + pl.fix : '') };
     var gate = gateFor(r), ap = (r.approvals || {})[r.stage] || {}, mineToOk = gate.indexOf(role) >= 0 && !ap[role];
     var othersOk = gate.filter(function (g) { return g !== role && !ap[g]; });
     function signOff(label, why) {
@@ -6048,6 +6167,26 @@ function tideTalk(env, t) {
       return Object.assign({}, c, { status: 'OK', verdict: 'Go', doneBy: role, note: 'Done: ' + c.action, why: (c.why ? c.why + ' ' : '') + 'Done by ' + who(role) + ': ' + c.action });
     });
     if (!done) t.fail('That one’s already done.');
+    updateItem(id, { checks: checks });
+    return { ok: true };
+  }
+
+  /** Takes a tick back: one made by mistake. The job goes back on her list as it was. */
+  function untickHand(id, key) {
+    t.need(['admin', 'artist']);
+    var r = item(id), sm = r.sample || {};
+    key = String(key || '');
+    if (key === 'order') { if (sm.status !== 'Ordered') t.fail('That one has moved on since.'); updateItem(id, { sample: { status: 'Not ordered', notes: String(sm.notes || '').replace(/\n?Ordered$/, '') } }); return { ok: true }; }
+    if (key === 'arrived') { if (sm.status !== 'Here') t.fail('That one has moved on since.'); updateItem(id, { sample: { status: 'Ordered', notes: sm.notes || '' } }); return { ok: true }; }
+    var m = /^fix:(C[A-Z0-9]{3,8})$/.exec(key), found = false;
+    if (!m) t.fail('That one can’t be unticked.');
+    var checks = t.list(r.checks).map(function (c) {
+      if (c.id !== m[1] || c.status !== 'OK' || !c.doneBy) return c;
+      found = true;
+      var why = String(c.why || ''), at = Math.max(why.lastIndexOf('Done by '), why.lastIndexOf('Done: '));
+      return Object.assign({}, c, { status: 'Problem', verdict: 'No go', doneBy: '', note: '', why: at >= 0 ? why.slice(0, at).trim() : why });
+    });
+    if (!found) t.fail('That one isn’t ticked.');
     updateItem(id, { checks: checks });
     return { ok: true };
   }
@@ -6321,7 +6460,7 @@ function tideTalk(env, t) {
     ai: ai, local: local, snapshot: snapshot, wakePaused: wakePaused, queueJob: queueJob, research: research, autoClear: autoClear,
     api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
       createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, askClaudeNow: askClaudeNow, parkItem: setParked, deleteItem: deleteItem, laterHand: laterHand, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
-      takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, helpStart: helpStart, helpPick: helpPick }
+      takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, untickHand: untickHand, helpStart: helpStart, helpPick: helpPick }
   };
 }
 
@@ -6527,7 +6666,7 @@ function tideInspo(env, t) {
     ch = ch || {};
     return env.lock(function () {
       var r = get(id), out = { updated: t.nowIso() };
-      if ('url' in ch) { out.url = cleanUrl(ch.url); out.source = sourceOf(out.url); }
+      if ('url' in ch) { out.url = cleanUrl(ch.url); out.source = sourceOf(out.url); if (out.url !== r.url) { out.embed = ''; out.embedTries = 0; } }
       if ('note' in ch) out.note = t.text(ch.note, 2000);
       if ('tags' in ch) out.tags = tags(ch.tags);
       env.table('inspiration').update(id, out);
@@ -6550,16 +6689,34 @@ function tideInspo(env, t) {
     return { topicId: made.id };
   }
 
+  /** Instagram lets some posts be shown inside other pages and not others; its own embed page says which. Each saved
+   *  post is checked once (get = a function that fetches a page's text), so one that can't be shown gets a tidy
+   *  "see it on Instagram" tile instead of Instagram's broken-link box. Nothing is copied or kept from the page. */
+  function checkEmbeds(get, max) {
+    var done = 0;
+    t.rows('inspiration').forEach(function (r) {
+      if (done >= (max || 3) || r.deleted || r.embed || (Number(r.embedTries) || 0) >= 3) return;
+      var m = /instagram\.com\/(?:[^\/?#]+\/)?(p|reel|reels|tv)\/([A-Za-z0-9_-]+)/i.exec(r.url || '');
+      if (!m) return;
+      done++;
+      var body = '';
+      try { body = String(get('https://www.instagram.com/' + (/^reel/i.test(m[1]) ? 'reel' : 'p') + '/' + m[2] + '/embed/') || ''); } catch (e) { body = ''; }
+      var verdict = !body ? '' : /may be broken|may have been removed/i.test(body) ? 'no' : /EmbeddedMedia|EmbedFrame|scontent|cdninstagram/i.test(body) ? 'ok' : '';
+      env.lock(function () { env.table('inspiration').update(r.id, verdict ? { embed: verdict } : { embedTries: (Number(r.embedTries) || 0) + 1 }); });
+    });
+    return done;
+  }
+
   function snapshot(role) {
     return t.rows('inspiration').filter(function (r) { return !r.deleted; }).map(function (r) {
       // what she writes about it is hers; the admin sees the picture and the link, never her words
       var hide = r.private && !(env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist');
-      return { id: r.id, url: r.url || '', source: r.source || '', note: hide ? '' : r.note || '', private: r.private === true, locked: r.locked === true, tags: t.list(r.tags), thumbIds: t.list(r.thumbIds),
+      return { id: r.id, url: r.url || '', source: r.source || '', embed: r.embed || '', note: hide ? '' : r.note || '', private: r.private === true, locked: r.locked === true, tags: t.list(r.tags), thumbIds: t.list(r.thumbIds),
         photoUrls: t.list(r.photoIds).map(function (x) { return env.files.viewUrl(x); }), topicId: r.topicId || '', by: r.createdBy === 'artist' ? env.brand.artistName : (env.brand.adminName || 'admin'), created: r.created };
     }).sort(function (a, b) { return a.created < b.created ? 1 : -1; });
   }
 
-  return { snapshot: snapshot, tags: I.TAGS, api: { addInspiration: addInspiration, updateInspiration: updateInspiration, deleteInspiration: deleteInspiration, talkAboutInspiration: talkAbout } };
+  return { snapshot: snapshot, checkEmbeds: checkEmbeds, tags: I.TAGS, api: { addInspiration: addInspiration, updateInspiration: updateInspiration, deleteInspiration: deleteInspiration, talkAboutInspiration: talkAbout } };
 }
 
 /**
@@ -7958,9 +8115,9 @@ var Kit = (function () {
 
   /** Segmented control whose white thumb slides between options. options: [{value, label, count}] */
   function segmented(o) {
-    var n = o.options.length, value = o.value;
-    var thumb = h('span', { class: 'seg-thumb', style: 'width:calc((100% - 6px) / ' + n + ')' });
-    var wrap = h('div', { class: 'seg', role: 'radiogroup', 'aria-label': o.label }, thumb);
+    var n = o.options.length, value = o.value, fit = !!o.fit;
+    var thumb = h('span', { class: 'seg-thumb', style: fit ? '' : 'width:calc((100% - 6px) / ' + n + ')' });
+    var wrap = h('div', { class: 'seg' + (fit ? ' fit' : ''), role: 'radiogroup', 'aria-label': o.label }, thumb);
     var buttons = o.options.map(function (opt, i) {
       var b = h('button', { type: 'button', role: 'radio', 'aria-checked': String(opt.value === value) },
         opt.label, opt.count !== undefined ? h('span', { class: 'n', text: String(opt.count) }) : null);
@@ -7974,10 +8131,29 @@ var Kit = (function () {
     });
     function paint() {
       var idx = Math.max(0, o.options.map(function (x) { return x.value; }).indexOf(value));
-      thumb.style.transform = 'translateX(' + (idx * 100) + '%)';
       buttons.forEach(function (b, i) { b.setAttribute('aria-checked', String(i === idx)); });
+      if (fit) {              // the thumb takes the size and place of the chosen word
+        var b = buttons[idx];
+        if (!b.offsetWidth) return;
+        thumb.style.width = b.offsetWidth + 'px'; thumb.style.transform = 'translateX(' + (b.offsetLeft - 3) + 'px)';
+        var over = b.offsetLeft + b.offsetWidth - wrap.clientWidth - wrap.scrollLeft + 24, under = b.offsetLeft - wrap.scrollLeft - 24;
+        if (over > 0) wrap.scrollLeft += over; else if (under < 0) wrap.scrollLeft += under;
+        more();
+        return;
+      }
+      thumb.style.transform = 'translateX(' + (idx * 100) + '%)';
     }
     paint();
+    // when there are more than fit, the far edge fades to show there is more to slide to
+    function more() { wrap.classList.toggle('more', wrap.scrollWidth - wrap.clientWidth - wrap.scrollLeft > 6); }
+    if (fit) {
+      wrap.addEventListener('scroll', more, { passive: true });
+      thumb.style.transition = 'none';
+      requestAnimationFrame(function () { paint(); requestAnimationFrame(function () { thumb.style.transition = ''; }); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(paint);
+      var onRs = function () { if (!document.contains(wrap)) { window.removeEventListener('resize', onRs); return; } paint(); };
+      window.addEventListener('resize', onRs);
+    }
     wrap.value = function () { return value; };
     wrap.set = function (v) { value = v; paint(); };
     return wrap;
@@ -8135,8 +8311,18 @@ var Kit = (function () {
    * A panel that springs up from the bottom on phones (drag it down to close) and opens as a
    * centred dialog on wide screens. o: {title, tall, build(ctl), guard(), onClose(result)}
    */
+  // One sheet can take another's place in the same frame (swap, below): no slide down and back up, and when it is the
+  // same sheet drawn again after a change, it stays at the same scroll place.
+  var swapNext = null;
+  function swap(old, open, keep) {
+    if (!old || !old.drop || old.gone()) { open(); return; }
+    swapNext = { top: keep ? old.body.scrollTop : 0, fade: !keep, focus: old.lastFocus };
+    try { open(); } finally { var took = !swapNext; swapNext = null; }
+    if (took) old.drop(); else old.close();           // nothing new opened (it went to a page instead): close as usual
+  }
   function sheet(o) {
-    var wide = wideQuery.matches, lastFocus = document.activeElement;
+    var swapped = swapNext; swapNext = null;
+    var wide = wideQuery.matches, lastFocus = swapped && swapped.focus || document.activeElement;
     var scrim = h('div', { class: 'scrim' });
     var titleEl = h('h2', { text: o.title });
     var grab = h('div', { class: 'grab', 'aria-hidden': 'true' });
@@ -8187,8 +8373,19 @@ var Kit = (function () {
       layer.style.bottom = Math.max(0, window.innerHeight - vv.height - vv.offsetTop) + 'px';
     }
 
+    /** Gone at once, with no slide: used when another sheet takes this one's place. */
+    function drop() {
+      if (closing) return;
+      closing = true;
+      var i = stack.indexOf(ctl); if (i >= 0) stack.splice(i, 1);
+      if (anim) anim.stop();
+      layer.remove(); lockScroll();
+      if (window.visualViewport) visualViewport.removeEventListener('resize', fit);
+      if (o.onClose) o.onClose();
+    }
     var ctl = {
-      panel: panel, body: body, foot: foot, close: close, requestClose: requestClose,
+      panel: panel, body: body, foot: foot, close: close, requestClose: requestClose, drop: drop, lastFocus: lastFocus,
+      gone: function () { return closing; },
       setTitle: function (t) { titleEl.textContent = t; panel.setAttribute('aria-label', t); },
       /** Covers the sheet with a tick, then closes it. */
       celebrate: function (title, sub, value) {
@@ -8238,8 +8435,10 @@ var Kit = (function () {
     document.body.appendChild(layer);
     stack.push(ctl); lockScroll();
     if (window.visualViewport) { visualViewport.addEventListener('resize', fit); fit(); }
-    apply(travel());
-    settle(0, 0);
+    if (swapped) {            // taking another sheet's place: already up, at the same place
+      apply(0); body.scrollTop = swapped.top;
+      if (swapped.fade && !reduceMotion) body.classList.add('swap-in');
+    } else { apply(travel()); settle(0, 0); }
     setTimeout(function () { try { panel.focus({ preventScroll: true }); } catch (e) {} }, 0);
     return ctl;
   }
@@ -8565,7 +8764,7 @@ var Kit = (function () {
     btn: btn, setBusy: setBusy, setLabel: setLabel, iconBtn: iconBtn, chip: chip,
     textField: textField, amountField: amountField, segmented: segmented, choices: choices, switchBtn: switchBtn, suggest: suggest,
     slider: slider, pickField: pickField, ring: ring, meter: meter, countUp: countUp, toast: toast,
-    sheet: sheet, confirm: confirm, ask: ask, pickFromList: pickFromList,
+    sheet: sheet, swap: swap, confirm: confirm, ask: ask, pickFromList: pickFromList,
     prepareImage: prepareImage, videoFrames: videoFrames, driveUpload: driveUpload, photoStrip: photoStrip, monthChart: monthChart, monthTable: monthTable, rankedBars: rankedBars,
     openSheets: function () { return stack.length; }
   };
@@ -8669,6 +8868,29 @@ var Kit = (function () {
     if (title) el.appendChild(h('h3', { text: title }));
     return el;
   }
+  /** Folds a sheet section away under its heading, with one line saying what's inside. A long sheet becomes a short
+   *  list of headings; each stays open or shut as she left it. open = how it starts. */
+  var FOLD = {};
+  function fold(sec, key, ic, sum, open) {
+    var head = sec.firstElementChild, isOpen = FOLD[key] == null ? !!open : FOLD[key];
+    var body = h('div', { class: 'fold-body' }), sumEl = h('span', { class: 'fold-s', text: sum || '' });
+    while (head.nextSibling) body.appendChild(head.nextSibling);
+    var hb = h('button', { type: 'button', class: 'fold-head', 'aria-expanded': String(isOpen) }, h('span', { class: 'fold-ic' }, icon(ic)),
+      h('span', { class: 'grow' }, h('span', { class: 'fold-t', text: head.textContent }), sumEl), icon('expand_more'));
+    head.replaceWith(hb); sec.appendChild(body);
+    sec.classList.add('fold'); sec.classList.toggle('open', isOpen); sec.dataset.fold = key;
+    sec.setOpen = function (v) { isOpen = !!v; FOLD[key] = isOpen; sec.classList.toggle('open', isOpen); hb.setAttribute('aria-expanded', String(isOpen)); };
+    sec.setSum = function (t) { sumEl.textContent = t || ''; };
+    hb.addEventListener('click', function () { sec.setOpen(!isOpen); K.haptic(); });
+    return sec;
+  }
+  /** Opens a folded section on the sheet in front and brings it into view. */
+  function openFold(key) {
+    var all = document.querySelectorAll('.fold[data-fold="' + key + '"]'), el = all[all.length - 1];
+    if (!el) return;
+    el.setOpen(true);
+    setTimeout(function () { el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 40);
+  }
 
   // ------------------------------------------------------------------ an idea's day (TIDE_DAY in Logic.gs)
   // Sunrise to golden hour as it's made and put out; sunset when it's retired; dusk, then night, while it rests.
@@ -8703,10 +8925,10 @@ var Kit = (function () {
         undoCard(msg, function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Put back.');
       });
     }
-    function grow() { ctl.close(); setTimeout(function () { openNote(null, { ideaId: x.id }); }, 260); }
+    function grow() { K.swap(ctl, function () { openNote(null, { ideaId: x.id }); }); }
     function talk() {
       return api('startTopic', { title: x.title, detail: String(x.note || x.summary || '').slice(0, 1800) }).then(function (r) {
-        return refresh().then(function () { ctl.close(); render(); setTimeout(function () { openTopic(r.id); }, 280); });
+        return refresh().then(function () { render(); K.swap(ctl, function () { openTopic(r.id); }); });
       });
     }
     function tick() {
@@ -9364,7 +9586,7 @@ var Kit = (function () {
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : 'Ranked by ' + (ADMIN ? artist() + '’s' : 'your') + ' priority, then by viability.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
-      label: 'Show', value: tab, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
+      label: 'Show', value: tab, fit: true, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
       options: [{ value: 'goals', label: 'Goals' }, { value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
         { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }, { value: 'notebook', label: 'Notes' }]
     })), 1));
@@ -9635,7 +9857,7 @@ var Kit = (function () {
     var r = byId(S.data.reports || [], id);
     if (!r) return;
     var tr = r.triage || {}, f = { status: r.status, reply: r.reply || tr.replyDraft || '', adminNotes: r.adminNotes || '' }, dirty = false, ctlRef = null;
-    function reopen() { refresh().then(function () { if (ctlRef) ctlRef.close(); render(); setTimeout(function () { openReportAdmin(id); }, 260); }).catch(fail); }
+    function reopen() { refresh().then(function () { render(); K.swap(ctlRef, function () { openReportAdmin(id); }, true); }).catch(fail); }
     K.sheet({
       title: tr.summary || r.kind, tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
       build: function (ctl) {
@@ -9689,6 +9911,8 @@ var Kit = (function () {
     if (i.thumbIds.length) return thumbImg(i.thumbIds[0], cls);
     var ig = igPost(i.url);
     if (!ig) return h('div', { class: cls + ' blank' }, icon('link'), h('span', { text: i.source || 'Link' }));
+    // Instagram doesn't let this one be shown inside other pages: a tidy tile, not its broken-link box
+    if (i.embed === 'no') return h('div', { class: cls + ' blank ig-only' }, icon('photo_camera'), h('span', { text: 'On Instagram' }), h('small', { text: 'Tap for the link' }));
     var box = h('div', { class: cls + ' inspo-embed' });
     box.appendChild(h('iframe', { src: 'https://www.instagram.com/' + ig.kind + '/' + ig.code + '/embed/', loading: 'lazy', tabindex: '-1', 'aria-hidden': 'true', scrolling: 'no', title: 'Instagram post' }));
     (function fit(n) { var w = box.clientWidth; if (w) box.style.setProperty('--s', String(w / 326)); else if (n < 40) setTimeout(function () { fit(n + 1); }, 150); })(0);
@@ -9743,7 +9967,9 @@ var Kit = (function () {
         var s2 = sheetSection('Link to the post');
         s2.appendChild(K.textField({ label: 'Paste the link', value: f.url, maxlength: 1000, onInput: function (v) { f.url = v; dirty = true; }, help: 'In Instagram: ⋯ → Copy link. Then paste it here.' }));
         var igIt = it && igPost(it.url);
-        if (igIt) s2.appendChild(h('div', { class: 'inspo-full' }, h('iframe', { src: 'https://www.instagram.com/' + igIt.kind + '/' + igIt.code + '/embed/captioned/', loading: 'lazy', title: 'The Instagram post', scrolling: 'no' })));
+        if (igIt && it.embed === 'no') s2.appendChild(h('a', { class: 'ig-open press', href: it.url, target: '_blank', rel: 'noopener noreferrer' }, icon('photo_camera'),
+          h('span', { class: 'grow' }, h('b', { text: 'Open it on Instagram' }), h('span', { class: 'body-s', text: 'Instagram only shows this one in its own app.' })), icon('open_in_new')));
+        else if (igIt) s2.appendChild(h('div', { class: 'inspo-full' }, h('iframe', { src: 'https://www.instagram.com/' + igIt.kind + '/' + igIt.code + '/embed/captioned/', loading: 'lazy', title: 'The Instagram post', scrolling: 'no' })));
         if (it && it.url) s2.appendChild(h('a', { class: 'btn text press', href: it.url, target: '_blank', rel: 'noopener', style: 'margin-top:6px' }, icon('open_in_new'), h('span', { text: 'Open the post' })));
         var s3 = sheetSection('What caught your eye?');
         s3.appendChild(K.textField({ suggest: ['The colours', 'The texture', 'The composition', 'The packaging', 'How it feels'], label: 'A few words (optional)', value: f.note, multiline: true, maxlength: 2000, onInput: function (v) { f.note = v; dirty = true; } }));
@@ -9969,7 +10195,7 @@ var Kit = (function () {
           if (!f.title.trim()) { title.input.focus(); return; }
           K.setBusy(go, true);
           api('startTopic', f).then(function (r) { return refresh().then(function () { return r; }); })
-            .then(function (r) { ctl.close(); render(); setTimeout(function () { openTopic(r.id); }, 280); })
+            .then(function (r) { render(); K.swap(ctl, function () { openTopic(r.id); }); })
             .catch(function (e) { K.setBusy(go, false); fail(e); });
         });
         ctl.foot.appendChild(go);
@@ -9988,7 +10214,7 @@ var Kit = (function () {
     var tp = byId(talkData().topics, id);
     if (!tp) return;
     var poll = null, ctlRef = null;
-    function reopen() { if (ctlRef) ctlRef.close(); setTimeout(function () { openTopic(id); }, 260); }
+    function reopen() { K.swap(ctlRef, function () { openTopic(id); }, true); }
     K.sheet({
       title: tp.status === 'Done' && tp.outcome ? tp.outcome.title : tp.title, tall: true,
       onClose: function () { if (poll) clearInterval(poll); render(); },
@@ -10091,9 +10317,9 @@ var Kit = (function () {
           nx.appendChild(nxr); ctl.body.appendChild(nx);
           if (o.nextStep) { var ns = sheetSection('Next step'); ns.appendChild(h('p', { class: 'body-m', text: o.nextStep })); ctl.body.appendChild(ns); }
           var fs = sheetSection('Filed'), fl = h('div', { class: 'field-gap' });
-          if (f.noteId && byId(S.data.notebook, f.noteId)) fl.appendChild(btn('outlined', 'Open the note', { icon: 'sticky_note_2', block: true, onclick: function () { ctl.close(); setTimeout(function () { openNote(f.noteId); }, 280); } }));
-          if (f.pipelineId && byId(talkData().pipeline, f.pipelineId)) fl.appendChild(btn('outlined', 'Open it in Products', { icon: 'sell', block: true, onclick: function () { ctl.close(); setTimeout(function () { openItem(f.pipelineId); }, 280); } }));
-          if (f.ideaId && byId(S.data.ideas, f.ideaId)) fl.appendChild(btn('outlined', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { ctl.close(); setTimeout(function () { openIdea(f.ideaId); }, 280); } }));
+          if (f.noteId && byId(S.data.notebook, f.noteId)) fl.appendChild(btn('outlined', 'Open the note', { icon: 'sticky_note_2', block: true, onclick: function () { K.swap(ctl, function () { openNote(f.noteId); }); } }));
+          if (f.pipelineId && byId(talkData().pipeline, f.pipelineId)) fl.appendChild(btn('outlined', 'Open it in Products', { icon: 'sell', block: true, onclick: function () { K.swap(ctl, function () { openItem(f.pipelineId); }); } }));
+          if (f.ideaId && byId(S.data.ideas, f.ideaId)) fl.appendChild(btn('outlined', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { K.swap(ctl, function () { openIdea(f.ideaId); }); } }));
           fl.appendChild(btn('text', 'File it as something else', { icon: 'category', onclick: function () {
             K.pickFromList({ title: 'What is it?', options: talkData().kinds }).then(function (k) {
               if (k === undefined) return;
@@ -10152,10 +10378,11 @@ var Kit = (function () {
           skyStrip(p.day),
           h('div', { class: 'th-blank' }, icon('sell')),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
-            h('div', { class: 'li-sup', style: 'white-space:normal;-webkit-line-clamp:2', text: p.summary || ' ' }),
+            h('div', { class: 'li-sup wrap2', text: p.summary || ' ' }),
             p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null,
-            p.next && !p.next.done ? h('div', { class: 'li-sup next-line' + (p.next.who === 'hers' ? ' hers' : ''), text: (p.next.wait ? '' : p.next.who === 'hers' ? 'You: ' : 'Go? ') + p.next.label }) : null),
-          h('div', { class: 'li-trail' }, dayChip(p.day), itemChip(p))));
+            p.next && !p.next.done ? h('div', { class: 'li-sup next-line' + (p.next.who === 'hers' ? ' hers' : ''), text: (p.next.wait ? '' : p.next.who === 'hers' ? 'You: ' : 'Go? ') + p.next.label }) : null,
+            h('div', { class: 'li-chips' }, itemChip(p))),
+          icon('chevron_right')));
       });
       sec.appendChild(l);
       main.appendChild(rise(sec, i++));
@@ -10278,67 +10505,96 @@ var Kit = (function () {
     return card;
   }
   /** Her checklist on a product: only what needs her own hands. Everything else is Tide Book's, with her go. */
+  var HAND_ALL = {}, HAND_PEEK = {}, HAND_SHOW = 5;
   function handList(p, saveFirst, reopen) {
     var L = p.hands || [];
     if (!L.length) return null;
-    var left = L.filter(function (x) { return x.state === 'now'; }).length;
+    var nowList = L.filter(function (x) { return x.state === 'now'; }), nLater = 0, nDone = 0;
+    L.forEach(function (x) { if (x.state === 'later') nLater++; else if (x.state === 'done') nDone++; });
+    var nNow = nowList.length;
+    if ((p.planWaits || p.parked) && nNow && !HAND_PEEK[p.id]) {
+      return h('div', { class: 'card pad hand-list', style: 'margin:0 0 14px' },
+        h('div', { class: 'row', style: 'gap:8px;align-items:center' }, icon('front_hand'), h('div', { class: 'title-s grow', text: 'Your checklist' }),
+          h('span', { class: 'hand-count wait', text: nNow + ' waiting' })),
+        h('p', { class: 'body-s', style: 'margin:8px 0 8px;color:var(--on-surface-variant)', text: p.parked ? 'Nothing to do on this while it’s paused. The list is kept for when it comes back.' : 'Nothing to do on this until its turn comes. The list is kept for then.' }),
+        btn('text', 'Have a look anyway', { sm: true, icon: 'expand_more', onclick: function () { HAND_PEEK[p.id] = true; reopen(); } }));
+    }
     var sec = h('div', { class: 'card pad hand-list', style: 'margin:0 0 14px' },
       h('div', { class: 'row', style: 'gap:8px;align-items:center' }, icon('front_hand'), h('div', { class: 'title-s grow', text: 'Your checklist' }),
-        h('span', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: left ? left + ' to do now' : 'Nothing for now' })),
-      h('p', { class: 'body-s', style: 'margin:4px 0 8px;color:var(--on-surface-variant)', text: 'Only the things that need you, noted so nothing’s forgotten. Nothing waits on them: tick each one when it’s done.' }));
-    // what's for now in full; what's later or done folds away
-    var rest = h('div', { hidden: true }), nLater = 0, nDone = 0;
-    L.forEach(function (x) {
-      if (x.state === 'later') nLater++; if (x.state === 'done') nDone++;
-      var hk = p.id + ':' + x.cid, hv = x.help || { turns: [], state: '' };
-      // tap the item to expand it: a one-sentence answer, then choices
-      var helpBtn = x.state === 'now' && x.cid ? h('div', { class: 'hand-more' + (HELP_OPEN[hk] ? ' open' : '') }, h('span', { text: HELP_OPEN[hk] ? 'Less' : 'How do I do this?' }), icon('expand_more')) : null;
-      function toggleHelp() {
-        HELP_OPEN[hk] = !HELP_OPEN[hk];
-        if (HELP_OPEN[hk] && !hv.turns.length && hv.state !== 'thinking') {
-          helpBtn.firstChild.textContent = 'Opening…';
-          saveFirst().then(function () { return api('helpStart', p.id, x.cid); }).then(refresh).then(reopen).catch(function (er) { HELP_OPEN[hk] = false; reopen(); fail(er); });
-        } else reopen();
-      }
-      var row = h('div', { class: 'hand-row ' + x.state },
-        h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'hourglass_top' : 'radio_button_unchecked')),
-        h('div', { class: 'grow' }, h('div', { class: 'hand-text', text: x.text }),
-          h('div', { class: 'hand-why', text: x.state === 'later' && !x.snoozed ? 'Later' + (x.why ? ': ' + x.why : '') : x.why || '' })),
-        x.state === 'now' && x.tick ? btn('tonal', 'Done', { sm: true, icon: 'check', onclick: function (e) {
-          var b = e.currentTarget; K.setBusy(b, true);
-          saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
-            .catch(function (er) { K.setBusy(b, false); fail(er); });
-        } }) : null);
-      // put it off for later, or bring it back
+        h('span', { class: 'hand-count' + (nNow ? '' : ' none'), text: nNow ? nNow + ' to do' : 'Nothing for now' })),
+      nDone && nNow ? h('div', { class: 'hand-bar', role: 'img', 'aria-label': nDone + ' of ' + (nDone + nNow) + ' done' }, h('i', { style: 'width:' + Math.round(nDone / (nDone + nNow) * 100) + '%' })) : null,
+      h('p', { class: 'body-s', style: 'margin:8px 0 6px;color:var(--on-surface-variant)', text: nNow ? 'Only the things that need you. Nothing waits on them: tick each one when it’s done, or put it off for later.' : 'Nothing needs you right now.' }));
+    function rowFor(x, into) {
+      var hk = p.id + ':' + x.cid, hv = x.help || { turns: [], state: '' }, isQ = /^q\d+$/.test(x.key);
+      var canHelp = x.state === 'now' && !!x.cid, open = canHelp && !!HELP_OPEN[hk];
+      var row = h('div', { class: 'hand-row ' + x.state + (open ? ' open' : '') }), lead;
+      // the circle is the tick
+      if (x.state === 'now' && x.tick) {
+        lead = h('button', { type: 'button', class: 'hand-tick', 'aria-label': 'Tick as done: ' + x.text }, icon('radio_button_unchecked'));
+        lead.addEventListener('click', function () {
+          if (lead.disabled) return;
+          lead.disabled = true; row.classList.add('ticked'); lead.firstChild.textContent = 'check_circle'; K.haptic('success');
+          saveFirst().then(function () { return api('tickHand', p.id, x.key); }).then(refresh).then(function () {
+            reopen();
+            undoCard('Ticked off.', function () { return api('untickHand', p.id, x.key).then(refresh).then(function () { reopen(); }); }, 'Back on your list.');
+          }).catch(function (er) { lead.disabled = false; row.classList.remove('ticked'); lead.firstChild.textContent = 'radio_button_unchecked'; fail(er); });
+        });
+      } else lead = h('span', { class: 'hand-ic' }, icon(x.state === 'done' ? 'check_circle' : x.state === 'later' ? 'schedule' : isQ ? 'edit_note' : 'pending'));
+      var body = h('div', { class: 'grow' }, h('div', { class: 'hand-text', text: x.text }),
+        h('div', { class: 'hand-why', text: x.state === 'later' && !x.snoozed ? 'Later' + (x.why ? ': ' + x.why : '') : x.why || '' }));
+      row.append(lead, body);
       if (x.state === 'now' || x.snoozed) {
-        var lb = btn('text', x.snoozed ? 'Bring back' : 'Later', { sm: true, icon: x.snoozed ? 'undo' : 'schedule', onclick: function (e) {
+        var acts = h('div', { class: 'hand-acts' }), more = null;
+        if (canHelp) more = h('span', { class: 'hand-more' + (open ? ' open' : '') }, h('span', { text: open ? 'Close' : 'How do I do this?' }), icon('expand_more'));
+        else if (isQ && x.state === 'now') more = h('span', { class: 'hand-more' }, h('span', { text: 'Answer it' }), icon('arrow_downward'));
+        if (more) acts.appendChild(more);
+        acts.appendChild(h('span', { class: 'grow' }));
+        // put it off for later, or bring it back
+        acts.appendChild(btn('text', x.snoozed ? 'Bring back' : 'Later', { sm: true, icon: x.snoozed ? 'undo' : 'schedule', onclick: function (e) {
           e.stopPropagation(); var b = e.currentTarget; K.setBusy(b, true);
           saveFirst().then(function () { return api('laterHand', p.id, x.key, !x.snoozed); }).then(refresh).then(function () {
             reopen();
-            if (!x.snoozed) undoCard('Put off for later. It’s under “for later”.', function () { return api('laterHand', p.id, x.key, false).then(function () { return refresh(); }).then(function () { reopen(); }); }, 'Back on your list.');
+            if (!x.snoozed) undoCard('Put off for later. It’s under “for later”.', function () { return api('laterHand', p.id, x.key, false).then(refresh).then(function () { reopen(); }); }, 'Back on your list.');
           }).catch(function (er) { K.setBusy(b, false); fail(er); });
-        } });
-        var tail = row.lastElementChild && row.lastElementChild.tagName === 'BUTTON' ? row.lastElementChild : null;
-        var stackBtns = h('div', { class: 'hand-btns' });
-        if (tail) stackBtns.appendChild(tail);
-        stackBtns.appendChild(lb);
-        row.appendChild(stackBtns);
+        } }));
+        body.appendChild(acts);
+        // tap the item itself: a one-sentence answer and choices, or straight to the question
+        var tap = canHelp ? function () {
+          HELP_OPEN[hk] = !HELP_OPEN[hk];
+          if (HELP_OPEN[hk] && !hv.turns.length && hv.state !== 'thinking') {
+            more.firstChild.textContent = 'Opening…';
+            saveFirst().then(function () { return api('helpStart', p.id, x.cid); }).then(refresh).then(reopen).catch(function (er) { HELP_OPEN[hk] = false; reopen(); fail(er); });
+          } else reopen();
+        } : more ? function () { openFold('pp:' + p.id + ':open'); } : null;
+        if (tap) {
+          body.classList.add('hand-tap'); body.setAttribute('role', 'button'); body.setAttribute('tabindex', '0');
+          if (canHelp) body.setAttribute('aria-expanded', String(open));
+          body.addEventListener('click', tap);
+          body.addEventListener('keydown', function (e) { if (e.target === body && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); tap(); } });
+        }
       }
-      if (helpBtn) {
-        var g = row.querySelector('.grow');
-        g.appendChild(helpBtn); g.classList.add('hand-tap');
-        g.setAttribute('role', 'button'); g.setAttribute('tabindex', '0'); g.setAttribute('aria-expanded', String(!!HELP_OPEN[hk]));
-        g.addEventListener('click', toggleHelp);
-        g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleHelp(); } });
-      }
-      (x.state === 'now' ? sec : rest).appendChild(row);
-      if (helpBtn && HELP_OPEN[hk]) sec.appendChild(helpBox(p, x, hv, saveFirst, reopen));
-    });
+      into.appendChild(row);
+      if (open) into.appendChild(helpBox(p, x, hv, saveFirst, reopen));
+    }
+    // the first few in full view; the rest one tap away, so the sheet stays short
+    var many = nNow > HAND_SHOW + 1;
+    var showAll = !many || HAND_ALL[p.id] || nowList.slice(HAND_SHOW).some(function (x) { return x.cid && HELP_OPEN[p.id + ':' + x.cid]; });
+    var extra = h('div', { hidden: !showAll });
+    nowList.forEach(function (x, i) { rowFor(x, many && i >= HAND_SHOW ? extra : sec); });
+    if (many) {
+      sec.appendChild(extra);
+      var allBtn = btn('tonal', '', { sm: true, block: true });
+      var paintAll = function () { allBtn.textContent = ''; allBtn.append(icon(showAll ? 'expand_less' : 'expand_more'), showAll ? 'Show fewer' : 'Show the other ' + (nNow - HAND_SHOW)); };
+      allBtn.addEventListener('click', function () { showAll = !showAll; HAND_ALL[p.id] = showAll; extra.hidden = !showAll; paintAll(); });
+      paintAll();
+      sec.appendChild(h('div', { style: 'margin-top:8px' }, allBtn));
+    }
+    // what's later or done folds away
     if (nLater || nDone) {
-      var more = btn('text', [nLater ? nLater + ' for later' : '', nDone ? nDone + ' done' : ''].filter(String).join(' · '), { sm: true, onclick: function () {
-        rest.hidden = !rest.hidden;
-      } });
-      sec.appendChild(h('div', { style: 'margin-top:6px' }, more)); sec.appendChild(rest);
+      var rest = h('div', { hidden: true });
+      L.forEach(function (x) { if (x.state !== 'now') rowFor(x, rest); });
+      sec.appendChild(h('div', { style: 'margin-top:6px' }, btn('text', [nLater ? nLater + ' for later' : '', nDone ? nDone + ' done' : ''].filter(String).join(' · '), { sm: true, icon: 'unfold_more', onclick: function () { rest.hidden = !rest.hidden; } })));
+      sec.appendChild(rest);
     }
     return sec;
   }
@@ -10502,7 +10758,7 @@ var Kit = (function () {
   function tldrItem(p) {
     var R = p.research, todo = (p.checks || []).filter(function (c) { return c.status !== 'OK'; }).length, need = (p.gate || []).filter(function (r) { return !((p.approvals || {})[p.stage] || {})[r]; });
     return tldr([
-      p.stage + (p.parked ? ' · parked' : need.length ? ' · needs ' + need.map(function (r) { return r === 'artist' ? cap(artist()) : adminName(); }).join(' and ') + '’s OK' : ''),
+      p.stage + (p.parked ? ' · paused' : need.length ? ' · needs ' + need.map(function (r) { return r === 'artist' ? cap(artist()) : adminName(); }).join(' and ') + '’s OK' : ''),
       R ? R.verdict + ' ' + R.viability + '/100 · about ' + R.demand.low + (R.demand.high > R.demand.low ? '–' + R.demand.high : '') + ' sales a month' + (R.costing.price ? ' at ' + money(R.costing.price) : '')
         : p.researchStatus === 'Queued' || p.researchStatus === 'Researching' ? 'Market research is on its way' : '',
       todo ? todo + ' check' + (todo === 1 ? '' : 's') + ' still to do' + (p.unitCost ? ' · costs ' + money(p.unitCost, { cents: true }) + ' to make' : '') : 'All checks done'
@@ -10518,7 +10774,8 @@ var Kit = (function () {
       price: p.price, sample: p.sample, listing: { copy: (p.listing || {}).copy || '', posts: ((p.listing || {}).posts || []).slice() } }));
     while (f.listing.posts.length < 3) f.listing.posts.push('');
     function touch() { dirty = true; paintCost(); }
-    function reopen() { if (ctlRef) ctlRef.close(); setTimeout(function () { openItem(id); }, 260); }
+    function reopen() { if (ctlRef && !ctlRef.gone()) K.swap(ctlRef, function () { openItem(id); }, true); else render(); }   // drawn again in place, where she was
+    function fk(k) { return 'pp:' + id + ':' + k; }
     function payload() { return { title: f.title, summary: f.summary, decisions: f.decisions, open: f.open, checks: f.checks, parts: f.parts, price: f.price, sample: f.sample, listing: f.listing }; }
     function saveFirst() { return dirty ? api('updateItem', id, payload()).then(function () { dirty = false; }) : Promise.resolve(); }
     var costEl = h('div', { class: 'keep' });
@@ -10527,6 +10784,8 @@ var Kit = (function () {
       var keep = f.price > 0 ? TidePricing.keep(f.price, unit, s.paymentFeePct, S.data.gstRegistered) : 0;
       costEl.textContent = 'Costs ' + money(unit, { cents: true }) + ' to make' + (f.price > 0 ? ' · you keep ' + money(keep, { cents: true }) + ' a sale' + (keep > 0 ? ' · ' + Math.ceil(T.goal / keep) + ' a week reaches ' + money(T.goal) : '') : ' · no price yet');
       costEl.classList.toggle('neg', f.price > 0 && keep < 0);
+      var ps = document.querySelectorAll('.fold[data-fold="' + fk('parts') + '"]'); ps = ps[ps.length - 1];
+      if (ps) ps.setSum((f.parts.length ? f.parts.length + (f.parts.length === 1 ? ' part' : ' parts') + ' · ' + money(unit, { cents: true }) + ' to make' : 'No parts yet') + (f.price > 0 ? ' · sells at ' + money(f.price, { cents: f.price % 1 !== 0 }) : ''));
     }
     K.sheet({
       title: p.title, tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
@@ -10538,7 +10797,9 @@ var Kit = (function () {
         var pln = planLine('product', p, reopen); if (pln) ctl.body.appendChild(pln);
         var nc = p.planWaits ? null : nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
         var hl = handList(p, saveFirst, reopen); if (hl) ctl.body.appendChild(hl);
-        ctl.body.appendChild(researchCard(p, f, reopen, saveFirst, touch));
+        var R0 = p.research, looking = p.researchStatus === 'Queued' || p.researchStatus === 'Researching' || p.researchStatus === 'First look';
+        ctl.body.appendChild(fold(researchCard(p, f, reopen, saveFirst, touch), fk('research'), 'travel_explore',
+          R0 ? R0.verdict + ' · ' + R0.viability + '/100' + (p.firstLook ? ' · a first look' : '') : looking ? 'On its way' : 'Not looked into yet', !R0 || si < 2));
         var pfc = printfulCard(p, reopen, saveFirst); if (pfc) ctl.body.appendChild(pfc);
         if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.resumeOn ? 'Paused. It comes back by itself on ' + K.dayLabel(p.resumeOn, true) + ', with a reminder the day before.' : 'Paused. Bring it back when you’re ready.', 'calendar_month')));
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.aiJob === 'clear' ? 'Checking each one…' : 'Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
@@ -10548,11 +10809,12 @@ var Kit = (function () {
         s1.appendChild(h('div', { class: 'field-gap' },
           K.textField({ label: 'Name', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } }),
           K.textField({ label: 'Summary', value: f.summary, multiline: true, maxlength: 2000, onInput: function (v) { f.summary = v; touch(); } })));
-        ctl.body.appendChild(s1);
+        ctl.body.appendChild(h('div', { class: 'fold-group', text: 'The details' }));
+        ctl.body.appendChild(fold(s1, fk('what'), 'sell', f.summary || 'Its name and what it is', false));
 
         var s2 = sheetSection('Decided');
         s2.appendChild(K.textField({ label: 'One per line', value: f.decisions.join('\n'), multiline: true, maxlength: 6000, onInput: function (v) { f.decisions = v.split('\n').map(function (x) { return x.trim(); }).filter(String); touch(); } }));
-        ctl.body.appendChild(s2);
+        ctl.body.appendChild(fold(s2, fk('decided'), 'task_alt', f.decisions.length ? f.decisions.length + ' decided' : 'Nothing decided yet', p.stage === 'Decisions'));
 
         var s3 = sheetSection('Open questions'), oq = h('div', { class: 'field-gap' });
         function drawOpen() {
@@ -10565,17 +10827,20 @@ var Kit = (function () {
         s3.append(oq, h('div', { style: 'margin-top:10px' }, btn('text', 'Add a question', { icon: 'add', onclick: function () {
           K.ask({ title: 'Open question', label: 'What still needs answering?', options: ['Who is it for?', 'What will it cost to make?', 'When should it launch?'], maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.open.push({ q: q, a: '' }); drawOpen(); touch(); } });
         } })));
-        ctl.body.appendChild(s3);
+        var openQ = f.open.filter(function (o) { return !o.a; }).length;
+        ctl.body.appendChild(fold(s3, fk('open'), 'help', openQ ? openQ + ' to answer' : f.open.length ? 'All answered' : 'None open', openQ > 0 && (p.stage === 'Questions' || p.stage === 'Decisions')));
 
         // Checks are closed loops: each ends in a go or no go, and a no go comes with the one simplest action
         // that makes it a go. Cleared ones fold away; what's left is a short list of things to do.
-        var s4 = sheetSection('Checks'), ck = h('div');
+        var s4 = sheetSection('Checks'), ck = h('div'), checkSum = '';
         var clearing = p.aiJob === 'clear' && (p.aiStatus === 'Queued' || p.aiStatus === 'Working');
         function drawChecks() {
           ck.textContent = '';
           var open = [], done = [];
           f.checks.forEach(function (c, i) { (c.status === 'OK' ? done : open).push({ c: c, i: i }); });
           var nogo = open.filter(function (x) { return x.c.status === 'Problem'; }).length, unknown = open.length - nogo;
+          checkSum = !f.checks.length ? 'None yet' : [done.length ? done.length + ' a go' : '', nogo ? nogo + ' to sort' : '', unknown ? unknown + ' being checked' : ''].filter(String).join(' · ');
+          if (s4.setSum) s4.setSum(checkSum);
           ck.appendChild(h('div', { class: 'check-sum' },
             h('span', { class: 'chk-pill go' }, icon('check_circle'), done.length + ' a go'),
             nogo ? h('span', { class: 'chk-pill nogo' }, icon('flag'), nogo + ' to sort') : null,
@@ -10613,7 +10878,7 @@ var Kit = (function () {
           btn('text', 'Add a check', { icon: 'add', onclick: function () { K.ask({ title: 'Add a check', label: 'What needs settling?', options: ['Is there a supplier in Australia?', 'Does the price cover the costs?', 'Is it safe to post?'], maxlength: 300, confirmLabel: 'Add' }).then(function (q) { if (q) { f.checks.push({ item: q, status: 'To check', note: '' }); drawChecks(); touch(); } }); } }),
           btn('text', 'Draft checks and parts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'checks'); }).then(refresh).then(function () { toast('Drafting. It\u2019ll appear here shortly.'); reopen(); }).catch(fail); } })));
         if (p.risks.length) { var rl = h('ul', { class: 'talk-list', style: 'margin-top:10px' }); p.risks.forEach(function (r) { rl.appendChild(h('li', { text: r })); }); s4.append(h('div', { class: 'label-s', style: 'margin:14px 4px 4px', text: 'Risks to watch' }), rl); }
-        ctl.body.appendChild(s4);
+        ctl.body.appendChild(fold(s4, fk('checks'), 'fact_check', checkSum, ADMIN && p.stage === 'Checks & costing'));
 
         var s5 = sheetSection('Parts and costing'), pl = h('div');
         function drawParts() {
@@ -10630,18 +10895,18 @@ var Kit = (function () {
         drawParts();
         s5.append(pl, btn('text', 'Add a part', { icon: 'add', onclick: function () { f.parts.push({ part: '', supplier: '', cost: 0, qty: 1 }); drawParts(); touch(); } }),
           h('div', { style: 'margin-top:12px' }, K.textField({ label: 'Selling price', prefix: '$', inputmode: 'decimal', value: f.price || '', onInput: function (v) { f.price = K.num(v); touch(); } })), costEl);
-        ctl.body.appendChild(s5);
+        ctl.body.appendChild(fold(s5, fk('parts'), 'payments', '', p.stage === 'Checks & costing'));
 
         var s6 = sheetSection('Sample');
         s6.append(K.choices({ row: true, label: 'Sample', value: f.sample.status || 'Not ordered', options: T.sampleStatus, onChange: function (v) { f.sample.status = v; touch(); } }),
           h('div', { style: 'margin-top:10px' }, K.textField({ suggest: ['Colours look true', 'Colours look dull', 'Lovely quality', 'Needs a change'], label: 'What we noticed', value: f.sample.notes || '', multiline: true, maxlength: 2000, onInput: function (v) { f.sample.notes = v; touch(); } })));
-        ctl.body.appendChild(s6);
+        ctl.body.appendChild(fold(s6, fk('sample'), 'package_2', f.sample.status || 'Not ordered', p.stage === 'Sample'));
 
         var s7 = sheetSection('Listing and launch posts');
         s7.appendChild(h('div', { class: 'field-gap' }, K.textField({ label: 'Listing (in ' + artist() + '’s voice)', value: f.listing.copy, multiline: true, maxlength: 3000, onInput: function (v) { f.listing.copy = v; touch(); } }),
           f.listing.posts.map(function (txt, i) { return K.textField({ label: ['Teaser post', 'Reveal post', 'Last-call post'][i] || 'Post', value: txt, multiline: true, compact: true, maxlength: 1200, onInput: function (v) { f.listing.posts[i] = v; touch(); } }); })));
         s7.appendChild(h('div', { style: 'margin-top:10px' }, btn('tonal', 'Draft the listing and posts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'copy'); }).then(refresh).then(function () { toast('Drafting in ' + artist() + '’s voice.'); reopen(); }).catch(fail); } })));
-        ctl.body.appendChild(s7);
+        ctl.body.appendChild(fold(s7, fk('listing'), 'edit_note', f.listing.copy ? 'Written' : 'Not written yet', p.stage === 'Listing & launch'));
 
         // sign-offs and moving on
         var s8 = sheetSection('Where it’s up to: ' + p.stage);
@@ -10763,7 +11028,7 @@ var Kit = (function () {
     preset = preset || {};
     var f = { title: n ? n.title : (preset.title || ''), body: n ? n.body : (preset.body || ''), ideaId: n ? n.ideaId : (preset.ideaId || '') };
     var revision = n ? n.revision : 0, dirty = false, poll = null;
-    function reopen(nid) { ctlRef.close(); setTimeout(function () { openNote(nid); }, 260); }
+    function reopen(nid) { K.swap(ctlRef, function () { openNote(nid); }, true); }
     var ctlRef = null;
 
     function save() {
@@ -10852,7 +11117,7 @@ var Kit = (function () {
           if (n.backlinks.length) conn.appendChild(h('div', {}, h('div', { class: 'label-s', text: 'Linked from' }), h('div', { class: 'chip-wrap' }, n.backlinks.map(noteChip))));
           if (n.unresolved.length) {
             conn.appendChild(h('div', {}, h('div', { class: 'label-s', text: 'Not made yet' }), h('div', { class: 'chip-wrap' }, n.unresolved.map(function (name) {
-              return h('button', { type: 'button', class: 'choice press soft', onclick: function () { ctl.close(); setTimeout(function () { openNote(null, { title: name, ideaId: n.ideaId }); }, 260); } }, icon('add'), name);
+              return h('button', { type: 'button', class: 'choice press soft', onclick: function () { K.swap(ctl, function () { openNote(null, { title: name, ideaId: n.ideaId }); }, true); } }, icon('add'), name);
             }))));
           }
           if (!conn.children.length) conn.appendChild(note('Type [[ and a note’s name to link it. Links show up on both notes.', 'link'));
@@ -10907,7 +11172,7 @@ var Kit = (function () {
           var s4 = sheetSection('More');
           var more = h('div', { class: 'field-gap' });
           if (!n.ideaId) more.appendChild(btn('outlined', 'Make it an idea', { icon: 'lightbulb', block: true, onclick: function (e) { makeIdea(n, e.currentTarget, ctl); } }));
-          else more.appendChild(btn('text', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { ctl.close(); setTimeout(function () { openIdea(n.ideaId); }, 260); } }));
+          else more.appendChild(btn('text', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { K.swap(ctl, function () { openIdea(n.ideaId); }); } }));
           more.appendChild(btn('text', 'Earlier versions', { icon: 'history', block: true, onclick: function () { openHistory(n, ctl); } }));
           more.appendChild(btn('text', 'Delete note', { icon: 'delete', block: true, danger: true, onclick: function () {
             K.confirm({ title: 'Delete this note?', text: ADMIN ? 'Links to it will show as not made yet. The earlier versions are kept in the Sheet.' : 'It will be gone from your notebook.', confirmLabel: 'Delete', danger: true })
@@ -10942,7 +11207,7 @@ var Kit = (function () {
       var c = h('div', { class: 'ex-q' }, h('div', { class: 'body-m', style: 'font-weight:500;margin-bottom:6px', text: q.question }));
       if (q.answer) { c.appendChild(h('div', { class: 'body-m', text: '→ ' + q.answer })); box.appendChild(c); return; }
       function send(text) {
-        api('answerNoteQuestion', n.id, i, text).then(refresh).then(function () { K.haptic('success'); toast('Added to the note.'); ctl.close(); setTimeout(function () { openNote(n.id); }, 260); }).catch(fail);
+        api('answerNoteQuestion', n.id, i, text).then(refresh).then(function () { K.haptic('success'); toast('Added to the note.'); K.swap(ctl, function () { openNote(n.id); }); }).catch(fail);
       }
       var opts = (q.options && q.options.length >= 2 ? q.options : ['Yes', 'Not yet']).slice(0, 2);
       var own = '';
@@ -10974,7 +11239,7 @@ var Kit = (function () {
           ? h('div', { style: 'margin-top:8px' }, chip('Kept as a note', 'approved', 'check'))
           : h('div', { style: 'margin-top:8px' }, btn('tonal', 'Keep as a note', { sm: true, icon: 'add', onclick: function (e) {
             var b = e.currentTarget; K.setBusy(b, true);
-            api('keepSuggestion', n.id, i).then(refresh).then(function () { K.haptic('success'); toast('Kept, and linked from this note.'); ctl.close(); setTimeout(function () { openNote(n.id); }, 260); })
+            api('keepSuggestion', n.id, i).then(refresh).then(function () { K.haptic('success'); toast('Kept, and linked from this note.'); K.swap(ctl, function () { openNote(n.id); }); })
               .catch(function (err) { K.setBusy(b, false); fail(err); });
           } }));
         ns.appendChild(h('div', { class: 'ex-suggest' }, h('div', { class: 'title-m', text: s.title }), h('p', { class: 'body-m', text: s.body }), keep));
@@ -10985,7 +11250,7 @@ var Kit = (function () {
       h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { makeIdea(n, e.target.closest('button'), ctl); } }, icon('lightbulb'), 'Make it an idea'),
       h('button', { type: 'button', class: 'choice press soft', onclick: function () {
         api('startTopic', { title: n.title, detail: String(n.body || '').slice(0, 1800) }).then(function (r) { return refresh().then(function () { return r; }); })
-          .then(function (r) { ctl.close(); render(); setTimeout(function () { openTopic(r.id); }, 280); }).catch(fail);
+          .then(function (r) { render(); K.swap(ctl, function () { openTopic(r.id); }); }).catch(fail);
       } }, icon('forum'), 'Talk it through'),
       h('button', { type: 'button', class: 'choice press soft', onclick: function () {
         api('addDirection', { title: n.title, body: String(n.body || '').slice(0, 4000) }).then(refresh).then(function () { toast('Added to Our direction.'); }).catch(fail);
@@ -11118,7 +11383,7 @@ var Kit = (function () {
         if (busy >= 5) {
           var top = closestToDone();
           ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note(busy + ' ideas are on the go. Finishing one first gets your work out sooner.', 'flag')));
-          if (top) ctl.body.appendChild(h('div', { style: 'margin:-4px 0 14px' }, btn('tonal', 'Finish “' + top.x.title + '” instead', { icon: 'flag', sm: true, onclick: function () { dirty = false; ctl.close(); setTimeout(function () { openIdea(top.x.id); }, 320); } })));
+          if (top) ctl.body.appendChild(h('div', { style: 'margin:-4px 0 14px' }, btn('tonal', 'Finish “' + top.x.title + '” instead', { icon: 'flag', sm: true, onclick: function () { dirty = false; K.swap(ctl, function () { openIdea(top.x.id); }); } })));
         }
         function touch() { dirty = true; }
         var title = K.textField({ label: 'Name of the idea', maxlength: 120, onInput: function (v) { f.title = v; touch(); } });
@@ -11223,7 +11488,7 @@ var Kit = (function () {
       title: x.title, tall: true, guard: function () { return dirty; },
       build: function (ctl) {
         function touch() { dirty = true; }
-        var reo = function () { ctl.close(); setTimeout(function () { openIdea(x.id); }, 280); };
+        var reo = function () { K.swap(ctl, function () { openIdea(x.id); }, true); };
         var ipl = planLine('idea', x, reo); if (ipl) ctl.body.appendChild(ipl);
         var isPlan = S.data.plan && S.data.plan.ideaId === x.id;
         if (isPlan) ctl.body.appendChild(h('div', { style: 'margin:4px 0 12px' }, note('This is your plan. Its steps set the order for everything: anything for a later step waits until you get there.', 'flag')));
@@ -11270,7 +11535,7 @@ var Kit = (function () {
         var mineNotes = notesFor(x.id), sn = sheetSection('Notes');
         if (mineNotes.length) { var nl = h('div', { class: 'list' }); mineNotes.forEach(function (nn) { nl.appendChild(noteRow(nn)); }); sn.appendChild(nl); }
         else sn.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 8px', text: 'Rough thoughts about this idea live here. Tap Expand to grow them.' }));
-        sn.appendChild(btn('text', 'New note for this idea', { icon: 'edit_note', onclick: function () { ctl.close(); setTimeout(function () { openNote(null, { ideaId: x.id }); }, 260); } }));
+        sn.appendChild(btn('text', 'New note for this idea', { icon: 'edit_note', onclick: function () { K.swap(ctl, function () { openNote(null, { ideaId: x.id }); }); } }));
         ctl.body.appendChild(sn);
 
         {   // where it's up to: hers to set too; the admin's notes and questions stay on the admin side
@@ -11305,14 +11570,14 @@ var Kit = (function () {
         var ws = sheetSection('Website change'), W = x.website;
         if (!W) ws.appendChild(btn('outlined', 'It’s a website change', { icon: 'language', block: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
-          api('websiteRequest', x.id).then(refresh).then(function () { render(); toast(ADMIN ? 'Marked as a website change. Approve it when you’re ready.' : 'Sent. ' + adminName() + ' will have it done on your website.'); ctl.close(); setTimeout(function () { openIdea(x.id); }, 260); })
+          api('websiteRequest', x.id).then(refresh).then(function () { render(); toast(ADMIN ? 'Marked as a website change. Approve it when you’re ready.' : 'Sent. ' + adminName() + ' will have it done on your website.'); K.swap(ctl, function () { openIdea(x.id); }, true); })
             .catch(function (err) { K.setBusy(b, false); fail(err); });
         } }));
         else if (W.status === 'Requested') {
           ws.appendChild(note('Asked for ' + ago(W.at) + '. ' + (ADMIN ? 'Approve it to make the prompt for Claude.' : 'Waiting for ' + adminName() + ' to approve.'), 'language'));
           if (ADMIN) ws.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Approve, and make the prompt', { icon: 'verified', block: true, onclick: function (e) {
             var b = e.currentTarget; K.setBusy(b, true);
-            api('approveWebsite', x.id).then(refresh).then(function () { K.haptic('success'); render(); ctl.close(); setTimeout(function () { openIdea(x.id); }, 260); })
+            api('approveWebsite', x.id).then(refresh).then(function () { K.haptic('success'); render(); K.swap(ctl, function () { openIdea(x.id); }, true); })
               .catch(function (err) { K.setBusy(b, false); fail(err); });
           } })));
         } else if (W.status === 'Approved') {
@@ -11636,7 +11901,7 @@ var Kit = (function () {
         var s1 = sheetSection('Photos'); s1.style.marginTop = '4px';
         s1.appendChild(K.photoStrip({ thumbIds: p ? p.thumbIds : [], photoUrls: p ? p.photoUrls : [], files: f.files, onChange: touch, onDraw: function () { setTimeout(loadThumbs, 0); } }));
         s1.appendChild(h('p', { class: 'tf-help', style: 'margin-left:4px', text: 'A phone photo is fine for the listing. Prints and products are made from the proper scan.' }));
-        if (p) s1.appendChild(scanRow(p, function () { ctl.close(); setTimeout(function () { openPrint(p.id); }, 280); }));
+        if (p) s1.appendChild(scanRow(p, function () { K.swap(ctl, function () { openPrint(p.id); }, true); }));
 
         var s2 = sheetSection('Details');
         var title = K.textField({ label: 'Title', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } });
@@ -11807,30 +12072,31 @@ var Kit = (function () {
     // the AI savings tally (admin): what it would have cost on Claude, what it did cost, and the difference
     var sv = ADMIN && S.data.aiSavings;
     if (sv) {
-      var usd = function (n) { return 'US$' + (n < 10 ? n.toFixed(2) : Math.round(n)); };
-      var asec = section('AI costs: Claude or the PC');
-      function row(label, t) {
-        return h('div', { class: 'card pad', style: 'margin-bottom:10px' }, h('div', { class: 'label-s', text: label }),
-          h('div', { class: 'stats', style: 'margin-top:8px' },
-            h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'All on Claude' }), h('div', { class: 'v', text: usd(t.would) })),
-            h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'Actually cost' }), h('div', { class: 'v', text: usd(t.actual) })),
-            h('div', { class: 'stat' }, h('div', { class: 'label-s', text: 'Saved' }), h('div', { class: 'v', style: 'color:var(--good, #1b7a3a)', text: usd(t.saved) }),
-              h('div', { class: 'd' }, t.would ? Math.round(t.saved / t.would * 100) + '% less' : ''))),
-          h('p', { class: 'body-s', style: 'margin:8px 0 0;color:var(--on-surface-variant)', text: t.jobs + ' jobs: ' + t.local + ' on the PC, ' + t.claude + ' on Claude' + (t.chat ? ', ' + t.chat + ' in Claude chat' : '') + '.' +
-            (t.measured ? ' ' + t.measured + ' measured to the token' + (t.estimated ? ', ' + t.estimated + ' estimated' : '') + '.' : t.estimated ? ' The PC and chat jobs are estimated.' : '') }),
-          t.pcMetered ? h('p', { class: 'body-s', style: 'margin:4px 0 0;color:var(--on-surface-variant)', text: 'PC electricity, measured on the graphics card: ' + (t.pcWh < 1 ? t.pcWh.toFixed(2) : Math.round(t.pcWh)) + ' Wh over ' +
-            Math.round(t.pcSeconds / 60) + ' min, about A$' + (t.pcWh / 1000 * (S.data.settings.electricityKwhAud || 0)).toFixed(3) + ' (' + t.pcMetered + ' job' + (t.pcMetered === 1 ? '' : 's') + ').' }) : null);
+      var usd = function (n) { return 'US$' + (n > 0 && n < 0.1 ? n.toFixed(3) : n < 10 ? n.toFixed(2) : Math.round(n)); };
+      var asec = section('AI costs: Claude or the PC'), per = S.aiPeriod === 'total' ? 'total' : 'month', t = sv[per];
+      var rate = S.data.settings.electricityKwhAud, pct = t.would ? Math.round(t.saved / t.would * 100) : 0, top = Math.max(t.would, t.actual, 0.000001);
+      function bar(label, v, cls) {
+        return h('div', { class: 'ai-bar' }, h('div', { class: 'ai-bar-top' }, h('span', { class: 'body-s', text: label }), h('b', { class: 'body-s', text: usd(v) })),
+          h('div', { class: 'ai-track' }, h('i', { class: cls, style: 'width:' + (v > 0 ? Math.max(1.5, v / top * 100) : 0) + '%' })));
       }
-      asec.appendChild(row('This month', sv.month));
-      var rate = S.data.settings.electricityKwhAud;
-      asec.appendChild(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:-2px 0 10px' }, h('span', { class: 'body-s grow', text: 'Electricity: A$' + rate + ' a kWh' }),
-        btn('text', 'Change', { sm: true, onclick: function () {
-          K.ask({ title: 'Electricity rate', text: 'What your power bill charges per kWh, in dollars (e.g. 0.33).', label: 'Dollars per kWh', value: String(rate), confirmLabel: 'Save', maxlength: 8 }).then(function (v) {
-            if (v == null) return; var n = parseFloat(v); if (!(n >= 0 && n <= 5)) { toast('That rate doesn’t look right.'); return; }
-            api('saveSettings', { electricityKwhAud: n }).then(refresh).then(render).catch(fail);
-          });
-        } })));
-      asec.appendChild(row('Since ' + (sv.since ? K.dayLabel(sv.since.slice(0, 10), true) : 'the start'), sv.total));
+      var card = h('div', { class: 'card pad ai-cost' },
+        K.segmented({ label: 'Period', value: per, onChange: function (v) { S.aiPeriod = v; render(); },
+          options: [{ value: 'month', label: 'This month' }, { value: 'total', label: 'Since ' + (sv.since ? K.dayLabel(sv.since.slice(0, 10), true) : 'the start') }] }),
+        h('div', { class: 'ai-head' }, h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Saved by using the PC' }), h('div', { class: 'ai-big', text: usd(t.saved) })),
+          h('span', { class: 'chip ' + (pct > 0 ? 'approved' : 'plain'), text: pct + '% less' })),
+        bar('If Claude had done everything', t.would, 'would'), bar('What it actually cost', t.actual, 'actual'),
+        h('p', { class: 'body-s ai-line', text: t.jobs + ' job' + (t.jobs === 1 ? '' : 's') + ': ' + t.local + ' on the PC, ' + t.claude + ' on Claude' + (t.chat ? ', ' + t.chat + ' in Claude chat' : '') + '.' +
+          (t.measured ? ' ' + t.measured + ' measured to the token' + (t.estimated ? ', ' + t.estimated + ' estimated' : '') + '.' : t.estimated ? ' The PC and chat jobs are estimated.' : '') }),
+        t.pcMetered ? h('p', { class: 'body-s ai-line', text: 'PC electricity, measured on the graphics card: ' + (t.pcWh < 1 ? t.pcWh.toFixed(2) : Math.round(t.pcWh)) + ' Wh over ' +
+          Math.round(t.pcSeconds / 60) + ' min, about A$' + (t.pcWh / 1000 * (rate || 0)).toFixed(3) + ' (' + t.pcMetered + ' job' + (t.pcMetered === 1 ? '' : 's') + ').' }) : null,
+        h('div', { class: 'row ai-rate' }, icon('bolt'), h('span', { class: 'body-s grow', text: 'Electricity: A$' + rate + ' a kWh' }),
+          btn('text', 'Change', { sm: true, onclick: function () {
+            K.ask({ title: 'Electricity rate', text: 'What your power bill charges per kWh, in dollars (e.g. 0.33).', label: 'Dollars per kWh', value: String(rate), confirmLabel: 'Save', maxlength: 8 }).then(function (v) {
+              if (v == null) return; var n = parseFloat(v); if (!(n >= 0 && n <= 5)) { toast('That rate doesn’t look right.'); return; }
+              api('saveSettings', { electricityKwhAud: n }).then(refresh).then(render).catch(fail);
+            });
+          } })));
+      asec.appendChild(card);
       asec.appendChild(h('p', { class: 'tf-help', text: 'Claude jobs count what Claude charged. Jobs on the PC, or in Claude chat, cost nothing; what they would have cost is estimated from their size at Claude’s prices.' +
         (sv.earlier ? ' The ' + sv.earlier + ' PC job' + (sv.earlier === 1 ? '' : 's') + ' from before the tally began were found in the records and estimated the same way.' : '') }));
       main.appendChild(rise(asec, n++));
@@ -12113,15 +12379,15 @@ var Kit = (function () {
       api('addGoal', Object.assign({ title: title, parentId: parentId || '' }, at || {})).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
     });
   }
-  /** The map: goals as bubbles she drags about. Lines show links and what is part of what. */
+  /** The map: goals as bubbles she drags about. Lines show links and what is part of what. Bubbles make room for
+   *  each other, so none hides another; a tap on an empty spot offers to add a goal there. */
   function goalMap(main, goals) {
-    var H = 460;
+    var H = Math.max(400, Math.min(560, window.innerHeight - 440));
     var board = h('div', { class: 'goal-map', style: 'height:' + H + 'px' });
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); board.appendChild(svg);
-    var els = {};
+    var els = {}, ghost = null;
     function lines() {
       svg.textContent = '';
-      var W = board.clientWidth;
       goals.forEach(function (g) {
         [].concat(g.parentId ? [[g.parentId, 'part']] : [], g.links.map(function (l) { return [l, 'link']; })).forEach(function (pair) {
           var o = goalById(pair[0]), a = els[g.id], b = o && els[o.id];
@@ -12133,10 +12399,40 @@ var Kit = (function () {
         });
       });
     }
+    /** Every bubble inside the board and clear of the others. keep = the one she just put down stays where it is. */
+    function makeRoom(keep) {
+      var W = board.clientWidth, PAD = 8;
+      if (!W) return;
+      var R = goals.map(function (g) { var el = els[g.id]; return { g: g, el: el, w: el.offsetWidth, h: el.offsetHeight, x: el.offsetLeft, y: el.offsetTop, fixed: g.id === keep }; });
+      function inside(r) { r.x = Math.max(PAD, Math.min(W - r.w - PAD, r.x)); r.y = Math.max(PAD, Math.min(H - r.h - PAD, r.y)); }
+      R.forEach(inside);
+      for (var it = 0; it < 80; it++) {
+        var moved = false;
+        for (var i = 0; i < R.length; i++) for (var j = i + 1; j < R.length; j++) {
+          var a = R[i], b = R[j];
+          var ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) + PAD, oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) + PAD;
+          if (ox <= 0 || oy <= 0) continue;
+          moved = true;
+          var sa = a.fixed ? 0 : b.fixed ? 1 : 0.5, sb = 1 - sa;      // the one she placed doesn't move; the other steps aside
+          if (oy <= ox) { var dy = (a.y + a.h / 2 <= b.y + b.h / 2 ? -1 : 1) * oy; a.y += dy * sa; b.y -= dy * sb; }
+          else { var dx = (a.x + a.w / 2 <= b.x + b.w / 2 ? -1 : 1) * ox; a.x += dx * sa; b.x -= dx * sb; }
+        }
+        R.forEach(inside);
+        if (!moved) break;
+      }
+      R.forEach(function (r) {
+        r.el.style.left = r.x + 'px'; r.el.style.top = r.y + 'px';
+        var nx = r.x / W, ny = r.y / H;
+        if (Math.abs(nx - r.g.x) > 0.015 || Math.abs(ny - r.g.y) > 0.015) { r.g.x = nx; r.g.y = ny; api('updateGoal', r.g.id, { x: nx, y: ny }).catch(function () {}); }
+      });
+      lines();
+    }
     goals.forEach(function (g) {
-      var el = h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (g.status === 'Done' ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
-        h('span', { class: 'gb-rank', text: g.parentId ? '' : String(g.rank) }), h('span', { class: 'gb-t', text: g.title }),
-        g.steps.length ? h('span', { class: 'gb-s', text: g.steps.filter(function (s) { return s.done; }).length + '/' + g.steps.length }) : null);
+      var nd = g.steps.filter(function (s) { return s.done; }).length, isDone = g.status === 'Done';
+      var el = h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
+        g.parentId ? null : isDone ? h('span', { class: 'gb-rank' }, icon('check')) : h('span', { class: 'gb-rank', text: String(g.rank) }),
+        h('span', { class: 'gb-main' }, g.active ? h('span', { class: 'gb-now', text: 'Now' }) : null, h('span', { class: 'gb-t', text: g.title }),
+          h('span', { class: 'gb-s', text: isDone ? 'Reached' : g.steps.length ? nd + ' of ' + g.steps.length + ' steps' : 'No plan yet' })));
       el.style.left = (g.x * 100) + '%'; el.style.top = (g.y * 100) + '%';
       els[g.id] = el; board.appendChild(el);
       // drag to move; a tap opens it
@@ -12150,21 +12446,31 @@ var Kit = (function () {
         var W = board.clientWidth, x = Math.max(0, Math.min(W - el.offsetWidth, ox + dx)), y = Math.max(0, Math.min(H - el.offsetHeight, oy + dy));
         el.style.left = x + 'px'; el.style.top = y + 'px'; lines();
       });
-      el.addEventListener('pointerup', function () {
+      function up() {
         if (!down) return; down = false;
         if (!moved) { openGoal(g.id); return; }
         el.classList.remove('lifted');
-        var W = board.clientWidth, x = el.offsetLeft / W, y = el.offsetTop / H;
-        g.x = x; g.y = y;
-        api('updateGoal', g.id, { x: x, y: y }).then(refresh).catch(fail);
-      });
+        makeRoom(g.id);
+      }
+      el.addEventListener('pointerup', up);
+      el.addEventListener('pointercancel', function () { down = false; el.classList.remove('lifted'); makeRoom(); });
       el.addEventListener('keydown', function (e) { if (e.key === 'Enter') openGoal(g.id); });
     });
-    // tap an empty spot to add a goal there
-    board.addEventListener('dblclick', function (e) { if (e.target !== board && e.target !== svg) return; var r = board.getBoundingClientRect(); addGoalAsk(null, { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height }); });
+    // tap an empty spot: an offer to add a goal right there
+    board.addEventListener('click', function (e) {
+      if (e.target !== board) return;
+      var r = board.getBoundingClientRect();
+      if (ghost) ghost.remove();
+      var mine = ghost = h('button', { type: 'button', class: 'goal-ghost' }, icon('add'), 'Add a goal here');
+      board.appendChild(mine);
+      var gx = Math.max(8, Math.min(r.width - mine.offsetWidth - 8, e.clientX - r.left - mine.offsetWidth / 2)), gy = Math.max(8, Math.min(H - mine.offsetHeight - 8, e.clientY - r.top - mine.offsetHeight / 2));
+      mine.style.left = gx + 'px'; mine.style.top = gy + 'px';
+      mine.addEventListener('click', function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: gx / r.width, y: gy / H }); });
+      setTimeout(function () { if (ghost === mine) { mine.remove(); ghost = null; } }, 5000);
+    });
     main.appendChild(rise(board, 2));
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Tap one to plan it, link it to others, or add smaller goals. Put them in order under “In order”.' }));
-    setTimeout(lines, 0); setTimeout(lines, 400);
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Drag goals anywhere. Tap one to open its plan. Tap an empty spot to add a goal there. Put them in order of importance under “In order”.' }));
+    setTimeout(function () { makeRoom(); }, 0); setTimeout(function () { makeRoom(); }, 450);
   }
   /** In order: drag the goal cards into order of importance. The top one sets the order of work. */
   function goalOrder(main, goals) {
@@ -12173,7 +12479,7 @@ var Kit = (function () {
     tops.forEach(function (g, i) {
       var subs = goals.filter(function (x) { return x.parentId === g.id; });
       var card = h('div', { class: 'ho-card goal-card' + (g.active ? ' active' : ''), dataset: { k: g.id } },
-        h('span', { class: 'ho-ic' }, icon(g.status === 'Done' ? 'check' : g.active ? 'flag' : 'lightbulb')),
+        g.status === 'Done' ? h('span', { class: 'ho-ic' }, icon('check')) : h('span', { class: 'ho-ic num', text: String(i + 1) }),
         h('span', { class: 'grow' }, h('span', { class: 'ho-t', style: 'display:block', text: g.title }),
           h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: g.status === 'Done' ? 'Done' : g.active ? 'Sets the order now · next: ' + g.next : g.steps.length ? g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : 'No plan yet' }),
           subs.length ? h('span', { class: 'body-s', style: 'display:block;color:var(--on-surface-variant)', text: 'Includes: ' + subs.map(function (x) { return x.title; }).join(', ') }) : null),
@@ -12214,53 +12520,67 @@ var Kit = (function () {
       title: g.title, tall: true, guard: function () { return dirty; },
       build: function (ctl) {
         function touch() { dirty = true; }
-        function again() { ctl.close(); setTimeout(function () { openGoal(id); }, 280); }
-        if (g.active) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('This is your most important goal, so its plan sets the order of everything. Anything for a later step waits.', 'flag')));
-        ctl.body.appendChild(h('div', { class: 'field-gap' },
-          K.textField({ label: 'The goal', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } }),
-          K.textField({ label: 'Why it matters (optional)', value: f.why, multiline: true, maxlength: 1000, onInput: function (v) { f.why = v; touch(); } })));
-        // the plan
-        var sp = sheetSection('The plan');
+        function again() { K.swap(ctl, function () { openGoal(id); }, true); }
+        if (g.active) ctl.body.appendChild(h('div', { style: 'margin-bottom:4px' }, note('This is your most important goal, so its plan sets the order of everything. Anything for a later step waits.', 'flag')));
+        // the plan first: it is what she comes here for
+        var sp = sheetSection('The plan'), nd = g.steps.filter(function (s) { return s.done; }).length, here = -1;
+        g.steps.some(function (s, i) { if (!s.done) { here = i; return true; } return false; });
         if (g.steps.length) {
-          var sl = h('div', { class: 'list' });
+          var sl = h('div', { class: 'card pad hand-list goal-steps' },
+            h('div', { class: 'row', style: 'gap:8px;align-items:center' }, h('div', { class: 'body-s grow', style: 'color:var(--on-surface-variant)', text: nd === g.steps.length ? 'Every step done.' : nd + ' of ' + g.steps.length + ' done' })),
+            h('div', { class: 'hand-bar', style: 'margin:8px 0 6px', 'aria-hidden': 'true' }, h('i', { style: 'width:' + Math.round(nd / g.steps.length * 100) + '%' })));
           g.steps.forEach(function (s, i) {
-            sl.appendChild(h('div', { class: 'li' }, h('span', { class: 'hand-ic' }, icon(s.done ? 'check_circle' : 'radio_button_unchecked')),
-              h('button', { class: 'grow', type: 'button', style: 'all:unset;cursor:pointer;flex:1', onclick: function () { dirty = false; ctl.close(); setTimeout(function () {
-                openStepTools({ n: i + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', id, s.id, true).then(refresh).then(function () { render(); }); });
-              }, 280); } }, h('div', { class: 'li-head', style: s.done ? 'text-decoration:line-through;opacity:.6' : '', text: (i + 1) + '. ' + s.text })),
-              btn('text', s.done ? 'Undo' : 'Done', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('tickGoalStep', id, s.id, !s.done).then(refresh).then(again).catch(fail); } })));
+            var tick = h('button', { type: 'button', class: 'hand-tick', 'aria-label': (s.done ? 'Untick: ' : 'Tick as done: ') + s.text }, icon(s.done ? 'check_circle' : 'radio_button_unchecked'));
+            tick.addEventListener('click', function () {
+              if (tick.disabled) return; tick.disabled = true; K.haptic('success');
+              api('tickGoalStep', id, s.id, !s.done).then(refresh).then(function () { render(); again(); }).catch(function (er) { tick.disabled = false; fail(er); });
+            });
+            sl.appendChild(h('div', { class: 'hand-row' + (s.done ? ' ticked' : '') + (i === here ? ' here' : '') }, tick,
+              h('button', { type: 'button', class: 'goal-step grow', onclick: function () {
+                dirty = false;
+                K.swap(ctl, function () { openStepTools({ n: i + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', id, s.id, true).then(refresh).then(function () { render(); }); }); });
+              } }, h('span', { class: 'hand-text', text: (i + 1) + '. ' + s.text }), i === here ? h('span', { class: 'hand-why', text: 'You’re here. Tap for what you need.' }) : null),
+              icon('chevron_right')));
           });
           sp.appendChild(sl);
         } else sp.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 8px;color:var(--on-surface-variant)', text: 'No plan yet. Tide Book can ask you a few questions and suggest the steps, or write them yourself.' }));
         var pt = g.planning;
         var planBtn = btn(g.steps.length ? 'tonal' : 'filled', pt && pt.status !== 'Done' ? 'Carry on planning it' : g.steps.length ? 'Plan it again with Tide Book' : 'Plan it with Tide Book', { icon: 'auto_awesome', onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
-          api('planGoal', id).then(function (r) { return refresh().then(function () { return r; }); }).then(function (r) { dirty = false; ctl.close(); setTimeout(function () { openTopic(r.topicId); }, 300); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+          api('planGoal', id).then(function (r) { return refresh().then(function () { return r; }); }).then(function (r) { dirty = false; K.swap(ctl, function () { openTopic(r.topicId); }); }).catch(function (er) { K.setBusy(b, false); fail(er); });
         } });
         var writeBtn = btn('text', g.steps.length ? 'Change the steps' : 'Write the steps myself', { icon: 'edit', onclick: function () {
           K.ask({ title: 'The steps', label: 'One step per line, in order', value: g.steps.map(function (s) { return s.text; }).join('\n'), multiline: true, maxlength: 3000, confirmLabel: 'Save the steps' }).then(function (txt) {
             if (txt == null) return;
             var old = {}; g.steps.forEach(function (s) { old[s.text] = s; });
             var steps = String(txt).split(/\n+/).map(function (x) { return x.trim(); }).filter(String).map(function (x) { return old[x] || { text: x, done: false }; });
-            api('updateGoal', id, { steps: steps }).then(refresh).then(again).catch(fail);
+            api('updateGoal', id, { steps: steps }).then(refresh).then(function () { render(); again(); }).catch(fail);
           });
         } });
         sp.appendChild(h('div', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' }, planBtn, writeBtn));
-        // links and smaller goals
+        ctl.body.appendChild(sp);
+        // the goal itself, and how it sits with the others: folded away until wanted
+        var sa = sheetSection('About this goal');
+        sa.appendChild(h('div', { class: 'field-gap' },
+          K.textField({ label: 'The goal', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } }),
+          K.textField({ label: 'Why it matters (optional)', value: f.why, multiline: true, maxlength: 1000, onInput: function (v) { f.why = v; touch(); } })));
+        ctl.body.appendChild(h('div', { class: 'fold-group', text: 'The goal' }));
+        ctl.body.appendChild(fold(sa, 'gl:' + id + ':about', 'flag', g.why || 'Its name, and why it matters', !g.steps.length));
         var others = (S.data.goals || []).filter(function (x) { return x.id !== id; });
         var sx = sheetSection('How it fits with the others');
         if (others.length) {
-          sx.appendChild(h('div', { class: 'label-s', text: 'Linked to' }));
+          sx.appendChild(h('div', { class: 'label-s', style: 'margin:0 0 6px', text: 'Linked to' }));
           sx.appendChild(multiChips(others.map(function (x) { return x.title; }), others.filter(function (x) { return f.links.indexOf(x.id) >= 0; }).map(function (x) { return x.title; }),
             function (v) { f.links = others.filter(function (x) { return v.indexOf(x.title) >= 0; }).map(function (x) { return x.id; }); touch(); }));
           var tops = others.filter(function (x) { return !x.parentId; });
           if (tops.length) {
-            sx.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px', text: 'Part of a bigger goal?' }));
+            sx.appendChild(h('div', { class: 'label-s', style: 'margin:14px 0 6px', text: 'Part of a bigger goal?' }));
             sx.appendChild(K.choices({ label: 'Part of', value: f.parentId, allowNone: true, options: tops.map(function (x) { return { value: x.id, label: x.title }; }), onChange: function (v) { f.parentId = v || ''; touch(); } }));
           }
         }
         sx.appendChild(h('div', { style: 'margin-top:10px' }, btn('text', 'Add a smaller goal inside this one', { icon: 'add', sm: true, onclick: function () { ctl.close(); setTimeout(function () { addGoalAsk(id); }, 280); } })));
-        ctl.body.append(sp, sx);
+        var kids = (S.data.goals || []).filter(function (x) { return x.parentId === id; }).length, par = g.parentId ? goalById(g.parentId) : null;
+        ctl.body.appendChild(fold(sx, 'gl:' + id + ':fits', 'link', [par ? 'Part of “' + par.title + '”' : '', g.links.length ? 'Linked to ' + g.links.length : '', kids ? kids + ' smaller ' + (kids === 1 ? 'goal' : 'goals') + ' inside' : ''].filter(String).join(' · ') || 'On its own for now', false));
         ctl.body.appendChild(h('div', { style: 'margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:4px' },
           btn('text', g.status === 'Done' ? 'Open it again' : 'Mark it reached', { icon: g.status === 'Done' ? 'restore' : 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', id, { status: g.status === 'Done' ? 'Open' : 'Done' }).then(refresh).then(function () { render(); again(); }).catch(fail); } }),
           btn('text', 'Delete this goal', { icon: 'delete', danger: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('deleteGoal', id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Goal deleted.', 'goal', id); }).catch(fail); } })));
@@ -12276,15 +12596,15 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ each step of a plan comes with the tools to do it
   var STEP_TOOLS = {
-    post: { ic: 'add_a_photo', label: 'Upload the photos and make a post', why: 'Pick the photos or video. Tide Book drafts the post; you look it over, then post it now or pick a time.',
+    post: { ic: 'add_a_photo', short: 'Upload and post', label: 'Upload the photos and make a post', why: 'Pick the photos or video. Tide Book drafts the post; you look it over, then post it now or pick a time.',
       go: function (st) { openAddFootage({ context: st.text, quick: true }); } },
-    review: { ic: 'send', label: 'Post now, or pick a time', why: 'Posts ready for you to look over. Approve one, then post it now or schedule it.',
+    review: { ic: 'send', short: 'Post or schedule', label: 'Post now, or pick a time', why: 'Posts ready for you to look over. Approve one, then post it now or schedule it.',
       go: function () { S.contentTab = 'review'; go('content'); } },
-    art: { ic: 'brush', label: 'Add the artwork', why: 'Photos, the story behind it, and its sizes and prices for the shop.', go: function () { openPrint(null); } },
-    prices: { ic: 'sell', label: 'Sizes and prices', why: 'Open your artworks to set the sizes and prices.', go: function () { go('prints'); } },
-    website: { ic: 'language', label: 'Change the website', why: 'Tell Tide Book what to add or change on your website.', go: function () { var t0 = (S.data.website && S.data.website.wishes || [])[0]; if (t0) openSiteWish(t0); else go('settings'); } },
-    product: { ic: 'storefront', label: 'Work on the product', why: 'Find it in Products, or start it there. Each one has its own steps.', go: function () { S.ideasTab = 'products'; go('ideas'); } },
-    sale: { ic: 'point_of_sale', label: 'Record a sale', why: 'Note what sold, and where.', go: function () { openTxn('Sale'); } },
+    art: { ic: 'brush', short: 'Add the artwork', label: 'Add the artwork', why: 'Photos, the story behind it, and its sizes and prices for the shop.', go: function () { openPrint(null); } },
+    prices: { ic: 'sell', short: 'Sizes and prices', label: 'Sizes and prices', why: 'Open your artworks to set the sizes and prices.', go: function () { go('prints'); } },
+    website: { ic: 'language', short: 'The website', label: 'Change the website', why: 'Tell Tide Book what to add or change on your website.', go: function () { var t0 = (S.data.website && S.data.website.wishes || [])[0]; if (t0) openSiteWish(t0); else go('settings'); } },
+    product: { ic: 'storefront', short: 'The product', label: 'Work on the product', why: 'Find it in Products, or start it there. Each one has its own steps.', go: function () { S.ideasTab = 'products'; go('ideas'); } },
+    sale: { ic: 'point_of_sale', short: 'Record a sale', label: 'Record a sale', why: 'Note what sold, and where.', go: function () { openTxn('Sale'); } },
     inspo: { ic: 'favorite', label: 'Save something that inspires you', why: '', go: function () { openInspo(null); } },
     talk: { ic: 'forum', label: 'Talk it through', why: 'A few questions at a time, to work out how.', go: function (st) { api('startTopic', { title: st.text.slice(0, 110), detail: 'A step in my plan: ' + st.text }).then(function (r) { return refresh().then(function () { openTopic(r.id); }); }).catch(fail); } }
   };
@@ -12346,6 +12666,7 @@ var Kit = (function () {
   function planLine(kind, x, after) {
     var pl = S.data.plan;
     if (!pl || !x.planStep || x.id === pl.ideaId) return null;
+    if (x.stage === 'Live' || x.status === 'Live' || x.status === 'Retired' || x.retired) return null;   // done things have no place left to take
     var move = btn('text', 'Move', { sm: true, icon: 'swap_vert', onclick: function () { openPlanStep(kind, x, after); } });
     if (x.planWaits) {
       var fwd = btn('tonal', 'Bring it forward now', { sm: true, icon: 'arrow_forward', onclick: function (e) {
@@ -12356,7 +12677,7 @@ var Kit = (function () {
       n.lastElementChild.appendChild(h('div', { class: 'btn-row', style: 'margin-top:8px;flex-wrap:wrap' }, fwd, move));
       return h('div', { style: 'margin:10px 0 14px' }, n);
     }
-    return h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 10px' }, icon('flag'),
+    return h('div', { class: 'row plan-line' }, icon('flag'),
       h('span', { class: 'body-s grow', text: x.planStep === -1 ? 'Not part of your plan: it goes ahead now.' : 'Step ' + x.planStep + ' of your plan: ' + planStepText(x.planStep) }), move);
   }
   /** Home: where she's up to in her plan, and one tap when a step is done. */
@@ -12366,7 +12687,7 @@ var Kit = (function () {
     var idea = pl.ideaId ? byId(S.data.ideas, pl.ideaId) : null;
     var cur = pl.steps[pl.current - 1];
     var dots = h('div', { class: 'plan-dots' }, pl.steps.map(function (s) { return h('i', { class: s.done ? 'done' : s.n === pl.current ? 'on' : '' }); }));
-    var done = btn('filled', 'Done, on to the next step', { icon: 'check', sm: true, onclick: function (e) {
+    var done = btn('filled', 'This step is done', { icon: 'check', sm: true, onclick: function (e) {
       var b = e.currentTarget;
       if (pl.goalId) {
         K.setBusy(b, true);
@@ -12390,9 +12711,13 @@ var Kit = (function () {
     }
     var head = h('button', { class: 'plan-head', type: 'button', onclick: function () { openStepTools(cur, pl.goalId ? tick : null); } },
       h('div', { class: 'label-s', text: (pl.goalId ? pl.title + ' · ' : 'Your plan · ') + 'step ' + pl.current + ' of ' + pl.steps.length }),
-      h('div', { class: 'row', style: 'gap:8px;align-items:flex-start;margin-top:4px' }, h('div', { class: 'title-m grow', text: cur.text }), icon('chevron_right')),
-      h('div', { class: 'body-s', style: 'margin-top:4px;color:var(--primary);font-weight:600', text: 'Tap for what you need: ' + toolsFor(cur.text).filter(function (k) { return k !== 'talk'; }).map(function (k) { return STEP_TOOLS[k].label.toLowerCase(); }).slice(0, 2).join(', ') }));
-    return h('div', { class: 'card pad plan-card' }, head, dots,
+      h('div', { class: 'row', style: 'gap:8px;align-items:flex-start;margin-top:4px' }, h('div', { class: 'title-m grow', text: cur.text }), icon('chevron_right')));
+    // what this step needs, one tap each, without opening anything first
+    var tools = h('div', { class: 'plan-tools' }, toolsFor(cur.text).filter(function (k) { return k !== 'talk'; }).slice(0, 3).map(function (k) {
+      var tl = STEP_TOOLS[k];
+      return h('button', { type: 'button', class: 'plan-tool press soft', onclick: function () { tl.go(cur); } }, icon(tl.ic), tl.short || tl.label);
+    }));
+    return h('div', { class: 'card pad plan-card' }, head, dots, tools,
       h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })));
   }
   /** Questions about her report: a tap each, her own words, or skip. All optional. */
@@ -12440,7 +12765,7 @@ var Kit = (function () {
           ctl.body.appendChild(card);
         });
         var key = '';
-        ctl.body.appendChild(K.textField({ label: 'Your Printful key', maxlength: 400, onInput: function (v) { key = v; }, help: 'It’s kept on the PC and never shown again.' }));
+        ctl.body.appendChild(K.textField({ label: 'Your Printful key', maxlength: 400, onInput: function (v) { key = v; }, help: 'It’s kept privately and never shown again.' }));
         var go = btn('filled', 'Link Printful', { icon: 'link', lg: true, block: true });
         go.addEventListener('click', function () {
           if (!key.trim()) { toast('Paste the key first.'); return; }
@@ -12459,7 +12784,7 @@ var Kit = (function () {
       build: function (ctl) {
         var q = (p.title || '').replace(/\(.*?\)/g, ''), res = h('div', { class: 'list', style: 'margin-top:10px' });
         function search() {
-          res.textContent = ''; res.appendChild(h('p', { class: 'body-m', style: 'padding:12px', text: 'Looking…' }));
+          res.classList.remove('pad'); res.textContent = ''; res.appendChild(h('p', { class: 'body-m', style: 'padding:12px', text: 'Looking…' }));
           api('printfulSearch', q).then(function (r) {
             res.textContent = '';
             if (!r.results.length) res.appendChild(h('p', { class: 'body-m', style: 'padding:12px', text: 'Nothing found. Try other words, like “poster”, “mug” or “tote”.' }));
@@ -12473,7 +12798,7 @@ var Kit = (function () {
         function sizes(x) {
           res.textContent = ''; res.appendChild(h('p', { class: 'body-m', style: 'padding:12px', text: 'Getting the sizes and costs…' }));
           api('printfulProduct', x.id).then(function (pr) {
-            res.textContent = '';
+            res.textContent = ''; res.classList.add('pad');
             var on = [];
             res.appendChild(h('div', { class: 'title-m', style: 'margin:4px 0 8px', text: pr.title }));
             var chips = h('div', { class: 'choices' });
@@ -12558,10 +12883,17 @@ var Kit = (function () {
   /** On a product: linking, what Printful makes, the artwork, mockups, shipping and a sample. One step at a time. */
   function printfulCard(p, reopen, saveFirst) {
     if (!usesPrintful()) return null;
-    var P = p.printful || {}, linked = (S.data.printful || {}).linked, sec = sheetSection('Make it with Printful');
+    var P = p.printful || {}, linked = (S.data.printful || {}).linked;
+    var sec = h('div', { class: 'card pad pf-card' },
+      h('div', { class: 'row', style: 'gap:12px;align-items:center;margin-bottom:14px' }, h('span', { class: 'fold-ic' }, icon('local_shipping')),
+        h('div', { class: 'grow' }, h('div', { class: 'title-s', text: 'Make it with Printful' }),
+          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: linked ? 'From here to a sample in your hands, without leaving Tide Book.' : 'Your print-on-demand supplier' }))));
+    var TITLES = ['What Printful makes', 'The artwork', 'See it, and what posting costs', 'A sample, to check before selling'];
     function step(n, done, title, body) {
-      return h('div', { class: 'pf-step' + (done ? ' done' : '') }, h('span', { class: 'pf-n' }, done ? icon('check') : String(n)), h('div', { class: 'grow' }, h('div', { class: 'title-s', text: title }), body));
+      return h('div', { class: 'pf-step ' + (done ? 'done' : body ? 'on' : 'todo') }, h('span', { class: 'pf-n' }, done ? icon('check') : String(n)), h('div', { class: 'grow' }, h('div', { class: 'title-s', text: title }), body));
     }
+    /** The steps still to come, shown faintly so she can see the whole road. */
+    function rest(from) { for (var n = from; n <= 4; n++) sec.appendChild(step(n, false, TITLES[n - 1], null)); return sec; }
     if (!linked) {
       sec.appendChild(note('Link your Printful account once, and Tide Book does the rest from here: what it makes, prices, mockups and samples.', 'link'));
       sec.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Link Printful', { icon: 'link', onclick: function () { openPrintfulLink(reopen); } })));
@@ -12573,7 +12905,7 @@ var Kit = (function () {
       btn('text', 'Change', { sm: true, onclick: function () { openPrintfulPick(p, reopen); } }))
       : btn('filled', 'Choose what Printful makes', { sm: true, icon: 'storefront', onclick: function () { openPrintfulPick(p, reopen); } });
     sec.appendChild(step(1, !!P.productId, 'What Printful makes', b1));
-    if (!P.productId) return sec;
+    if (!P.productId) return rest(2);
     // 2 the artwork
     var b2 = f.status === 'ok' ? h('div', {}, f.preview ? h('img', { src: f.preview, alt: 'The print file', style: 'width:84px;height:84px;object-fit:cover;border-radius:10px;margin:4px 0' }) : null,
         f.dpi && Number(f.dpi) < 150 ? h('p', { class: 'tf-help', text: 'Printful says this file is ' + f.dpi + ' dpi: a bigger file will print crisper.' }) : null,
@@ -12582,7 +12914,7 @@ var Kit = (function () {
       : h('div', {}, f.status === 'failed' ? h('p', { class: 'tf-help', text: f.error || 'That didn’t go through.' }) : null, btn('filled', f.status === 'failed' ? 'Try again' : 'Send the artwork', { sm: true, icon: 'upload', onclick: function () { openPrintfulArt(p, reopen); } }));
     sec.appendChild(step(2, f.status === 'ok', 'The artwork', b2));
     if (f.status === 'sending') { setTimeout(function () { refresh().then(function () { var now = byId(talkData().pipeline, p.id); if (now && ((now.printful || {}).file || {}).status !== 'sending') reopen(); }).catch(function () {}); }, 20000); }
-    if (f.status !== 'ok') return sec;
+    if (f.status !== 'ok') return rest(3);
     // 3 mockups and shipping
     var b3 = h('div', {});
     if ((P.mockups || []).length) b3.appendChild(h('div', { class: 'pf-mocks' }, P.mockups.slice(0, 6).map(function (u) { return h('a', { href: u, target: '_blank', rel: 'noopener' }, h('img', { src: u, alt: 'Mockup' })); })));
@@ -12614,9 +12946,9 @@ var Kit = (function () {
   }
   /** While the PC's own model works on something: a quicker answer from Claude, for a small cost. */
   function quickerBtn(id) {
-    return h('div', { style: 'margin-top:8px' }, btn('text', 'Quicker answer with Claude · about 1c', { sm: true, icon: 'auto_awesome', onclick: function (e) {
+    return h('div', { style: 'margin-top:8px' }, btn('text', (ADMIN ? 'Quicker answer with Claude' : 'Quicker answer') + ' · about 1c', { sm: true, icon: 'auto_awesome', onclick: function (e) {
       var b = e.currentTarget; K.setBusy(b, true);
-      api('askClaudeNow', id).then(function () { toast('Asked Claude. It’s usually a few seconds.'); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+      api('askClaudeNow', id).then(function () { toast(ADMIN ? 'Asked Claude. It’s usually a few seconds.' : 'On its way. Usually a few seconds.'); }).catch(function (er) { K.setBusy(b, false); fail(er); });
     } }));
   }
   /** After a delete: a card with Undo that puts it straight back. */
@@ -12670,7 +13002,8 @@ var Kit = (function () {
         function draw() {
           ctl.body.textContent = ''; ctl.foot.textContent = '';
           var st = steps[i];
-          ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin-bottom:6px', text: (i + 1) + ' of ' + steps.length }));
+          ctl.body.appendChild(h('div', { class: 'plan-dots', style: 'margin:2px 0 14px', role: 'img', 'aria-label': 'Question ' + (i + 1) + ' of ' + steps.length }, steps.map(function (x, n) { return h('i', { class: n < i ? 'done' : n === i ? 'on' : '' }); })));
+          ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin-bottom:6px', text: 'Question ' + (i + 1) + ' of ' + steps.length }));
           ctl.body.appendChild(h('div', { class: 'title-m', text: st.q }));
           ctl.body.appendChild(h('p', { class: 'body-s', style: 'margin:4px 0 14px;color:var(--on-surface-variant)', text: st.why }));
           ctl.body.appendChild(st.build());
@@ -12679,11 +13012,11 @@ var Kit = (function () {
           next.addEventListener('click', function () {
             if (!last) { i++; draw(); return; }
             K.setBusy(next, true);
-            finish().then(function () { K.haptic('success'); ctl.close(); render(); toast('All set. Tide Book starts from this now.'); setTimeout(openBusiness, 320); }).catch(function (e) { K.setBusy(next, false); fail(e); });
+            finish().then(function () { K.haptic('success'); render(); toast('All set. Tide Book starts from this now.'); K.swap(ctl, openBusiness); }).catch(function (e) { K.setBusy(next, false); fail(e); });
           });
           var row = h('div', { style: 'display:flex;gap:8px;justify-content:space-between;margin-top:6px' },
             i > 0 ? btn('text', 'Back', { onclick: function () { i--; draw(); } }) : h('span'),
-            btn('text', 'That’s enough for now', { onclick: function (e) { K.setBusy(e.currentTarget, true); finish().then(function () { ctl.close(); render(); setTimeout(openBusiness, 320); }).catch(fail); } }));
+            btn('text', 'That’s enough for now', { onclick: function (e) { K.setBusy(e.currentTarget, true); finish().then(function () { render(); K.swap(ctl, openBusiness); }).catch(fail); } }));
           ctl.foot.appendChild(h('div', {}, next, row));
         }
         draw();
@@ -12699,17 +13032,17 @@ var Kit = (function () {
       title: 'Business setup', tall: true, guard: function () { return dirty; },
       build: function (ctl) {
         function touch() { dirty = true; }
-        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 6px;color:var(--on-surface-variant)', text: 'Tide Book starts every plan, price and question from this. Change anything on a single product as you go.' }));
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Tide Book starts every plan, price and question from this. Change anything on a single product as you go.' }));
         // suppliers
         var s1 = sheetSection('Suppliers');
         var sl = h('div', { class: 'list' });
         (S.data.suppliers || []).forEach(function (x) {
-          sl.appendChild(h('button', { class: 'li press soft', type: 'button', style: 'width:100%;text-align:left', onclick: function () { ctl.close(); setTimeout(function () { openSupplier(x.id); }, 280); } },
+          sl.appendChild(h('button', { class: 'li press soft', type: 'button', style: 'width:100%;text-align:left', onclick: function () { K.swap(ctl, function () { openSupplier(x.id); }); } },
             h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.name }),
               h('div', { class: 'li-sup', text: [x.makes.join(', '), x.defaultFor.length ? 'Default for ' + x.defaultFor.join(', ') : ''].filter(String).join(' · ') || 'Tap to say what they make' })), icon('chevron_right')));
         });
         if (!(S.data.suppliers || []).length) sl.appendChild(h('p', { class: 'body-m', style: 'margin:0;padding:12px;color:var(--on-surface-variant)', text: 'No suppliers yet. Add who prints or makes ' + your + ' things.' }));
-        s1.append(sl, h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a supplier', { icon: 'add', onclick: function () { ctl.close(); setTimeout(function () { openSupplier(null); }, 280); } })));
+        s1.append(sl, h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a supplier', { icon: 'add', onclick: function () { K.swap(ctl, function () { openSupplier(null); }); } })));
         // money
         var s2 = sheetSection('Money');
         s2.appendChild(h('div', { class: 'field-gap' },
@@ -12738,8 +13071,13 @@ var Kit = (function () {
           go2('Voice, and who it’s for', 'edit_note', function () { openBrief(); }),
           go2('Our direction', 'explore', function () { S.ideasTab = 'ideas'; go('ideas'); }),
           go2('Names and topics: go or no go', 'verified', function () { S.adminTab = 'consent'; go('settings'); })));
-        ctl.body.append(s1, s2, s3, s4,
-          h('div', { style: 'margin-top:14px;text-align:center' }, btn('text', 'Walk me through it again', { icon: 'refresh', onclick: function () { ctl.close(); setTimeout(openBizGuide, 280); } })));
+        var sups = S.data.suppliers || [];
+        ctl.body.append(
+          fold(s1, 'biz:suppliers', 'storefront', sups.length ? sups.map(function (x) { return x.name; }).join(', ') : 'None yet', true),
+          fold(s2, 'biz:money', 'payments', m.defaultMarkupPct + '% markup · ' + ({ dollar: 'to the dollar', five: 'to $5', none: 'not rounded' }[m.priceRounding] || 'to the dollar') + ' · ' + m.taxSetAsidePct + '% for tax', false),
+          fold(s3, 'biz:work', 'tune', [f.workPace, f.perRound + ' questions at a time', f.quietDays.length ? 'quiet ' + f.quietDays.map(function (d) { return d.slice(0, 3); }).join(', ') : ''].filter(String).join(' · '), false),
+          fold(s4, 'biz:brand', 'verified', 'Voice, direction, and what’s a go or no go', false),
+          h('div', { style: 'margin-top:14px;text-align:center' }, btn('text', 'Walk me through it again', { icon: 'refresh', onclick: function () { dirty = false; K.swap(ctl, openBizGuide); } })));
         var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           K.setBusy(save, true);
@@ -12751,12 +13089,13 @@ var Kit = (function () {
     });
   }
   function openSupplier(id) {
-    var L = S.data.bizLists, x = id ? byId(S.data.suppliers || [], id) : null, dirty = false;
+    var L = S.data.bizLists, x = id ? byId(S.data.suppliers || [], id) : null, dirty = false, back = true;
     var f = x ? JSON.parse(JSON.stringify(x)) : { name: '', makes: [], defaultFor: [], contact: '', website: '', costNote: '', leadTime: '', notes: '' };
     K.sheet({
-      title: x ? x.name : 'Add a supplier', tall: true, guard: function () { return dirty; }, onClose: function () { setTimeout(openBusiness, 300); },
+      title: x ? x.name : 'Add a supplier', tall: true, guard: function () { return dirty; }, onClose: function () { if (back) setTimeout(openBusiness, 300); },
       build: function (ctl) {
         function touch() { dirty = true; }
+        function toBusiness() { dirty = false; back = false; K.swap(ctl, openBusiness); }
         var defWrap = h('div');
         function drawDef() {
           defWrap.textContent = '';
@@ -12777,16 +13116,16 @@ var Kit = (function () {
         if (/printful/i.test(f.name || '')) ctl.body.appendChild(h('div', { style: 'margin-top:14px' }, (S.data.printful || {}).linked
           ? note('Linked to ' + (S.data.printful.store || 'Printful') + '. Products can be made with Printful from their Products page.', 'check_circle', 'good')
           : h('div', {}, note('Link Printful, and your products go from idea to production right here: what it makes, prices, mockups and samples.', 'link'),
-            h('div', { style: 'margin-top:8px' }, btn('filled', 'Link Printful', { icon: 'link', onclick: function () { ctl.close(); setTimeout(function () { openPrintfulLink(); }, 300); } })))));
+            h('div', { style: 'margin-top:8px' }, btn('filled', 'Link Printful', { icon: 'link', onclick: function () { back = false; K.swap(ctl, function () { openPrintfulLink(); }); } })))));
         if (x) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Delete this supplier', { icon: 'delete', danger: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
-          api('deleteSupplier', x.id).then(refresh).then(function () { dirty = false; ctl.close(); binUndo('Supplier deleted.', 'supplier', x.id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+          api('deleteSupplier', x.id).then(refresh).then(function () { toBusiness(); binUndo('Supplier deleted.', 'supplier', x.id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
         } })));
         var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           if (!f.name.trim()) { toast('Give the supplier a name.'); name.input.focus(); return; }
           K.setBusy(save, true);
-          api('saveSupplier', x ? x.id : null, f).then(refresh).then(function () { dirty = false; K.haptic('success'); toast('Saved.'); ctl.close(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+          api('saveSupplier', x ? x.id : null, f).then(refresh).then(function () { K.haptic('success'); toast('Saved.'); toBusiness(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
         });
         ctl.foot.appendChild(save);
       }
@@ -12910,7 +13249,7 @@ var Kit = (function () {
         K.switchBtn({ checked: false, label: 'Re-edit the video too', onChange: function (v) { reedit = v; } })));
       if (c.revisions >= S.data.studio.maxRevisions) ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, note_('This has been redrafted a few times now. It’s quickest to finish it yourself.', 'info', 'warn')));
       var mine = btn('outlined', 'Fix it myself', { icon: 'edit', lg: true });
-      mine.addEventListener('click', function () { ctl.close(); setTimeout(function () { openPost(c.id); }, 320); });
+      mine.addEventListener('click', function () { K.swap(ctl, function () { openPost(c.id); }); });
       var send = btn('filled', 'Redo it for me', { icon: 'auto_awesome', lg: true });
       send.addEventListener('click', function () {
         var picked = Object.keys(failed).filter(function (k) { return failed[k]; });
@@ -13417,7 +13756,7 @@ var Kit = (function () {
   function openEditor(f, done) {
     var isVideo = f.kind === 'Video', src = f.viewUrl || '';
     if (!src && f.thumbIds.length) src = S.thumbs[f.thumbIds[0]] || '';
-    if (!src) { toast(isVideo ? 'This clip isn\u2019t on the PC yet, so it can\u2019t be edited.' : 'This photo isn\u2019t ready to edit yet.'); return; }
+    if (!src) { toast(isVideo ? 'This clip isn\u2019t ready to edit yet.' : 'This photo isn\u2019t ready to edit yet.'); return; }
     var st = { shape: 'orig', posX: 0.5, posY: 0.5, theme: 'none', light: { bright: 0, contrast: 0, sat: 0, warm: 0 },
       text: { value: '', font: 'classic', pos: 'bottom', color: '#ffffff', size: 6 }, trim: { start: 0, end: 0 } };
     var dirty = false;
@@ -13602,7 +13941,7 @@ var Kit = (function () {
   function adBox(c, ctl) {
     var A = c.ad; if (!A) return null;
     var sec = sheetSection('The ad'), when = function (d) { return d ? new Date(d + 'T09:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }) : ''; };
-    var reopen = function () { ctl.close(); setTimeout(function () { openPost(c.id); }, 280); };
+    var reopen = function () { K.swap(ctl, function () { openPost(c.id); }); };
     var S2 = A.summary, P = A.plan;
     function act(b, call, args, msg) {
       K.setBusy(b, true);
@@ -13750,7 +14089,7 @@ var Kit = (function () {
         if (reviewing) {
           var changes = btn('tonal', 'Needs changes', { icon: 'edit', lg: true }), ok = btn('filled', 'Approve', { icon: 'check', lg: true });
           changes.addEventListener('click', function () {
-            var go = function () { ctl.close(); setTimeout(function () { openChanges(byId(S.data.content, c.id) || c); }, 320); };
+            var go = function () { K.swap(ctl, function () { openChanges(byId(S.data.content, c.id) || c); }); };
             if (!dirty) { go(); return; }
             save().then(refresh).then(go).catch(function (e) { if (e) fail(e); });
           });
@@ -14264,7 +14603,7 @@ var Kit = (function () {
     var me = S.data.me || {}, viewing = me.real && me.real !== me.role;
     var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
     K.sheet({ title: 'Link your accounts', tall: true, onClose: function () { render(); }, build: function (ctl) {
-      function again(msg) { refresh().then(function () { ctl.close(); setTimeout(function () { openLinkAccounts(); if (msg) toast(msg); }, 320); }).catch(fail); }
+      function again(msg) { refresh().then(function () { K.swap(ctl, function () { openLinkAccounts(); if (msg) toast(msg); }, true); }).catch(fail); }
       function stepCard(n, title, done, body, ic) {
         return h('div', { class: 'card pad link-step' + (done ? ' done' : ''), style: 'margin-bottom:12px;--sheet-bg:var(--surface-lowest)' },
           h('div', { class: 'row', style: 'gap:12px;align-items:center' },
@@ -14568,7 +14907,7 @@ var Kit = (function () {
     K.sheet({ title: name, tall: true, build: function (ctl) {
       var list = h('div', { class: 'list' });
       listMembers(name).forEach(function (c) {
-        list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { ctl.close(); setTimeout(function () { openContact(c.id); }, 320); } },
+        list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { K.swap(ctl, function () { openContact(c.id); }); } },
           h('div', { class: 'th-blank avatar', 'aria-hidden': 'true', text: initials(c) }),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: c.name || c.email }), h('div', { class: 'li-sup', text: c.email + (c.source ? ' · ' + c.source : '') }))));
       });
@@ -14684,7 +15023,7 @@ var Kit = (function () {
           h('button', { type: 'button', class: 'acct-go press', 'aria-label': 'Edit ' + c.term, onclick: function () { openConsent(c.id); } },
             h('div', { class: 'th-blank' }, icon(c.kind === 'Topic' ? 'sticky_note_2' : 'contacts')),
             h('div', { class: 'grow' }, h('div', { class: 'li-head' }, c.term, ' ', consentChip(c.status, c.often)),
-              h('div', { class: 'li-sup', text: [c.note, whoDecided(c)].filter(String).join(' · ') }))),
+              h('div', { class: 'li-sup wrap2', text: [c.note, whoDecided(c)].filter(String).join(' · ') }))),
           btn('text', flip === 'Go' ? 'Make go' : 'Make no go', { onclick: function (ev) {
             var b = ev.currentTarget; K.setBusy(b, true);
             api('saveConsent', c.id, { term: c.term, kind: c.kind, note: c.note, status: flip, often: c.often }).then(refresh)
@@ -14908,7 +15247,7 @@ var Kit = (function () {
         S.ideasTab = 'inspo'; go('ideas');
         openInspo(null, { url: link, note: link ? '' : text, files: files });
       });
-    }).catch(function () { toast('Couldn’t pick up the share. Is the PC on?'); });
+    }).catch(function () { toast('Couldn’t pick up the share. Try again in a moment.'); });
     return true;
   }
 
