@@ -1173,6 +1173,7 @@ var TIDE_SETTING_DEFAULTS = {
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
   // how she likes to work (the business setup): fed into every plan, question round and draft
   workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
+  sampleAddress: null,   // where samples are posted (her name and address), kept once she has entered it
   planIdeaId: '',  // her plan: the idea whose steps set the order of work (what happens now, what waits)
   priceRounding: 'dollar',   // 'dollar', 'five' or 'none'
   gstThreshold: 75000,
@@ -1416,7 +1417,7 @@ var TIDE_SCHEMAS = {
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'],
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
       ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number'],
-      ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list'], ['resumeOn', 'Paused until', 'day'], ['remindedAt', 'Reminded', 'date'],
+      ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list'], ['printful', 'Printful', 'json'], ['resumeOn', 'Paused until', 'day'], ['remindedAt', 'Reminded', 'date'],
       ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text']
     ]
   },
@@ -2577,7 +2578,7 @@ function createTideLogic(env) {
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
-      plan: planState(), goals: goalSnapshot(), homeOrder: list(env.settings.get().homeOrder),
+      plan: planState(), goals: goalSnapshot(), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -2934,6 +2935,94 @@ function createTideLogic(env) {
     return [out.length ? 'The business setup (her defaults):\n' + out.join('\n') : '', pl].filter(String).join('\n\n');
   }
 
+  // ---------- Printful: her print-on-demand supplier, linked, so a product goes from idea to production in Tide Book
+  function pf() { if (!env.printful) fail(env.user.role === 'admin' ? 'Printful works on the PC version of Tide Book.' : 'Not available yet.'); return env.printful; }
+  function pfItem(id) { var r = rows('pipeline').filter(function (x) { return x.id === id && !x.deleted; })[0]; if (!r) fail('That product has been removed.'); return r; }
+  function pfSave(id, ch) { env.lock(function () { var r = pfItem(id); env.table('pipeline').update(id, { printful: Object.assign({}, r.printful || {}, ch), updated: nowIso() }); }); }
+  function printfulStatus() { need(['admin', 'artist']); var p = env.printful; return { linked: !!(p && p.linked()), store: p && p.linked() ? p.store() : '' }; }
+  function linkPrintful(token) { need(['admin', 'artist']); var res = pf().link(token); return { ok: true, store: res.store }; }
+  function unlinkPrintful() { need(['admin', 'artist']); pf().unlink(); return { ok: true }; }
+  function printfulSearch(q) { need(['admin', 'artist']); return { results: pf().search(text(q, 120)) }; }
+  function printfulProduct(productId) { need(['admin', 'artist']); return pf().product(productId); }
+  /** She picks what Printful makes, and which sizes: the product's parts and costs follow. */
+  function printfulPick(id, productId, variantIds) {
+    need(['admin', 'artist']);
+    var p = pf().product(productId), ids = list(variantIds).map(Number);
+    var vs = p.variants.filter(function (v) { return ids.indexOf(v.id) >= 0; }).slice(0, 12);
+    if (!vs.length) fail('Pick at least one size.');
+    var r = pfItem(id), aud = p.currency === 'AUD';
+    var parts = list(r.parts).filter(function (x) { return !(x && x.pf); }).concat([{ part: 'Printful: ' + p.title + (vs.length === 1 ? ' (' + vs[0].name + ')' : ''), supplier: 'Printful', cost: aud ? vs[0].cost : 0, qty: 1, pf: true }]);
+    env.lock(function () {
+      env.table('pipeline').update(id, { parts: parts, updated: nowIso(), printful: Object.assign({}, r.printful || {}, { productId: p.id, title: p.title, image: p.image, currency: p.currency,
+        variants: vs, mockups: [], mockupTask: '' }) });
+    });
+    return { ok: true, currency: p.currency };
+  }
+  function printfulShipping(id) {
+    need(['admin', 'artist']);
+    var r = pfItem(id), v = ((r.printful || {}).variants || [])[0];
+    if (!v) fail('Pick what Printful makes first.');
+    var to = settings().sampleAddress || {};
+    var rates = pf().shipping(v.id, { country: to.country || 'AU', state: to.state || 'NSW', zip: to.zip || '' });
+    pfSave(id, { shipping: rates.slice(0, 3) });
+    return { rates: rates.slice(0, 3) };
+  }
+  /** Sends a print file to Printful: a brief public link, collected, then taken down again (on the PC). */
+  function printfulSendArt(id, fileId) {
+    need(['admin', 'artist']);
+    pf();
+    if (!env.briefPrintful) fail('Sending print files works on the PC version of Tide Book.');
+    var r = pfItem(id);
+    if (!((r.printful || {}).variants || []).length) fail('Pick what Printful makes first.');
+    if (!fileId) fail('Pick the artwork to print.');
+    pfSave(id, { file: { status: 'sending', from: String(fileId), at: nowIso() } });
+    env.briefPrintful(id, String(fileId));
+    return { ok: true };
+  }
+  /** The PC calls this when Printful has the file (or couldn't take it). */
+  function printfulFileDone(id, res) { pfSave(id, { file: Object.assign({ at: nowIso() }, res || {}) }); }
+  function printfulMockups(id) {
+    need(['admin', 'artist']);
+    var r = pfItem(id), P = r.printful || {}, f = P.file || {};
+    if (f.status !== 'ok' || !f.preview) fail('Send the artwork to Printful first.');
+    var t = pf().mockupStart(P.productId, (P.variants || []).map(function (v) { return v.id; }), f.preview);
+    pfSave(id, { mockupTask: t.taskKey, mockups: [] });
+    return { ok: true };
+  }
+  function printfulMockupCheck(id) {
+    need(['admin', 'artist']);
+    var P = pfItem(id).printful || {};
+    if (!P.mockupTask) return { status: 'none' };
+    var res = pf().mockupResult(P.mockupTask);
+    if (res.status === 'completed') pfSave(id, { mockups: res.urls, mockupTask: '', mockupsAt: nowIso() });
+    else if (res.status === 'failed') pfSave(id, { mockupTask: '', mockupError: res.error || 'Printful couldn\u2019t make the mockups.' });
+    return { status: res.status };
+  }
+  /** A sample, as a draft: Printful works out the exact cost, and nothing is charged until she confirms. */
+  function printfulSample(id, variantId, address) {
+    need(['admin', 'artist']);
+    var r = pfItem(id), P = r.printful || {}, f = P.file || {};
+    if (f.status !== 'ok') fail('Send the artwork to Printful first.');
+    var a = address || {};
+    var to = { name: text(a.name, 80), address1: text(a.address1, 120), city: text(a.city, 60), state: text(a.state, 10).toUpperCase(), zip: text(a.zip, 10), country: 'AU' };
+    if (!to.name || !to.address1 || !to.city || !to.state || !to.zip) fail('Fill in the name and address for the sample.');
+    env.settings.set({ sampleAddress: to });
+    var v = (P.variants || []).filter(function (x) { return x.id === Number(variantId); })[0] || (P.variants || [])[0];
+    var o = pf().draftOrder(v.id, f.id, to, 'TB-' + id + '-' + Date.now().toString(36));
+    pfSave(id, { sample: { orderId: o.id, status: o.status, total: o.total, subtotal: o.subtotal, shipping: o.shipping, tax: o.tax, currency: o.currency, variant: v.name, at: nowIso() } });
+    return o;
+  }
+  /** Her tap: Printful makes and posts the sample, and charges her Printful card. */
+  function printfulConfirm(id) {
+    need(['admin', 'artist']);
+    var r = pfItem(id), s = (r.printful || {}).sample || {};
+    if (!s.orderId) fail('Make the sample order first.');
+    var o = pf().confirm(s.orderId);
+    pfSave(id, { sample: Object.assign({}, s, { status: o.status, confirmedAt: nowIso() }) });
+    env.lock(function () { var rr = pfItem(id); env.table('pipeline').update(id, { sample: Object.assign({}, rr.sample || {}, { status: 'Ordered', notes: 'Printful sample, order ' + s.orderId }) }); });
+    return { ok: true, status: o.status };
+  }
+
   // ---------- pause: anything in progress can stop for a while, with a day to come back to it
   // A design rule across the app: pausing never loses progress, it says when it's coming back, a calendar mark shows it,
   // a reminder goes out the day before, and on the day it wakes up by itself where it left off.
@@ -3003,7 +3092,9 @@ function createTideLogic(env) {
     // Everything the screens are allowed to call.
     api: {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
-      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
+      printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -3015,7 +3106,7 @@ function createTideLogic(env) {
     studio: content.studio,
     publish: publish,
     notebook: notebook,
-    talk: talk, wakePaused: wakePaused, setupContext: setupContext,
+    talk: talk, wakePaused: wakePaused, setupContext: setupContext, printfulFileDone: printfulFileDone,
     direction: direction,
     recordOnlineSales: recordOnlineSales,
     siteData: siteData,
@@ -6091,7 +6182,7 @@ function tideTalk(env, t) {
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
         id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
-        firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))),
+        firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))), printful: r.printful || null,
         day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
