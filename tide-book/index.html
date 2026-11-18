@@ -496,6 +496,7 @@ button.card { border: 0; text-align: left; width: 100%; display: block; color: i
 .gb-s { font-size: 12px; opacity: .75; }
 .goal-card.active { box-shadow: inset 0 0 0 2px var(--primary); }
 /* her plan on the home page: where she's up to */
+.plan-head { all: unset; display: block; width: 100%; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .plan-dots { display: flex; gap: 6px; margin-top: 10px; }
 .plan-dots i { flex: 1; height: 6px; border-radius: 3px; background: var(--outline-variant); }
 .plan-dots i.done { background: var(--primary); }
@@ -12025,7 +12026,9 @@ var Kit = (function () {
           var sl = h('div', { class: 'list' });
           g.steps.forEach(function (s, i) {
             sl.appendChild(h('div', { class: 'li' }, h('span', { class: 'hand-ic' }, icon(s.done ? 'check_circle' : 'radio_button_unchecked')),
-              h('div', { class: 'grow' }, h('div', { class: 'li-head', style: s.done ? 'text-decoration:line-through;opacity:.6' : '', text: (i + 1) + '. ' + s.text })),
+              h('button', { class: 'grow', type: 'button', style: 'all:unset;cursor:pointer;flex:1', onclick: function () { dirty = false; ctl.close(); setTimeout(function () {
+                openStepTools({ n: i + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', id, s.id, true).then(refresh).then(function () { render(); }); });
+              }, 280); } }, h('div', { class: 'li-head', style: s.done ? 'text-decoration:line-through;opacity:.6' : '', text: (i + 1) + '. ' + s.text })),
               btn('text', s.done ? 'Undo' : 'Done', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('tickGoalStep', id, s.id, !s.done).then(refresh).then(again).catch(fail); } })));
           });
           sp.appendChild(sl);
@@ -12068,6 +12071,52 @@ var Kit = (function () {
           api('updateGoal', id, f).then(refresh).then(function () { dirty = false; K.haptic('success'); render(); ctl.close(); toast('Saved.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
         });
         ctl.foot.appendChild(save);
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------ each step of a plan comes with the tools to do it
+  var STEP_TOOLS = {
+    post: { ic: 'add_a_photo', label: 'Upload the photos and make a post', why: 'Pick the photos or video. Tide Book drafts the post; you look it over, then post it now or pick a time.',
+      go: function (st) { openAddFootage({ context: st.text, quick: true }); } },
+    review: { ic: 'send', label: 'Post now, or pick a time', why: 'Posts ready for you to look over. Approve one, then post it now or schedule it.',
+      go: function () { S.contentTab = 'review'; go('content'); } },
+    art: { ic: 'brush', label: 'Add the artwork', why: 'Photos, the story behind it, and its sizes and prices for the shop.', go: function () { openPrint(null); } },
+    prices: { ic: 'sell', label: 'Sizes and prices', why: 'Open your artworks to set the sizes and prices.', go: function () { go('prints'); } },
+    website: { ic: 'language', label: 'Change the website', why: 'Tell Tide Book what to add or change on your website.', go: function () { var t0 = (S.data.website && S.data.website.wishes || [])[0]; if (t0) openSiteWish(t0); else go('settings'); } },
+    product: { ic: 'storefront', label: 'Work on the product', why: 'Find it in Products, or start it there. Each one has its own steps.', go: function () { S.ideasTab = 'products'; go('ideas'); } },
+    sale: { ic: 'point_of_sale', label: 'Record a sale', why: 'Note what sold, and where.', go: function () { openTxn('Sale'); } },
+    inspo: { ic: 'favorite', label: 'Save something that inspires you', why: '', go: function () { openInspo(null); } },
+    talk: { ic: 'forum', label: 'Talk it through', why: 'A few questions at a time, to work out how.', go: function (st) { api('startTopic', { title: st.text.slice(0, 110), detail: 'A step in my plan: ' + st.text }).then(function (r) { return refresh().then(function () { openTopic(r.id); }); }).catch(fail); } }
+  };
+  /** What a step needs, read from its words: photos and posts, artwork, prices, the website, a product, a sale. */
+  function toolsFor(text) {
+    var s = String(text || '').toLowerCase(), out = [];
+    function add(k) { if (out.indexOf(k) < 0) out.push(k); }
+    if (/\b(paint|artwork|draw|original)/.test(s)) add('art');
+    if (/\b(upload|photo|gallery|video|film|footage|post|share|instagram|story|reel)/.test(s)) { add('post'); add('review'); }
+    if (/\b(price|size|shop|sell|listing)/.test(s)) { add('art'); add('prices'); }
+    if (/\b(website|web site|site|page)/.test(s)) add('website');
+    if (/\b(batch|product|cards?|scarf|tins?|stickers?|deck|pack|make)/.test(s)) add('product');
+    if (/\b(sold|sale|market|stall)/.test(s)) add('sale');
+    add('talk');
+    return out;
+  }
+  /** One step, with everything needed to do it, one tap each. */
+  function openStepTools(st, onDone) {
+    K.sheet({
+      title: 'Step ' + st.n, tall: true,
+      build: function (ctl) {
+        ctl.body.appendChild(h('div', { class: 'title-m', text: st.text }));
+        ctl.body.appendChild(h('p', { class: 'body-s', style: 'margin:4px 0 12px;color:var(--on-surface-variant)', text: 'Everything for this step is here. Start with the first.' }));
+        var list = h('div', { class: 'next-opts' });
+        toolsFor(st.text).forEach(function (k, i) {
+          var tl = STEP_TOOLS[k];
+          list.appendChild(h('button', { class: 'next-opt' + (i === 0 ? ' main' : ''), type: 'button', onclick: function () { ctl.close(); setTimeout(function () { tl.go(st); }, 280); } },
+            h('span', { class: 'next-opt-ic' }, icon(tl.ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: tl.label }), tl.why ? h('span', { class: 'next-opt-why', text: tl.why }) : null)));
+        });
+        ctl.body.appendChild(list);
+        if (onDone && !st.done) ctl.foot.appendChild(btn('filled', 'This step is done', { icon: 'check', lg: true, block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); onDone().then(function () { ctl.close(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); }); } }));
       }
     });
   }
@@ -12136,9 +12185,15 @@ var Kit = (function () {
         undoCard('Step ' + pl.current + ' done. On to the next.', function () { return api('updateIdea', idea.id, { scope: idea.scope }); }, 'Back on that step.');
       }).catch(function (er) { K.setBusy(b, false); fail(er); });
     } });
-    return h('div', { class: 'card pad plan-card' },
+    function tick() {
+      if (pl.goalId) return api('tickGoalStep', pl.goalId, cur.id, true).then(refresh).then(function () { K.haptic('success'); render(); undoCard('Step ' + pl.current + ' done. On to the next.', function () { return api('tickGoalStep', pl.goalId, cur.id, false); }, 'Back on that step.'); });
+      return Promise.resolve();
+    }
+    var head = h('button', { class: 'plan-head', type: 'button', onclick: function () { openStepTools(cur, pl.goalId ? tick : null); } },
       h('div', { class: 'label-s', text: (pl.goalId ? pl.title + ' · ' : 'Your plan · ') + 'step ' + pl.current + ' of ' + pl.steps.length }),
-      h('div', { class: 'title-m', style: 'margin-top:4px', text: cur.text }), dots,
+      h('div', { class: 'row', style: 'gap:8px;align-items:flex-start;margin-top:4px' }, h('div', { class: 'title-m grow', text: cur.text }), icon('chevron_right')),
+      h('div', { class: 'body-s', style: 'margin-top:4px;color:var(--primary);font-weight:600', text: 'Tap for what you need: ' + toolsFor(cur.text).filter(function (k) { return k !== 'talk'; }).map(function (k) { return STEP_TOOLS[k].label.toLowerCase(); }).slice(0, 2).join(', ') }));
+    return h('div', { class: 'card pad plan-card' }, head, dots,
       h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' }, done, btn('text', 'See the plan', { sm: true, onclick: function () { if (pl.goalId) openGoal(pl.goalId); else openIdea(pl.ideaId); } })));
   }
   /** After a delete: a card with Undo that puts it straight back. */
@@ -13375,8 +13430,9 @@ var Kit = (function () {
     });
   }
 
-  function openAddFootage() {
-    var files = [], context = '', quick = false, campaignId = '', dirty = false;
+  function openAddFootage(preset) {
+    preset = preset || {};
+    var files = [], context = preset.context || '', quick = !!preset.quick, campaignId = '', dirty = false;
     K.sheet({
       title: 'Add content', tall: true, guard: function () { return dirty; },
       build: function (ctl) {
@@ -13406,7 +13462,7 @@ var Kit = (function () {
           h('span', { class: 'body-m', text: 'As many as you like. No titles needed.' })));
         ctl.body.append(input, grid);
         var s = sheetSection('Anything to say about these?');
-        s.appendChild(K.textField({ suggest: S.data.contextIdeas || [], label: 'Context (optional)', multiline: true, maxlength: 2000, onInput: function (v) { context = v; dirty = true; },
+        s.appendChild(K.textField({ suggest: S.data.contextIdeas || [], label: 'Context (optional)', multiline: true, maxlength: 2000, value: context, onInput: function (v) { context = v; dirty = true; },
           help: 'Where it was, which piece it is, what was happening. Or leave it blank: you may get a quick question instead.' }));
         ctl.body.appendChild(s);
         var live = S.data.campaigns.filter(function (c) { return c.status === 'Active'; });
@@ -13417,7 +13473,7 @@ var Kit = (function () {
         }
         ctl.body.appendChild(h('div', { class: 'switch-row', style: 'margin-top:14px' },
           h('div', {}, h('div', { class: 'title-m', text: 'Quick post' }), h('div', { class: 'body-m', text: 'One post from these, no questions asked.' })),
-          K.switchBtn({ checked: false, label: 'Quick post', onChange: function (v) { quick = v; } })));
+          K.switchBtn({ checked: quick, label: 'Quick post', onChange: function (v) { quick = v; } })));
 
         send.addEventListener('click', function () {
           var total = files.length, i = 0, skipped = 0, roundId = null;
