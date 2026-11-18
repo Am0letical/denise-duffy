@@ -7285,6 +7285,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-hand-savings', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'Savings compared with prompting Claude yourself',
+    say: 'A second card under AI costs: the same work as if you’d prompted Claude’s API by hand, on the model you’d pick, with some back and forth.',
+    steps: ['Open Money and scroll to “AI costs”.', 'The second card compares Tide Book with prompting Claude yourself.', 'Pick the model you’d have used, and how much back and forth. The card says what it counts and what it leaves out.'],
+    go: { view: 'money', find: '.hand-cost', tip: 'Change the model and the back and forth here.' } },
   { id: '2026-11-19-ready-to-sell', on: '2026-11-19', to: 'all', icon: 'storefront', title: 'Ready to sell: a checklist in Orders',
     say: 'Everything your website needs before its first sale is in one list, with the button for each step right there.',
     steps: ['Open the menu (bottom left) and tap Orders.', 'Work down “Ready to sell”: Stripe (for payments), Printful (for the bigger prints), your postage, then your first artwork on your website.', 'Each step has its own button. A tick means it’s done.', 'When every step is ticked, the list goes and your shop is open.'],
@@ -14705,6 +14709,25 @@ var Kit = (function () {
       asec.appendChild(card);
       asec.appendChild(h('p', { class: 'tf-help', text: 'Claude jobs count what Claude charged. Jobs on the PC, or in Claude chat, cost nothing; what they would have cost is estimated from their size at Claude’s prices.' +
         (sv.earlier ? ' The ' + sv.earlier + ' PC job' + (sv.earlier === 1 ? '' : 's') + ' from before the tally began were found in the records and estimated the same way.' : '') }));
+      // the same work without Tide Book: prompting Claude by hand
+      var hm = S.handModel || 'sonnet', hf = S.handTalk || 2, hand = (t.hand || {})[hm] || {}, handUsd = hand[hf] || 0, hSaved = Math.max(0, handUsd - t.actual);
+      var hpct = handUsd ? Math.round(hSaved / handUsd * 100) : 0, htop = Math.max(handUsd, t.actual, 0.000001);
+      function hbar(label, val, cls) {
+        return h('div', { class: 'ai-bar' }, h('div', { class: 'ai-bar-top' }, h('span', { class: 'body-s', text: label }), h('b', { class: 'body-s', text: usd(val) })),
+          h('div', { class: 'ai-track' }, h('i', { class: cls, style: 'width:' + (val > 0 ? Math.max(1.5, val / htop * 100) : 0) + '%' })));
+      }
+      var hcard = h('div', { class: 'card pad ai-cost hand-cost', style: 'margin-top:12px' },
+        h('div', { class: 'ai-head' }, h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Saved compared with prompting Claude yourself' }), h('div', { class: 'ai-big', text: usd(hSaved) })),
+          h('span', { class: 'chip ' + (hpct > 0 ? 'approved' : 'plain'), text: hpct + '% less' })),
+        hbar('Prompting Claude’s API yourself', handUsd, 'would'), hbar('With Tide Book', t.actual, 'actual'),
+        h('div', { class: 'label-s', style: 'margin:12px 0 6px', text: 'You’d have used' }),
+        K.choices({ row: true, label: 'Model', value: hm, options: [{ value: 'sonnet', label: 'Sonnet' }, { value: 'opus', label: 'Opus' }, { value: 'haiku', label: 'Haiku' }], onChange: function (v) { S.handModel = v || 'sonnet'; render(); } }),
+        h('div', { class: 'label-s', style: 'margin:10px 0 6px', text: 'Back and forth' }),
+        K.choices({ row: true, label: 'Back and forth', value: String(hf), options: [{ value: '1', label: 'One message each' }, { value: '2', label: 'A little' }, { value: '4', label: 'A lot' }], onChange: function (v) { S.handTalk = Number(v) || 2; render(); } }),
+        h('p', { class: 'body-s ai-line', text: 'The same ' + t.jobs + ' job' + (t.jobs === 1 ? '' : 's') + ', each prompted by hand on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' at full price' + (hf > 1 ? ', with the conversation sent again ' + (hf === 2 ? 'once more' : 'a few more times') + ' as you go back and forth' : '') + '. Tide Book saves by doing jobs on the PC or in Claude chat for nothing, using the cheapest model that does the job well, sending research in half-price batches, reusing its saved instructions, and asking once with everything Claude needs.' }),
+        h('p', { class: 'body-s ai-line', text: 'An estimate, on the low side: it leaves out the work Tide Book does with no AI at all (prices, postage, orders, the website), and your time.' +
+          (t.estimatedJobs ? ' The ' + t.estimatedJobs + ' job' + (t.estimatedJobs === 1 ? '' : 's') + ' from before it counted tokens are sized from what they cost.' : '') }));
+      asec.appendChild(hcard);
       main.appendChild(rise(asec, n++));
     }
 
