@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,directions_walk,done_all,download,drag_indicator,edit,edit_note,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,forum,front_hand,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -2941,11 +2941,30 @@ function createTideLogic(env) {
       return { ok: true };
     });
   }
-  /** The goals worked on together with this one: linked either way, still open, with steps left. */
+  /** The goals in this one's group: everything linked to it, and to those, and so on (two or more goals). */
+  function groupOf(g) {
+    var all = goalList(), seen = [g.id], todo = [g];
+    while (todo.length) {
+      var cur = todo.shift();
+      all.forEach(function (o) {
+        if (seen.indexOf(o.id) >= 0 || o.status === 'Done') return;
+        if (list(cur.links).indexOf(o.id) >= 0 || list(o.links).indexOf(cur.id) >= 0) { seen.push(o.id); todo.push(o); }
+      });
+    }
+    return all.filter(function (o) { return o.id !== g.id && seen.indexOf(o.id) >= 0; });
+  }
+  /** The goals worked on together with this one: its group, still open, with steps left. */
   function togetherWith(g) {
-    return goalList().filter(function (o) {
-      return o.id !== g.id && o.status !== 'Done' && !o.parentId && list(o.steps).some(function (s) { return !s.done; }) &&
-        (list(g.links).indexOf(o.id) >= 0 || list(o.links).indexOf(g.id) >= 0);
+    return groupOf(g).filter(function (o) { return !o.parentId && list(o.steps).some(function (s) { return !s.done; }); });
+  }
+  /** Takes a goal out of its group: all its links go, and the rest of the group stays together if they're linked to each other. */
+  function leaveGroup(id) {
+    need(['admin', 'artist']);
+    return env.lock(function () {
+      goalRow(id);
+      env.table('goals').update(id, { links: [], updated: nowIso() });
+      syncLinks(id, []);
+      return { ok: true };
     });
   }
   function orderGoals(ids) {
@@ -2982,6 +3001,7 @@ function createTideLogic(env) {
       return { id: g.id, title: g.title, why: g.why || '', x: Number(g.x), y: Number(g.y), links: list(g.links), parentId: g.parentId || '', rank: Number(g.rank) || 0,
         status: g.status || 'Open', steps: steps, next: next ? next.text : '', active: !!(top && top.id === g.id),
         alongside: !!(top && top.id !== g.id && togetherWith(top).some(function (o) { return o.id === g.id; })),
+        group: groupOf(g).map(function (o) { return o.id; }),
         planning: tp ? { id: tp.id, status: tp.status } : null };
     });
   }
@@ -3324,7 +3344,7 @@ function createTideLogic(env) {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -6627,9 +6647,13 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
-  { id: '2026-11-18-goals-together', on: '2026-11-18', to: 'artist', icon: 'link', title: 'Work on two goals together',
-    say: 'Link two goals and both move forward at once, each with its own steps, instead of one waiting for the other.',
-    steps: ['Go to Ideas, then Goals.', 'Drag one goal and drop it on another.', 'Tap “Work on them together”.', 'Both goals’ next steps now show on Home. To undo it, drop them together again.'],
+  { id: '2026-11-18-idea-folds', on: '2026-11-18', to: 'artist', icon: 'unfold_less', title: 'Idea pages are shorter too',
+    say: 'Like products, each part of an idea now folds away under a heading that says what’s inside.',
+    steps: ['Go to Ideas and open an idea.', 'Tap a heading, like “What’s included”, to open it.', 'Tap it again to fold it away.'],
+    go: { view: 'ideas', state: { ideasTab: 'ideas' }, find: 'main .li', tip: 'Open an idea to see its folding sections.' } },
+  { id: '2026-11-18-goals-together', on: '2026-11-18', to: 'artist', icon: 'link', title: 'Work on two or more goals together',
+    say: 'Group goals and they all move forward at once, each with its own steps, instead of waiting for each other.',
+    steps: ['Go to Ideas, then Goals.', 'Drag one goal and drop it on another, then tap “Work on them together”.', 'Drop a third on either of them to add it to the group.', 'Every goal in the group shows its next step on Home. To take one out, drop it on the group again.'],
     go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.goal-map', tip: 'Drag one goal onto another to link them.' } },
   { id: '2026-11-18-map-zoom', on: '2026-11-18', to: 'artist', icon: 'zoom_in', title: 'Zoom in and out on your goals map',
     say: 'Pinch the map with two fingers to zoom, or use the buttons in its corner.',
@@ -11775,7 +11799,10 @@ var Kit = (function () {
             : needsCard({ kind: 'idea', item: x }, function () { ctl.close(); })));
         }
         if (ADMIN && x.artistComment) ctl.body.appendChild(h('div', { style: 'margin-top:12px' }, note(artist() + ' said: “' + x.artistComment + '”', 'chat')));
-        ctl.body.appendChild(researchBlock(x, ctl));
+        var rb = researchBlock(x, ctl), RS = x.research;
+        ctl.body.appendChild(fold(rb, 'id:' + x.id + ':research', 'travel_explore', RS && RS.verdict ? RS.verdict + (x.viability ? ' · ' + x.viability + '/100' : '') : x.researchStatus === 'Queued' || x.researchStatus === 'Researching' ? 'On its way' : 'No research yet', false));
+        function ik(k) { return 'id:' + x.id + ':' + k; }
+        function firstLine(t) { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length > 80 ? t.slice(0, 78) + '…' : t; }
 
         var s1 = sheetSection('The idea');
         var title = K.textField({ label: 'Name of the idea', value: f.title, maxlength: 120, onInput: function (v) { f.title = v; touch(); } });
@@ -11790,14 +11817,20 @@ var Kit = (function () {
           options: S.data.options.priorities.map(function (p) { return { value: p, label: p }; }) }));
         var s4 = sheetSection(ADMIN ? 'Scope' : 'What’s included');
         s4.appendChild(scopeEditor(f.scope, { ticks: true, onChange: touch }));
-        ctl.body.append(s1, s4, s2, s3);
+        var nScope = f.scope.length, nTick = f.scope.filter(function (s) { return s.done; }).length;
+        ctl.body.appendChild(h('div', { class: 'fold-group', text: 'The details' }));
+        ctl.body.append(
+          fold(s1, ik('idea'), 'lightbulb', firstLine(f.note) || 'Its name and what it is', !f.note),
+          fold(s4, ik('scope'), 'checklist', nScope ? nScope + (nScope === 1 ? ' part' : ' parts') + (nTick ? ' · ' + nTick + ' done' : '') : 'Nothing listed yet', false),
+          fold(s2, ik('when'), 'schedule', f.timeline || 'No timeline yet', false),
+          fold(s3, ik('priority'), 'flag', f.priority ? f.priority + (ADMIN ? ' priority' : '') : 'Not set', false));
 
         // its notes, from the notebook
         var mineNotes = notesFor(x.id), sn = sheetSection('Notes');
         if (mineNotes.length) { var nl = h('div', { class: 'list' }); mineNotes.forEach(function (nn) { nl.appendChild(noteRow(nn)); }); sn.appendChild(nl); }
         else sn.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 8px', text: 'Rough thoughts about this idea live here. Tap Expand to grow them.' }));
         sn.appendChild(btn('text', 'New note for this idea', { icon: 'edit_note', onclick: function () { K.swap(ctl, function () { openNote(null, { ideaId: x.id }); }); } }));
-        ctl.body.appendChild(sn);
+        ctl.body.appendChild(fold(sn, ik('notes'), 'edit_note', mineNotes.length ? mineNotes.length + (mineNotes.length === 1 ? ' note' : ' notes') : 'No notes yet', false));
 
         {   // where it's up to: hers to set too; the admin's notes and questions stay on the admin side
           var s5 = sheetSection(ADMIN ? 'Admin' : 'Where it’s up to');
@@ -11811,7 +11844,7 @@ var Kit = (function () {
           }
           if (ADMIN) stack.appendChild(K.textField({ label: 'Admin notes', value: f.adminNotes, multiline: true, maxlength: 5000, onInput: function (v) { f.adminNotes = v; touch(); }, help: 'Only admins see these.' }));
           s5.appendChild(stack);
-          ctl.body.appendChild(s5);
+          ctl.body.appendChild(fold(s5, ik('stage'), 'timeline', stageLabel(f.stage), false));
         }
         if (ADMIN) {
           var s6 = sheetSection('Ask ' + artist());
@@ -11824,7 +11857,7 @@ var Kit = (function () {
               .catch(function (e) { K.setBusy(askBtn, false); fail(e); });
           });
           s6.appendChild(h('div', { class: 'field-gap' }, req, askBtn));
-          ctl.body.appendChild(s6);
+          ctl.body.appendChild(fold(s6, ik('ask'), 'chat', x.approvalState === 'Pending' ? 'Waiting for ' + artist() : 'Nothing asked', false));
         }
 
         // a website change: asked for here, approved by the admin, then a prompt for Claude Code
@@ -11857,7 +11890,7 @@ var Kit = (function () {
               } }, icon('check'), 'It’s done')));
           }
         } else ws.appendChild(note('On the website ' + ago(W.doneAt) + '.', 'check_circle', 'good'));
-        ctl.body.appendChild(ws);
+        ctl.body.appendChild(fold(ws, ik('web'), 'language', !W ? 'Not a website change' : W.status === 'Done' ? 'On the website' : W.status, !!W && W.status !== 'Done'));
 
         var s7 = sheetSection('Take it further');
         var row = h('div', { class: 'btn-row' });
@@ -11889,7 +11922,7 @@ var Kit = (function () {
           row.appendChild(cal);
         }
         s7.appendChild(row);
-        ctl.body.appendChild(s7);
+        ctl.body.appendChild(fold(s7, ik('further'), 'rocket_launch', 'An artwork, a product, or our direction', false));
 
         ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Delete this idea', { icon: 'delete', danger: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
@@ -12711,7 +12744,7 @@ var Kit = (function () {
     }
     /** Dropped one goal on another: work on them together, make it part of it, or just put it down. */
     function dropped(g, o) {
-      var linked = g.links.indexOf(o.id) >= 0;
+      var linked = g.links.indexOf(o.id) >= 0, inGroup = (g.group || []).indexOf(o.id) >= 0, others = (o.group || []).filter(function (x) { return x !== g.id; });
       K.sheet({
         title: '“' + g.title + '” and “' + o.title + '”',
         build: function (ctl) {
@@ -12722,8 +12755,11 @@ var Kit = (function () {
               fn().then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); }).catch(function (er) { K.setBusy(b, false); fail(er); });
             } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), h('span', { class: 'next-opt-why', text: why }))));
           }
-          if (linked) opt('link_off', 'Stop working on them together', 'Each goes back to waiting its own turn.', true, function () { return api('linkGoals', g.id, o.id, false); });
-          else opt('link', 'Work on them together', 'Each keeps its own steps. Both show what’s next on Home, and neither waits for the other.', true, function () { return api('linkGoals', g.id, o.id, true); });
+          if (linked || inGroup) {
+            opt('link_off', 'Take “' + g.title + '” out of the group', 'It goes back to waiting its own turn. The others stay together.', true, function () { return api('leaveGroup', g.id); });
+          } else opt('link', others.length ? 'Add it to this group' : 'Work on them together',
+            (others.length ? 'It joins “' + o.title + '” and ' + others.length + ' more. ' : '') + 'Each keeps its own steps. All show what’s next on Home, and none waits for another.', true,
+            function () { return api('linkGoals', g.id, o.id, true); });
           if (!o.parentId && g.parentId !== o.id) opt('subdirectory_arrow_right', 'Make it part of “' + o.title + '”', 'A smaller goal inside the bigger one.', false, function () { return api('updateGoal', g.id, { parentId: o.id }); });
           opt('open_with', 'Just put it here', 'Nothing changes but where it sits.', false, function () { return Promise.resolve(); });
           ctl.body.appendChild(list);
@@ -12943,7 +12979,9 @@ var Kit = (function () {
         var sx = sheetSection('How it fits with the others');
         if (others.length) {
           sx.appendChild(h('div', { class: 'label-s', style: 'margin:0 0 2px', text: 'Work on it together with' }));
-          sx.appendChild(h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Each goal keeps its own steps. Both show what’s next on Home, and neither waits for the other.' }));
+          sx.appendChild(h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Pick two or more. Each goal keeps its own steps. All of them show what’s next on Home, and none waits for another.' }));
+          var grp = (g.group || []).filter(function (x) { return f.links.indexOf(x) < 0; }).map(function (x) { var o = goalById(x); return o ? '“' + o.title + '”' : ''; }).filter(String);
+          if (grp.length) sx.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 8px;color:var(--secondary)', text: 'Also in its group, through those: ' + grp.join(', ') + '.' }));
           sx.appendChild(multiChips(others.map(function (x) { return x.title; }), others.filter(function (x) { return f.links.indexOf(x.id) >= 0; }).map(function (x) { return x.title; }),
             function (v) { f.links = others.filter(function (x) { return v.indexOf(x.title) >= 0; }).map(function (x) { return x.id; }); touch(); }));
           var tops = others.filter(function (x) { return !x.parentId; });
@@ -12954,7 +12992,7 @@ var Kit = (function () {
         }
         sx.appendChild(h('div', { style: 'margin-top:10px' }, btn('text', 'Add a smaller goal inside this one', { icon: 'add', sm: true, onclick: function () { ctl.close(); setTimeout(function () { addGoalAsk(id); }, 280); } })));
         var kids = (S.data.goals || []).filter(function (x) { return x.parentId === id; }).length, par = g.parentId ? goalById(g.parentId) : null;
-        ctl.body.appendChild(fold(sx, 'gl:' + id + ':fits', 'link', [par ? 'Part of “' + par.title + '”' : '', g.links.length ? 'Together with ' + g.links.map(function (l) { var o = goalById(l); return o ? '“' + o.title + '”' : ''; }).filter(String).join(', ') : '', kids ? kids + ' smaller ' + (kids === 1 ? 'goal' : 'goals') + ' inside' : ''].filter(String).join(' · ') || 'On its own for now', false));
+        ctl.body.appendChild(fold(sx, 'gl:' + id + ':fits', 'link', [par ? 'Part of “' + par.title + '”' : '', (g.group || []).length ? 'In a group with ' + g.group.map(function (l) { var o = goalById(l); return o ? '“' + o.title + '”' : ''; }).filter(String).join(', ') : '', kids ? kids + ' smaller ' + (kids === 1 ? 'goal' : 'goals') + ' inside' : ''].filter(String).join(' · ') || 'On its own for now', false));
         ctl.body.appendChild(h('div', { style: 'margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:4px' },
           btn('text', g.status === 'Done' ? 'Open it again' : 'Mark it reached', { icon: g.status === 'Done' ? 'restore' : 'check', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', id, { status: g.status === 'Done' ? 'Open' : 'Done' }).then(refresh).then(function () { render(); again(); }).catch(fail); } }),
           btn('text', 'Delete this goal', { icon: 'delete', danger: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('deleteGoal', id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Goal deleted.', 'goal', id); }).catch(fail); } })));
