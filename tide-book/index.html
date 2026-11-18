@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_note,edit_off,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,cloud_off,colorize,computer,contacts,content_copy,content_cut,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_note,edit_off,error,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,radio_button_unchecked,receipt_long,refresh,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1250,6 +1250,26 @@ img, video { max-width: 100%; }
 .sheet.insp-sheet { max-height: 54vh; }
 .sheet.insp-sheet .scrim, .layer:has(.insp-sheet) .scrim { background: transparent; }
 body.inspecting .site-top { visibility: hidden; }
+/* every decision: park for now, not interested, delete */
+.decide-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px; }
+.dz { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 64px; padding: 8px 6px; border-radius: var(--r-l); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .12s var(--ease), background .15s; }
+.dz:active { transform: scale(0.96); }
+.dz:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.dz .ms { font-size: 22px; }
+.dz-t { font: 600 14px/18px var(--font); }
+.dz-s { font: 400 11.5px/15px var(--font); opacity: 0.8; }
+.dz.park { background: var(--secondary-container); color: var(--on-secondary-container); }
+.dz.not { background: var(--warn-container); color: var(--on-warn-container); }
+.dz.del { background: var(--error-container); color: var(--on-error-container); }
+.decide-row.compact { margin-top: 8px; }
+.decide-row.compact .dz { min-height: 54px; padding: 6px 4px; }
+.decide-row.compact .dz .ms { font-size: 20px; }
+.decide-row.compact .dz-t { font-size: 13px; }
+.away-list > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: var(--r-l); background: var(--surface-low); cursor: pointer; font: 500 14px/20px var(--font); color: var(--on-surface-variant); }
+.away-list > summary::-webkit-details-marker { display: none; }
+.away-list[open] > summary > .ms:last-child { transform: rotate(180deg); }
+.away-list > .list { margin-top: 8px; }
+.decide-row { grid-template-columns: 1fr 1fr; }
 </style>
 
   <script>
@@ -1445,7 +1465,8 @@ var TIDE_SCHEMAS = {
       ['researchTries', 'Research tries', 'number'], ['researchNote', 'Research note', 'text'],
       ['updated', 'Updated', 'date'], ['stageChanged', 'Stage changed', 'date'], ['website', 'Website change', 'json'],
       ['deleted', 'Removed', 'bool'], ['resumeOn', 'Paused until', 'day'], ['resumeStage', 'Stage before the pause', 'text'], ['remindedAt', 'Reminded', 'date'],
-      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text']
+      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text'], ['notInterested', 'Not interested', 'bool'], ['prevStage', 'Stage before', 'text'],
+      ['approvalLater', 'Request parked until', 'day']
     ]
   },
   // who makes what for her (the business setup): the default for each kind is what plans start from
@@ -1467,7 +1488,8 @@ var TIDE_SCHEMAS = {
       ['approvalRequest', 'Approval request', 'text'], ['approvalState', 'Approval state', 'text'],
       ['artistComment', 'Artist comment', 'text'], ['approvalAnswered', 'Approval answered', 'date'],
       ['adminNotes', 'Admin notes', 'text'], ['sourceIdea', 'From idea', 'text'],
-      ['series', 'Series', 'text'], ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date']
+      ['series', 'Series', 'text'], ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date'],
+      ['approvalLater', 'Request parked until', 'day']
     ]
   },
   feed: {
@@ -1522,6 +1544,7 @@ var TIDE_SCHEMAS = {
       ['adStatus', 'Ad status', 'text'], ['adResearch', 'Ad research', 'json'], ['adPlan', 'Ad plan', 'json'], ['adNote', 'Ad note', 'text'],
       ['adTries', 'Ad tries', 'number'], ['adAt', 'Ad researched', 'date'], ['adConfirmedAt', 'Ad confirmed', 'date'], ['adStarted', 'Ad started', 'date'],
       ['adFinished', 'Ad finished', 'date'], ['adMeta', 'Ad in Meta', 'json'], ['adNeedsOk', 'Ad needs OK', 'bool'], ['adOkBy', 'Ad OK by', 'text'],
+      ['deleted', 'Removed', 'bool'], ['prevStatus', 'Status before', 'text'], ['resumeOn', 'Parked until', 'day'], ['remindedAt', 'Reminded', 'date'], ['notInterested', 'Not interested', 'bool'],
       ['updated', 'Updated', 'date']
     ]
   },
@@ -1619,6 +1642,7 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Started by', 'text'], ['title', 'Topic', 'text'],
       ['detail', 'To start with', 'text'], ['status', 'Status', 'text'], ['rounds', 'Questions and answers', 'json'],
       ['outcome', 'Written up', 'json'], ['filed', 'Filed as', 'json'], ['maxQ', 'Question limit', 'number'], ['deleted', 'Removed', 'bool'], ['goalId', 'For goal', 'text'],
+      ['parked', 'Parked', 'bool'], ['resumeOn', 'Parked until', 'day'], ['remindedAt', 'Reminded', 'date'], ['dropped', 'Not interested', 'bool'],
       ['updated', 'Updated', 'date'], ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'],
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
     ]
@@ -1637,7 +1661,7 @@ var TIDE_SCHEMAS = {
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
       ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number'],
       ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list'], ['printful', 'Printful', 'json'], ['resumeOn', 'Paused until', 'day'], ['remindedAt', 'Reminded', 'date'],
-      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text']
+      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text'], ['notInterested', 'Not interested', 'bool']
     ]
   },
   // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
@@ -2716,7 +2740,7 @@ function createTideLogic(env) {
       status: T.ARTIST_STATUS[it.stage] || 'Received', thumbIds: list(it.thumbIds),
       day: tideDay({ stage: it.stage, since: it.stageChanged }, env.now().getTime()),
       photoUrls: photoIds.map(function (x) { return env.files.viewUrl(x); }),
-      approvalRequest: it.approvalRequest || '', approvalState: it.approvalState || '',
+      approvalRequest: it.approvalRequest || '', approvalState: it.approvalState || '', approvalLater: it.approvalLater || '', notInterested: it.notInterested === true,
       artistComment: it.artistComment || '', linkedTo: it.linkedTo || '',
       website: it.website ? { status: it.website.status, at: it.website.at, by: it.website.by, approvedAt: it.website.approvedAt || '', doneAt: it.website.doneAt || '',
         prompt: role === 'admin' ? it.website.prompt || '' : '', file: role === 'admin' ? it.website.file || '' : '' } : null
@@ -2748,7 +2772,7 @@ function createTideLogic(env) {
             keep: TidePricing.keep(v.price, v.cost, s.paymentFeePct, registered) }; }) };
       }),
       photoUrls: photoIds.map(function (x) { return env.files.viewUrl(x); }), folderUrl: pr.folderUrl || '',
-      approvalRequest: pr.approvalRequest || '', approvalState: pr.approvalState || '',
+      approvalRequest: pr.approvalRequest || '', approvalState: pr.approvalState || '', approvalLater: pr.approvalLater || '',
       artistComment: pr.artistComment || '', wentLive: pr.wentLive || '', sourceIdea: pr.sourceIdea || '',
       gaps: liveGaps(pr), edition: Object.assign(editionState(pr, s, env.today(), salesCache || (salesCache = salesByArtwork())), { line: '' })
     };
@@ -3216,6 +3240,7 @@ function createTideLogic(env) {
   /** The setup in plain words, for every AI job: the defaults to start from. */
   function setupContext() {
     var s = settings(), out = [], sup = supplierList();
+    notInterestedLines().forEach(function (l) { out.push(l); });
     if (sup.length) {
       out.push('Her suppliers. Use them for everything they make (her default first for each kind). Only suggest another supplier for a part or product none of hers makes, and then say plainly that none of hers make it:');
       sup.forEach(function (x) {
@@ -3360,9 +3385,128 @@ function createTideLogic(env) {
         }
       });
     });
+    env.lock(function () {
+      rows('content').forEach(function (c) {
+        if (c.deleted || c.status !== 'Parked' || !c.resumeOn) return;
+        if (c.resumeOn <= today) { env.table('content').update(c.id, { status: c.prevStatus || 'Suggested', prevStatus: '', resumeOn: '', remindedAt: '', updated: nowIso() }); woke.push(['Back for a look: ' + (c.title || 'a post'), 'The post you parked is back with your others.']); }
+        else if (c.resumeOn === tomorrow && !c.remindedAt) { env.table('content').update(c.id, { remindedAt: nowIso() }); woke.push(['Tomorrow: ' + (c.title || 'a post'), 'The post you parked comes back tomorrow.']); }
+      });
+      rows('topics').forEach(function (x) {
+        if (x.deleted || x.parked !== true || !x.resumeOn) return;
+        if (x.resumeOn <= today) { env.table('topics').update(x.id, { parked: false, resumeOn: '', remindedAt: '', updated: nowIso() }); woke.push(['Back on: ' + x.title, 'The conversation you parked is back.']); }
+        else if (x.resumeOn === tomorrow && !x.remindedAt) { env.table('topics').update(x.id, { remindedAt: nowIso() }); woke.push(['Tomorrow: ' + x.title, 'The conversation you parked comes back tomorrow.']); }
+      });
+      ['ideas', 'prints'].forEach(function (tb) {
+        rows(tb).forEach(function (x) {
+          if (x.approvalState !== 'Later' || !x.approvalLater || x.approvalLater > today) return;
+          env.table(tb).update(x.id, { approvalState: 'Pending', approvalLater: '', updated: nowIso() });
+          woke.push(['Back for a look: ' + x.title, 'The request you parked is back.']);
+        });
+      });
+    });
     var more = talk.wakePaused ? talk.wakePaused(today, tomorrow) : [];
     woke.concat(more).forEach(function (w) { try { publish.push('artist', w[0], w[1]); } catch (e) {} });
     return { woke: woke.length + more.length };
+  }
+
+  // ---------- every decision: park for now, not interested, or delete. Each can be undone.
+  // park:  out of the way until a day she picks (or until she brings it back); a reminder the day before; back by itself.
+  // not:   put away for good, kept, and remembered so Tide Book stops suggesting things like it.
+  // del:   gone (kept in the bin, so Undo puts it back).
+  var DECIDE_KINDS = ['idea', 'product', 'post', 'topic', 'request-idea', 'request-print'];
+  function decideItem(kind, id, action, day) {
+    var role = need(['admin', 'artist']);
+    if (DECIDE_KINDS.indexOf(kind) < 0) fail('That can\u2019t be decided here.');
+    if (['park', 'not', 'del', 'never'].indexOf(action) < 0) fail('Pick park for now, or delete.');
+    // delete, and she's not interested: it goes, and Tide Book remembers not to suggest anything like it
+    if (action === 'never') {
+      var tbl = { idea: 'ideas', product: 'pipeline', post: 'content', topic: 'topics', 'request-idea': 'ideas' }[kind];
+      if (!tbl) return decideItem(kind, id, 'not');
+      if (kind === 'post') { var cp = find('content', id); if (cp.status === 'Suggested') content.api.decideContent(id, 'reject', 'Not interested'); }
+      env.lock(function () { find(tbl, id); env.table(tbl).update(id, kind === 'topic' ? { dropped: true } : { notInterested: true }); });
+      return decideItem(kind === 'request-idea' ? 'idea' : kind, id, 'del');
+    }
+    var d = action === 'park' ? resumeDay(day) : '', now = nowIso();
+    if (kind === 'idea') {
+      if (action === 'park') return pauseIdea(id, d);
+      if (action === 'del') return deleteIdea(id);
+      return env.lock(function () { var it = ideaRow(id); env.table('ideas').update(id, { prevStage: it.stage, stage: 'Retired', stageChanged: now, notInterested: true, updated: now }); return { ok: true }; });
+    }
+    if (kind === 'product') {
+      if (action === 'park') return talk.api.parkItem(id, true, d);
+      if (action === 'del') return talk.api.deleteItem(id);
+      return env.lock(function () { find('pipeline', id); env.table('pipeline').update(id, { retired: true, notInterested: true, parked: false, resumeOn: '', updated: now }); return { ok: true }; });
+    }
+    if (kind === 'post') {
+      return env.lock(function () {
+        var c = find('content', id);
+        if (action === 'del') { env.table('content').update(id, { deleted: true, updated: now }); return { ok: true }; }
+        if (action === 'park') { env.table('content').update(id, { prevStatus: c.status === 'Parked' ? c.prevStatus : c.status, status: 'Parked', resumeOn: d, remindedAt: '', updated: now }); return { ok: true }; }
+        if (c.status === 'Suggested') content.api.decideContent(id, 'reject', 'Not interested');
+        else env.table('content').update(id, { prevStatus: c.status, status: 'Rejected', rejectedBy: role, rejectReason: 'Not interested', decided: now });
+        env.table('content').update(id, { notInterested: true, updated: nowIso() });
+        return { ok: true };
+      });
+    }
+    if (kind === 'topic') {
+      if (action === 'del') return talk.api.deleteTopic(id);
+      return env.lock(function () {
+        find('topics', id);
+        env.table('topics').update(id, action === 'park' ? { parked: true, resumeOn: d, remindedAt: '', updated: now } : { dropped: true, parked: false, updated: now });
+        return { ok: true };
+      });
+    }
+    // a request from the admin (an idea or an artwork to look over): park it, or say no thanks
+    var tb = kind === 'request-idea' ? 'ideas' : 'prints';
+    if (action === 'del') { if (tb !== 'ideas') fail('An artwork can\u2019t be deleted from here.'); return deleteIdea(id); }
+    return env.lock(function () {
+      var it = find(tb, id);
+      if (it.approvalState !== 'Pending' && it.approvalState !== 'Later') fail('This one has already been answered.');
+      env.table(tb).update(id, action === 'park' ? { approvalState: 'Later', approvalLater: d, updated: now }
+        : { approvalState: 'Declined', artistComment: 'Not interested', approvalAnswered: now, updated: now });
+      return { ok: true };
+    });
+  }
+  function undoDecision(kind, id, action) {
+    need(['admin', 'artist']);
+    var now = nowIso();
+    if (action === 'del' || action === 'never') {
+      var r0 = undoDelete(kind === 'post' ? 'post' : kind === 'request-idea' ? 'idea' : kind, id);
+      if (action === 'never') {
+        var tb0 = { idea: 'ideas', product: 'pipeline', post: 'content', topic: 'topics', 'request-idea': 'ideas' }[kind];
+        env.lock(function () { env.table(tb0).update(id, kind === 'topic' ? { dropped: false } : { notInterested: false }); });
+        if (kind === 'post') { try { content.api.undoReject(id); } catch (e) { /* it wasn't set aside */ } }
+      }
+      return r0;
+    }
+    return env.lock(function () {
+      if (kind === 'idea') {
+        var it = ideaRow(id);
+        env.table('ideas').update(id, action === 'park' ? { stage: it.resumeStage || 'In progress', resumeOn: '', remindedAt: '', stageChanged: now, updated: now }
+          : { stage: it.prevStage || 'In progress', prevStage: '', notInterested: false, stageChanged: now, updated: now });
+      } else if (kind === 'product') {
+        env.table('pipeline').update(id, action === 'park' ? { parked: false, parkedAt: '', resumeOn: '', remindedAt: '', updated: now } : { retired: false, notInterested: false, updated: now });
+      } else if (kind === 'post') {
+        var c = find('content', id);
+        env.table('content').update(id, action === 'park' ? { status: c.prevStatus || 'Suggested', prevStatus: '', resumeOn: '', remindedAt: '', updated: now }
+          : { status: c.prevStatus && c.prevStatus !== 'Suggested' ? c.prevStatus : 'Suggested', prevStatus: '', artistDecision: '', adminDecision: '', rejectedBy: '', rejectReason: '', decided: '', notInterested: false, updated: now });
+      } else if (kind === 'topic') {
+        env.table('topics').update(id, action === 'park' ? { parked: false, resumeOn: '', remindedAt: '', updated: now } : { dropped: false, updated: now });
+      } else {
+        env.table(kind === 'request-idea' ? 'ideas' : 'prints').update(id, { approvalState: 'Pending', approvalLater: '', artistComment: '', approvalAnswered: '', updated: now });
+      }
+      return { ok: true };
+    });
+  }
+  /** What she's said she isn't interested in: Tide Book reads this before suggesting anything. */
+  function notInterestedLines() {
+    var titles = [];
+    rows('ideas').forEach(function (x) { if (x.notInterested) titles.push(x.title); });
+    rows('pipeline').forEach(function (x) { if (x.notInterested) titles.push(x.title); });
+    rows('content').forEach(function (x) { if (x.notInterested && x.title) titles.push(x.title); });
+    rows('topics').forEach(function (x) { if (x.dropped && !x.private) titles.push(x.title); });
+    titles = titles.filter(String).slice(-20);
+    return titles.length ? ['She has said she is not interested in these. Don\u2019t suggest them again, or anything close to them: ' + titles.map(function (x) { return '"' + x + '"'; }).join(', ') + '.'] : [];
   }
 
   // ---------- delete, and undo: nothing is wiped, so anything removed can be put back
@@ -3370,7 +3514,7 @@ function createTideLogic(env) {
     need(['admin', 'artist']);
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
-  var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
+  var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], post: ['content', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
     supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
@@ -3397,7 +3541,7 @@ function createTideLogic(env) {
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -3889,11 +4033,12 @@ function tideContent(env, t) {
         status: f.status, round: f.batch || '', viewUrl: f.fileId ? env.files.viewUrl(f.fileId) : ''
       };
     }).reverse();
-    var content = t.rows('content').map(function (c) {
+    var content = t.rows('content').filter(function (c) { return !c.deleted; }).map(function (c) {
       return {
         id: c.id, created: c.created, type: c.type, platform: c.platform || '', format: c.format || '', pillar: c.pillar || '',
         title: c.title || '', caption: c.caption || '', hashtags: c.hashtags || '', onScreen: c.onScreen || '',
         plan: t.list(c.plan), footageIds: t.list(c.footageIds), cta: c.cta || '', why: c.why || '', status: c.status,
+        resumeOn: c.status === 'Parked' ? c.resumeOn || '' : '', notInterested: c.notInterested === true,
         purpose: c.purpose || '', checks: t.list(c.checks), revisions: Number(c.revisions) || 0, feedback: t.list(c.feedback), nudges: t.list(c.nudges),
         campaign: c.campaign || '', round: c.round || '',
         videoUrl: c.videoId ? env.files.viewUrl(c.videoId) : '', videoThumb: c.videoThumb || '', editStatus: c.editStatus || '', editNote: c.editNote || '',
@@ -6493,7 +6638,7 @@ function tideTalk(env, t) {
           outcome: { title: sh.title, summary: sh.summary, decisions: t.list(sh.decisions), open: [], kind: (x.outcome && x.outcome.kind) || 'Other', shareState: 'Sent' },
           filed: x.filed ? { kind: x.filed.kind, pipelineId: x.filed.pipelineId || '', ideaId: x.filed.ideaId || '' } : null, aiStatus: '', created: x.created, updated: x.updated };
       }
-      return { id: x.id, title: x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status,
+      return { id: x.id, title: x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status, parked: x.parked === true, resumeOn: x.parked === true ? x.resumeOn || '' : '', dropped: x.dropped === true,
         rounds: t.list(x.rounds), answered: asked(x), max: Number(x.maxQ) || K.MAX_Q, min: K.MIN_Q,
         outcome: x.outcome || null, filed: x.filed || null, aiStatus: x.aiStatus || '', aiRoute: x.aiRoute || '', aiNote: x.aiNote || '', aiWhy: x.aiWhy || '',
         private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated,
@@ -6505,7 +6650,7 @@ function tideTalk(env, t) {
       var price = Number((r.pricing || {}).price) || 0;
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
-        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
+        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true, notInterested: r.notInterested === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
         firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))), printful: r.printful || null,
         day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
@@ -6701,6 +6846,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-18-decide-row', on: '2026-11-18', to: 'artist', icon: 'delete', title: 'Park for now, or Delete, on everything',
+    say: 'Every idea, product, post, conversation and request now has the same two buttons, each with Undo.',
+    steps: ['Park for now: it goes out of the way until a day you pick, and comes back by itself.', 'Delete asks one thing: just delete it, or “I’m not interested”, so Tide Book never suggests anything like it again.', 'Tap Undo straight after if you didn’t mean it.', 'Parked things are in a list at the bottom of each page, with Bring back.'],
+    go: { view: 'content', state: { contentTab: 'review' }, find: '.decide-row', tip: 'The same three buttons are on every decision.' } },
   { id: '2026-11-18-website-controls', on: '2026-11-18', to: 'artist', icon: 'tune', title: 'Adjust things right on your website',
     say: 'Tap a picture to move it in its frame, zoom, brighten it or round its corners. Tap words or a button for size, font, colour and where it goes.',
     steps: ['In the Website tab, tap a picture.', 'Drag the dot to the part that matters most, then slide Zoom.', 'Look has brightness, colour and corners. Your website changes as you slide.', 'Tap Done to keep it, or close to leave it as it was.'],
@@ -9459,7 +9608,7 @@ var Kit = (function () {
     } else if (d.key === 'golden') act('Retire it', 'wb_twilight', 'tonal', function () { return stage('Retired', 'Retired: ' + x.title + '.'); });
     else if (d.key === 'sunset') act('Bring it back', 'restore', 'tonal', function () { return stage('Live', 'Back out in the world: ' + x.title + '.'); });
     else act('Wake it up', 'wb_twilight', 'filled', function () { return stage('Reviewing', 'Awake again: ' + x.title + '.'); });
-    if (d.mode !== 'rest' && d.key !== 'golden') act('Pause it', 'calendar_month', 'text', function () {
+    if (false) act('Pause it', 'calendar_month', 'text', function () {   // now "Park for now", in the decision row
       ctl.close();
       setTimeout(function () { openPause(x.title, function (day) {
         return api('pauseIdea', x.id, day).then(refresh).then(function () { render(); undoCard(pauseLabel(day) + ': ' + x.title + '.', function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); });
@@ -9988,7 +10137,8 @@ var Kit = (function () {
       it.thumbIds.length ? h('div', { class: 'thumbs', style: 'margin-top:10px' }, it.thumbIds.map(function (tid, i) {
         return h('a', { href: it.photoUrls[i] || '#', target: '_blank', rel: 'noopener', 'aria-label': 'Open photo ' + (i + 1) }, h('img', { alt: '', dataset: { thumb: tid } }));
       })) : null,
-      field, h('div', { class: 'btn-row' }, approve, change));
+      field, h('div', { class: 'btn-row' }, approve, change),
+      ADMIN ? null : h('div', { style: 'margin-top:10px' }, decideRow('request-' + entry.kind, it, { compact: true, noDelete: entry.kind !== 'idea', after: onDone })));
   }
 
   // ------------------------------------------------------------------ Home
@@ -10713,6 +10863,63 @@ var Kit = (function () {
     })();
   }
 
+  // ------------------------------------------------------------------ every decision: Park for now, or Delete
+  // The same two, in the same order, with the same look, on every decision she makes (ideas, products, posts,
+  // conversations, requests). Each says plainly what it does, and each comes with Undo.
+  //   Park for now:  out of the way until a day she picks; a reminder the day before; back by itself.
+  //   Delete:        asks one thing: just this one, or "I'm not interested" (gone, and Tide Book stops suggesting
+  //                  anything like it). A request about an artwork can't be deleted from here: it gets "No thanks".
+  function decideRow(kind, x, o) {
+    o = o || {};
+    var what = o.what || x.title || 'it', shortWhat = what.length > 40 ? what.slice(0, 38) + '…' : what;
+    function act(action, day, b) {
+      if (b) K.setBusy(b, true);
+      return api('decideItem', kind, x.id, action, day || '').then(refresh).then(function () {
+        K.haptic('success');
+        if (o.ctl) { o.ctl.close(); }
+        render();
+        if (o.after) o.after();
+        undoCard(action === 'park' ? 'Parked' + (day ? ' until ' + K.dayLabel(day, true) : '') + ': ' + shortWhat + '.' : action === 'never' ? 'Deleted: ' + shortWhat + '. Tide Book won’t suggest anything like it.' : action === 'not' ? 'No thanks: ' + shortWhat + '.' : 'Deleted: ' + shortWhat + '.',
+          function () { return api('undoDecision', kind, x.id, action); }, action === 'park' ? 'Back on.' : action === 'not' ? 'Back again.' : 'Put back.', 12);
+      }).catch(function (e) { if (b) K.setBusy(b, false); fail(e); });
+    }
+    function one(cls, ic, label, sub, fn) {
+      var b = h('button', { type: 'button', class: 'dz ' + cls + ' press soft', 'aria-label': label + ': ' + sub }, icon(ic), h('span', { class: 'dz-t', text: label }), o.compact ? null : h('span', { class: 'dz-s', text: sub }));
+      b.addEventListener('click', function (e) { e.stopPropagation(); fn(b); });
+      return b;
+    }
+    /** Delete asks one thing: just this one, or not interested in anything like it ever again. */
+    function askDelete() {
+      K.sheet({
+        title: 'Delete “' + shortWhat + '”?',
+        build: function (ctl) {
+          var l = h('div', { class: 'next-opts' });
+          [['never', 'thumb_down', 'Delete, and I’m not interested', 'Gone, and Tide Book won’t suggest anything like it again.'],
+           ['del', 'delete', 'Just delete it', 'Gone from here. Something like it could still come up another time.']].forEach(function (c, i) {
+            l.appendChild(h('button', { type: 'button', class: 'next-opt' + (i === 0 ? ' main' : ''), onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); act(c[0], '', null).then(function () { ctl.close(); }); } },
+              h('span', { class: 'next-opt-ic' }, icon(c[1])), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: c[2] }), h('span', { class: 'next-opt-why', text: c[3] }))));
+          });
+          ctl.body.append(l, h('p', { class: 'tf-help', style: 'margin:10px 4px 0', text: 'Either way, Undo puts it straight back.' }));
+        }
+      });
+    }
+    return h('div', { class: 'decide-row' + (o.compact ? ' compact' : ''), role: 'group', 'aria-label': 'Park for now, or delete' },
+      o.noPark ? null : one('park', 'calendar_month', 'Park for now', 'Back on a day you pick', function () { openPause(what, function (day) { return act('park', day); }); }),
+      o.noDelete ? one('not', 'thumb_down', 'No thanks', 'Say no to this one', function (b) { act('not', '', b); })
+        : one('del', 'delete', 'Delete', 'Just this, or for good', function () { askDelete(); }));
+  }
+  /** Where something she parked or put away is, with one tap to bring it back. */
+  function decidedNote(kind, x, how, o) {
+    o = o || {};
+    var text = how === 'park' ? 'Parked' + (x.resumeOn ? ' until ' + K.dayLabel(x.resumeOn, true) + '. It comes back by itself, with a reminder the day before.' : '. Bring it back whenever you like.') : 'You said you’re not interested, so it’s put away and Tide Book won’t suggest things like it.';
+    var n = note(text, how === 'park' ? 'calendar_month' : 'thumb_down');
+    n.lastElementChild.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Bring it back', { sm: true, icon: 'undo', onclick: function (e) {
+      K.setBusy(e.currentTarget, true);
+      api('undoDecision', kind, x.id, how).then(refresh).then(function () { K.haptic('success'); toast('Back on.'); if (o.ctl && o.ctl.redraw) o.ctl.redraw(); else if (o.ctl) o.ctl.close(); render(); }).catch(fail);
+    } })));
+    return h('div', { style: 'margin:4px 0 14px' }, n);
+  }
+
   /** The artist's first time: what's here, in a few lines. */
   function artistWelcome() {
     if (ADMIN || !S.data.setup || S.data.setup.welcomed || window.TIDE_DEMO) return;
@@ -11139,10 +11346,28 @@ var Kit = (function () {
       h('div', { class: 'title-m', text: 'Talk something through' }),
       h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Name anything: a product, a painting, a story, something about Tide Book. You’ll get a few questions at a time, 10 to 20 in all, then it’s written up and filed in the right place.' }),
       btn('filled', 'Start a topic', { icon: 'forum', onclick: openTopicStart })), 2));
-    var going = T.topics.filter(function (tp) { return tp.status !== 'Done'; }), done = T.topics.filter(function (tp) { return tp.status === 'Done'; });
+    var away = T.topics.filter(function (tp) { return tp.parked || tp.dropped; }), here = T.topics.filter(function (tp) { return !tp.parked && !tp.dropped; });
+    var going = here.filter(function (tp) { return tp.status !== 'Done'; }), done = here.filter(function (tp) { return tp.status === 'Done'; });
     if (!T.topics.length) { main.appendChild(rise(emptyState('forum', 'Nothing yet', 'Start a topic whenever something’s on your mind.'), 3)); return; }
     if (going.length) { var s1 = section('In progress'), l1 = h('div', { class: 'list' }); going.forEach(function (tp) { l1.appendChild(topicRow(tp)); }); s1.appendChild(l1); main.appendChild(rise(s1, 3)); }
     if (done.length) { var s2 = section('Written up'), l2 = h('div', { class: 'list' }); done.forEach(function (tp) { l2.appendChild(topicRow(tp)); }); s2.appendChild(l2); main.appendChild(rise(s2, 4)); }
+    if (away.length) main.appendChild(rise(awayList('Parked', away.map(function (tp) { return { kind: 'topic', x: tp, how: tp.dropped ? 'not' : 'park' }; })), 5));
+  }
+  /** Things she parked or put away: out of her lists, one tap to bring each back. */
+  function awayList(title, items) {
+    var d = h('details', { class: 'away-list' }, h('summary', {}, icon('inventory_2'), h('span', { class: 'grow', text: title + ' (' + items.length + ')' }), icon('expand_more')));
+    var l = h('div', { class: 'list' });
+    items.forEach(function (e) {
+      l.appendChild(h('div', { class: 'li' }, h('span', { class: 'ic' }, icon(e.how === 'park' ? 'calendar_month' : 'thumb_down')),
+        h('div', { class: 'grow' }, h('div', { class: 'li-head', text: e.x.title || 'Untitled' }),
+          h('div', { class: 'li-sup', text: e.how === 'park' ? (e.x.resumeOn ? 'Parked until ' + K.dayLabel(e.x.resumeOn, true) : 'Parked') : 'Not interested' })),
+        btn('text', 'Bring back', { sm: true, icon: 'undo', onclick: function (ev) {
+          K.setBusy(ev.currentTarget, true);
+          api('undoDecision', e.kind, e.x.id, e.how).then(refresh).then(function () { K.haptic('success'); toast('Back on.'); render(); }).catch(fail);
+        } })));
+    });
+    d.appendChild(l);
+    return h('div', { style: 'margin-top:16px' }, d);
   }
 
   function openTopicStart() {
@@ -11195,6 +11420,11 @@ var Kit = (function () {
           ]));
         })();
         ctlRef = ctl; ctl.redraw = reopen;
+        if (tp.mine || ADMIN) {
+          if (tp.dropped) ctl.body.appendChild(decidedNote('topic', tp, 'not', { ctl: ctl }));
+          else if (tp.parked) ctl.body.appendChild(decidedNote('topic', tp, 'park', { ctl: ctl }));
+          else if (tp.status !== 'Done') ctl.body.appendChild(h('div', { style: 'margin:0 0 14px' }, decideRow('topic', tp, { ctl: ctl, what: tp.title })));
+        }
         var pct = Math.min(100, Math.round(tp.answered / tp.max * 100));
         ctl.body.appendChild(h('div', { style: 'margin-bottom:14px' },
           h('div', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: tp.answered + ' answered' + (tp.status === 'Done' ? '' : tp.max <= tp.min ? ' of ' + tp.max : ' · usually ' + tp.min + ' to ' + tp.max) + (ADMIN ? ' · started by ' + tp.by : '') }),
@@ -11306,11 +11536,6 @@ var Kit = (function () {
           });
           ctl.body.appendChild(det);
         }
-        ctl.body.appendChild(h('div', { style: 'text-align:center;margin-top:18px' }, btn('text', 'Remove this topic', { danger: true, icon: 'delete', onclick: function () {
-          K.confirm({ title: 'Remove this topic?', text: 'Anything already filed (a note, a product, an idea) stays.', confirmLabel: 'Remove', danger: true }).then(function (yes) {
-            if (!yes) return; api('deleteTopic', id).then(refresh).then(function () { ctl.close(); render(); binUndo('Topic removed.', 'topic', id); }).catch(fail);
-          });
-        } })));
       }
     });
   }
@@ -11479,7 +11704,7 @@ var Kit = (function () {
       return h('div', { class: 'card pad hand-list', style: 'margin:0 0 14px' },
         h('div', { class: 'row', style: 'gap:8px;align-items:center' }, icon('front_hand'), h('div', { class: 'title-s grow', text: 'Your checklist' }),
           h('span', { class: 'hand-count wait', text: nNow + ' waiting' })),
-        h('p', { class: 'body-s', style: 'margin:8px 0 8px;color:var(--on-surface-variant)', text: p.parked ? 'Nothing to do on this while it’s paused. The list is kept for when it comes back.' : 'Nothing to do on this until its turn comes. The list is kept for then.' }),
+        h('p', { class: 'body-s', style: 'margin:8px 0 8px;color:var(--on-surface-variant)', text: p.parked ? 'Nothing to do on this while it’s parked. The list is kept for when it comes back.' : 'Nothing to do on this until its turn comes. The list is kept for then.' }),
         btn('text', 'Have a look anyway', { sm: true, icon: 'expand_more', onclick: function () { HAND_PEEK[p.id] = true; reopen(); } }));
     }
     var sec = h('div', { class: 'card pad hand-list', style: 'margin:0 0 14px' },
@@ -11721,7 +11946,7 @@ var Kit = (function () {
   function tldrItem(p) {
     var R = p.research, todo = (p.checks || []).filter(function (c) { return c.status !== 'OK'; }).length, need = (p.gate || []).filter(function (r) { return !((p.approvals || {})[p.stage] || {})[r]; });
     return tldr([
-      p.stage + (p.parked ? ' · paused' : need.length ? ' · needs ' + need.map(function (r) { return r === 'artist' ? (ADMIN ? cap(artist()) + '’s' : 'your') : adminName() + '’s'; }).join(' and ') + ' OK' : ''),
+      p.stage + (p.parked ? ' · parked' : need.length ? ' · needs ' + need.map(function (r) { return r === 'artist' ? (ADMIN ? cap(artist()) + '’s' : 'your') : adminName() + '’s'; }).join(' and ') + ' OK' : ''),
       R ? R.verdict + ' ' + R.viability + '/100 · about ' + R.demand.low + (R.demand.high > R.demand.low ? '–' + R.demand.high : '') + ' sales a month' + (R.costing.price ? ' at ' + money(R.costing.price) : '')
         : p.researchStatus === 'Queued' || p.researchStatus === 'Researching' ? 'Market research is on its way' : '',
       todo ? todo + ' check' + (todo === 1 ? '' : 's') + ' still to do' + (p.unitCost ? ' · costs ' + money(p.unitCost, { cents: true }) + ' to make' : '') : 'All checks done'
@@ -11758,13 +11983,16 @@ var Kit = (function () {
         ctl.body.appendChild(tldrItem(p));
         ctl.body.appendChild(h('div', { class: 'stage-steps' }, T.stages.map(function (st, i) { return h('span', { class: i < si ? 'done' : i === si ? 'on' : '', text: st }); })));
         var pln = planLine('product', p, reopen); if (pln) ctl.body.appendChild(pln);
+        if (p.notInterested) ctl.body.appendChild(decidedNote('product', p, 'not', { ctl: ctl }));
+        else if (p.parked) ctl.body.appendChild(decidedNote('product', p, 'park', { ctl: ctl }));
+        else ctl.body.appendChild(h('div', { style: 'margin:0 0 14px' }, decideRow('product', p, { ctl: ctl })));
         var nc = p.planWaits ? null : nextCard(p, saveFirst, reopen); if (nc) ctl.body.appendChild(nc);
         var hl = handList(p, saveFirst, reopen); if (hl) ctl.body.appendChild(hl);
         var R0 = p.research, looking = p.researchStatus === 'Queued' || p.researchStatus === 'Researching' || p.researchStatus === 'First look';
         ctl.body.appendChild(fold(researchCard(p, f, reopen, saveFirst, touch), fk('research'), 'travel_explore',
           R0 ? R0.verdict + ' · ' + R0.viability + '/100' + (p.firstLook ? ' · a first look' : '') : looking ? 'On its way' : 'Not looked into yet', !R0 || si < 2));
         var pfc = printfulCard(p, reopen, saveFirst); if (pfc) ctl.body.appendChild(pfc);
-        if (p.parked) ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.resumeOn ? 'Paused. It comes back by itself on ' + K.dayLabel(p.resumeOn, true) + ', with a reminder the day before.' : 'Paused. Bring it back when you’re ready.', 'calendar_month')));
+
         if (p.aiStatus === 'Queued' || p.aiStatus === 'Working') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note(p.aiJob === 'clear' ? 'Checking each one…' : 'Drafting ' + (p.aiJob === 'copy' ? 'the listing and posts' : 'the checks and parts') + '…', 'auto_awesome')));
         if (p.aiStatus === 'Failed') ctl.body.appendChild(h('div', { style: 'margin:10px 0' }, note('The draft didn’t work' + (ADMIN && p.aiNote ? ': ' + p.aiNote : '. Try it again.'), 'warning', 'warn')));
 
@@ -11900,14 +12128,6 @@ var Kit = (function () {
           } });
         } }));
         if (p.stage === 'Live' || p.retired) row.appendChild(btn('text', p.retired ? 'Bring it back' : 'Retire it', { icon: p.retired ? 'restore' : 'wb_twilight', onclick: function () { saveFirst().then(function () { return api('retireItem', id, !p.retired); }).then(refresh).then(reopen).catch(fail); } }));
-        row.appendChild(btn('text', 'Delete', { icon: 'delete', danger: true, onclick: function (e) {
-          var b = e.currentTarget; K.setBusy(b, true);
-          api('deleteItem', id).then(refresh).then(function () { ctl.close(); render(); binUndo('Deleted “' + p.title + '”.', 'product', id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
-        } }));
-        if (!(p.stage === 'Live' || p.retired)) row.appendChild(btn('text', p.parked ? 'Resume now' : 'Pause it', { icon: p.parked ? 'wb_twilight' : 'calendar_month', onclick: function () {
-          if (p.parked) { saveFirst().then(function () { return api('parkItem', id, false); }).then(refresh).then(reopen).catch(fail); return; }
-          openPause(p.title, function (day) { return saveFirst().then(function () { return api('parkItem', id, true, day); }).then(refresh).then(function () { reopen(); undoCard(pauseLabel(day) + ': ' + p.title + '.', function () { return api('parkItem', id, false); }, 'Back on the go.'); }); });
-        } }));
         s8.appendChild(row);
         if (p.log.length) {
           var lg = h('details', { class: 'talk-past', style: 'margin-top:12px' }, h('summary', { text: 'History' }));
@@ -12329,7 +12549,7 @@ var Kit = (function () {
         .catch(function (err) { K.setBusy(b, false); fail(err); });
     } }));
     row.appendChild(btn('tonal', 'Open it', { sm: true, onclick: function () { openIdea(x.id); } }));
-    if (open > 1) row.appendChild(btn('text', 'Pause it', { sm: true, icon: 'calendar_month', onclick: function () {
+    if (open > 1) row.appendChild(btn('text', 'Park for now', { sm: true, icon: 'calendar_month', onclick: function () {
       openPause(x.title, function (day) {
         return api('pauseIdea', x.id, day).then(refresh).then(function () { render(); undoCard(pauseLabel(day) + ': ' + x.title + '.', function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); });
       });
@@ -12467,6 +12687,9 @@ var Kit = (function () {
           firstBit(x.summary || x.note)
         ]));
         var dc = ideaDayCard(x, ctl); if (dc) ctl.body.appendChild(dc);
+        if (x.notInterested) ctl.body.appendChild(decidedNote('idea', x, 'not', { ctl: ctl }));
+        else if (x.stage === 'Parked') ctl.body.appendChild(decidedNote('idea', x, 'park', { ctl: ctl }));
+        else ctl.body.appendChild(h('div', { style: 'margin:4px 0 12px' }, decideRow('idea', x, { ctl: ctl })));
         ctl.body.appendChild(h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' },
           chip(stageLabel(x.stage), K.slug(x.stage)),
           chip(x.kind, 'outline', KIND_ICON[x.kind]),
@@ -12604,10 +12827,6 @@ var Kit = (function () {
         s7.appendChild(row);
         ctl.body.appendChild(fold(s7, ik('further'), 'rocket_launch', 'An artwork, a product, or our direction', false));
 
-        ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Delete this idea', { icon: 'delete', danger: true, onclick: function (e) {
-          var b = e.currentTarget; K.setBusy(b, true);
-          api('deleteIdea', x.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Deleted “' + x.title + '”.', 'idea', x.id); }).catch(function (er) { K.setBusy(b, false); fail(er); });
-        } })));
         var save = btn('filled', 'Save changes', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           if (!f.title.trim()) { toast('Give the idea a name.'); title.input.focus(); return; }
@@ -13299,26 +13518,26 @@ var Kit = (function () {
 
   /** Pause: when to come back to it. Quick picks, or any day on the calendar. onPick(day) gets 'YYYY-MM-DD' or '' (no date). */
   function dayFromNow(n, months) { var d = new Date(); if (months) d.setMonth(d.getMonth() + months); else d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
-  function pauseLabel(day) { return day ? 'Paused · back ' + K.dayLabel(day, true) : 'Paused'; }
+  function pauseLabel(day) { return day ? 'Parked · back ' + K.dayLabel(day, true) : 'Parked'; }
   function openPause(title, onPick) {
     var picks = [['Tomorrow', dayFromNow(1)], ['In a week', dayFromNow(7)], ['In a month', dayFromNow(0, 1)], ['In 3 months', dayFromNow(0, 3)]];
     var chosen = dayFromNow(7);
     K.sheet({
-      title: 'Pause “' + title + '”',
+      title: 'Park “' + title + '” for now',
       build: function (ctl) {
         ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Nothing is lost. It waits where it is, you get a reminder the day before, and on the day it comes back by itself.' }));
         var dateF = K.textField({ label: 'Or pick a day', type: 'date', value: chosen, onInput: function (v) { chosen = v; ch.set && ch.set(''); } });
         var ch = K.choices({ label: 'When to come back to it', value: chosen, options: picks.map(function (p) { return { value: p[1], label: p[0] }; }),
           onChange: function (v) { if (v) { chosen = v; dateF.input.value = v; } } });
         ctl.body.appendChild(h('div', { class: 'field-gap' }, h('div', { class: 'label-s', text: 'Come back to it' }), ch, dateF));
-        var go = btn('filled', 'Pause it', { icon: 'calendar_month', lg: true, block: true });
+        var go = btn('filled', 'Park it', { icon: 'calendar_month', lg: true, block: true });
         go.addEventListener('click', function () {
-          if (!chosen) { toast('Pick a day, or pause with no date.'); return; }
+          if (!chosen) { toast('Pick a day, or park it with no date.'); return; }
           K.setBusy(go, true);
           onPick(chosen).then(function () { ctl.close(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
         });
         ctl.foot.appendChild(h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, go,
-          btn('text', 'Pause with no date', { onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); onPick('').then(function () { ctl.close(); }).catch(function (er) { K.setBusy(b, false); fail(er); }); } })));
+          btn('text', 'Park it with no date', { onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); onPick('').then(function () { ctl.close(); }).catch(function (er) { K.setBusy(b, false); fail(er); }); } })));
       }
     });
   }
@@ -14388,11 +14607,12 @@ var Kit = (function () {
     yes.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'approve', all, after); });
     fix.addEventListener('click', function (e) { e.stopPropagation(); openChanges(c, after); });
     no.addEventListener('click', function (e) { e.stopPropagation(); decide(c, 'reject', all, after); });
-    if (aside && c.clash) return h('div', {}, h('div', { class: 'btn-row', style: 'flex-wrap:wrap' }, fix));
+    var row = c.type === 'Post' ? decideRow('post', c, { compact: true, what: c.title || 'this post', after: after }) : null;
+    if (aside && c.clash) return h('div', {}, h('div', { class: 'btn-row', style: 'flex-wrap:wrap' }, fix), row);
     var ask = aside
       ? note('Suggested: don’t post this one. It was marked to be set aside. Tap “Don’t post it”, or “Post it anyway” if that’s changed.', 'lightbulb')
-      : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Your call: Approve posts it. Needs changes has it redone. Don’t post it sets it aside.' });
-    return h('div', {}, ask, h('div', { class: 'btn-row', style: 'flex-wrap:wrap;margin-top:8px' }, aside ? no : yes, aside ? yes : fix, aside ? fix : no));
+      : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Approve posts it. Needs changes has it redone. Or park it for now, or delete it.' });
+    return h('div', {}, ask, h('div', { class: 'btn-row', style: 'flex-wrap:wrap;margin-top:8px' }, yes, fix, c.type === 'Post' ? null : no), row);
   }
   function shotButtons(c) {
     var yes = btn('filled', 'Add to the list', { icon: 'check' }), no = btn('outlined', 'Not this', { icon: 'close' });
@@ -14543,6 +14763,9 @@ var Kit = (function () {
       waiting.forEach(function (c) { w.appendChild(postCard(c, 'waiting')); });
       main.appendChild(rise(w, 6));
     }
+    // posts she parked, or wasn't interested in: out of the way, one tap to bring back
+    var away = (S.data.content || []).filter(function (c) { return c.type === 'Post' && (c.status === 'Parked' || (c.status === 'Rejected' && c.notInterested)); }).slice(0, 30);
+    if (away.length) main.appendChild(rise(awayList('Parked', away.map(function (c) { return { kind: 'post', x: { id: c.id, title: c.title || 'A post', resumeOn: c.resumeOn }, how: c.status === 'Parked' ? 'park' : 'not' }; })), 7));
   }
 
   function tabFootage(main) {
