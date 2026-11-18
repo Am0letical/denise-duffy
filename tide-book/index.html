@@ -5076,7 +5076,7 @@ function tideTalk(env, t) {
   /** Saves an AI answer to whichever job it was. */
   function save(id, res, by) {
     res = res || {};
-    var by2 = t.text(by || 'Claude', 60), pushOut = null;
+    var by2 = t.text(by || 'Claude', 60), pushOut = null, later = null;
     env.lock(function () {
       var r = rowOf(id);
       if (!r || r.aiStatus !== 'Working') return;
@@ -5093,6 +5093,10 @@ function tideTalk(env, t) {
         var rounds = t.list(r.rounds).concat([{ questions: qs, readyToWrap: res.ready_to_wrap === true, by: by2, at: now }]);
         env.table('topics').update(id, { rounds: rounds, status: 'Your turn', aiStatus: '', aiNote: '', updated: now });
         pushOut = [r.createdBy, 'New questions about ' + r.title, qs.length + ' questions are ready when you are.'];
+      } else if (tb === 'pipeline' && r.aiJob === 'firstlook') {
+        // the PC's own first look: shown as research, marked as a first look, with a deeper look (web search) on offer
+        env.table('pipeline').update(id, { aiStatus: '', aiNote: '' });
+        later = function () { research.save(id, res, by2 + ' · first look'); };
       } else if (tb === 'topics' && r.aiJob === 'goalplan') {
         // a goal's plan: the steps go onto the goal; the talk is written up as the plan
         var steps = t.list(res.steps).slice(0, 12).map(function (s) { return clean(typeof s === 'string' ? s : s && s.text, 300); }).filter(String);
@@ -5171,6 +5175,7 @@ function tideTalk(env, t) {
         pushOut = ['both', r.title + ': words drafted', 'The listing and launch posts are ready to read.'];
       }
     });
+    if (later) later();
     if (pushOut && t.push) t.push(pushOut[0] === 'artist' || pushOut[0] === 'admin' || pushOut[0] === 'both' ? pushOut[0] : 'admin', pushOut[1], pushOut[2]);
     var after = rowOf(id);
     if (after && after.status === 'Done' && tableOf(id) === 'topics' && !(after.filed && after.filed.noteId)) file(id);
@@ -5516,6 +5521,7 @@ function tideTalk(env, t) {
     if (!t.text(p.title, 120)) t.fail('Give it a name.');
     return env.lock(function () {
       var nid = addItem(p), st = t.planState ? t.planState() : null;
+      if (localFirst()) { env.table('pipeline').update(nid, { researchStatus: 'First look' }); queue(nid, 'firstlook'); }
       if (st) env.table('pipeline').update(nid, { planStep: t.placeFor(p.title, p.summary, st), planPlacedBy: 'auto' });
       return { id: nid };
     });
@@ -6067,6 +6073,7 @@ function tideTalk(env, t) {
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
         id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
+        firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))),
         day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
