@@ -1395,6 +1395,8 @@ body.map-full { overflow: hidden; }
 .site-visit { flex: none; display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 12px; border-radius: var(--r-m); background: var(--primary-container); color: var(--on-primary-container); font: 500 14px/20px var(--font); text-decoration: none; }
 .site-visit .ms { font-size: 18px; }
 .site-card .btn-row a.btn { text-decoration: none; }
+/* the Website tab's buttons under the page: one row that slides, so the menu bubble never sits on them */
+@media (max-width: 839px) { .site-tools { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; } .site-tools .btn { flex: none; } }
 </style>
 
   <script>
@@ -1551,7 +1553,8 @@ var TIDE_SETTING_DEFAULTS = {
   // getting set up in the app (LogicSetup.gs)
   setupBasicsDone: false, starterLoaded: false, stripeDone: false, artistWelcomed: false,
   seenChangesArtist: [], seenChangesAdmin: [],   // what's new (TIDE_CHANGES in LogicSetup.gs): the changes each has seen
-  sitePublishedAt: ''       // when the website was last published from Tide Book
+  sitePublishedAt: '',      // when the website was last published from Tide Book
+  sitePublishedSig: ''      // what the shop looked like then, to tell when it has changes that aren't on the website yet
 };
 
 /**
@@ -2009,6 +2012,20 @@ function createTideLogic(env) {
       env.table('ideas').update(id, { linkedTo: joinLink(it.linkedTo, made.id), updated: nowIso() });
     });
     return { id: made.id, message: 'Draft print ' + made.id + ' created. Add photos and prices to launch it.' };
+  }
+
+  /** An idea becomes a product: it joins Products (once), where Tide Book takes it a step at a time to the website. */
+  function ideaToProduct(id) {
+    need(['admin', 'artist']);
+    var it = find('ideas', id);
+    var have = rows('pipeline').filter(function (r) { return r.ideaId === id && r.deleted !== true; })[0];
+    if (have) return { id: have.id, message: 'It’s already in Products.' };
+    var made = talk.api.createItem({ title: it.title, summary: [it.note, it.summary].filter(Boolean).join('\n\n'), ideaId: it.id });
+    env.lock(function () {
+      var now = nowIso(), early = it.stage === 'New' || it.stage === 'Reviewing';
+      env.table('ideas').update(id, { linkedTo: joinLink(it.linkedTo, made.id), stage: early ? 'In progress' : it.stage, stageChanged: early ? now : it.stageChanged, updated: now });
+    });
+    return { id: made.id, message: 'It’s in Products now. Tide Book takes it from here, a step at a time.' };
   }
 
   function requeueResearch(id) {
@@ -2475,9 +2492,50 @@ function createTideLogic(env) {
     need(['admin', 'artist']);
     if (!env.site) fail(env.user.role === 'admin' ? 'Publishing the website works on the PC version of Tide Book.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     var r = env.site.publish(consentHit);
-    env.settings.set({ sitePublishedAt: nowIso() });
+    env.settings.set({ sitePublishedAt: nowIso(), sitePublishedSig: shopSig() });
     return r;
   }
+  /** The shop as the website would show it, boiled down, so "has anything changed since the last publish?" is one compare. */
+  function shopSig() {
+    var d = siteData('live');
+    var str = JSON.stringify([d.artworks, d.keeps].map(function (list) { return list.map(function (a) {
+      return [a.id, a.title, a.story, a.series, a.photos, a.scan, a.products, a.ed ? [a.ed.mode, a.ed.left, a.ed.limit, a.ed.size] : 0]; }); }));
+    var h = 5381; for (var i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+    return str.length + ':' + h;
+  }
+  /** True when the shop (live artworks, their photos, prices, products) isn't what the website shows. */
+  function shopPending() {
+    var s = settings();
+    if (!s.sitePublishedSig) return rows('prints').some(function (pr) { return pr.status === 'Live' && list(pr.photoIds).length; });
+    return s.sitePublishedSig !== shopSig();
+  }
+  // a product from Ideas reaching the website (LogicTalk.gs): its page in Artworks, on sale, published
+  var shopLink = {
+    of: function (r) {
+      var pr = r.artworkId ? rows('prints').filter(function (x) { return x.id === r.artworkId; })[0] : null;
+      return pr ? { id: pr.id, photos: list(pr.photoIds).length, status: pr.status, published: pr.status === 'Live' && !shopPending() } : null;
+    },
+    make: function (r, unit) {
+      var title = String(r.title || ''), low = title.toLowerCase(), type = 'Other', name = '';
+      Object.keys(T.PRODUCT_TYPES).forEach(function (k) {
+        if (k === 'Original' || name) return;
+        T.PRODUCT_TYPES[k].items.forEach(function (it) { if (!name && low.indexOf(it.toLowerCase()) >= 0) { type = k; name = it; } });
+      });
+      var pl = (r.research && r.research.plan) || {}, how = String(pl.supplierWhy || '') + ' ' + String(pl.sampleHow || '');
+      var price = Number((r.pricing || {}).price) || 0;
+      var series = T.SERIES.filter(function (s) { return low.indexOf(s.toLowerCase().split(/[ &]/)[0]) >= 0; })[0];
+      var made = createPrint({ title: title, description: String((r.listing || {}).copy || r.summary || ''), series: series,
+        products: [{ type: type, name: text(name || title, 60), status: price > 0 ? 'Live' : 'Draft',
+          fulfilment: type === 'Download' ? 'Digital download' : /to order|on demand|one at a time|printful/i.test(how) ? 'Print on demand' : T.PRODUCT_TYPES[type].fulfil,
+          variants: price > 0 ? [{ option: type === 'Download' ? 'Digital file' : 'One size', cost: type === 'Download' ? 0 : Math.max(0, Number(unit) || 0), price: price }] : [] }] });
+      return made.id;
+    },
+    live: function (pid) { return setPrintStatus(pid, 'Live'); },
+    publish: function () {
+      if (typeof HOST !== 'undefined' && HOST.practice === true) { env.settings.set({ sitePublishedSig: shopSig() }); return { ok: true, message: 'Published, in the practice copy only: the real website hasn’t changed.' }; }
+      return publishWebsite();
+    }
+  };
 
   function siteData(which) {
     var s = settings(), today = env.today(), sales = salesByArtwork(), FULFIL = {
@@ -2941,7 +2999,7 @@ function createTideLogic(env) {
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
-      website: env.site ? { preview: env.site.previewUrl(), live: env.site.liveUrl ? env.site.liveUrl() : '', lastPublished: String(settings().sitePublishedAt || '') } : null,
+      website: env.site ? { preview: env.site.previewUrl(), live: env.site.liveUrl ? env.site.liveUrl() : '', pending: shopPending(), lastPublished: String(settings().sitePublishedAt || '') } : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
       options: {
         kinds: T.KINDS, timelines: T.TIMELINES, priorities: T.PRIORITIES, stages: T.STAGES, sizes: T.SIZES,
@@ -3020,7 +3078,7 @@ function createTideLogic(env) {
 
   // ---------- what the website needs from her (LogicSite.gs)
   var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push });
-  var siteEditor = tideSiteEditor(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push, publishWebsite: function () { return publishWebsite(); },
+  var siteEditor = tideSiteEditor(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push, publishWebsite: function () { return publishWebsite(); }, shopPending: function () { return shopPending(); }, markPublished: function () { env.settings.set({ sitePublishedSig: shopSig() }); },
     liveArtworks: function () { return rows('prints').filter(function (pr) { return pr.status === 'Live' && list(pr.photoIds).length; }).length; } });
 
   // ---------- her private writing: locked with her passphrase (the PC server's vault; elsewhere there's no lock to show)
@@ -3053,7 +3111,7 @@ function createTideLogic(env) {
 
   // ---------- talk it through and the product pipeline (LogicTalk.gs)
   var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf,
-    createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push, planState: planState, planStepOf: planStepOf, planWaits: planWaits, placeFor: placeFor });
+    createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push, planState: planState, planStepOf: planStepOf, planWaits: planWaits, placeFor: placeFor, shop: shopLink });
 
   // ---------- suggestions and problems (LogicReports.gs)
   var reports = tideReports(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, oneOf: oneOf, queueJob: talk.queueJob, push: publish.push });
@@ -3712,7 +3770,7 @@ function createTideLogic(env) {
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
       printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
-      createPrintFromIdea: createPrintFromIdea, requeueResearch: requeueResearch,
+      createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
@@ -6361,7 +6419,15 @@ function tideTalk(env, t) {
       return { ok: true, stage: next };
     });
     if (msg && t.push) t.push(msg[0], msg[1], msg[2]);
+    if (res.stage === 'Live') { try { makeShop(id); } catch (e) { /* the step "Make its page" is still there to press */ } }
     return res;
+  }
+  /** Its page for the website: an entry in Artworks, from the listing and the price. A draft until it has a photo. */
+  function makeShop(id) {
+    var r = item(id);
+    if (!t.shop || t.shop.of(r)) return;
+    var pid = t.shop.make(r, unitCost(r));
+    env.lock(function () { env.table('pipeline').update(id, { artworkId: pid, updated: t.nowIso(), log: logAdd(item(id), 'Tide Book set up its page for the website') }); });
   }
   function setParked(id, parked, resumeOn) {
     var role = t.need(['admin', 'artist']);
@@ -6429,7 +6495,18 @@ function tideTalk(env, t) {
     var needsSetup = !!(r.research && r.research.plan) && (!t.list(r.parts).length || !(unitCost(r) > 0));
     var blocksHere = busy && r.aiJob !== 'help' && (r.aiJob === 'copy' ? r.stage === 'Listing & launch' : r.aiJob === 'clear' || r.aiJob === 'checks' ? r.stage === 'Checks & costing' && !needsSetup : true);
     if (blocksHere) return { wait: true, label: JOB_WAIT[r.aiJob] || 'Working on it…' };
-    if (r.stage === 'Live') return { kind: 'done', done: true, label: r.retired ? 'Retired' : 'On sale', why: 'Set up, checked and live.' };
+    if (r.stage === 'Live') {
+      // on sale isn't the end: it has to reach her website. Its page is made from the listing and the price, she adds a
+      // photo, it goes in the shop, and the website is published. (She can say it isn't sold on the website.)
+      var onSale = { kind: 'done', done: true, label: r.retired ? 'Retired' : 'On sale', why: 'Set up, checked and live.' };
+      if (r.retired || !t.shop || (r.declined || {}).shop) return onSale;
+      var sh = t.shop.of(r), NOSHOP = { no: 'noshop', noLabel: 'No go: it isn’t sold on my website' };
+      if (!sh) return Object.assign({ kind: 'shop', who: 'auto', label: 'Make its page for your website', why: 'Tide Book sets the page up from the listing and the ' + money2(Number((r.pricing || {}).price) || 0) + ' price. You add a photo, then it goes on your website.' }, NOSHOP);
+      if (!sh.photos) return Object.assign({ kind: 'photo', who: 'hers', print: sh.id, label: 'Add a photo of it', why: 'Its page for your website is ready: the listing and the price are in. It only needs a picture.' }, NOSHOP);
+      if (sh.status !== 'Live') return Object.assign({ kind: 'onsale', who: 'auto', print: sh.id, label: 'Put it in your shop', why: 'Its page has the listing, the price and a photo. Next it goes on your website.' }, NOSHOP);
+      if (!sh.published) return { kind: 'publish', who: 'auto', print: sh.id, label: 'Publish your website', why: 'It’s in your shop. Visitors see it once your website is published.' };
+      return Object.assign(onSale, { why: 'On your website, with its listing and price.', print: sh.id, onSite: true });
+    }
     if (r.researchStatus === 'Queued' || r.researchStatus === 'Researching') return { wait: true, label: 'Researching whether it’s worth making, who makes it and what to charge…' };
     if (pl && pl.go === 'No go' && !r.goAnyway && r.stage !== 'Live') return { kind: 'park', who: 'auto', no: 'goanyway', noLabel: 'No go: carry on anyway', label: 'Pause it for now', why: pl.goWhy + (pl.fix ? ' What would make it a go: ' + pl.fix : '') };
     var gate = gateFor(r), ap = (r.approvals || {})[r.stage] || {}, mineToOk = gate.indexOf(role) >= 0 && !ap[role];
@@ -6753,6 +6830,15 @@ function tideTalk(env, t) {
       updateItem(id, { sample: { status: 'Approved', notes: t.text(((r.sample || {}).notes ? r.sample.notes + '\n' : '') + (want === 'nosample' ? 'No sample needed: ' + ((pl && pl.sampleHow) || '') : 'Approved'), 2000) } });
       return signAndMove(id);
     }
+    if (want === 'noshop') {
+      var dn = Object.assign({}, r.declined || {}); dn.shop = true;
+      env.lock(function () { env.table('pipeline').update(id, { declined: dn, updated: t.nowIso(), log: logAdd(item(id), who(role) + ' said it isn’t sold on the website') }); });
+      return { ok: true };
+    }
+    if (want === 'shop') { makeShop(id); return { ok: true }; }
+    if (want === 'photo') t.fail('Add the photo on its page first.');
+    if (want === 'onsale') { t.shop.live(r.artworkId); return { ok: true }; }
+    if (want === 'publish') return t.shop.publish();
     if (want === 'park') return setParked(id, true);
     if (want === 'goanyway') { env.lock(function () { env.table('pipeline').update(id, { goAnyway: true, updated: t.nowIso(), log: logAdd(item(id), who(role) + ' went ahead despite the research') }); }); return { ok: true }; }
     t.fail('That step can’t be done from here.');
@@ -7016,6 +7102,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-18-idea-to-website', on: '2026-11-18', to: 'artist', icon: 'storefront', title: 'From an idea all the way to your website',
+    say: 'A product no longer stops at “on sale”. Tide Book makes its page for your website, you add a photo, and one tap publishes it.',
+    steps: ['On an idea, open “Take it further” and tap “Make it a product”. It joins Ideas › Products.', 'Tap the step at the top of the product each time. Tide Book does what it can; you say go.', 'When the words are OK’d, its shop page is made for you from the listing and the price. Tap “Add the photo”.', 'Tap “Put it in your shop”, then “Publish now”. “Look at it first” shows your website with it on.', 'Home and the Website tab say when your shop has changes that aren’t on your website yet.'],
+    go: { view: 'ideas', state: { ideasTab: 'products' }, find: '.next-line, .list-item, .card', tip: 'Each product shows its next step here.' } },
   { id: '2026-11-18-goal-map-full', on: '2026-11-18', to: 'artist', icon: 'open_in_full', title: 'Your goals map: full screen, and dots',
     say: 'Open the goals map to the whole screen, and shrink any goal down to a dot to make room.',
     steps: ['In Ideas › Goals, tap the corner button with two arrows to go full screen.', 'To move a goal, hold the dotted handle on its right and drag. Anywhere else, your finger scrolls.', 'Tap “–” on a goal to shrink it to a dot. Tap the dot to open it again.', 'The button with two arrows pointing in shrinks every goal but the ones you’re on now.', 'Tap Done to come back.'],
@@ -7973,7 +8063,7 @@ function tideSiteEditor(env, t) {
     var role = t.need(['admin', 'artist']), s = st(), before = s.siteLive || '';
     // (with no artworks live in Tide Book yet, the site keeps its sample shop: site.html)
     env.settings.set({ siteLive: s.siteDraft || '' });
-    if (typeof HOST !== 'undefined' && HOST.practice === true) return { ok: true, message: 'Published, in the practice copy only: the real website hasn’t changed.' };
+    if (typeof HOST !== 'undefined' && HOST.practice === true) { if (t.markPublished) t.markPublished(); return { ok: true, message: 'Published, in the practice copy only: the real website hasn’t changed.' }; }
     var r;
     try { r = t.publishWebsite(); } catch (e) { env.settings.set({ siteLive: before }); throw e; }
     if (role === 'artist' && t.push) t.push('admin', 'Denise published her website', 'Her changes are live.');
@@ -8027,7 +8117,7 @@ function tideSiteEditor(env, t) {
     var asks = t.rows('siteasks').filter(function (r) { return r.status !== 'Withdrawn' && (role === 'admin' || r.by === 'artist'); }).map(function (r) {
       return { id: r.id, created: r.created, by: r.by, text: r.text, route: r.route, kind: r.kind, elText: r.elText, status: r.status, doneAt: r.doneAt || '', prompt: role === 'admin' ? r.prompt : '', file: role === 'admin' ? r.file : '' };
     }).sort(function (a, b) { return a.created < b.created ? 1 : -1; }).slice(0, 30);
-    return { draft: d, urls: urls, changed: JSON.stringify(d) !== JSON.stringify(l), canUndo: hist > 0, artworks: t.liveArtworks ? t.liveArtworks() : -1, publishedAt: s.sitePublishedAt || '', asks: asks,
+    return { draft: d, urls: urls, changed: JSON.stringify(d) !== JSON.stringify(l), shopPending: t.shopPending ? t.shopPending() : false, canUndo: hist > 0, artworks: t.liveArtworks ? t.liveArtworks() : -1, publishedAt: s.sitePublishedAt || '', asks: asks,
       colours: X.COLOURS, fonts: X.FONTS, blocks: X.BLOCKS, available: !!env.site };
   }
   /** For the build: the live layer (or the draft, for the preview), and the pictures it uses. */
@@ -9975,14 +10065,15 @@ var Kit = (function () {
     b.append(
       h('button', { type: 'button', class: 'site-page press soft', onclick: openSitePages }, icon('description'), h('span', { class: 'grow', text: SITE.title || 'Home' }), icon('expand_more')),
       btn('text', 'Undo', { sm: true, icon: 'undo', disabled: !E.canUndo, onclick: function (e) { var x = e.currentTarget; K.setBusy(x, true); api('undoSiteEdit').then(function (snap) { siteAfter(snap, 'Undone.'); }).catch(function (er) { K.setBusy(x, false); fail(er); }); } }),
-      !E.changed ? h('span', { class: 'chip ' + (E.publishedAt ? 'approved' : 'plain') + ' site-live' }, icon(E.publishedAt ? 'check_circle' : 'edit_off'), E.publishedAt ? 'Up to date' : 'No changes')
+      !E.changed && !E.shopPending ? h('span', { class: 'chip ' + (E.publishedAt ? 'approved' : 'plain') + ' site-live' }, icon(E.publishedAt ? 'check_circle' : 'edit_off'), E.publishedAt ? 'Up to date' : 'No changes')
         : btn('filled', 'Publish', { sm: true, icon: 'rocket_launch', onclick: publishSite }));
   }
   function publishSite() {
-    K.confirm({ title: 'Publish your changes?', text: 'Your website updates in about a minute. You can keep changing it afterwards, and nothing you’ve kept private goes out.', confirmLabel: 'Publish' }).then(function (yes) {
+    var E = siteEd(), shopOnly = E.shopPending && !E.changed;
+    K.confirm({ title: shopOnly ? 'Publish your shop’s changes?' : 'Publish your changes?', text: (E.shopPending ? 'What’s new in your shop (artworks, photos, prices) goes onto your website. ' : '') + 'Your website updates in about a minute. You can keep changing it afterwards, and nothing you’ve kept private goes out.', confirmLabel: 'Publish' }).then(function (yes) {
       if (!yes) return;
       toast('Publishing…');
-      api('publishSiteDraft').then(function (r) { return refresh().then(function () { K.haptic('success'); paintSiteBar(); toast((r && r.message) || 'Published.'); }); }).catch(fail);
+      api('publishSiteDraft').then(function (r) { return refresh().then(function () { K.haptic('success'); if (S.view === 'site') paintSiteBar(); else render(); toast((r && r.message) || 'Published.'); }); }).catch(fail);
     });
   }
   function viewSite(main) {
@@ -10000,7 +10091,7 @@ var Kit = (function () {
     var visit = live ? h('a', { class: 'site-visit press soft', href: live, target: '_blank', rel: 'noopener', 'aria-label': 'Visit your website, as visitors see it (opens a new tab)' }, icon('open_in_new'), h('span', { text: 'Visit' })) : null;
     main.appendChild(rise(h('div', { class: 'site-top' }, h('div', { class: 'site-modes' }, mode, visit), hint, SITE.bar), 1));
     paintSiteBar();
-    var H = Math.max(460, window.innerHeight - 330);
+    var H = Math.max(440, window.innerHeight - (window.innerWidth < 840 ? 392 : 330));   // on a phone, the buttons under it stay clear of the menu bubble
     SITE.frame = h('iframe', { class: 'site-frame', title: 'Your website', src: 'site-preview/?edit=1' + (SITE.route && SITE.route !== '#/' ? SITE.route : ''), style: 'height:' + H + 'px' });
     SITE.ready = false;
     main.appendChild(rise(h('div', { class: 'site-frame-wrap' }, SITE.frame), 2));
@@ -10627,10 +10718,11 @@ var Kit = (function () {
       // her website: go and see it as visitors do, or change it
       main.appendChild(rise(h('div', { class: 'card pad drafts site-card' },
         h('span', { class: 'ic' }, icon('language')),
-        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: 'See it as visitors do, or tap anything on it to change it.' }),
+        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: S.data.website.pending ? 'Your shop has changes that aren’t on your website yet. Publish to show them.' : 'See it as visitors do, or tap anything on it to change it.' }),
           h('span', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' },
             h('a', { class: 'btn tonal sm press', href: S.data.website.live, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Visit it' })),
-            btn('filled', 'Change it', { sm: true, icon: 'edit', onclick: function () { go('site'); } })))), n++));
+            S.data.website.pending ? btn('filled', 'Publish', { sm: true, icon: 'rocket_launch', onclick: publishSite }) : null,
+      btn(S.data.website.pending ? 'tonal' : 'filled', 'Change it', { sm: true, icon: 'edit', onclick: function () { go('site'); } })))), n++));
     }
 
     mark('website');
@@ -11859,7 +11951,10 @@ var Kit = (function () {
     if (!n) return null;
     if (n.done) return h('div', { class: 'card pad next-card done', style: 'margin:10px 0 14px' },
       h('div', { class: 'row', style: 'gap:12px;align-items:center' }, h('span', { class: 'ic' }, icon('rocket_launch')),
-        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: n.label }), h('div', { class: 'body-m', text: readyLine(p.ready) }))));
+        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: n.label }), h('div', { class: 'body-m', text: n.onSite ? n.why : readyLine(p.ready) }))),
+      n.onSite ? h('div', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' },
+        S.data.website && S.data.website.live ? h('a', { class: 'btn tonal sm press', href: S.data.website.live, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'See it on your website' })) : null,
+        btn('text', 'Its shop page', { sm: true, icon: 'storefront', onclick: function () { saveFirst().then(function () { openPrint(n.print, reopen); }).catch(fail); } })) : null);
     var hers = n.who === 'hers';
     var whoLine = h('div', { class: 'label-s next-who' }, icon(n.wait ? 'hourglass_top' : hers ? 'front_hand' : 'auto_awesome'), n.wait ? 'Working on it' : hers ? 'Your turn' : 'Tide Book can do this');
     if (n.wait) {
@@ -11873,16 +11968,21 @@ var Kit = (function () {
       return card;
     }
     function take(kind, b) {
+      // her own hands, on another screen: the photo goes on its shop page, and this sheet catches up when she's back
+      if (kind === 'photo') { saveFirst().then(function () { openPrint(n.print, reopen); }).catch(fail); return; }
+      if (kind === 'seesite') { saveFirst().then(function () { var top = K.topSheet(); if (top && top.close) top.close(); S.siteMode = 'look'; setTimeout(function () { go('site'); }, 260); }).catch(fail); return; }
       K.setBusy(b, true);
-      saveFirst().then(function () { return api('takeNext', p.id, kind); }).then(refresh).then(function () { K.haptic('success'); reopen(); })
+      saveFirst().then(function () { return api('takeNext', p.id, kind); }).then(function (r) { return refresh().then(function () { return r; }); })
+        .then(function (r) { K.haptic('success'); reopen(); if (kind === 'publish' && r && r.message) toast(r.message); })
         .catch(function (e) { K.setBusy(b, false); fail(e); });
     }
     // the card folds: the step on top, tap it for the choices
     var NO_WHY = { fixno: 'It goes on your checklist to do your way.', decline: 'It goes on your checklist to do your way.',
       goanyway: 'Keep going despite what the research found.', wantsample: 'Get a sample made first after all.', samplechanges: 'It needs changes before it can go on sale.' };
     var opts = [];
-    if (n.kind) opts.push({ kind: n.kind, main: true, ic: 'check', label: hers ? (n.kind === 'approvesample' ? 'Yes, it’s right' : 'Done') : 'Go',
-      why: hers ? '' : n.kind === 'fix' ? 'Tide Book makes this change now.' : 'Tide Book does it now.' });
+    if (n.kind) opts.push({ kind: n.kind, main: true, ic: n.kind === 'photo' ? 'add_a_photo' : 'check', label: n.kind === 'photo' ? 'Add the photo' : hers ? (n.kind === 'approvesample' ? 'Yes, it’s right' : 'Done') : n.kind === 'publish' ? 'Publish now' : 'Go',
+      why: n.kind === 'photo' ? 'Opens its shop page. Save it there and you’re back here.' : hers ? '' : n.kind === 'fix' ? 'Tide Book makes this change now.' : n.kind === 'publish' ? 'Your website updates in about a minute.' : 'Tide Book does it now.' });
+    if (n.kind === 'publish') opts.push({ kind: 'seesite', ic: 'visibility', label: 'Look at it first', why: 'Opens your website’s preview, with this on it.' });
     if (n.alt) opts.push({ kind: n.alt.kind, ic: n.alt.kind === 'fixall' ? 'done_all' : n.alt.kind === 'redo' ? 'auto_awesome' : 'arrow_forward', label: n.alt.label,
       why: n.alt.why || (n.alt.kind === 'fixall' ? 'Every fix Tide Book can make, in one go.' : '') });
     (n.more || []).forEach(function (m) { opts.push({ kind: m.kind, ic: 'verified', label: m.label, why: m.why || '' }); });
@@ -13026,6 +13126,19 @@ var Kit = (function () {
 
         var s7 = sheetSection('Take it further');
         var row = h('div', { class: 'btn-row' });
+        // a product idea's road to the website starts in Products
+        var linked = (talkData().pipeline || []).filter(function (r) { return r.ideaId === x.id; })[0];
+        if (linked || x.kind !== 'Content') {
+          var mp = btn(linked ? 'tonal' : x.kind === 'Product' ? 'filled' : 'outlined', linked ? 'Open it in Products' : 'Make it a product', { icon: 'inventory_2' });
+          mp.addEventListener('click', function () {
+            if (linked) { ctl.close(); setTimeout(function () { openPipeItem(linked.id); }, 320); return; }
+            K.setBusy(mp, true);
+            api('ideaToProduct', x.id).then(function (res) { return refresh().then(function () { return res; }); })
+              .then(function (res) { dirty = false; render(); ctl.close(); toast(res.message); setTimeout(function () { openPipeItem(res.id); }, 380); })
+              .catch(function (e) { K.setBusy(mp, false); fail(e); });
+          });
+          row.appendChild(mp);
+        }
         var mk = btn('outlined', 'Make it an artwork', { icon: 'brush' });
         mk.addEventListener('click', function () {
           K.setBusy(mk, true);
@@ -13286,7 +13399,7 @@ var Kit = (function () {
     });
   }
 
-  function openPrint(id) {
+  function openPrint(id, after) {
     var p = id ? byId(S.data.prints, id) : null;
     if (id && !p) return;
     var s = S.data.settings;
@@ -13296,6 +13409,7 @@ var Kit = (function () {
     var dirty = false, status = p ? p.status : 'Draft';
     K.sheet({
       title: p ? p.title : 'New artwork', tall: true, guard: function () { return dirty; },
+      onClose: function () { if (after) refresh().then(after).catch(function () {}); },
       build: function (ctl) {
         var checklist = h('div', { class: 'checklist' });
         function gaps() {
@@ -13454,7 +13568,7 @@ var Kit = (function () {
           }
           busy(true, goBtn);
           persist(goBtn).then(function (pid) { return api('setPrintStatus', pid, 'Live'); }).then(refresh)
-            .then(function () { dirty = false; render(); ctl.celebrate('It’s live', f.title + ' is now on sale.'); })
+            .then(function () { dirty = false; render(); ctl.celebrate('It’s in your shop', S.data.website && S.data.website.pending ? 'Publish your website to show it: the button is on Home and in Website.' : f.title + ' is now on sale.'); })
             .catch(function (e) { busy(false, goBtn); K.setLabel(goBtn, status === 'Parked' ? 'Put back live' : 'Launch'); fail(e); refresh().then(render); });
         });
         ctl.foot.appendChild(h('div', { class: 'btn-row' }, saveBtn, goBtn));
