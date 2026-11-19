@@ -7290,9 +7290,9 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
-  { id: '2026-11-19-hand-savings', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'Savings compared with doing it all with AI',
-    say: 'A second card under AI costs: everything Tide Book does (its AI jobs, and its own work like prices, postage, orders and the website) as if Claude’s API had been prompted to do it all.',
-    steps: ['Open Money and scroll to “AI costs”.', 'The second card compares Tide Book with prompting Claude yourself.', 'Pick the model you’d have used, and how much back and forth. The card says what it counts and what it leaves out.'],
+  { id: '2026-11-19-hand-savings', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'AI costs: Tide Book against doing it all with Claude',
+    say: 'One card on Money: what Tide Book spent, beside the same work (its AI jobs and its own work like prices, postage, orders and the website) done entirely by Claude Opus 5.5 through the API.',
+    steps: ['Open Money and scroll to “AI costs”.', 'The card shows the saving since the start, and this month underneath. It says what it counts.'],
     go: { view: 'money', find: '.hand-cost', tip: 'Change the model and the back and forth here.' } },
   { id: '2026-11-19-ready-to-sell', on: '2026-11-19', to: 'all', icon: 'storefront', title: 'Ready to sell: a checklist in Orders',
     say: 'Everything your website needs before its first sale is in one list, with the button for each step right there.',
@@ -14687,63 +14687,30 @@ var Kit = (function () {
       h('button', { class: 'action press g', type: 'button', onclick: function () { openTxn('Sale'); } }, h('span', { class: 'ic' }, icon('point_of_sale')), h('b', { text: 'Record a sale' })),
       h('button', { class: 'action press w', type: 'button', onclick: function () { openTxn('Expense'); } }, h('span', { class: 'ic' }, icon('receipt_long')), h('b', { text: 'Record an expense' }))), n++));
 
-    // the AI savings tally (admin): what it would have cost on Claude, what it did cost, and the difference
+    // AI costs (admin): what Tide Book spent, beside the same work done entirely with Claude Opus 5.5 through the API
     var sv = ADMIN && S.data.aiSavings;
     if (sv) {
       var usd = function (n) { return 'US$' + (n > 0 && n < 0.1 ? n.toFixed(3) : n < 10 ? n.toFixed(2) : Math.round(n)); };
-      var asec = section('AI costs: Claude or the PC'), per = S.aiPeriod === 'total' ? 'total' : 'month', t = sv[per];
-      var rate = S.data.settings.electricityKwhAud, pct = t.would ? Math.round(t.saved / t.would * 100) : 0, top = Math.max(t.would, t.actual, 0.000001);
+      var asec = section('AI costs'), T = sv.total, M = sv.month;
+      var allAi = function (t) { return ((t.hand || {}).opus || {})[1] || 0; };
+      var base = allAi(T), spent = T.actual || 0, saved = Math.max(0, base - spent), pct = base ? Math.round(saved / base * 100) : 0, top = Math.max(base, spent, 0.000001);
       function bar(label, v, cls) {
         return h('div', { class: 'ai-bar' }, h('div', { class: 'ai-bar-top' }, h('span', { class: 'body-s', text: label }), h('b', { class: 'body-s', text: usd(v) })),
           h('div', { class: 'ai-track' }, h('i', { class: cls, style: 'width:' + (v > 0 ? Math.max(1.5, v / top * 100) : 0) + '%' })));
       }
-      var card = h('div', { class: 'card pad ai-cost' },
-        K.segmented({ label: 'Period', value: per, onChange: function (v) { S.aiPeriod = v; render(); },
-          options: [{ value: 'month', label: 'This month' }, { value: 'total', label: 'Since ' + (sv.since ? K.dayLabel(sv.since.slice(0, 10), true) : 'the start') }] }),
-        h('div', { class: 'ai-head' }, h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Saved by using the PC' }), h('div', { class: 'ai-big', text: usd(t.saved) })),
+      var W = T.work || {}, LBL = { price: ['price worked out', 'prices worked out'], money: ['sale or expense recorded', 'sales and expenses recorded'], quote: ['cart priced', 'carts priced'],
+        checkout: ['checkout started', 'checkouts started'], order: ['order split into parcels', 'orders split into parcels'], tracking: ['parcel followed', 'parcels followed'],
+        siteEdit: ['website change', 'website changes'], publish: ['website publish', 'website publishes'], reminder: ['reminder', 'reminders'] };
+      var bits = Object.keys(LBL).filter(function (k) { return W[k] > 0; }).map(function (k) { return W[k] + ' ' + LBL[k][W[k] === 1 ? 0 : 1]; });
+      var card = h('div', { class: 'card pad ai-cost hand-cost' },
+        h('div', { class: 'ai-head' }, h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Saved since ' + (sv.since ? K.dayLabel(sv.since.slice(0, 10), true) : 'the start') }), h('div', { class: 'ai-big', text: usd(saved) })),
           h('span', { class: 'chip ' + (pct > 0 ? 'approved' : 'plain'), text: pct + '% less' })),
-        bar('If Claude had done everything', t.would, 'would'), bar('What it actually cost', t.actual, 'actual'),
-        h('p', { class: 'body-s ai-line', text: t.jobs + ' job' + (t.jobs === 1 ? '' : 's') + ': ' + t.local + ' on the PC, ' + t.claude + ' on Claude' + (t.chat ? ', ' + t.chat + ' in Claude chat' : '') + '.' +
-          (t.measured ? ' ' + t.measured + ' measured to the token' + (t.estimated ? ', ' + t.estimated + ' estimated' : '') + '.' : t.estimated ? ' The PC and chat jobs are estimated.' : '') }),
-        t.pcMetered ? h('p', { class: 'body-s ai-line', text: 'PC electricity, measured on the graphics card: ' + (t.pcWh < 1 ? t.pcWh.toFixed(2) : Math.round(t.pcWh)) + ' Wh over ' +
-          Math.round(t.pcSeconds / 60) + ' min, about A$' + (t.pcWh / 1000 * (rate || 0)).toFixed(3) + ' (' + t.pcMetered + ' job' + (t.pcMetered === 1 ? '' : 's') + ').' }) : null,
-        h('div', { class: 'row ai-rate' }, icon('bolt'), h('span', { class: 'body-s grow', text: 'Electricity: A$' + rate + ' a kWh' }),
-          btn('text', 'Change', { sm: true, onclick: function () {
-            K.ask({ title: 'Electricity rate', text: 'What your power bill charges per kWh, in dollars (e.g. 0.33).', label: 'Dollars per kWh', value: String(rate), confirmLabel: 'Save', maxlength: 8 }).then(function (v) {
-              if (v == null) return; var n = parseFloat(v); if (!(n >= 0 && n <= 5)) { toast('That rate doesn’t look right.'); return; }
-              api('saveSettings', { electricityKwhAud: n }).then(refresh).then(render).catch(fail);
-            });
-          } })));
+        bar('Everything done with Claude Opus 5.5', base, 'would'), bar('What Tide Book spent', spent, 'actual'),
+        h('p', { class: 'body-s ai-line', text: 'This month: ' + usd(M.actual || 0) + ' spent, against ' + usd(allAi(M)) + '.' }),
+        h('p', { class: 'body-s ai-line', text: 'The comparison: every one of the ' + T.jobs + ' AI job' + (T.jobs === 1 ? '' : 's') + (bits.length ? ', and Tide Book’s own work (' + bits.join(', ') + '),' : ' and all of Tide Book’s own work') +
+          ' done by Claude Opus 5.5 at medium effort through the API, each run once, at full price. What Tide Book spent is what Claude charged: its PC jobs, Claude chat jobs and its own work cost nothing.' }),
+        h('p', { class: 'body-s ai-line', text: 'An estimate, on the low side (Opus’s thinking isn’t added).' + (T.estimatedJobs ? ' The ' + T.estimatedJobs + ' AI job' + (T.estimatedJobs === 1 ? '' : 's') + ' from before tokens were counted are sized from what they cost.' : '') }));
       asec.appendChild(card);
-      asec.appendChild(h('p', { class: 'tf-help', text: 'Claude jobs count what Claude charged. Jobs on the PC, or in Claude chat, cost nothing; what they would have cost is estimated from their size at Claude’s prices.' +
-        (sv.earlier ? ' The ' + sv.earlier + ' PC job' + (sv.earlier === 1 ? '' : 's') + ' from before the tally began were found in the records and estimated the same way.' : '') }));
-      // the same work without Tide Book: prompting Claude by hand
-      var hm = S.handModel || 'sonnet', hf = S.handTalk || 2, hand = (t.hand || {})[hm] || {}, handUsd = hand[hf] || 0, hSaved = Math.max(0, handUsd - t.actual);
-      var hpct = handUsd ? Math.round(hSaved / handUsd * 100) : 0, htop = Math.max(handUsd, t.actual, 0.000001);
-      function hbar(label, val, cls) {
-        return h('div', { class: 'ai-bar' }, h('div', { class: 'ai-bar-top' }, h('span', { class: 'body-s', text: label }), h('b', { class: 'body-s', text: usd(val) })),
-          h('div', { class: 'ai-track' }, h('i', { class: cls, style: 'width:' + (val > 0 ? Math.max(1.5, val / htop * 100) : 0) + '%' })));
-      }
-      var hcard = h('div', { class: 'card pad ai-cost hand-cost', style: 'margin-top:12px' },
-        h('div', { class: 'ai-head' }, h('div', { class: 'grow' }, h('div', { class: 'label-s', text: 'Saved compared with doing it all with AI' }), h('div', { class: 'ai-big', text: usd(hSaved) })),
-          h('span', { class: 'chip ' + (hpct > 0 ? 'approved' : 'plain'), text: hpct + '% less' })),
-        hbar('All of it done with Claude’s API', handUsd, 'would'), hbar('With Tide Book', t.actual, 'actual'),
-        h('div', { class: 'label-s', style: 'margin:12px 0 6px', text: 'You’d have used' }),
-        K.choices({ row: true, label: 'Model', value: hm, options: [{ value: 'sonnet', label: 'Sonnet' }, { value: 'opus', label: 'Opus' }, { value: 'haiku', label: 'Haiku' }], onChange: function (v) { S.handModel = v || 'sonnet'; render(); } }),
-        h('div', { class: 'label-s', style: 'margin:10px 0 6px', text: 'Back and forth' }),
-        K.choices({ row: true, label: 'Back and forth', value: String(hf), options: [{ value: '1', label: 'One message each' }, { value: '2', label: 'A little' }, { value: '4', label: 'A lot' }], onChange: function (v) { S.handTalk = Number(v) || 2; render(); } }),
-        h('p', { class: 'body-s ai-line', text: 'Everything Tide Book did, done by prompting Claude’s API instead: the ' + t.jobs + ' AI job' + (t.jobs === 1 ? '' : 's') + ' and the work below, each on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' at full price' + (hf > 1 ? ', with the conversation sent again ' + (hf === 2 ? 'once more' : 'a few more times') + ' as you go back and forth' : '') + '. Tide Book saves by doing jobs on the PC or in Claude chat for nothing, using the cheapest model that does the job well, sending research in half-price batches, reusing its saved instructions, asking once with everything Claude needs, and doing the rest in its own code, at no cost.' }),
-        (function () {
-          // the work Tide Book does without AI, counted as if Claude had been asked to do each piece
-          var W = t.work || {}, LBL = { price: ['price worked out', 'prices worked out'], money: ['sale or expense recorded', 'sales and expenses recorded'], quote: ['cart priced', 'carts priced'],
-            checkout: ['checkout started', 'checkouts started'], order: ['order split into parcels', 'orders split into parcels'], tracking: ['parcel followed', 'parcels followed'],
-            siteEdit: ['website change', 'website changes'], publish: ['website publish', 'website publishes'], reminder: ['reminder', 'reminders'] };
-          var bits = Object.keys(LBL).filter(function (k) { return W[k] > 0; }).map(function (k) { return W[k] + ' ' + LBL[k][W[k] === 1 ? 0 : 1]; });
-          return h('p', { class: 'body-s ai-line', text: (bits.length ? 'It also counts the work Tide Book does with no AI at all, as if Claude had been asked to do each piece: ' + bits.join(', ') + '. ' : 'Work Tide Book does with no AI at all (prices, postage, orders, the website) is counted here as it happens, as if Claude had been asked to do it. ') +
-            'An estimate, kept on the small side.' + (t.estimatedJobs ? ' The ' + t.estimatedJobs + ' AI job' + (t.estimatedJobs === 1 ? '' : 's') + ' from before it counted tokens are sized from what they cost.' : '') });
-        })(),
-        handUsd < t.actual ? note('Prompting everything on ' + ({ sonnet: 'Sonnet', opus: 'Opus', haiku: 'Haiku' })[hm] + ' yourself would have cost ' + usd(t.actual - handUsd) + ' less. Tide Book spends more where it matters: research and the rules checks use Sonnet, because Haiku’s answers weren’t good enough for them.', 'info') : null);
-      asec.appendChild(hcard);
       main.appendChild(rise(asec, n++));
     }
 
