@@ -7897,7 +7897,7 @@ function tideTalk(env, t) {
           outcome: { title: sh.title, summary: sh.summary, decisions: t.list(sh.decisions), open: [], kind: (x.outcome && x.outcome.kind) || 'Other', shareState: 'Sent' },
           filed: x.filed ? { kind: x.filed.kind, pipelineId: x.filed.pipelineId || '', ideaId: x.filed.ideaId || '' } : null, aiStatus: '', created: x.created, updated: x.updated };
       }
-      return { id: x.id, title: x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status, parked: x.parked === true, resumeOn: x.parked === true ? x.resumeOn || '' : '', dropped: x.dropped === true,
+      return { id: x.id, title: x.locked ? 'Private talk (locked)' : x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status, parked: x.parked === true, resumeOn: x.parked === true ? x.resumeOn || '' : '', dropped: x.dropped === true,
         rounds: t.list(x.rounds), answered: asked(x), max: Number(x.maxQ) || K.MAX_Q, min: K.MIN_Q,
         outcome: x.outcome || null, filed: x.filed || null, aiStatus: x.aiStatus || '', aiRoute: x.aiRoute || '', aiNote: x.aiNote || '', aiWhy: x.aiWhy || '',
         private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated,
@@ -15069,6 +15069,14 @@ var Kit = (function () {
   function openTopic(id) {
     var tp = byId(talkData().topics, id);
     if (!tp) return;
+    // her private talks are locked until she unlocks her writing (it locks again whenever the PC restarts)
+    if (tp.locked) {
+      K.sheet({ title: 'Private talk', build: function (ctl) {
+        var pb = privacyBar();
+        ctl.body.appendChild(pb || note('This talk is private and locked. Unlock your private writing first.', 'lock'));
+      } });
+      return;
+    }
     var poll = null, ctlRef = null;
     function reopen() { K.swap(ctlRef, function () { openTopic(id); }, true); }
     K.sheet({
@@ -15108,7 +15116,8 @@ var Kit = (function () {
             refresh().then(function () { var now = byId(talkData().topics, id); if (now && (now.status !== tp.status || now.aiStatus !== tp.aiStatus)) { clearInterval(poll); poll = null; reopen(); } });
           }, 3000);
         } else if (tp.status === 'Your turn') {
-          var round = tp.rounds[tp.rounds.length - 1];
+          var round = (tp.rounds || [])[(tp.rounds || []).length - 1] || { questions: [] };
+          round.questions = round.questions || [];
           if (!tp.mine && !ADMIN) ctl.body.appendChild(note('Waiting for ' + tp.by + ' to answer.', 'forum'));
           else {
             if (!tp.mine) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('These are ' + tp.by + '’s questions. You can answer for her if she asks you to.', 'info')));
@@ -15194,7 +15203,7 @@ var Kit = (function () {
         }
 
         // the conversation so far
-        var past = tp.rounds.filter(function (r) { return r.answers; });
+        var past = (tp.rounds || []).filter(function (r) { return r && r.answers; });
         if (past.length) {
           var det = h('details', { class: 'talk-past' }, h('summary', { text: 'The conversation so far (' + tp.answered + ' answers)' }));
           past.forEach(function (r) {
