@@ -1488,6 +1488,30 @@ body.map-full { overflow: hidden; }
 .sky-ghost { position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 4px; padding: 6px; border-radius: 18px; background: rgba(20,28,55,.95); box-shadow: 0 6px 20px rgba(0,0,0,.5); }
 .sky-ghost button { all: unset; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 14px; cursor: pointer; color: #fff; font: 500 13px/16px var(--font); }
 .sky-ghost button:active { background: rgba(255,255,255,.12); }
+/* In order: the same sky, lined up from the sun, most important nearest */
+.sky-world.morph .sky-planet, .sky-world.morph .sky-sun, .sky-world.morph .sky-moon, .sky-world.morph .sky-bigsun { transition: left 1.6s cubic-bezier(.65,0,.35,1), top 1.6s cubic-bezier(.65,0,.35,1), opacity 1.2s, transform 1.6s cubic-bezier(.65,0,.35,1) !important; }
+.sky-world .goal-lines { transition: opacity .5s; }
+.sky-world.morph .goal-lines { transition: opacity .4s; }
+.sky-bigsun { position: absolute; width: 300px; height: 300px; pointer-events: none; opacity: 0; transform: scale(.25); z-index: 1; transition: opacity .6s, transform .6s; }
+.sky-bigsun-core { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 60% 50%, #fff3c4, #ffc24d 35%, #f08a24 62%, #c8501a);
+  box-shadow: 0 0 60px 18px rgba(255,170,70,.45), 0 0 140px 40px rgba(255,120,40,.2); }
+.sky-label.sun.big { top: auto; bottom: -30px; left: calc(100% + 40px); transform: none; width: 140px; text-align: left; font-size: 12px; color: #ffe7b0; opacity: .8; }
+.goal-map.sky.order .sky-bigsun { opacity: 1; transform: none; }
+.sky-sun.gone { opacity: 0; pointer-events: none; transform: scale(.4); }
+.goal-map.sky.order .sky-world .goal-lines .orbit.arc { stroke: rgba(255,255,255,.16); stroke-dasharray: none; }
+.goal-map.sky.order .sky-planet.up .sky-label { top: auto; bottom: calc(100% + 18px); }
+.goal-map.sky.order .sky-planet { z-index: 3; }
+.sky-full { left: auto; right: 10px; }
+.goal-map.full .sky-full { display: none; }
+@media (prefers-reduced-motion: reduce) { .sky-world.morph .sky-planet, .sky-world.morph .sky-sun, .sky-world.morph .sky-moon, .sky-world.morph .sky-bigsun { transition: opacity .3s !important; } }
+.goal-map.sky:not(.order) .sky-planet.mini .sky-label, .goal-map.sky:not(.order) .sky-planet.mini .sky-rank { display: none; }
+.goal-map.sky.order .sky-planet.mini { width: 40px; height: 40px; }
+.sky-world.morph .sky-planet { transition-property: left, top, width, height, opacity, transform !important; }
+/* gravity: once a sun is put down, its planets make their way over */
+.sky-world.gravity .sky-planet, .sky-world.gravity .sky-moon { transition: left 1.5s cubic-bezier(.3,.05,.15,1), top 1.5s cubic-bezier(.3,.05,.15,1) !important; }
+.sky-world.gravity .goal-lines { opacity: 0; }
+.goal-map.sky .sky-sun { touch-action: none; }
+.goal-map.sky.full .sky-planet { touch-action: none; }
 </style>
 
   <script>
@@ -7437,6 +7461,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-sky-order', on: '2026-11-19', to: 'all', icon: 'wb_sunny', title: 'Your goals sky: in order, and suns you can move',
+    say: 'Tap “In order” and the same planets glide into a line from the sun, most important nearest. Drag a sun anywhere: when you let go, its planets make their way over.',
+    steps: ['In Ideas › Goals, switch between Map and In order and watch them move.', 'In order, tap a planet, then drag it left or right to change its place.', 'On the map, drag a sun anywhere. Its planets follow once you let go.', 'Tap “Full screen” at the top right for the whole screen.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'order' }, find: '.sky-full', tip: 'Full screen is here.' } },
   { id: '2026-11-19-goal-sky', on: '2026-11-19', to: 'all', icon: 'wb_sunny', title: 'Your goals, as a night sky',
     say: 'The goals map is a little solar system now. A milestone (a big aim) is a sun; the goals that lead to it orbit it like planets; each goal’s steps are its moons.',
     steps: ['In Ideas › Goals, tap “Add a milestone” at the top left, name it, and tick the goals that belong to it.', 'Tap a planet to choose it. Then drag it into a sun’s orbit: it glides into place beside the others.', 'Drop a planet on another to work on them together.', 'Chosen planets have Open, Shrink and Bin, kept apart so you never bin one by mistake. Bin has an Undo.', 'Tap a moon to see that step and tick it off.'],
@@ -15273,7 +15301,7 @@ var Kit = (function () {
           return tog.length ? ' Worked on together with ' + tog.join(' and ') + '.' : '';
         })() })), icon('chevron_right')), 1));
     main.appendChild(rise(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 12px;flex-wrap:wrap' },
-      h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }] })),
+      h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; if (SKY.morph && SKY.morph(v)) return; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }] })),
       btn('filled', 'Add a goal', { icon: 'add', sm: true, onclick: function () { addGoalAsk(null); } })), 1));
     if (!goals.length) {
       var start = h('div', { class: 'card pad' }, h('div', { class: 'title-m', text: 'Where would you like to get to?' }),
@@ -15285,7 +15313,6 @@ var Kit = (function () {
       main.appendChild(rise(start, 2));
       return;
     }
-    if (mode === 'order') return goalOrder(main, goals);
     skyMap(main, goals);
   }
   function addGoalAsk(parentId, at) {
@@ -15802,11 +15829,11 @@ var Kit = (function () {
   var SKY = { sel: null };
   var SKY_SIZE = { sun: 34, planet: 20, mini: 9, moonRing: 30, moon: 5, foot: 52, ref: 900 };
   function skyMap(main, goals) {
-    var full = !!S.mapFull, Z = SKY_SIZE, REF = Z.ref;
+    var full = !!S.mapFull, Z = SKY_SIZE, REF = Z.ref, mode = S.goalMode === 'order' ? 'order' : 'map';
     var H = full ? window.innerHeight : Math.max(440, Math.min(620, window.innerHeight - 380));
     var suns = (S.data.milestones || []).slice();
     var sunIds = suns.map(function (m) { return m.id; });
-    var board = h('div', { class: 'goal-map sky' + (full ? ' full' : ''), style: 'height:' + H + 'px' });
+    var board = h('div', { class: 'goal-map sky' + (full ? ' full' : '') + (mode === 'order' ? ' order' : ''), style: 'height:' + H + 'px' });
     document.body.classList.toggle('map-full', full);
     var world = h('div', { class: 'goal-world sky-world' });
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); world.appendChild(svg);
@@ -15815,9 +15842,24 @@ var Kit = (function () {
     function W() { return board.clientWidth || 360; }
     // ---------- where everything goes: suns where she put them, their planets evenly round them, free planets where she put them
     function inOrbit(g) { return !g.parentId && g.milestoneId && sunIds.indexOf(g.milestoneId) >= 0; }
-    function radiusOf(g) { return g.mini ? Z.mini : Z.planet; }
+    function radiusOf(g) { return g.mini && mode !== 'order' ? Z.mini : Z.planet; }
     function orbitR(n) { return Math.max(Z.sun + 74, n * (2 * Z.foot) / (2 * Math.PI)); }
+    var ORDER_SUN = { x: -70, r: 150 };
+    function layoutOrder() {
+      var tops = goals.filter(function (g) { return !g.parentId; }).slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
+      var gap = 96, first = ORDER_SUN.x + ORDER_SUN.r + 70;
+      WW = Math.max(W(), first + tops.length * gap + 40); HW = H;
+      world.style.width = WW + 'px'; world.style.height = HW + 'px';
+      var mid = Math.round(H * 0.46);
+      pos = { sun: { x: ORDER_SUN.x, y: mid } };
+      tops.forEach(function (g, i) { pos['g:' + g.id] = { x: first + i * gap, y: mid, i: i, up: i % 2 === 1 }; });
+      // a smaller goal sits just above its bigger one
+      goals.filter(function (g) { return g.parentId; }).forEach(function (g, i) { var p = pos['g:' + g.parentId]; if (p) pos['g:' + g.id] = { x: p.x + 22, y: p.y - 58 - (i % 2) * 18 }; });
+      suns.forEach(function (m) { var p = pos.sun; pos['s:' + m.id] = { x: p.x, y: p.y, gone: true }; });
+      return [];
+    }
     function layout() {
+      if (mode === 'order') return layoutOrder();
       WW = Math.max(W(), 360);
       var bodies = [];
       suns.forEach(function (m) {
@@ -15833,6 +15875,7 @@ var Kit = (function () {
           if (need <= 0) continue;
           moved = true;
           var ux = dx / d, uy = dy / d, wa = a.kind === 'sun' && b.kind !== 'sun' ? 0.2 : b.kind === 'sun' && a.kind !== 'sun' ? 0.8 : 0.5;
+          if (SKY.fixed && a.id === SKY.fixed) wa = 0; else if (SKY.fixed && b.id === SKY.fixed) wa = 1;
           a.x -= ux * need * wa; a.y -= uy * need * wa; b.x += ux * need * (1 - wa); b.y += uy * need * (1 - wa);
         }
         bodies.forEach(function (o) { o.x = Math.max(o.r * 0.6, Math.min(WW - o.r * 0.6, o.x)); o.y = Math.max(o.r * 0.6 + (full ? 60 : 8), o.y); });
@@ -15866,10 +15909,13 @@ var Kit = (function () {
     function place(el, p, size) { el.style.left = (p.x - size) + 'px'; el.style.top = (p.y - size) + 'px'; }
     function draw() {
       var bodies = layout();
+      board.classList.toggle('order', mode === 'order');
+      if (orderSun) { if (mode === 'order') { orderSun.style.left = (pos.sun.x - ORDER_SUN.r) + 'px'; orderSun.style.top = (pos.sun.y - ORDER_SUN.r) + 'px'; } else { var s0 = suns[0] && pos['s:' + suns[0].id]; orderSun.style.left = ((s0 ? s0.x : WW / 2) - ORDER_SUN.r) + 'px'; orderSun.style.top = ((s0 ? s0.y : 120) - ORDER_SUN.r) + 'px'; } }
       svg.setAttribute('width', WW); svg.setAttribute('height', HW); svg.textContent = '';
       function line(x1, y1, x2, y2, cls) { var l = document.createElementNS('http://www.w3.org/2000/svg', 'line'); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); l.setAttribute('class', cls); svg.appendChild(l); }
       function ring(x, y, r, cls) { var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', r); c.setAttribute('class', cls); svg.appendChild(c); }
       bodies.forEach(function (o) { if (o.kind === 'sun' && o.members.length) ring(o.x, o.y, o.R, 'orbit'); });
+      if (mode === 'order') goals.forEach(function (g) { var p = pos['g:' + g.id]; if (p && !g.parentId) ring(pos.sun.x, pos.sun.y, p.x - pos.sun.x, 'orbit arc'); });
       // goals worked on together, and smaller goals with their bigger one
       var done = {};
       goals.forEach(function (g) {
@@ -15878,10 +15924,11 @@ var Kit = (function () {
           if (done[k] || !a || !b) return; done[k] = 1; line(a.x, a.y, b.x, b.y, pr[1]);
         });
       });
-      suns.forEach(function (m) { var p = pos['s:' + m.id], el = els['s:' + m.id]; if (el) place(el, p, Z.sun); });
+      suns.forEach(function (m) { var p = pos['s:' + m.id], el = els['s:' + m.id]; if (el) { place(el, p, Z.sun); el.classList.toggle('gone', !!p.gone); } });
       goals.forEach(function (g) {
         var p = pos['g:' + g.id], el = els['g:' + g.id]; if (!p || !el) return;
         place(el, p, radiusOf(g));
+        el.classList.toggle('up', mode === 'order' && !!p.up);
         if (!g.mini && g.steps.length) ring(p.x, p.y, Z.moonRing, 'moonring');
         (el._moons || []).forEach(function (mn, i) {
           var a = -Math.PI / 2 + i * 2 * Math.PI / el._moons.length;
@@ -15891,6 +15938,8 @@ var Kit = (function () {
       paintBar();
     }
     // ---------- the bodies
+    var orderSun = h('div', { class: 'sky-bigsun', 'aria-hidden': 'true' }, h('span', { class: 'sky-bigsun-core' }), h('span', { class: 'sky-label sun big', text: 'Most important nearest' }));
+    world.appendChild(orderSun);
     suns.forEach(function (m) {
       var members = goals.filter(function (g) { return inOrbit(g) && g.milestoneId === m.id; });
       var el = h('div', { class: 'sky-sun', role: 'button', tabindex: '0', 'aria-label': 'Milestone: ' + m.title + '. ' + members.length + ' goal' + (members.length === 1 ? '' : 's') + ' in its orbit.' },
@@ -15902,8 +15951,8 @@ var Kit = (function () {
       var isDone = g.status === 'Done', gc = goalColour(g.id);
       var el = h('div', { class: 'sky-planet' + (g.mini ? ' mini' : '') + (g.active ? ' now' : '') + (g.alongside ? ' along' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', style: '--gc:' + gc,
           'aria-label': g.title + (g.active ? ', the goal you’re working on now' : '') + (g.steps.length ? ', ' + g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : ', no plan yet') },
-        h('span', { class: 'sky-ball' }, isDone ? icon('check') : g.mini || g.parentId ? null : h('span', { text: String(g.rank) })),
-        g.mini ? null : h('span', { class: 'sky-label' }, g.active || g.alongside ? h('b', { class: 'sky-now', text: g.alongside ? 'Now, together' : 'Now' }) : null, h('span', { class: 'sky-t', text: g.title })));
+        h('span', { class: 'sky-ball' }, isDone ? icon('check') : g.parentId ? null : h('span', { class: 'sky-rank', text: String(g.rank) })),
+        h('span', { class: 'sky-label' }, g.active || g.alongside ? h('b', { class: 'sky-now', text: g.alongside ? 'Now, together' : 'Now' }) : null, h('span', { class: 'sky-t', text: g.title })));
       el.dataset.k = 'g:' + g.id;
       els['g:' + g.id] = el; world.appendChild(el); body(el, { kind: 'goal', id: g.id });
       // its steps: moons in a ring, filled in when done. Tap one for the step.
@@ -15965,7 +16014,7 @@ var Kit = (function () {
       // only a chosen one moves: anywhere else, a finger scrolls the page or moves the map
       el.addEventListener('pointerdown', function (e) {
         var k = (who.kind === 'sun' ? 's:' : 'g:') + who.id;
-        if (pinching || selKey() !== k) return;
+        if (pinching || (selKey() !== k && who.kind !== 'sun' && !full)) return;
         e.stopPropagation(); el.setPointerCapture(e.pointerId);
         var p = pos[k];
         down = { sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, moved: false };
@@ -15977,7 +16026,7 @@ var Kit = (function () {
         if (!down.moved) { down.moved = true; el.classList.add('lifted'); world.classList.add('dragging'); if (bar) bar.style.display = 'none'; }
         var nx = down.x + dx, ny = down.y + dy, size = who.kind === 'sun' ? Z.sun : radiusOf(goalById(who.id) || {});
         el.style.left = (nx - size) + 'px'; el.style.top = (ny - size) + 'px';
-        if (who.kind === 'goal') {
+        if (who.kind === 'goal' && mode !== 'order') {
           (el._moons || []).forEach(function (mn) { mn.style.opacity = '0'; });
           var tg = targetAt(nx, ny, { id: who.id });
           Object.keys(els).forEach(function (kk) { els[kk].classList.toggle('target', !!tg && kk === (tg.kind === 'sun' ? 's:' + tg.m.id : 'g:' + tg.g.id)); });
@@ -15991,7 +16040,25 @@ var Kit = (function () {
         if (!d.moved) return;
         board.dataset.dragged = '1'; setTimeout(function () { delete board.dataset.dragged; }, 400);
         var x = Math.max(0, Math.min(1, d.nx / WW)), y = Math.max(0, Math.min(1, d.ny / REF));
-        if (who.kind === 'sun') { var m = suns.filter(function (s) { return s.id === who.id; })[0]; m.x = x; m.y = y; api('updateMilestone', m.id, { x: x, y: y }).catch(fail); draw(); return; }
+        if (who.kind === 'sun') {
+          var m = suns.filter(function (s) { return s.id === who.id; })[0]; m.x = x; m.y = y;
+          api('updateMilestone', m.id, { x: x, y: y }).catch(fail);
+          var mine = goals.filter(function (g2) { return inOrbit(g2) && g2.milestoneId === m.id; });
+          mine.forEach(function (g2, i) { var e2 = els['g:' + g2.id]; if (!e2) return; e2.style.transitionDelay = (i * 0.12) + 's'; (e2._moons || []).forEach(function (mn) { mn.style.transitionDelay = (i * 0.12 + 0.1) + 's'; }); });
+          world.classList.add('gravity'); SKY.fixed = m.id; draw(); SKY.fixed = null;
+          clearTimeout(SKY.gravT); SKY.gravT = setTimeout(function () { world.classList.remove('gravity'); mine.forEach(function (g2) { var e2 = els['g:' + g2.id]; if (e2) { e2.style.transitionDelay = ''; (e2._moons || []).forEach(function (mn) { mn.style.transitionDelay = ''; }); } }); }, 2600);
+          return;
+        }
+        if (mode === 'order') {
+          var tops = goals.filter(function (o) { return !o.parentId; }).slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
+          var ids = tops.map(function (o) { return o.id; }).filter(function (x) { return x !== who.id; });
+          var at = ids.filter(function (x) { return pos['g:' + x].x < d.nx; }).length;
+          ids.splice(at, 0, who.id);
+          ids.forEach(function (x, i) { var o = goalById(x); if (o) o.rank = i + 1; });
+          draw();
+          api('orderGoals', ids).then(refresh).then(function () { K.haptic('success'); toast(at === 0 ? 'Most important now: it sets the order of everything else.' : 'Moved to number ' + (at + 1) + '.'); }).catch(fail);
+          return;
+        }
         var g = goalById(who.id), tg = targetAt(d.nx, d.ny, { id: who.id });
         if (tg && tg.kind === 'goal') { draw(); skyDropped(g, tg.g); return; }
         var ms = tg && tg.kind === 'sun' ? tg.m.id : '';
@@ -16033,7 +16100,7 @@ var Kit = (function () {
       track(e);
       if (pinching || e.target.closest('.sky-bar, .gz, .gm-full-bar, .goal-ghost, .sky-add')) return;
       var onBody = e.target.closest('.sky-planet, .sky-sun');
-      if (onBody && onBody.dataset.k === selKey()) return;
+      if (onBody && (onBody.dataset.k === selKey() || onBody.classList.contains('sky-sun') || full)) return;
       pan = { x: e.clientX, y: e.clientY, gx: GZ.x, gy: GZ.y, sy: window.scrollY, moved: false };
     });
     board.addEventListener('pointermove', function (e) {
@@ -16072,17 +16139,23 @@ var Kit = (function () {
     });
     var zl = h('span', { class: 'gz-level', 'aria-live': 'polite' });
     function zb(ic, label, fn) { var b = h('button', { type: 'button', class: 'gz-btn', 'aria-label': label, title: label }, icon(ic)); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); b.addEventListener('click', function (e) { e.stopPropagation(); fn(); }); return b; }
-    function fitZoom() { var f = Math.min(1, (H - 8) / HW, W() / WW); return { s: f, x: (W() - WW * f) / 2, y: 0, fit: true }; }
+    function fitZoom() { if (mode === 'order') return { s: 1, x: 0, y: 0, fit: true }; var f = Math.min(1, (H - 8) / HW, W() / WW); return { s: f, x: (W() - WW * f) / 2, y: 0, fit: true }; }
     board.appendChild(h('div', { class: 'gz' },
       zb('zoom_out', 'Zoom out', function () { zoomAt(GZ.s / 1.25, W() / 2, H / 2); }), zl,
       zb('zoom_in', 'Zoom in', function () { zoomAt(GZ.s * 1.25, W() / 2, H / 2); }),
-      zb('fit_screen', 'Show the whole sky', function () { GZ = fitZoom(); paintZoom(); }),
-      full ? null : zb('open_in_full', 'Full screen', function () { goalMapFull(true); })));
+      zb('fit_screen', 'Show the whole sky', function () { GZ = fitZoom(); paintZoom(); })));
+    if (!full) {
+      var fs = h('button', { type: 'button', class: 'sky-add sky-full' }, icon('open_in_full'), 'Full screen');
+      fs.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      fs.addEventListener('click', function (e) { e.stopPropagation(); goalMapFull(true); });
+      board.appendChild(fs);
+    }
     var add = h('button', { type: 'button', class: 'sky-add' }, icon('wb_sunny'), suns.length ? 'Milestone' : 'Add a milestone');
     add.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
     add.addEventListener('click', function (e) { e.stopPropagation(); openMilestone(null); });
     board.appendChild(add);
-    var HINT = suns.length ? 'Tap a planet to choose it, then drag it. Moons are its steps.' : 'Add a milestone, a big aim, and drop your goals into its orbit.';
+    function hintFor() { return mode === 'order' ? 'Most important nearest the sun. Tap a planet, then drag it left or right to change its place.' : suns.length ? 'Tap a planet to choose it, then drag it. Moons are its steps.' : 'Add a milestone, a big aim, and drop your goals into its orbit.'; }
+    var HINT = hintFor();
     board.appendChild(h('div', { class: 'sky-hint', 'aria-live': 'polite', text: HINT }));
     if (full) board.appendChild(h('div', { class: 'gm-full-bar' }, h('span', { class: 'gm-full-t', text: 'Your goals' }),
       btn('tonal', 'Add a goal', { sm: true, icon: 'add', onclick: function () { addGoalAsk(null); } }),
@@ -16090,6 +16163,16 @@ var Kit = (function () {
     main.appendChild(rise(board, 2));
     main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Milestones are the suns, goals the planets, and each goal’s steps its moons. Tap a planet to choose it: then drag it into a milestone’s orbit (it settles in beside the others), onto another goal to work on them together, or use Open, Shrink or Bin. Pinch to zoom.' }));
     if (SKY.sel && !els[selKey()]) SKY.sel = null;
+    SKY.morph = function (to) {
+      if (!document.body.contains(board)) return false;
+      mode = to === 'order' ? 'order' : 'map';
+      choose(null);
+      world.classList.add('morph'); svg.style.opacity = '0';
+      draw(); GZ = fitZoom(); paintZoom();
+      board.querySelector('.sky-hint').textContent = HINT = hintFor();
+      clearTimeout(SKY.morphT); SKY.morphT = setTimeout(function () { world.classList.remove('morph'); svg.style.opacity = ''; }, 1700);
+      return true;
+    };
     setTimeout(function () {
       draw();
       if (!GZ || GZ.fit || (GZ.s === 1 && !GZ.x && !GZ.y)) GZ = fitZoom();
