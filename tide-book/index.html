@@ -3236,6 +3236,7 @@ if (env.workDone) env.workDone('publish');
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
+      fx: env.setup && env.setup.fx ? env.setup.fx() : { rate: 1.55, estimate: true },
       me: { role: env.user.role, real: env.user.realRole || env.user.role, canSwap: !!env.user.canSwap },
       website: env.site ? { preview: env.site.previewUrl(), live: siteEditor.liveUrl(), pending: shopPending(), checkout: !!(env.site.shopUrl && env.site.shopUrl(false)), lastPublished: String(settings().sitePublishedAt || '') } : null,
       features: { health: !!env.features.health, research: !!env.features.research, claude: !!env.features.research, exportKind: env.features.exportKind },
@@ -11149,10 +11150,10 @@ var Kit = (function () {
             prod = pr; picked = pr.id; sizesBox.textContent = '';
             sizesBox.appendChild(h('div', { class: 'title-s', style: 'margin:14px 0 6px', text: pr.title }));
             podS.forEach(function (z) {
-              var opts = [{ value: '', label: 'Not this size' }].concat(pr.variants.map(function (v) { return { value: String(v.id), label: v.name.replace(pr.title + ' / ', '') + ' · ' + (pr.currency === 'AUD' ? '$' : pr.currency + ' ') + Number(v.cost).toFixed(2) }; }));
+              var opts = [{ value: '', label: 'Not this size' }].concat(pr.variants.map(function (v) { return { value: String(v.id), label: v.name.replace(pr.title + ' / ', '') + ' · ' + pfMoney(v.cost, pr.currency) }; }));
               sizesBox.appendChild(K.pickField({ label: 'Your ' + z, value: map[z] ? String(map[z]) : '', options: opts, onChange: function (v) { if (v) map[z] = Number(v); else delete map[z]; } }));
             });
-            if (pr.currency !== 'AUD') sizesBox.appendChild(h('p', { class: 'tf-help', text: 'Printful shows its charges in ' + pr.currency + '. Set your cost on each size above in dollars, so “You keep” is right.' }));
+            if (pr.currency !== 'AUD') sizesBox.appendChild(h('p', { class: 'tf-help', text: 'Printful charges in ' + pr.currency + ': shown here in A$ at today’s rate. Set your cost on each size above in dollars, so “You keep” is right.' }));
           }).catch(fail);
         }
         var q = K.textField({ label: 'Search Printful', value: 'poster', onEnter: function (v) { search(v); } });
@@ -15007,7 +15008,7 @@ var Kit = (function () {
     // AI costs (admin): what Tide Book spent, beside the same work done entirely with Claude Opus 5.5 through the API
     var sv = ADMIN && S.data.aiSavings;
     if (sv) {
-      var usd = function (n) { return 'US$' + (n > 0 && n < 0.1 ? n.toFixed(3) : n < 10 ? n.toFixed(2) : Math.round(n)); };
+      var usd = function (n) { return audFromUsd(n); };
       var asec = section('AI costs'), T = sv.total, M = sv.month;
       var allAi = function (t) { return ((t.hand || {}).opus || {})[1] || 0; };
       var base = allAi(T), spent = T.actual || 0, saved = Math.max(0, base - spent), pct = base ? Math.round(saved / base * 100) : 0, top = Math.max(base, spent, 0.000001);
@@ -15026,7 +15027,7 @@ var Kit = (function () {
         h('p', { class: 'body-s ai-line', text: 'This month: ' + usd(M.actual || 0) + ' spent, against ' + usd(allAi(M)) + '.' }),
         h('p', { class: 'body-s ai-line', text: 'The comparison: every one of the ' + T.jobs + ' AI job' + (T.jobs === 1 ? '' : 's') + (bits.length ? ', and Tide Book’s own work (' + bits.join(', ') + '),' : ' and all of Tide Book’s own work') +
           ' done by Claude Opus 5.5 at medium effort through the API, each run once, at full price. What Tide Book spent is what Claude charged: its PC jobs, Claude chat jobs and its own work cost nothing.' }),
-        h('p', { class: 'body-s ai-line', text: 'An estimate, on the low side (Opus’s thinking isn’t added).' + (T.estimatedJobs ? ' The ' + T.estimatedJobs + ' AI job' + (T.estimatedJobs === 1 ? '' : 's') + ' from before tokens were counted are sized from what they cost.' : '') }));
+        h('p', { class: 'body-s ai-line', text: fxNote() + ' An estimate, on the low side (Opus’s thinking isn’t added).' + (T.estimatedJobs ? ' The ' + T.estimatedJobs + ' AI job' + (T.estimatedJobs === 1 ? '' : 's') + ' from before tokens were counted are sized from what they cost.' : '') }));
       asec.appendChild(card);
       main.appendChild(rise(asec, n++));
     }
@@ -16575,7 +16576,11 @@ var Kit = (function () {
   }
   // ------------------------------------------------------------------ Printful: from idea to production, without leaving Tide Book
   function usesPrintful() { return (S.data.printful || {}).linked || (S.data.suppliers || []).some(function (x) { return /printful/i.test(x.name); }); }
-  function pfMoney(n, cur) { return (cur && cur !== 'AUD' ? (cur === 'USD' ? 'US$' : cur + ' ') : '$') + (Number(n) || 0).toFixed(2); }
+  /** US dollars (what Claude and Printful charge) shown in A$, at today's rate. */
+  function fxRate() { return ((S.data && S.data.fx) || {}).rate || 1.55; }
+  function audFromUsd(n, places) { var v = (Number(n) || 0) * fxRate(); return 'A$' + (v > 0 && v < 0.1 ? v.toFixed(3) : v < 10 || places ? v.toFixed(2) : String(Math.round(v))); }
+  function fxNote() { var fx = (S.data && S.data.fx) || {}; return fx.estimate ? 'Converted from US$ at about ' + fxRate().toFixed(2) + ' (today’s rate couldn’t be fetched).' : 'Converted from US$ at today’s rate (' + fxRate().toFixed(4) + ').'; }
+  function pfMoney(n, cur) { return cur === 'USD' ? 'about ' + audFromUsd(n, true) : (cur && cur !== 'AUD' ? cur + ' ' : '$') + (Number(n) || 0).toFixed(2); }
   /** Linking Printful, step by step. She makes a key in her Printful account and pastes it here. */
   function openPrintfulLink(after) {
     K.sheet({
@@ -18436,8 +18441,8 @@ var Kit = (function () {
     // what Claude has cost this month, and the cap
     var sp = S.data.aiSpend;
     if (sp) {
-      var bud = { v: sp.budget }, pct = sp.budget > 0 ? Math.min(100, Math.round(sp.usd / sp.budget * 100)) : 100;
-      var usd = function (x) { return 'US$' + (x < 10 ? x.toFixed(2) : Math.round(x)); };
+      var bud = { v: sp.budget > 0 ? Math.round(sp.budget * fxRate()) : 0 }, pct = sp.budget > 0 ? Math.min(100, Math.round(sp.usd / sp.budget * 100)) : 100;
+      var usd = function (x) { return audFromUsd(x, true); };
       as.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest);margin-top:12px' },
         h('div', { class: 'title-m', text: 'Claude this month: ' + usd(sp.usd) + (sp.budget > 0 ? ' of ' + usd(sp.budget) : '') }),
         h('div', { class: 'meter', style: 'height:6px;border-radius:3px;background:var(--surface-high);overflow:hidden' },
@@ -18460,10 +18465,10 @@ var Kit = (function () {
               api('saveClaudeUpgrade', j[0], v).then(refresh).then(function () { K.haptic('success'); render(); toast(j[1] + (v ? ': Claude Sonnet.' : ': Claude Haiku.')); }).catch(fail);
             } }));
         }),
-        K.textField({ label: 'Monthly limit (US dollars)', prefix: '$', inputmode: 'decimal', value: bud.v, help: 'Claude stops at this amount until next month. 0 turns Claude off.', onInput: function (v) { bud.v = v; } }),
+        K.textField({ label: 'Monthly limit (A$)', prefix: 'A$', inputmode: 'decimal', value: bud.v, help: 'Claude stops at this amount until next month. 0 turns Claude off. ' + fxNote(), onInput: function (v) { bud.v = v; } }),
         btn('tonal', 'Save limit', { icon: 'savings', block: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
-          api('saveClaudeBudget', K.num(bud.v)).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+          api('saveClaudeBudget', Math.round(K.num(bud.v) / fxRate() * 100) / 100).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
         } })));
     }
     main.appendChild(rise(as, n++));
