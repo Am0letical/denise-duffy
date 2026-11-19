@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,psychology,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1598,6 +1598,72 @@ body.map-full { overflow: hidden; }
 .cal-blk.short { flex-direction: row; align-items: center; gap: 6px; padding: 0 8px; }
 .cal-blk.short .cal-blk-s { flex: none; }
 .cal-blk.short .cal-blk-t { flex: 1; min-width: 0; }
+/* ---- Mentors ---- */
+.mn-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; flex: none; background: var(--secondary-container); color: var(--on-secondary-container); }
+.mn-ic.big { width: 48px; height: 48px; background: var(--primary-container); color: var(--on-primary-container); }
+.mn-stats { display: flex; gap: 24px; margin: 14px 2px 4px; }
+.mn-stats div { display: flex; flex-direction: column; }
+.mn-stats b { font: 500 22px/28px var(--display); }
+.mn-stats span { font: 400 12px/16px var(--font); color: var(--on-surface-variant); }
+.mn-chat, .mn-card { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; border-radius: var(--r-l); background: var(--surface-lowest); box-shadow: var(--shadow-1); cursor: pointer; }
+.mn-chat { margin-bottom: 14px; }
+.mn-chat > .grow, .mn-card > .grow { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mn-chat b, .mn-card b { font: 500 16px/22px var(--font); }
+.mn-sub { font: 400 13px/18px var(--font); color: var(--on-surface-variant); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.mn-deep { align-self: flex-start; font: 500 11px/16px var(--font); padding: 0 8px; border-radius: var(--r-full); background: var(--tertiary-container, #E8DEF8); color: var(--on-tertiary-container, #31111D); }
+.mn-prog { position: relative; display: block; height: 18px; margin-top: 4px; }
+.mn-prog::before { content: ''; position: absolute; left: 0; right: 0; top: 7px; height: 4px; border-radius: 2px; background: var(--surface-high, #E6E0E9); }
+.mn-prog i { position: absolute; left: 0; top: 7px; height: 4px; border-radius: 2px; background: var(--primary); }
+.mn-prog em { position: absolute; right: 0; top: -2px; font: 500 11px/14px var(--font); font-style: normal; color: var(--on-surface-variant); background: var(--surface-lowest); padding-left: 6px; }
+.mn-list { display: flex; flex-direction: column; gap: 10px; }
+.mn-h { display: flex; align-items: center; margin: 4px 2px 0; }
+.mn-empty { padding: 14px; border-radius: var(--r-l); background: var(--surface-low); }
+.mn-empty p { margin: 0 0 10px; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
+.mn-view { display: flex; flex-direction: column; gap: 10px; min-height: calc(100vh - 140px); }
+.mn-top { display: flex; align-items: center; gap: 6px; position: sticky; top: 0; z-index: 4; padding: 6px 0; background: var(--surface, #FDF8F3); }
+.mn-top .grow { min-width: 0; display: flex; flex-direction: column; }
+.mn-title { font: 500 18px/24px var(--display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mn-top .mn-sub { -webkit-line-clamp: 1; }
+.mn-course { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.mn-course:empty { display: none; }
+.mn-course-none { font: 400 12px/16px var(--font); color: var(--on-surface-variant); padding: 0 2px; }
+.mn-lesson { all: unset; box-sizing: border-box; flex: none; display: inline-flex; align-items: center; gap: 6px; max-width: 220px; padding: 6px 12px 6px 8px; border-radius: var(--r-full); background: var(--surface-low); font: 500 12px/16px var(--font); cursor: pointer; }
+.mn-lesson span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mn-lesson .ms { font-size: 18px; color: var(--on-surface-variant); }
+.mn-lesson.now { background: var(--secondary-container); color: var(--on-secondary-container); }
+.mn-lesson.now .ms, .mn-lesson.done .ms { color: var(--primary); }
+.mn-lesson.done { opacity: .75; }
+.mn-feed { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+.mn-hello { margin: 20px 8px; text-align: center; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
+.mn-msg { max-width: 88%; padding: 10px 14px; border-radius: 18px; font: 400 15px/22px var(--font); overflow-wrap: anywhere; }
+.mn-msg.her { align-self: flex-end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 6px; }
+.mn-msg.her a { color: inherit; }
+.mn-msg.them { align-self: flex-start; background: var(--surface-lowest); box-shadow: var(--shadow-1); border-bottom-left-radius: 6px; }
+.mn-msg.failed { background: var(--surface-low); box-shadow: none; color: var(--on-surface-variant); }
+.mn-msg.failed p { margin: 0 0 8px; }
+.mn-msg .md p { margin: 0 0 8px; } .mn-msg .md p:last-child, .mn-msg .md ul:last-child, .mn-msg .md ol:last-child { margin-bottom: 0; }
+.mn-msg .md ul, .mn-msg .md ol { margin: 0 0 8px; padding-left: 20px; }
+.mn-msg .md li { margin-bottom: 3px; }
+.mn-msg.thinking { display: flex; align-items: center; gap: 10px; color: var(--on-surface-variant); font-size: 14px; }
+.mn-dots { display: inline-flex; gap: 4px; }
+.mn-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); opacity: .3; animation: mnDot 1.2s infinite ease-in-out; }
+.mn-dots i:nth-child(2) { animation-delay: .15s; } .mn-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes mnDot { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .mn-dots i { animation: none; opacity: .7; } }
+.mn-acts { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.mn-act { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--surface-low); font: 500 13px/18px var(--font); cursor: pointer; }
+.mn-act .ms { font-size: 18px; color: var(--primary); }
+.mn-quick { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.mn-quick:empty { display: none; }
+.mn-compose { position: sticky; bottom: 84px; z-index: 4; display: flex; align-items: flex-end; gap: 8px; padding: 8px 0; background: var(--surface, #FDF8F3); }
+.mn-compose > :first-child { flex: 1; min-width: 0; }
+.mn-compose textarea { max-height: 160px; }
+.mn-send { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 4px; border-radius: 50%; background: var(--primary); color: var(--on-primary); cursor: pointer; flex: none; }
+.mn-send:disabled { opacity: .4; cursor: default; }
+.mn-send:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.mn-practice { margin: 12px 0; padding: 12px 14px; border-radius: 12px; background: var(--secondary-container); color: var(--on-secondary-container); }
+.mn-practice p { margin: 4px 0 0; font: 400 14px/20px var(--font); }
+.mn-compose .tf textarea { min-height: 56px; height: 56px; resize: none; }
 </style>
 
   <script>
@@ -1849,6 +1915,23 @@ var TIDE_SCHEMAS = {
     columns: [
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['by', 'By', 'text'], ['day', 'Day', 'day'], ['text', 'What', 'text'], ['goalId', 'Goal', 'text'],
       ['done', 'Done', 'bool'], ['reminded', 'Reminded for', 'text'], ['at', 'At', 'text'], ['mins', 'Minutes', 'number'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
+  // Mentors (LogicMentor.gs): hers alone, sealed with her private-writing passphrase on the PC
+  mentors: {
+    sheet: 'Mentors',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['kind', 'Kind', 'text'], ['title', 'Name', 'text'], ['goal', 'To learn or do', 'text'], ['model', 'Thinking', 'text'],
+      ['course', 'Course', 'json'], ['notes', 'Its notes', 'text'], ['goalId', 'Goal it made', 'text'], ['private', 'Private', 'bool'], ['lastAt', 'Last talked', 'date'],
+      ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
+  mentormsgs: {
+    sheet: 'Mentor Talk',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['mentorId', 'Mentor', 'text'], ['by', 'Who', 'text'], ['text', 'Said', 'text'], ['status', 'Status', 'text'],
+      ['actions', 'Did', 'json'], ['replies', 'Replies offered', 'json'], ['usd', 'Cost (US$)', 'number'], ['error', 'Problem', 'text'], ['kickoff', 'First hello', 'bool'], ['sentAt', 'Sent', 'date'],
+      ['private', 'Private', 'bool'], ['deleted', 'Removed', 'bool']
     ]
   },
   // her other calendars, read by their iCal links (LogicCal.gs). Each is the person's own who added it; the link is never shown again.
@@ -3364,7 +3447,7 @@ if (env.workDone) env.workDone('publish');
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
@@ -3452,6 +3535,19 @@ if (env.workDone) env.workDone('publish');
   var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push,
     place: function (route, type, words, pics) { return siteEditor.addContent(route, type, words, pics); } });
   // ---------- the website's shop: checkout, orders and their parcels (LogicShop.gs)
+  // ---------- Mentors (LogicMentor.gs; Mentor.gs does the talking)
+  var mentors = tideMentors(env, { fail: fail, text: text, list: list, rows: rows, nowIso: nowIso,
+    goalList: function () { return goalList(); }, addGoal: function (p) { return addGoal(p); }, updateGoal: function (id, ch) { return updateGoal(id, ch); }, makeIdea: function (p) { return makeIdea(p); },
+    draftPost: function (p) {
+      return env.lock(function () {
+        var now = nowIso(), id = env.nextId('CN', 4);
+        env.table('content').append({ id: id, created: now, type: 'Post', platform: 'Instagram and Facebook', format: ['Photo post', 'Carousel', 'Reel', 'Story'].indexOf(p.format) >= 0 ? p.format : 'Photo post', pillar: '',
+          title: text(p.title, 70) || 'A post', caption: text(p.caption, 2200), hashtags: text(p.hashtags, 500), onScreen: '', plan: [], footageIds: [], cta: '', why: text(p.why, 500),
+          purpose: 'Drafted with your mentor (' + text(p.from, 60) + '). Add a photo when you approve it.', checks: [], revisions: 0, feedback: [], nudges: [], campaign: '', round: '', tries: 0,
+          status: 'Suggested', artistDecision: '', adminDecision: '', rejectedBy: '', rejectReason: '', source: 'Mentor', updated: now });
+        return id;
+      });
+    } });
   // ---------- the calendar: planning her days, her other calendars, and Tide Book in her phone's calendar (LogicCal.gs)
   var cal = tideCal(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: function (who, a, b) { return publish.push(who, a, b); },
     goalList: function () { return goalList(); }, goalRow: function (id) { return goalRow(id); } });
@@ -4331,7 +4427,7 @@ if (env.workDone) env.workDone('publish');
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
   var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], post: ['content', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
-    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], milestone: ['milestones', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], milestone: ['milestones', 'deleted'], mentor: ['mentors', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
     var b = BIN[kind];
@@ -4395,6 +4491,8 @@ if (env.workDone) env.workDone('publish');
   Object.keys(shop.api).forEach(function (k) { out.api[k] = shop.api[k]; });
   out.shop = shop;
   Object.keys(cal.api).forEach(function (k) { out.api[k] = cal.api[k]; });
+  Object.keys(mentors.api).forEach(function (k) { out.api[k] = mentors.api[k]; });
+  out.mentors = mentors;
   out.cal = cal;
   return out;
 }
@@ -7724,6 +7822,15 @@ var TIDE_GUIDE = [
   { id: 'g-calendar', area: 'Calendar', to: 'all', icon: 'calendar_month', title: 'The calendar',
     say: 'Your goals’ steps in their colours, your posts, parked things coming back, your own things and your other calendars.',
     steps: ['Open the menu and tap Calendar.', 'Switch between Day, Week and Month.', 'Tap a day, then Add: your own thing (with a time if it has one), or a step of a goal.'], go: { view: 'calendar', find: '.cal-top', tip: 'Day, week or month.' } },
+  { id: 'g-mentor-chat', area: 'Mentors', to: 'artist', icon: 'forum', title: 'Just chat',
+    say: 'A conversation about anything: ask a question, think out loud, talk something through. It’s yours alone.',
+    steps: ['Open the menu and tap Mentors.', 'Tap Just chat.', 'Write, or tap one of the replies it offers. Your own words always work.'], go: { view: 'mentors', find: '.mn-chat', tip: 'Just chat.' } },
+  { id: 'g-mentor', area: 'Mentors', to: 'artist', icon: 'school', title: 'A mentor to learn something with',
+    say: 'Make a mentor for anything you want to learn or get done, like growing your audience. It teaches a little at a time, gives you something to try, checks in on how it went, and does the busywork: goals and steps on your calendar, posts and ideas drafted for you to approve.',
+    steps: ['In Mentors, tap New mentor.', 'Say what you’d like to learn or get done (or tap a suggestion), then Start.', 'Answer its first questions: it sets out your course along the top.', 'Tap a lesson to start it or go over it again.', 'Tap what it made (a goal, a drafted post) to open it.', '⋮ switches it to Deep thinking for big plans, renames it, or removes it.'], go: { view: 'mentors', find: '.mn-h', tip: 'New mentor is here.' } },
+  { id: 'g-mentor-admin', area: 'Mentors', to: 'admin', icon: 'lock', title: 'Mentors (private to her)',
+    say: 'Her mentor chats are sealed with her passphrase: you never see them. You see the count and the month’s cost, and what they make (goals, drafted posts, ideas) in their usual places. Quick replies run on Haiku, Deep thinking on Opus, within the monthly Claude limit.',
+    steps: ['Open Mentors to see the count and cost.', 'Mentors need the Claude API key and the month’s limit not reached (Settings › AI).'], go: { view: 'mentors', tip: 'Private to her.' } },
   { id: 'g-cal-day', area: 'Calendar', to: 'all', icon: 'schedule', title: 'Hour by hour',
     say: 'Day shows the day hour by hour, with your working hours shaded. Things without a time sit at the top.',
     steps: ['In Calendar, tap Day (or a day’s name in Week, or a day twice in Month).', 'Tap a free time to add something right there.', 'Hold a step or one of your own things, then drag it to another time.', 'Tap anything to open it.'], go: { view: 'calendar', state: { calMode: 'day' }, find: '.cal-hours', tip: 'Tap a time to add, hold to drag.' } },
@@ -7809,6 +7916,13 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-19-mentors', on: '2026-11-19', to: 'artist', icon: 'school', title: 'Mentors: chat, or learn something properly',
+    say: 'A new place in the menu. Just chat is for anything at all. A mentor is for something you want to learn or get done: it teaches you a little at a time, gives you something to try, and does the busywork for you. It’s all yours alone.',
+    steps: ['Open the menu and tap Mentors.', 'Tap Just chat to talk about anything.', 'Or tap New mentor, say what you’d like to learn (like “grow my audience”), and Start.', 'Your course shows along the top as it goes.'],
+    go: { view: 'mentors', find: '.mn-chat', tip: 'Start here.' } },
+  { id: '2026-11-19-mentors-admin', on: '2026-11-19', to: 'admin', icon: 'school', title: 'Mentors for Denise (private)',
+    say: 'Her own chat and topic mentors, on Haiku (Opus when she picks Deep thinking), with tools: her records, web search, goals and steps, drafted posts and ideas. Chats are sealed with her passphrase; you see only the count and cost.',
+    steps: ['Open Mentors for the count and this month’s cost.', 'They need the Claude API key (Settings › AI) and stop at the monthly limit.'], go: { view: 'mentors', tip: 'Private to her.' } },
   { id: '2026-11-19-calendar-plan', on: '2026-11-19', to: 'all', icon: 'auto_awesome', title: 'A calendar that plans with you',
     say: 'The calendar can plan your days now: it fits your goals’ steps into the hours you like to work, around everything else, and moves what slips (with Undo). It shows the day hour by hour, and your Google, iPhone or Outlook calendars beside your own things.',
     steps: ['Open Calendar and tap the sliders at the top right.', 'Choose “Plan my days for me” (or “I’ll set the days myself”), your working days and hours, then Save.', 'Tap Day to see it hour by hour: tap a time to add, hold to drag.', 'Tap “Link a calendar” to bring in Google Calendar, your iPhone’s or Outlook’s.', '“Show Tide Book in your phone’s calendar” puts your steps on your phone too.'],
@@ -9986,6 +10100,250 @@ function tideCal(env, t) {
   };
 }
 
+/**
+ * Tide Book: Mentors. Hers alone (sealed with her private-writing passphrase on the PC; the admin never sees them).
+ *   Just chat   a general back-and-forth, about anything.
+ *   A mentor    made for something she wants to learn or get done ("grow my audience"). It keeps a short course
+ *               (a lesson, something to practise, a check-in on how it went), does what it can for her (goals and
+ *               steps that the calendar plans, posts and ideas drafted for her to approve, a look at her own
+ *               records, a search of the web), and keeps the learning hers.
+ * Everyday answers come from the quick model; "Deep thinking" switches a mentor to the most capable one.
+ * Mentor.gs does the talking (the tools loop); this file keeps the conversations and does what the tools ask.
+ */
+
+var TIDE_MENTOR = {
+  MODELS: { quick: 'claude-haiku-5-5', deep: 'claude-opus-5-5' },
+  HISTORY: 40, MAX_TEXT: 4000, MAX_MENTORS: 20, TOOL_ROUNDS: 6,
+  STARTERS: ['Grow my audience on Instagram', 'Price my work with confidence', 'Get my art into a gallery', 'Take better photos of my paintings', 'Sell at markets', 'Write about my art']
+};
+
+function tideMentors(env, t) {
+  var fail = t.fail, text = t.text, list = t.list, rows = t.rows, nowIso = t.nowIso, M = TIDE_MENTOR;
+  /** Hers alone: only she, signed in as herself (the practice copy lets the admin try it on made-up data). */
+  function mine() {
+    var real = env.user.realRole || env.user.role;
+    if (!((real === 'artist' && env.user.role === 'artist') || (env.practice && env.user.role === 'artist'))) fail('Mentors are ' + env.brand.artistName + '’s own.');
+  }
+  function mentorRows() { return rows('mentors').filter(function (m) { return !m.deleted; }); }
+  function mentorRow(id) { var m = mentorRows().filter(function (x) { return x.id === id; })[0]; if (!m) fail('That mentor has been removed.'); if (m.locked) fail('Your private writing is locked. Unlock it first.'); return m; }
+  function msgsOf(id) { return rows('mentormsgs').filter(function (x) { return x.mentorId === id && !x.deleted; }).sort(function (a, b) { return a.created < b.created ? -1 : a.created > b.created ? 1 : a.id < b.id ? -1 : 1; }); }
+  function course(m) { var c = m.course; if (typeof c === 'string') { try { c = JSON.parse(c); } catch (e) { c = null; } } return c && typeof c === 'object' ? c : { lessons: [] }; }
+  function engineOn() { return !!(env.mentorReady && env.mentorReady()); }
+
+  function clientMentor(m) {
+    var c = course(m), ls = list(c.lessons), last = msgsOf(m.id).slice(-1)[0];
+    return { id: m.id, kind: m.kind, title: m.locked ? '' : m.title, goal: m.locked ? '' : m.goal || '', deep: m.model === 'deep', locked: !!m.locked, goalId: m.goalId || '',
+      lessons: m.locked ? [] : ls.map(function (l) { return { title: l.title, summary: l.summary || '', practice: l.practice || '', status: l.status || 'todo', note: l.note || '' }; }),
+      done: ls.filter(function (l) { return l.status === 'done'; }).length, total: ls.length,
+      last: last && !last.locked ? { by: last.by, text: String(last.text || '').slice(0, 140), at: last.created, thinking: last.status === 'thinking' } : null,
+      updated: m.lastAt || m.updated || m.created };
+  }
+  function clientMsg(x) {
+    return { id: x.id, by: x.by, text: x.locked ? '' : x.text || '', status: x.status || 'done', actions: x.locked ? [] : list(x.actions), replies: x.locked ? [] : list(x.replies), at: x.created, error: x.error || '' };
+  }
+  function snapshot(role) {
+    var all = mentorRows(), month = env.today().slice(0, 7);
+    var spent = rows('mentormsgs').filter(function (x) { return String(x.created || '').slice(0, 7) === month; }).reduce(function (n, x) { return n + (Number(x.usd) || 0); }, 0);
+    if (role !== 'artist') return { private: true, count: all.length, spentUsd: Math.round(spent * 100) / 100, on: engineOn() };
+    return { private: false, on: engineOn(), why: env.mentorReady ? env.mentorWhy() : 'Not available here.', starters: M.STARTERS,
+      list: all.map(clientMentor).sort(function (a, b) { return a.kind === 'chat' ? -1 : b.kind === 'chat' ? 1 : a.updated < b.updated ? 1 : -1; }) };
+  }
+
+  // ---------- making them, talking to them
+  function append(row) { env.table('mentormsgs').append(Object.assign({ id: env.nextId('MM', 5), created: nowIso(), private: true, deleted: false, status: 'done', actions: [], replies: [], usd: 0, error: '' }, row)); }
+  function newMentor(p) {
+    mine();
+    p = p || {};
+    var kind = p.kind === 'chat' ? 'chat' : 'coach', goal = text(p.goal, 300);
+    if (kind === 'coach' && !goal) fail('Say what you’d like to learn or get done.');
+    if (!engineOn()) fail(env.mentorWhy());
+    var id = env.lock(function () {
+      if (kind === 'chat') { var have = mentorRows().filter(function (m) { return m.kind === 'chat'; })[0]; if (have) return have.id; }
+      if (mentorRows().length >= M.MAX_MENTORS) fail('That’s a lot of mentors. Remove one you’ve finished with first.');
+      var nid = env.nextId('MN', 3), now = nowIso();
+      env.table('mentors').append({ id: nid, created: now, kind: kind, title: kind === 'chat' ? 'Just chat' : text(p.title, 80) || goal.replace(/^(i want to|help me|how (do|can) i|teach me( how)? to|learn (how )?to)\s+/i, '').replace(/^./, function (c) { return c.toUpperCase(); }).slice(0, 80),
+        goal: goal, model: p.deep === true ? 'deep' : 'quick', course: { lessons: [] }, notes: '', goalId: '', private: true, lastAt: now, deleted: false, updated: now });
+      if (kind === 'coach') append({ mentorId: nid, by: 'mentor', text: '', status: 'thinking', kickoff: true });
+      return nid;
+    });
+    var think = msgsOf(id).filter(function (x) { return x.status === 'thinking'; })[0];
+    if (think) env.mentorNow(think.id);
+    return { id: id };
+  }
+  function sendMentor(id, words) {
+    mine();
+    var w = text(words, M.MAX_TEXT);
+    if (!w) fail('Say something first.');
+    if (!engineOn()) fail(env.mentorWhy());
+    var mid = env.lock(function () {
+      var m = mentorRow(id);
+      if (msgsOf(id).some(function (x) { return x.status === 'thinking'; })) fail('Your mentor is still answering. One moment.');
+      append({ mentorId: id, by: 'her', text: w });
+      var nid = env.nextId('MM', 5);
+      env.table('mentormsgs').append({ id: nid, created: nowIso(), mentorId: id, by: 'mentor', text: '', status: 'thinking', actions: [], replies: [], usd: 0, error: '', private: true, deleted: false });
+      env.table('mentors').update(m.id, { lastAt: nowIso(), updated: nowIso() });
+      return nid;
+    });
+    env.mentorNow(mid);
+    return { ok: true };
+  }
+  function retryMentor(id) {
+    mine();
+    if (!engineOn()) fail(env.mentorWhy());
+    var mid = env.lock(function () {
+      mentorRow(id);
+      var last = msgsOf(id).slice(-1)[0];
+      if (!last || last.by !== 'mentor' || last.status !== 'failed') fail('Nothing to try again.');
+      env.table('mentormsgs').update(last.id, { status: 'thinking', error: '' });
+      return last.id;
+    });
+    env.mentorNow(mid);
+    return { ok: true };
+  }
+  function mentorChat(id) {
+    mine();
+    var m = mentorRow(id);
+    // a reply that's been "thinking" for 3 minutes didn't make it
+    var stale = Date.now() - 3 * 60000;
+    msgsOf(id).forEach(function (x) { if (x.status === 'thinking' && new Date(x.created).getTime() < stale && (!x.sentAt || new Date(x.sentAt).getTime() < stale)) env.table('mentormsgs').update(x.id, { status: 'failed', error: 'That took too long.' }); });
+    return { mentor: clientMentor(m), messages: msgsOf(id).filter(function (x) { return !(x.kickoff && x.status === 'done' && !x.text); }).map(clientMsg) };
+  }
+  function updateMentor(id, p) {
+    mine();
+    p = p || {};
+    return env.lock(function () {
+      var m = mentorRow(id), out = { updated: nowIso() };
+      if ('title' in p) out.title = text(p.title, 80) || m.title;
+      if ('deep' in p) out.model = p.deep === true ? 'deep' : 'quick';
+      env.table('mentors').update(id, out);
+      return { ok: true };
+    });
+  }
+  function deleteMentor(id) {
+    mine();
+    return env.lock(function () { mentorRow(id); env.table('mentors').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
+  }
+
+  // ---------- for Mentor.gs: what to send, and saving what comes back
+  function context(msgId) {
+    var x = rows('mentormsgs').filter(function (r) { return r.id === msgId; })[0];
+    if (!x || x.status !== 'thinking' || x.locked) return null;
+    var m = rows('mentors').filter(function (r) { return r.id === x.mentorId && !r.deleted; })[0];
+    if (!m || m.locked) return null;
+    var hist = msgsOf(m.id).filter(function (r) { return r.id !== msgId && r.status === 'done' && r.text; }).slice(-M.HISTORY);
+    var msgs = [];
+    hist.forEach(function (r) {
+      var role = r.by === 'her' ? 'user' : 'assistant', body = r.text + (r.by === 'mentor' && list(r.actions).length ? '\n\n[You did: ' + list(r.actions).map(function (a) { return a.label; }).join('; ') + ']' : '');
+      if (msgs.length && msgs[msgs.length - 1].role === role) msgs[msgs.length - 1].content += '\n\n' + body; else msgs.push({ role: role, content: body });
+    });
+    if (!msgs.length || msgs[0].role !== 'user') msgs.unshift({ role: 'user', content: m.kind === 'chat' ? '(She has opened the chat. Say hello in a line or two.)' : '(She has just made you, her mentor for: “' + m.goal + '”. Say hello, find out where she’s at with one or two short questions, and say how you’ll work together: a little to learn, then something to do, then a check-in.)' });
+    if (msgs[msgs.length - 1].role !== 'user') msgs.push({ role: 'user', content: '(Carry on.)' });
+    var c = course(m);
+    return { id: msgId, mentorId: m.id, kind: m.kind, model: M.MODELS[m.model === 'deep' ? 'deep' : 'quick'], deep: m.model === 'deep', goal: m.goal || '', title: m.title,
+      course: list(c.lessons), notes: String(m.notes || ''), messages: msgs, artist: env.brand.artistName, today: env.today(), rounds: M.TOOL_ROUNDS };
+  }
+  function sent(msgId) { env.table('mentormsgs').update(msgId, { sentAt: nowIso() }); }
+  function save(msgId, out) {
+    return env.lock(function () {
+      var x = rows('mentormsgs').filter(function (r) { return r.id === msgId; })[0]; if (!x) return;
+      var words = String(out.text || '').trim(), replies = [];
+      var mr = /\n?\s*REPLIES:\s*(.+)\s*$/i.exec(words);
+      if (mr) { replies = mr[1].split('|').map(function (s) { return s.trim().replace(/^["“]|["”]$/g, ''); }).filter(Boolean).slice(0, 3).map(function (s) { return s.slice(0, 80); }); words = words.slice(0, mr.index).trim(); }
+      env.table('mentormsgs').update(msgId, { status: words ? 'done' : 'failed', text: words.slice(0, 20000), replies: replies, actions: list(out.actions), usd: Math.round((Number(out.usd) || 0) * 1e6) / 1e6, error: words ? '' : 'No answer came back.' });
+      env.table('mentors').update(x.mentorId, { lastAt: nowIso() });
+      if (env.workDone) env.workDone('mentor', 1);
+    });
+  }
+  function failed(msgId, why) { env.table('mentormsgs').update(msgId, { status: 'failed', error: String(why || 'It didn’t finish.').slice(0, 200) }); }
+
+  // ---------- what a mentor can do (its tools)
+  var TOOLS = [
+    { name: 'look_at_business', description: 'Look at her own Tide Book records, so advice fits her real business. Areas: overview, artworks, sales, posts, goals.',
+      input_schema: { type: 'object', properties: { area: { type: 'string', enum: ['overview', 'artworks', 'sales', 'posts', 'goals'] } }, required: ['area'] } },
+    { name: 'make_goal', description: 'Make one of her goals, with its first few steps (short, doable, in order). The calendar plans the steps into her working hours. Only when she has agreed to it.',
+      input_schema: { type: 'object', properties: { title: { type: 'string' }, why: { type: 'string' }, steps: { type: 'array', items: { type: 'string' }, maxItems: 8 }, aim_by: { type: 'string', description: 'yyyy-mm-dd, optional' } }, required: ['title', 'steps'] } },
+    { name: 'add_steps', description: 'Add steps to one of her existing goals (by its id from look_at_business goals, or the goal you made).',
+      input_schema: { type: 'object', properties: { goal_id: { type: 'string' }, steps: { type: 'array', items: { type: 'string' }, maxItems: 8 } }, required: ['goal_id', 'steps'] } },
+    { name: 'draft_post', description: 'Draft an Instagram/Facebook post for her to approve in Posts. Never published without her. Nothing about her health or family.',
+      input_schema: { type: 'object', properties: { title: { type: 'string' }, caption: { type: 'string' }, hashtags: { type: 'string' }, format: { type: 'string', enum: ['Photo post', 'Carousel', 'Reel', 'Story'] }, why: { type: 'string' } }, required: ['title', 'caption', 'format'] } },
+    { name: 'save_idea', description: 'Save an idea to her Ideas list.',
+      input_schema: { type: 'object', properties: { title: { type: 'string' }, note: { type: 'string' }, kind: { type: 'string', enum: ['Product', 'Content', 'Other'] } }, required: ['title'] } },
+    { name: 'set_course', description: 'Set (or reshape) her short course for this mentor: 3 to 8 lessons in order, each with a one-line summary and a small practice task she does in real life.',
+      input_schema: { type: 'object', properties: { lessons: { type: 'array', minItems: 1, maxItems: 8, items: { type: 'object', properties: { title: { type: 'string' }, summary: { type: 'string' }, practice: { type: 'string' } }, required: ['title', 'summary', 'practice'] } } }, required: ['lessons'] } },
+    { name: 'mark_lesson', description: 'Mark a lesson (0-based index) as now (being worked on) or done, with a short note on how it went.',
+      input_schema: { type: 'object', properties: { index: { type: 'integer' }, status: { type: 'string', enum: ['now', 'done'] }, note: { type: 'string' } }, required: ['index', 'status'] } },
+    { name: 'remember', description: 'Keep a short note for next time: what she knows, prefers, has tried, or how it went. Replaces your notes, so include what still matters.',
+      input_schema: { type: 'object', properties: { notes: { type: 'string' } }, required: ['notes'] } }
+  ];
+  function business(area) {
+    var today = env.today(), since = env.dayOffset ? env.dayOffset(-90) : '';
+    if (area === 'artworks') return rows('prints').filter(function (p) { return !p.deleted; }).slice(-40).map(function (p) { return '- ' + p.title + (p.series ? ' (' + p.series + ')' : '') + ' · ' + (p.status || '') + (p.originalPrice ? ' · original $' + p.originalPrice : ''); }).join('\n') || 'No artworks yet.';
+    if (area === 'sales') {
+      var s = rows('ledger').filter(function (x) { return x.kind === 'Sale' && x.status !== 'Void' && (!since || x.date >= since); });
+      var tot = s.reduce(function (n, x) { return n + (Number(x.amount) || 0); }, 0), by = {};
+      s.forEach(function (x) { var k = x.channel || x.source || 'other'; by[k] = (by[k] || 0) + (Number(x.amount) || 0); });
+      return 'Sales in the last 90 days: ' + s.length + ', $' + Math.round(tot) + ' (by where: ' + Object.keys(by).map(function (k) { return k + ' $' + Math.round(by[k]); }).join(', ') + ').\n' + s.slice(-15).map(function (x) { return '- ' + x.date + ' ' + x.description + ' $' + x.amount; }).join('\n');
+    }
+    if (area === 'posts') return rows('content').filter(function (c) { return c.type === 'Post' && !c.deleted; }).slice(-15).map(function (c) { return '- ' + (c.title || 'A post') + ' · ' + c.format + ' · ' + c.status + (c.scheduledAt ? ' · ' + String(c.scheduledAt).slice(0, 10) : ''); }).join('\n') || 'No posts yet.';
+    if (area === 'goals') return t.goalList().filter(function (g) { return g.status !== 'Done'; }).map(function (g) { return '- [' + g.id + '] ' + g.title + (g.targetOn ? ' (aim by ' + g.targetOn + ')' : '') + '\n' + list(g.steps).map(function (s) { return '    ' + (s.done ? '✓ ' : '· ') + s.text + (s.due ? ' (' + s.due + ')' : ''); }).join('\n'); }).join('\n') || 'No goals yet.';
+    var pr = rows('prints').filter(function (p) { return !p.deleted; }), live = pr.filter(function (p) { return p.status === 'Live'; }).length;
+    var sales = rows('ledger').filter(function (x) { return x.kind === 'Sale' && x.status !== 'Void' && (!since || x.date >= since); });
+    return 'Today is ' + today + '. Artworks: ' + pr.length + ' (' + live + ' on sale). Sales in the last 90 days: ' + sales.length + '. Posts: ' + rows('content').filter(function (c) { return c.type === 'Post' && !c.deleted; }).length +
+      '. Open goals: ' + t.goalList().filter(function (g) { return g.status !== 'Done'; }).map(function (g) { return g.title; }).join('; ') + '.';
+  }
+  /** Runs one tool for a mentor's reply. Returns [result text, action for her to see (or null)]. */
+  function tool(msgId, name, input) {
+    var x = rows('mentormsgs').filter(function (r) { return r.id === msgId; })[0]; if (!x) return ['Gone.', null];
+    var m = rows('mentors').filter(function (r) { return r.id === x.mentorId; })[0]; input = input || {};
+    try {
+      if (name === 'look_at_business') return [business(String(input.area || 'overview')), null];
+      if (name === 'make_goal') {
+        var r = t.addGoal({ title: input.title, why: input.why || ('With your mentor: ' + m.title), steps: list(input.steps).map(function (s) { return { text: s }; }) });
+        if (input.aim_by && /^\d{4}-\d{2}-\d{2}$/.test(input.aim_by)) try { t.updateGoal(r.id, { targetOn: input.aim_by }); } catch (e) {}
+        if (!m.goalId) env.table('mentors').update(m.id, { goalId: r.id });
+        return ['Made goal ' + r.id + '. Its steps are on her calendar.', { kind: 'goal', id: r.id, label: 'Made a goal: ' + text(input.title, 80) }];
+      }
+      if (name === 'add_steps') {
+        var g = t.goalList().filter(function (y) { return y.id === input.goal_id; })[0]; if (!g) return ['No goal with that id. Use look_at_business goals.', null];
+        t.updateGoal(g.id, { steps: list(g.steps).concat(list(input.steps).map(function (s) { return { text: s }; })) });
+        return ['Added ' + list(input.steps).length + ' steps.', { kind: 'goal', id: g.id, label: 'Added ' + list(input.steps).length + ' step' + (list(input.steps).length === 1 ? '' : 's') + ' to “' + g.title + '”' }];
+      }
+      if (name === 'draft_post') {
+        var cid = t.draftPost({ title: input.title, caption: input.caption, hashtags: input.hashtags, format: input.format, why: input.why, from: m.title });
+        return ['Drafted post ' + cid + ' for her to approve in Posts (she adds the photo).', { kind: 'post', id: cid, label: 'Drafted a post: ' + text(input.title, 80) }];
+      }
+      if (name === 'save_idea') {
+        var ir = t.makeIdea({ title: input.title, note: input.note || '', kind: ['Product', 'Content', 'Other'].indexOf(input.kind) >= 0 ? input.kind : 'Other' });
+        return ['Saved idea ' + ir.id + '.', { kind: 'idea', id: ir.id, label: 'Saved an idea: ' + text(input.title, 80) }];
+      }
+      if (name === 'set_course') {
+        var old = list(course(m).lessons);
+        var ls = list(input.lessons).slice(0, 8).map(function (l, i) {
+          var was = old.filter(function (o) { return o.title === l.title; })[0];
+          return { title: text(l.title, 80), summary: text(l.summary, 300), practice: text(l.practice, 300), status: was ? was.status : (i === 0 ? 'now' : 'todo'), note: was ? was.note || '' : '' };
+        });
+        env.table('mentors').update(m.id, { course: { lessons: ls } });
+        return ['Course set: ' + ls.length + ' lessons.', { kind: 'course', id: m.id, label: 'Set out your course: ' + ls.length + ' lessons' }];
+      }
+      if (name === 'mark_lesson') {
+        var L = list(course(m).lessons), i = Number(input.index);
+        if (!(i >= 0 && i < L.length)) return ['No lesson ' + input.index + '.', null];
+        L[i] = Object.assign({}, L[i], { status: input.status === 'done' ? 'done' : 'now', note: text(input.note, 300) || L[i].note || '' });
+        if (input.status === 'done' && L[i + 1] && L[i + 1].status === 'todo') L[i + 1] = Object.assign({}, L[i + 1], { status: 'now' });
+        env.table('mentors').update(m.id, { course: { lessons: L } });
+        return ['Marked.', input.status === 'done' ? { kind: 'lesson', id: m.id, label: 'Lesson done: ' + L[i].title } : null];
+      }
+      if (name === 'remember') { env.table('mentors').update(m.id, { notes: text(input.notes, 3000) }); return ['Kept.', null]; }
+    } catch (e) { return ['That didn’t work: ' + String(e && e.message || e), null]; }
+    return ['Unknown tool.', null];
+  }
+
+  return {
+    api: { newMentor: newMentor, sendMentor: sendMentor, retryMentor: retryMentor, mentorChat: mentorChat, updateMentor: updateMentor, deleteMentor: deleteMentor },
+    snapshot: snapshot, context: context, sent: sent, save: save, failed: failed, tool: tool, tools: TOOLS
+  };
+}
+
 </script>
 <script>
 /**
@@ -11754,9 +12112,9 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ navigation
   var NAV = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
+    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
   // Settings is a button at the bottom of Home, so the bottom bar stays at five. The back-end parts are admin-only.
   function homeGear() {
     return h('div', { class: 'home-gear' }, btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
@@ -12624,7 +12982,7 @@ var Kit = (function () {
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, mentors: viewMentors, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
     if (S.view === 'home' || !S.view) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -16683,6 +17041,206 @@ var Kit = (function () {
     if (!GZ || GZ.fit || (GZ.s === 1 && !GZ.x && !GZ.y)) GZ = fitZoom();
     paintZoom();
     setTimeout(function () { if (GZ.fit) GZ = fitZoom(); makeRoom(); paintZoom(); }, 0); setTimeout(function () { makeRoom(); }, 450);
+  }
+
+  // ------------------------------------------------------------------ Mentors: just chat, or a mentor to learn something with
+  // Hers alone (sealed with her passphrase); the admin sees only that they exist and what they cost.
+  function mentorsData() { return S.data.mentors || { private: true, count: 0, list: [], starters: [] }; }
+  /** Plain words with a little formatting: paragraphs, lists, **bold**, and links. Never as HTML. */
+  function mdLite(src) {
+    var box = h('div', { class: 'md' });
+    function inline(el, line) {
+      var parts = String(line).split(/(\*\*[^*]+\*\*|https?:\/\/[^\s)]+|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/);
+      parts.forEach(function (p) {
+        if (!p) return;
+        var b = /^\*\*([^*]+)\*\*$/.exec(p), l = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(p);
+        if (b) el.appendChild(h('b', { text: b[1] }));
+        else if (l) el.appendChild(h('a', { href: l[2], target: '_blank', rel: 'noopener', text: l[1] }));
+        else if (/^https?:\/\//.test(p)) el.appendChild(h('a', { href: p, target: '_blank', rel: 'noopener', text: p.replace(/^https?:\/\/(www\.)?/, '').slice(0, 40) }));
+        else el.appendChild(document.createTextNode(p));
+      });
+    }
+    // line by line: runs of list lines become a list, other runs a paragraph
+    var p = null, ul = null, BUL = /^\s*([-•*]|\d+[.)])\s+/;
+    String(src || '').replace(/\r/g, '').split('\n').forEach(function (x) {
+      if (!x.trim()) { p = null; ul = null; return; }
+      if (BUL.test(x)) {
+        var ol = /^\s*\d/.test(x);
+        if (!ul || (ul.tagName === 'OL') !== ol) { ul = h(ol ? 'ol' : 'ul'); box.appendChild(ul); }
+        p = null; var li = h('li'); inline(li, x.replace(BUL, '')); ul.appendChild(li); return;
+      }
+      ul = null;
+      if (!p) { p = h('p'); box.appendChild(p); } else p.appendChild(h('br'));
+      var hd = /^#+\s+(.*)$/.exec(x); if (hd) p.appendChild(h('b', { text: hd[1] })); else inline(p, x);
+    });
+    return box;
+  }
+  function viewMentors(main) {
+    var M = mentorsData();
+    if (S.mentorId && !M.private) { mentorChatView(main, S.mentorId); return; }
+    pageTitle(main, 'Mentors', M.private ? 'Private to ' + artist() + '.' : 'Talk anything through, or learn something properly with a mentor who helps you do it too.');
+    var n = 2;
+    if (M.private) {
+      main.appendChild(rise(h('div', { class: 'card pad' }, h('div', { class: 'row', style: 'gap:10px;align-items:center' }, h('span', { class: 'mn-ic' }, icon('lock')),
+        h('div', { class: 'grow' }, h('b', { text: cap(artist()) + '’s mentors are hers alone' }),
+          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'You never see the conversations (they’re sealed with her passphrase). You see what they make: goals, drafted posts and ideas, in their usual places.' }))),
+        h('div', { class: 'mn-stats' }, h('div', {}, h('b', { text: String(M.count) }), h('span', { text: M.count === 1 ? 'mentor' : 'mentors' })), h('div', {}, h('b', { text: audFromUsd(M.spentUsd || 0, true) }), h('span', { text: 'this month' }))),
+        M.on ? null : note('Mentors are off: they need the Claude API key, and this month’s Claude limit not reached (Settings › AI). Quick replies run on Haiku; “Deep thinking” on Opus.', 'warning', 'warn')), n++));
+      return;
+    }
+    var pb = privacyBar(); if (pb) main.appendChild(rise(pb, n++));
+    if (!M.on) main.appendChild(rise(note(M.why || 'Your mentors aren’t switched on yet.', 'info'), n++));
+    var list = M.list || [], chat = list.filter(function (m) { return m.kind === 'chat'; })[0], coaches = list.filter(function (m) { return m.kind !== 'chat'; });
+    // just chat
+    main.appendChild(rise(h('button', { type: 'button', class: 'mn-chat press soft', onclick: function (e) {
+      if (chat) { S.mentorId = chat.id; render(); return; }
+      K.setBusy(e.currentTarget, true);
+      api('newMentor', { kind: 'chat' }).then(function (r) { S.mentorId = r.id; return refresh(); }).then(render).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); });
+    } }, h('span', { class: 'mn-ic big' }, icon('forum')), h('span', { class: 'grow' }, h('b', { text: 'Just chat' }), h('span', { class: 'mn-sub', text: chat && chat.last ? (chat.last.by === 'her' ? 'You: ' : '') + chat.last.text : 'Anything at all: ask, think out loud, talk something through.' })), icon('chevron_right')), n++));
+    var sec = h('div', { class: 'mn-list' }, h('div', { class: 'mn-h' }, h('span', { class: 'label-l', text: 'Your mentors' }), h('span', { class: 'grow' }), btn('filled', 'New mentor', { sm: true, icon: 'add', onclick: newMentorSheet })));
+    if (!coaches.length) sec.appendChild(h('div', { class: 'mn-empty' }, h('p', { text: 'A mentor is for something you want to learn or get done, like growing your audience. It teaches you a little at a time, gives you something to try, checks in on how it went, and does the busywork for you: goals and steps on your calendar, posts drafted for you to approve.' }),
+      h('div', { class: 'filter-row' }, (M.starters || []).slice(0, 4).map(function (s) { return h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { newMentorSheet(s); } }); }))));
+    coaches.forEach(function (m) {
+      var pct = m.total ? Math.round(m.done / m.total * 100) : 0;
+      sec.appendChild(h('button', { type: 'button', class: 'mn-card press soft', onclick: function () { S.mentorId = m.id; render(); } },
+        h('span', { class: 'mn-ic' }, icon('school')),
+        h('span', { class: 'grow' }, h('b', { text: m.locked ? 'Locked' : m.title }), m.deep ? h('span', { class: 'mn-deep', text: 'Deep thinking' }) : null,
+          h('span', { class: 'mn-sub', text: m.last && m.last.thinking ? 'Thinking…' : m.last ? (m.last.by === 'her' ? 'You: ' : '') + m.last.text : m.goal }),
+          m.total ? h('span', { class: 'mn-prog' }, h('i', { style: 'width:' + pct + '%' }), h('em', { text: m.done + ' of ' + m.total + ' lessons' })) : null),
+        icon('chevron_right')));
+    });
+    main.appendChild(rise(sec, n++));
+  }
+  function newMentorSheet(start) {
+    var M = mentorsData(), f = { goal: typeof start === 'string' ? start : '', deep: false };
+    K.sheet({ title: 'A new mentor', build: function (ctl) {
+      var goalF = K.textField({ label: 'What would you like to learn or get done?', value: f.goal, maxlength: 300, multiline: true, placeholder: 'For example: grow my audience on Instagram', onInput: function (v) { f.goal = v; } });
+      ctl.body.append(goalF, h('div', { class: 'filter-row', style: 'margin-top:8px' }, (M.starters || []).map(function (s) { return h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { f.goal = s; goalF.input.value = s; } }); })),
+        h('div', { class: 'label-m', style: 'margin:16px 2px 6px', text: 'How should it think?' }),
+        K.choices({ label: 'How should it think?', value: 'quick', options: [{ value: 'quick', label: 'Everyday', icon: 'bolt' }, { value: 'deep', label: 'Deep thinking', icon: 'psychology' }], onChange: function (v) { f.deep = v === 'deep'; } }),
+        h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: 'Everyday answers quickly and suits most things. Deep thinking is slower and costs more: for big plans. You can switch any time.' }),
+        note('Your mentors are yours alone. They can look at your artworks, sales, posts and goals (never your private notes), search the web, and make goals and drafts for you to approve.', 'lock'));
+      var go = btn('filled', 'Start', { icon: 'school', lg: true, block: true, onclick: function () {
+        if (!f.goal.trim()) { toast('Say what you’d like to learn or get done.'); goalF.input.focus(); return; }
+        K.setBusy(go, true);
+        api('newMentor', { kind: 'coach', goal: f.goal, deep: f.deep }).then(function (r) { S.mentorId = r.id; S.mentorChat = null; return refresh(); }).then(function () { ctl.close(); render(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+      } });
+      ctl.foot.appendChild(go);
+      setTimeout(function () { if (!f.goal) goalF.input.focus(); }, 350);
+    } });
+  }
+  /** One conversation: her course along the top (for a mentor), the talk, replies to tap, and a box to write in. */
+  function mentorChatView(main, id) {
+    var wrap = h('div', { class: 'mn-view' }), head = h('div', { class: 'mn-top' }), strip = h('div', { class: 'mn-course' }), feed = h('div', { class: 'mn-feed', 'aria-live': 'polite' }), quick = h('div', { class: 'mn-quick' });
+    var draft = K.textField({ label: 'Write to your mentor', value: S.mentorDraft || '', maxlength: 4000, multiline: true, onInput: function (v) { S.mentorDraft = v; } });
+    var sendB = h('button', { type: 'button', class: 'mn-send press', 'aria-label': 'Send' }, icon('send'));
+    var compose = h('div', { class: 'mn-compose' }, draft, sendB);
+    wrap.append(head, strip, feed, quick, compose);
+    main.appendChild(wrap);
+    var data = S.mentorChat && S.mentorChat.id === id ? S.mentorChat.data : null, timer = null;
+    // while it opens: what's already known about it
+    var known = (mentorsData().list || []).filter(function (x) { return x.id === id; })[0];
+    if (!data && known) data = { mentor: known, messages: [], opening: true };
+    function send(words) {
+      words = String(words || '').trim();
+      if (!words) { toast('Write something first.'); return; }
+      sendB.disabled = true;
+      api('sendMentor', id, words).then(function () { S.mentorDraft = ''; draft.input.value = ''; return load(); }).catch(fail).then(function () { sendB.disabled = false; });
+    }
+    sendB.addEventListener('click', function () { send(draft.input.value); });
+    function grow() { var ta = draft.input; ta.style.height = '56px'; ta.style.height = Math.min(160, ta.scrollHeight) + 'px'; }
+    draft.input.addEventListener('input', grow); setTimeout(grow, 0);
+    draft.input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send(draft.input.value); } });
+    function paint() {
+      if (!data) { feed.textContent = ''; feed.appendChild(h('p', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'Opening…' })); return; }
+      var m = data.mentor, msgs = data.messages, last = msgs[msgs.length - 1];
+      head.textContent = '';
+      head.append(K.iconBtn('arrow_back', 'Back to your mentors', function () { S.mentorId = ''; S.mentorChat = null; render(); }),
+        h('div', { class: 'grow' }, h('b', { class: 'mn-title', text: m.title }), h('span', { class: 'mn-sub', text: m.kind === 'chat' ? 'Anything at all' + (m.deep ? ' · Deep thinking' : '') : (m.deep ? 'Deep thinking' : 'Everyday') + (m.goal && m.goal !== m.title ? ' · ' + m.goal : '') })),
+        K.iconBtn('more_vert', 'More', function () { mentorMore(m); }));
+      // her course
+      strip.textContent = '';
+      if (m.kind !== 'chat') {
+        if (!m.lessons.length) strip.appendChild(h('span', { class: 'mn-course-none', text: 'Your course appears here once your mentor knows where you’re at.' }));
+        m.lessons.forEach(function (l, i) {
+          strip.appendChild(h('button', { type: 'button', class: 'mn-lesson ' + l.status, onclick: function () { lessonSheet(m, l, i); } },
+            icon(l.status === 'done' ? 'check_circle' : l.status === 'now' ? 'play_circle' : 'radio_button_unchecked'), h('span', { text: (i + 1) + '. ' + l.title })));
+        });
+      }
+      // the talk
+      var atBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 80 || !feed.childNodes.length;
+      feed.textContent = '';
+      if (data.opening) feed.appendChild(h('p', { class: 'mn-hello', text: 'Opening…' }));
+      else if (!msgs.length) feed.appendChild(h('p', { class: 'mn-hello', text: m.kind === 'chat' ? 'Say anything. Ask a question, think out loud, or talk something through.' : 'Your mentor is getting ready…' }));
+      msgs.forEach(function (x) {
+        if (x.by === 'her') { feed.appendChild(h('div', { class: 'mn-msg her' }, mdLite(x.text))); return; }
+        if (x.status === 'thinking') { feed.appendChild(h('div', { class: 'mn-msg them thinking' }, h('span', { class: 'mn-dots' }, h('i'), h('i'), h('i')), h('span', { text: m.deep ? 'Thinking it through…' : 'Thinking…' }))); return; }
+        if (x.status === 'failed') {
+          feed.appendChild(h('div', { class: 'mn-msg them failed' }, h('p', { text: x.error || 'That didn’t come through.' }),
+            x === last ? btn('tonal', 'Try again', { sm: true, icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('retryMentor', id).then(load).catch(fail); } }) : null));
+          return;
+        }
+        var bub = h('div', { class: 'mn-msg them' }, mdLite(x.text));
+        if (x.actions && x.actions.length) {
+          var acts = h('div', { class: 'mn-acts' });
+          x.actions.forEach(function (a) {
+            acts.appendChild(h('button', { type: 'button', class: 'mn-act press soft', onclick: function () {
+              if (a.kind === 'goal') openGoal(a.id);
+              else if (a.kind === 'post') { S.contentTab = 'review'; go('content'); }
+              else if (a.kind === 'idea') openIdea(a.id);
+              else if (m.lessons.length) lessonSheet(m, m.lessons.filter(function (l) { return l.status === 'now'; })[0] || m.lessons[0], Math.max(0, m.lessons.map(function (l) { return l.status; }).indexOf('now')));
+            } }, icon({ goal: 'flag', post: 'perm_media', idea: 'lightbulb', course: 'school', lesson: 'task_alt' }[a.kind] || 'check'), h('span', { text: a.label })));
+          });
+          bub.appendChild(acts);
+        }
+        feed.appendChild(bub);
+      });
+      if (atBottom) setTimeout(function () { feed.scrollTop = feed.scrollHeight; window.scrollTo(0, document.body.scrollHeight); }, 0);
+      // replies to tap (and her own words, always)
+      quick.textContent = '';
+      var busy = last && last.status === 'thinking';
+      if (!busy && last && last.by === 'mentor' && last.replies && last.replies.length)
+        last.replies.forEach(function (r) { quick.appendChild(h('button', { type: 'button', class: 'choice press soft', text: r, onclick: function () { send(r); } })); });
+      sendB.disabled = !!busy;
+      clearTimeout(timer);
+      if (busy) timer = setTimeout(function () { if (document.contains(wrap) && S.mentorId === id) load(); }, 2500);
+    }
+    function load() {
+      return api('mentorChat', id).then(function (r) { data = r; S.mentorChat = { id: id, data: r }; if (document.contains(wrap)) paint(); }).catch(function (e) {
+        if (/removed|locked/i.test(String(e && e.message || e))) { S.mentorId = ''; S.mentorChat = null; refresh().then(render); }
+        fail(e);
+      });
+    }
+    paint(); load();
+  }
+  function lessonSheet(m, l, i) {
+    if (!l) return;
+    K.sheet({ title: (i + 1) + '. ' + l.title, build: function (ctl) {
+      ctl.body.appendChild(h('div', {}, h('p', { class: 'body-m', text: l.summary }),
+        l.practice ? h('div', { class: 'mn-practice' }, h('div', { class: 'label-s', text: 'To try' }), h('p', { text: l.practice })) : null,
+        l.note ? note('How it went: ' + l.note, 'task_alt') : null));
+      ctl.foot.appendChild(h('div', { class: 'btn-row' },
+        btn('filled', l.status === 'done' ? 'Go over it again' : l.status === 'now' ? 'Let’s work on it' : 'Start this one', { icon: 'forum', onclick: function (e) {
+          K.setBusy(e.currentTarget, true);
+          api('sendMentor', m.id, (l.status === 'done' ? 'Can we go over lesson ' : 'Let’s do lesson ') + (i + 1) + ': ' + l.title + '.').then(function () { ctl.close(); S.mentorChat = null; render(); }).catch(fail);
+        } }),
+        btn('text', 'Close', { onclick: function () { ctl.close(); } })));
+    } });
+  }
+  function mentorMore(m) {
+    K.sheet({ title: m.title, build: function (ctl) {
+      var acts = h('div', { class: 'next-opts' });
+      function a(ic, label, why, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null))); }
+      a(m.deep ? 'bolt' : 'psychology', m.deep ? 'Switch to Everyday' : 'Switch to Deep thinking', m.deep ? 'Quicker answers, and cheaper. Good for most things.' : 'Slower and costs more, for big plans and tricky questions.', function () {
+        api('updateMentor', m.id, { deep: !m.deep }).then(function () { S.mentorChat = null; return refresh(); }).then(function () { render(); toast(m.deep ? 'Everyday now.' : 'Deep thinking now.'); }).catch(fail);
+      });
+      if (m.kind !== 'chat') a('edit', 'Rename it', '', function () { K.ask({ title: 'Its name', label: 'Name', value: m.title, maxlength: 80, confirmLabel: 'Save' }).then(function (v) { if (v) api('updateMentor', m.id, { title: v }).then(function () { S.mentorChat = null; return refresh(); }).then(render).catch(fail); }); });
+      if (m.goalId) a('flag', 'Its goal', 'The goal it made with you, and its steps.', function () { openGoal(m.goalId); });
+      a('delete', m.kind === 'chat' ? 'Clear this chat' : 'Remove this mentor', 'It goes in the bin, so you can bring it back.', function () {
+        api('deleteMentor', m.id).then(function () { S.mentorId = ''; S.mentorChat = null; return refresh(); }).then(function () { render(); undoCard('Removed: ' + m.title + '.', function () { return api('undoDelete', 'mentor', m.id); }, 'Back again.'); }).catch(fail);
+      });
+      ctl.body.appendChild(acts);
+    } });
   }
 
   // ------------------------------------------------------------------ the calendar: month and week, built around her goals
