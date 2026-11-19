@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1519,6 +1519,34 @@ body.map-full { overflow: hidden; }
 .exp-idea .body-s { color: var(--on-surface-variant); }
 .exp-from { margin-top: 2px; opacity: .8; }
 .exp-acts { display: flex; flex-direction: column; gap: 2px; align-items: flex-end; flex: none; }
+/* the Goals page's steps, like a reminders list */
+.gsteps { margin-top: 18px; }
+.gsteps-h { margin: 0 4px 10px; }
+.gs-ms { display: flex; align-items: center; gap: 8px; margin: 16px 4px 8px; font: 600 15px/20px var(--display); color: #B5651D; }
+.gs-ms.free { color: var(--on-surface-variant); }
+.gs-list { border-radius: 18px; background: var(--surface-lowest); box-shadow: 0 0 0 1px var(--outline-variant); margin-bottom: 10px; overflow: hidden; }
+.gs-head { all: unset; box-sizing: border-box; width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 12px 10px 14px; cursor: pointer; }
+.gs-head .grow { display: flex; flex-direction: column; gap: 1px; }
+.gs-head b { font: 600 15px/20px var(--font); }
+.gs-head .body-s { color: var(--on-surface-variant); }
+.gs-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--gc); flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--gc) 20%, transparent); }
+.gs-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 14px; border-top: 1px solid var(--outline-variant); min-height: 46px; }
+.gs-tick { all: unset; box-sizing: border-box; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gc); flex: none; cursor: pointer; position: relative; }
+.gs-tick::after { content: ''; position: absolute; inset: -10px; }
+.gs-tick.on { background: var(--gc); box-shadow: inset 0 0 0 3px var(--surface-lowest); }
+.gs-text { all: unset; flex: 1; display: flex; flex-direction: column; gap: 2px; font: 400 15px/20px var(--font); cursor: pointer; padding: 8px 0; }
+.gs-row.done .gs-text { color: var(--on-surface-variant); text-decoration: line-through; cursor: default; }
+.gs-day { font: 500 12px/16px var(--font); color: #B5651D; }
+.gs-tool, .gs-more { all: unset; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; cursor: pointer; color: var(--primary); flex: none; }
+.gs-more { color: var(--on-surface-variant); }
+.gs-tool:active, .gs-more:active { background: var(--surface-high); }
+.gs-row.add .gs-plus { width: 24px; display: grid; place-items: center; color: var(--gc); }
+.gs-new { flex: 1; border: 0; background: transparent; font: 400 15px/20px var(--font); padding: 10px 0; outline: none; color: var(--on-surface); }
+.gs-addbtn { all: unset; padding: 6px 12px; border-radius: 14px; color: var(--primary); font: 600 13px/16px var(--font); cursor: pointer; }
+.gs-sug { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px 12px 14px; border-top: 1px dashed var(--outline-variant); background: color-mix(in srgb, var(--gc) 5%, transparent); }
+.gs-sug .label-s { width: 100%; color: var(--on-surface-variant); }
+.gs-sug .choice { font-size: 13px; }
+.gs-done-toggle { all: unset; display: block; padding: 8px 14px 10px; font: 500 13px/16px var(--font); color: var(--on-surface-variant); cursor: pointer; border-top: 1px solid var(--outline-variant); }
 </style>
 
   <script>
@@ -7611,6 +7639,9 @@ var TIDE_GUIDE = [
     say: 'Milestones (big aims) are suns, your goals are the planets around them, and each goal’s steps are its moons.',
     steps: ['Open Ideas › Goals.', 'Tap “Add a milestone” at the top, name it, and tick its goals (Tide Book ticks the ones that fit).', 'Tap “Add a goal” on the map. Tide Book picks the milestone it fits.', 'Tap a planet to choose it: drag it, or use Open, Shrink or Bin.', 'Drag a sun anywhere: its planets follow when you let go.', 'Full screen is at the top right.'],
     go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Add a goal here.' } },
+  { id: 'g-steps', area: 'Goals and your plan', to: 'all', icon: 'checklist', title: 'Steps, like a reminders list',
+    say: 'Under the sky, each goal’s steps: tick them off, add one in a line, and tap Tide Book’s suggestions.',
+    steps: ['Scroll below the sky in Ideas › Goals.', 'Tap a circle to tick a step off.', 'Type in “Add a step” and press Enter.', 'Tap a step for its tools, or ⋮ for more.'], go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gsteps', tip: 'Your steps.' } },
   { id: 'g-order', area: 'Goals and your plan', to: 'all', icon: 'format_list_numbered', title: 'Goals in order of importance',
     say: '“In order” lines your goals up from the sun, most important nearest. The first one sets the order of everything else.',
     steps: ['In Ideas › Goals, tap In order.', 'Tap a planet, then drag it left or right.', 'The nearest one is your “Now” goal.'], go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'order' }, tip: 'Most important nearest the sun.' } },
@@ -7690,6 +7721,10 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-19-goal-steps', on: '2026-11-19', to: 'all', icon: 'checklist', title: 'Your steps, like a reminders list',
+    say: 'Under your goals sky, every goal’s steps are listed: tick them off, add one in a line, and tap Tide Book’s suggestions to add them.',
+    steps: ['Open Ideas › Goals and scroll below the sky.', 'Tap a circle to tick a step off (there’s an Undo).', 'Type in “Add a step” and press Enter.', 'Tap a suggestion to add it, or “Plan it with me” for a goal with none.', 'Tap a step for its tools, or ⋮ to change it, give it a day, move it or remove it.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gsteps', tip: 'Your steps.' } },
   { id: '2026-11-19-how-to', on: '2026-11-19', to: 'all', icon: 'menu_book', title: 'How to: every part of Tide Book',
     say: 'Settings has a How to page now: every way to use Tide Book, a step at a time, with Show me.',
     steps: ['Open the menu and tap Settings.', 'Tap “How to” at the top.', 'Tap anything for its steps, then Show me. Or search for a word.'],
@@ -15612,6 +15647,98 @@ var Kit = (function () {
       return;
     }
     skyMap(main, goals);
+    goalSteps(main, goals);
+  }
+  /** Steps Tide Book suggests for a goal, from what it's about (and, for the shop, what Ready to sell still needs). */
+  function stepIdeasFor(g) {
+    var t = String(g.title || '').toLowerCase(), out = [], RD = ((S.data.shop || {}).ready) || {};
+    function add(x) { if (out.indexOf(x) < 0) out.push(x); }
+    if (/\b(shop|store|sell online|online)\b/.test(t)) {
+      if (!RD.artworks) add('Add the first artwork with its sizes and prices');
+      if (!RD.stripe || !RD.stripeLive) add('Set up payments with Stripe');
+      if (!RD.rates) add('Set up postage with Australia Post');
+      if (!RD.printful) add('Link Printful for the big prints');
+      if (!RD.published) add('Publish the website');
+    }
+    if (/\b(upload|images?|photos?|prints?|available)\b/.test(t)) { add('Photograph each print in daylight'); add('Add each print as an artwork'); add('Set the paper, sizes and prices'); }
+    if (/\birukandji\b/.test(t)) add('Send the list to Irukandji');
+    if (/\b(draw|drawing|paint|painting|sketch)\b/.test(t)) { add('Sketch it out'); add('Paint it'); add('Photograph or scan the finished piece'); add('Add it as an artwork'); }
+    if (/\b(video|stills|content|film)\b/.test(t)) { add('Film the making'); add('Take stills as you go'); add('Make a post from them'); }
+    if (/\b(clay|candle|kiln|fire|shrinkage|pebble|pebbbles)\b/.test(t)) { add('Make a few test pieces'); add('Measure the shrinkage once dry'); add('Test fire them'); add('Photograph the results'); add('Make it a product'); }
+    if (/\b(instagram|social|followers|reels?)\b/.test(t)) { add('Post a reel this week'); add('Share a story from the studio'); add('Reply to comments'); add('Plan next week’s posts'); }
+    if (/\b(market|events?|stall)\b/.test(t)) { add('Find the next market'); add('Book a stall'); add('Check public liability insurance'); add('Pack the stall kit'); }
+    var have = (g.steps || []).map(function (s) { return String(s.text).toLowerCase(); });
+    return out.filter(function (x) { return have.indexOf(x.toLowerCase()) < 0; });
+  }
+  /** Her goals' steps on the Goals page, like a reminders list: tick them off, add one in a line, each with its tool. */
+  function goalSteps(main, goals) {
+    var tops = goals.filter(function (g) { return !g.parentId; }).slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
+    if (!tops.length) return;
+    var ms = S.data.milestones || [], open = S.stepsOpen || (S.stepsOpen = {}), wrap = h('div', { class: 'gsteps' });
+    var now = goals.filter(function (g) { return g.active; })[0];
+    wrap.appendChild(h('div', { class: 'gsteps-h' }, h('div', { class: 'title-l', text: 'Steps' }),
+      h('p', { class: 'body-m', style: 'margin:2px 0 0;color:var(--on-surface-variant)', text: now ? (now.next ? 'Next up: “' + now.next + '”, for “' + now.title + '”.' : 'Your “Now” goal has no steps left: add the next one, or tick the goal off.') : 'Tick steps off as you go, and add new ones in a line.' })));
+    function save(g, steps, msg) { g.steps = steps; return api('updateGoal', g.id, { steps: steps }).then(refresh).then(function () { K.haptic('success'); render(); if (msg) toast(msg); }).catch(fail); }
+    function list(g) {
+      var gc = goalColour(g.id), steps = g.steps || [], left = steps.filter(function (s) { return !s.done; }), done = steps.filter(function (s) { return s.done; });
+      var box = h('div', { class: 'gs-list', style: '--gc:' + gc });
+      box.appendChild(h('button', { type: 'button', class: 'gs-head', onclick: function () { openGoal(g.id); } }, h('i', { class: 'gs-dot' }),
+        h('span', { class: 'grow' }, h('b', { text: g.title }), h('span', { class: 'body-s', text: steps.length ? done.length + ' of ' + steps.length + ' done' : 'No steps yet' })), icon('chevron_right')));
+      left.forEach(function (s) {
+        var tool = STEP_TOOLS[toolsFor(s.text)[0]];
+        var row = h('div', { class: 'gs-row' },
+          h('button', { type: 'button', class: 'gs-tick', 'aria-label': 'Done: ' + s.text, onclick: function (e) { e.currentTarget.classList.add('on'); K.haptic('success'); api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); undoCard('Done: ' + s.text + '.', function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on the list.'); }).catch(fail); } }),
+          h('button', { type: 'button', class: 'gs-text', onclick: function () { openStepTools({ n: steps.indexOf(s) + 1, id: s.id, text: s.text, done: false }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); } },
+            h('span', { text: s.text }), s.due ? h('span', { class: 'gs-day', text: K.dayLabel(s.due, true) }) : null),
+          tool && toolsFor(s.text)[0] !== 'talk' ? h('button', { type: 'button', class: 'gs-tool', 'aria-label': tool.label, title: tool.label, onclick: function () { tool.go(s); } }, icon(tool.ic)) : null,
+          h('button', { type: 'button', class: 'gs-more', 'aria-label': 'More for this step', onclick: function () { stepMore(g, s); } }, icon('more_vert')));
+        box.appendChild(row);
+      });
+      // a new step, in a line
+      var inp = h('input', { class: 'gs-new', placeholder: 'Add a step', maxlength: 300, 'aria-label': 'Add a step to ' + g.title });
+      function addIt(txt) { txt = String(txt || '').trim(); if (!txt) return; save(g, steps.concat([{ text: txt }]), ''); }
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addIt(inp.value); } });
+      box.appendChild(h('div', { class: 'gs-row add' }, h('span', { class: 'gs-plus' }, icon('add')), inp, h('button', { type: 'button', class: 'gs-addbtn', onclick: function () { addIt(inp.value); } }, 'Add')));
+      // Tide Book's suggestions, from what the goal is about
+      var ideas = stepIdeasFor(g).slice(0, steps.length ? 3 : 4);
+      if (ideas.length || !steps.length) {
+        var sug = h('div', { class: 'gs-sug' }, h('span', { class: 'label-s', text: steps.length ? 'Next, maybe' : 'To start, maybe' }));
+        ideas.forEach(function (x) { sug.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { addIt(x); } }, icon('add'), x)); });
+        if (!steps.length) sug.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { K.setBusy(e.currentTarget, true); api('planGoal', g.id).then(function (r) { return refresh().then(function () { openTopic(r.topicId); }); }).catch(fail); } }, icon('forum'), 'Plan it with me'));
+        box.appendChild(sug);
+      }
+      if (done.length) {
+        var k = 'd:' + g.id;
+        box.appendChild(h('button', { type: 'button', class: 'gs-done-toggle', onclick: function () { open[k] = !open[k]; render(); } }, open[k] ? 'Hide ' + done.length + ' done' : 'Show ' + done.length + ' done'));
+        if (open[k]) done.forEach(function (s) {
+          box.appendChild(h('div', { class: 'gs-row done' }, h('button', { type: 'button', class: 'gs-tick on', 'aria-label': 'Not done: ' + s.text, onclick: function () { api('tickGoalStep', g.id, s.id, false).then(refresh).then(render).catch(fail); } }), h('span', { class: 'gs-text', text: s.text })));
+        });
+      }
+      return box;
+    }
+    function stepMore(g, s) {
+      K.sheet({ title: s.text.slice(0, 60), build: function (ctl) {
+        var acts = h('div', { class: 'next-opts' });
+        function a(ic, label, why, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null))); }
+        a('edit', 'Change the words', '', function () { K.ask({ title: 'The step', label: 'In a few words', value: s.text, maxlength: 300, confirmLabel: 'Save' }).then(function (v) { if (v) save(g, g.steps.map(function (x) { return x.id === s.id ? Object.assign({}, x, { text: v }) : x; }), 'Saved.'); }); });
+        a('event', s.due ? 'Move its day (' + K.dayLabel(s.due, true) + ')' : 'Give it a day', 'It shows on your calendar, with a reminder the day before.', function () { pickDay('When for “' + s.text.slice(0, 40) + '”?', s.due || '', function (d) { return api('setStepDay', g.id, s.id, d).then(refresh).then(function () { render(); toast(d ? 'On your calendar for ' + K.dayLabel(d, true) + '.' : 'No day now.'); }); }); });
+        a('apps', 'Its tools', 'Everything for doing it, one tap each.', function () { openStepTools({ n: g.steps.indexOf(s) + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); });
+        var others = (S.data.goals || []).filter(function (o) { return o.id !== g.id && !o.parentId; });
+        if (others.length) a('move_down', 'Move it to another goal', '', function () { K.pickFromList({ title: 'Which goal?', options: others.map(function (o) { return o.title; }) }).then(function (pick) { var o = others.filter(function (x) { return x.title === pick; })[0]; if (!o) return; api('updateGoal', o.id, { steps: o.steps.concat([{ text: s.text, due: s.due }]) }).then(function () { return save(g, g.steps.filter(function (x) { return x.id !== s.id; }), 'Moved to “' + o.title + '”.'); }).catch(fail); }); });
+        a('delete', 'Remove it', '', function () { var before = g.steps.slice(); save(g, g.steps.filter(function (x) { return x.id !== s.id; }), '').then(function () { undoCard('Step removed.', function () { return api('updateGoal', g.id, { steps: before }); }, 'Put back.'); }); });
+        ctl.body.appendChild(acts);
+      } });
+    }
+    // milestones first (each with its goals), then the goals on their own
+    ms.forEach(function (m) {
+      var mine = tops.filter(function (g) { return g.milestoneId === m.id; });
+      if (!mine.length) return;
+      wrap.appendChild(h('div', { class: 'gs-ms' }, icon('wb_sunny'), h('span', { text: m.title })));
+      mine.forEach(function (g) { wrap.appendChild(list(g)); });
+    });
+    var free = tops.filter(function (g) { return !g.milestoneId || !ms.some(function (m) { return m.id === g.milestoneId; }); });
+    if (free.length) { if (ms.length) wrap.appendChild(h('div', { class: 'gs-ms free' }, icon('public'), h('span', { text: 'On their own' }))); free.forEach(function (g) { wrap.appendChild(list(g)); }); }
+    main.appendChild(rise(wrap, 3));
   }
   /** The milestone a goal most likely leads to, from the words in it (and in the goals already orbiting each one). '' if none fits. */
   function milestoneFor(text) {
