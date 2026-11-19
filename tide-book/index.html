@@ -1512,6 +1512,9 @@ body.map-full { overflow: hidden; }
 .sky-world.gravity .goal-lines { opacity: 0; }
 .goal-map.sky .sky-sun { touch-action: none; }
 .goal-map.sky.full .sky-planet { touch-action: none; }
+.usage-row { border-top: 1px solid var(--outline-variant); padding: 10px 0 4px; margin-top: 8px; }
+.usage-row .body-s { color: var(--on-surface-variant); }
+.usage-tip { font-style: italic; margin-top: 2px; }
 </style>
 
   <script>
@@ -1702,7 +1705,34 @@ function tideTaxGuess(category, description) {
 }
 var TIDE_TAX_LABEL = { yes: 'Likely claimable', part: 'Only the business share', capital: 'A business tool', no: 'Usually not claimable', ask: 'Ask your accountant' };
 
+// What an expense was for, from its words, when she leaves it as "Other expense": first match wins.
+var TIDE_EXPENSE_WORDS = [
+  ['Packaging and postage', '\\b(postage|stamps?|post office|aus(tralia)? ?post|sendle|aramex|courier|mailers?|tubes?|bubble ?wrap|boxes|packaging|tissue)\\b'],
+  ['Art materials', '\\b(paints?|brush(es)?|canvas(es)?|paper|ink|pigments?|watercolou?rs?|gouache|pencils?|easel|clay|glaze|frames?|mounts?|beeswax|wax|resin|gold leaf)\\b'],
+  ['Printing', '\\b(prints?|printing|giclee|reproductions?|officeworks)\\b'],
+  ['Selling fees', '\\b(stripe|etsy|paypal|square|stall|market fee|commission|selling fee|booth)\\b'],
+  ['Marketing', '\\b(ads?|advert|facebook|instagram|meta|flyers?|business cards?|banners?|signage|promo)\\b'],
+  ['Software and subscriptions', '\\b(adobe|canva|lightroom|photoshop|procreate|subscription|domain|hosting|squarespace|shopify|app|software|icloud|google one|dropbox)\\b'],
+  ['Professional fees', '\\b(accountant|bookkeep|lawyer|solicitor|tax agent|abn|business name|registration fee)\\b'],
+  ['Equipment', '\\b(printer|laptop|computer|ipad|tablet|camera|lens|tripod|light ?box|scanner|kiln)\\b'],
+  ['Travel', '\\b(fuel|petrol|parking|toll|uber|taxi|train|bus|flight|airfare|accommodation|motel)\\b']
+];
+function tideExpenseCategory(desc) {
+  var d = String(desc || '').toLowerCase();
+  for (var i = 0; i < TIDE_EXPENSE_WORDS.length; i++) if (new RegExp(TIDE_EXPENSE_WORDS[i][1], 'i').test(d)) return TIDE_EXPENSE_WORDS[i][0];
+  return '';
+}
+
 var TIDE_SCHEMAS = {
+  // how she's using Tide Book, for the admin: what she did, where Tide Book put it, and how that screen could be clearer.
+  // Only shared things are looked at (goals, ideas, expenses, website answers): never her private writing.
+  usage: {
+    sheet: 'How she uses it',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['area', 'Where', 'text'], ['what', 'What she did', 'text'], ['placed', 'Where Tide Book put it', 'text'],
+      ['tip', 'How it could be clearer', 'text'], ['view', 'Screen', 'text'], ['status', 'Status', 'text'], ['updated', 'Updated', 'date']
+    ]
+  },
   // her milestones: the big aims her goals orbit on the map (the sun, with goals as planets and steps as moons)
   milestones: {
     sheet: 'Milestones',
@@ -2823,7 +2853,15 @@ if (env.workDone) env.workDone('publish');
   }
 
   function addTransaction(p) {
-    need(['admin', 'artist']);
+    var who0 = need(['admin', 'artist']);
+    p = p || {};
+    if (p.kind === 'Expense' && (!p.category || p.category === 'Other expense')) {
+      var auto = tideExpenseCategory(p.description);
+      if (auto) {
+        if (who0 === 'artist') noteUsage('Money', 'Recorded “' + text(p.description, 80) + '” as ' + (p.category || 'no category'), 'Filed under ' + auto + ' from its words', 'If “What was it for?” keeps landing on Other, its list may need names closer to how she says things (or Tide Book can keep picking it from the words).', 'money');
+        p = Object.assign({}, p, { category: auto });
+      }
+    }
     if (env.workDone) env.workDone('money');
     var row = readTxn(p || {});
     return env.lock(function () {
@@ -3243,12 +3281,13 @@ if (env.workDone) env.workDone('publish');
       options: {
         kinds: T.KINDS, timelines: T.TIMELINES, priorities: T.PRIORITIES, stages: T.STAGES, sizes: T.SIZES,
         productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: allSeries(), seriesInfo: seriesInfo(),
-        saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES, taxRules: TIDE_TAX_RULES, taxLabels: TIDE_TAX_LABEL
+        saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES, taxRules: TIDE_TAX_RULES, taxLabels: TIDE_TAX_LABEL, expenseWords: TIDE_EXPENSE_WORDS
       },
       settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, practice: env.practice === true,
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
+      usage: role === 'admin' ? usageList() : [],
       plan: planState(), goals: goalSnapshot(), milestones: milestoneSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
@@ -3395,11 +3434,36 @@ if (env.workDone) env.workDone('publish');
     }).filter(Boolean);
   }
   function clamp01(n, d) { n = Number(n); return isFinite(n) ? Math.max(0, Math.min(1, n)) : d; }
+  /** The milestone a goal's words point to (sharing a word with the milestone or the goals already orbiting it). */
+  function milestoneByWords(title) {
+    var stop = /^(the|and|for|with|my|a|an|to|of|in|on|at|by|it|is|be|up|get|make|more|some|one|time|step)$/;
+    function words(s) { return String(s || '').toLowerCase().split(/[^a-z0-9]+/).filter(function (w) { return w.length > 2 && !stop.test(w); }).map(function (w) { return w.replace(/(ing|es|s)$/, ''); }); }
+    var mine = words(title), best = '', top = 0, gl = goalList();
+    milestoneRows().forEach(function (m) {
+      var pool = words(m.title); gl.filter(function (g) { return g.milestoneId === m.id; }).forEach(function (g) { pool = pool.concat(words(g.title)); });
+      var sc = mine.filter(function (w) { return pool.indexOf(w) >= 0; }).length;
+      if (sc > top) { top = sc; best = m.id; }
+    });
+    return best;
+  }
+  /** A goal that reads like a step of another goal (most of its words are in one of that goal's steps). */
+  function stepLike(title) {
+    var w = String(title || '').toLowerCase().split(/[^a-z0-9]+/).filter(function (x) { return x.length > 3; });
+    if (w.length < 2) return null;
+    var hit = null;
+    goalList().forEach(function (g) { list(g.steps).forEach(function (s) { var sw = String(s.text || '').toLowerCase(); var n = w.filter(function (x) { return sw.indexOf(x) >= 0; }).length; if (!hit && n >= Math.max(2, Math.ceil(w.length * 0.6))) hit = { goal: g, step: s }; }); });
+    return hit;
+  }
   function addGoal(p) {
     var role = need(['admin', 'artist']);
     p = p || {};
     var title = text(p.title, 120);
     if (!title) fail('What’s the goal?');
+    if (!('milestoneId' in p) && !p.parentId) { var guess = milestoneByWords(title); if (guess) p = Object.assign({}, p, { milestoneId: guess }); }
+    if (role === 'artist') {
+      var sl = stepLike(title);
+      if (sl) noteUsage('Goals', 'Added “' + title + '” as a goal', 'It reads like a step of “' + sl.goal.title + '” (“' + text(sl.step.text, 60) + '”)', 'The difference between a goal and its steps may not be clear. The goal sheet could offer “Add it as a step of …” when a new goal sounds like one.', 'ideas');
+    }
     return env.lock(function () {
       var id = env.nextId('GL', 3), now = nowIso(), all = goalList();
       env.table('goals').append({ id: id, created: now, createdBy: role, title: title, why: text(p.why, 1000), x: clamp01(p.x, 0.15 + Math.random() * 0.7), y: clamp01(p.y, 0.15 + Math.random() * 0.7),
@@ -3545,6 +3609,22 @@ if (env.workDone) env.workDone('publish');
       order.forEach(function (gid, i) { env.table('goals').update(gid, { rank: i + 1 }); });
       return { ok: true };
     });
+  }
+  // ---------- how she's using it (admin only): what didn't land where it fits, and how to make that clearer
+  function noteUsage(area, what, placed, tip, view) {
+    try {
+      var dupe = rows('usage').some(function (u) { return u.status === 'New' && u.what === text(what, 300); });
+      if (dupe) return;
+      env.table('usage').append({ id: env.nextId('US', 4), created: nowIso(), area: text(area, 40), what: text(what, 300), placed: text(placed, 300), tip: text(tip, 600), view: text(view, 20), status: 'New', updated: nowIso() });
+    } catch (e) { /* never stops her doing what she was doing */ }
+  }
+  function usageList() { return rows('usage').filter(function (u) { return u.status === 'New'; }).sort(function (a, b) { return a.created < b.created ? 1 : -1; }).slice(0, 30); }
+  function usageDone(id, how) {
+    need(['admin']);
+    var u = find('usage', id);
+    if (how === 'suggest') reports.api.sendReport({ kind: 'An idea', text: 'Make it clearer (' + u.area + '): ' + u.what + '. ' + u.placed + '. ' + u.tip, screen: u.view });
+    env.lock(function () { env.table('usage').update(id, { status: how === 'suggest' ? 'Suggested' : 'Seen', updated: nowIso() }); });
+    return { ok: true };
   }
   // ---------- milestones: the suns her goals orbit on the map
   function milestoneRows() { return rows('milestones').filter(function (m) { return m.deleted !== true; }); }
@@ -4129,7 +4209,7 @@ if (env.workDone) env.workDone('publish');
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, addMilestone: addMilestone, updateMilestone: updateMilestone, deleteMilestone: deleteMilestone, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, usageDone: usageDone, addMilestone: addMilestone, updateMilestone: updateMilestone, deleteMilestone: deleteMilestone, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, addSeries: addSeries, updateSeries: updateSeries, printfulForPrint: printfulForPrint, printfulPrintFile: printfulPrintFile, printfulFileUse: printfulFileUse, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -11792,6 +11872,23 @@ var Kit = (function () {
   }
 
   // ------------------------------------------------------------------ Home
+  /** Admin: how she's using it. What she did, where Tide Book put it, and how that screen could be clearer. */
+  function usageCard(main, n) {
+    var U = S.data.usage || [];
+    if (!U.length) return n;
+    var card = h('div', { class: 'card pad usage-card', style: 'margin-bottom:12px' }, h('div', { class: 'row', style: 'gap:10px;align-items:center' }, h('span', { class: 'ic' }, icon('insights')),
+      h('div', { class: 'grow' }, h('b', { text: 'How ' + artist() + '’s using it' }), h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: U.length + ' thing' + (U.length === 1 ? '' : 's') + ' Tide Book placed for her, and what might make it clearer.' }))));
+    U.slice(0, 4).forEach(function (u) {
+      card.appendChild(h('div', { class: 'usage-row' }, h('div', { class: 'label-s', text: u.area }), h('div', { class: 'body-m', text: u.what + '.' }),
+        h('div', { class: 'body-s', text: '→ ' + u.placed + '.' }), h('div', { class: 'body-s usage-tip', text: u.tip }),
+        h('div', { class: 'btn-row', style: 'margin-top:6px;flex-wrap:wrap' },
+          btn('tonal', 'Talk it through', { sm: true, icon: 'forum', onclick: function (e) { K.setBusy(e.currentTarget, true); api('usageDone', u.id, 'suggest').then(refresh).then(function () { render(); toast('Added to your suggestions, to talk through.'); }).catch(fail); } }),
+          btn('text', 'Fine as it is', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('usageDone', u.id, 'seen').then(refresh).then(render).catch(fail); } }))));
+    });
+    if (U.length > 4) card.appendChild(h('p', { class: 'tf-help', text: (U.length - 4) + ' more after these.' }));
+    main.appendChild(rise(card, n++));
+    return n;
+  }
   function viewHome(main) {
     var hour = new Date().getHours(), hello = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
     if (!ADMIN) return viewHomeArtist(main, hello);
@@ -11802,7 +11899,7 @@ var Kit = (function () {
     var rest = S.data.rest;
     if (rest) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note(cap(artist()) + ' is taking it easy' + (rest.until ? ' until ' + restDay(rest.until) : '') + '. Her buzzes and footage questions come to you; posts still wait for her approval.', 'spa')), n++));
     n = talkCards(main, n);
-
+    n = usageCard(main, n);
 
     var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = S.data.questions.length;
     if (nPosts || nQs) {
@@ -15142,6 +15239,7 @@ var Kit = (function () {
     }).catch(function (err) { K.setBusy(b, false); fail(err); });
   }
 
+  function expenseCategoryGuess(desc) { var W = (S.data.options || {}).expenseWords || [], d = String(desc || '').toLowerCase(); for (var i = 0; i < W.length; i++) if (new RegExp(W[i][1], 'i').test(d)) return W[i][0]; return ''; }
   /** The tax guide, as she types: the same rules Tide Book files the expense by. */
   function taxGuess(cat, desc) {
     var R = (S.data.options || {}).taxRules || [], d = String(desc || '').toLowerCase();
@@ -15171,7 +15269,9 @@ var Kit = (function () {
           if (sale) return;
           taxBox.textContent = '';
           if (!f.category && !String(f.description || '').trim()) { taxBox.appendChild(h('p', { class: 'tf-help', text: 'Choose what it was for, and Tide Book says whether it’s likely claimable at tax time.' })); return; }
-          var g = taxGuess(f.category, f.description), L = (o.taxLabels || {})[g.claim] || '';
+          var autoCat = (!f.category || f.category === 'Other expense') ? expenseCategoryGuess(f.description) : '';
+          var g = taxGuess(autoCat || f.category, f.description), L = (o.taxLabels || {})[g.claim] || '';
+          if (autoCat) taxBox.appendChild(h('p', { class: 'body-s', style: 'margin:0 2px 6px;color:var(--on-surface-variant)', text: 'Filed under ' + autoCat + ', from its words.' }));
           var tone = g.claim === 'yes' ? 'good' : g.claim === 'no' ? 'plain' : 'warn';
           taxBox.appendChild(h('div', { class: 'tax-row ' + tone }, icon(g.claim === 'yes' ? 'check_circle' : g.claim === 'no' ? 'block' : g.claim === 'capital' ? 'handyman' : g.claim === 'part' ? 'pie_chart' : 'help'),
             h('div', { class: 'grow' }, h('b', { text: L }), h('span', { class: 'body-s', text: g.why }))));
@@ -15244,7 +15344,7 @@ var Kit = (function () {
         save.addEventListener('click', function () {
           if (!(f.amount > 0)) { toast('Enter the amount.'); amount.input.focus(); return; }
           if (!f.date) { toast('Choose the date.'); return; }
-          if (!sale && !f.category) { toast('Choose what it was for.'); return; }
+          if (!sale && !f.category && !expenseCategoryGuess(f.description)) { toast('Choose what it was for, or say who was paid and what for.'); return; }
           K.setBusy(save, true);
           var linked = sale && (f.category === 'Prints' || f.category === 'Originals') ? f.printId : '';
           var payload = { kind: kind, amount: f.amount, date: f.date, channel: f.channel, category: f.category, description: f.description, gstInPrice: f.gstInPrice,
@@ -16249,16 +16349,23 @@ var Kit = (function () {
   function openMilestone(id, at) {
     var m = id ? (S.data.milestones || []).filter(function (x) { return x.id === id; })[0] : null;
     var goals = (S.data.goals || []).filter(function (g) { return !g.parentId; });
-    var f = { title: m ? m.title : '', goals: goals.filter(function (g) { return m && g.milestoneId === m.id; }).map(function (g) { return g.id; }) };
+    var f = { title: m ? m.title : '', goals: goals.filter(function (g) { return m && g.milestoneId === m.id; }).map(function (g) { return g.id; }) }, ticked = !!m;
     K.sheet({ title: m ? 'Milestone' : 'A new milestone', tall: goals.length > 4, build: function (ctl) {
-      var t1 = K.textField({ label: 'The milestone', value: f.title, maxlength: 120, placeholder: 'For example: the shop open by Christmas', onInput: function (v) { f.title = v; } });
+      var t1 = K.textField({ label: 'The milestone', value: f.title, maxlength: 120, placeholder: 'For example: the shop open by Christmas', onInput: function (v) {
+        f.title = v;
+        // until she ticks some herself, the goals whose words fit are ticked for her
+        if (!ticked && box) { var w = String(v).toLowerCase().split(/[^a-z0-9]+/).filter(function (x) { return x.length > 3; }).map(function (x) { return x.replace(/(ing|es|s)$/, ''); });
+          f.goals = goals.filter(function (g) { var gw = String(g.title).toLowerCase(); return w.some(function (x) { return gw.indexOf(x) >= 0; }); }).map(function (g) { return g.id; });
+          [].forEach.call(box.children, function (b) { b.setAttribute('aria-pressed', String(f.goals.indexOf(b.dataset.gid) >= 0)); }); }
+      } });
+      var box = null;
       ctl.body.append(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'A big aim. On the map it’s a sun, and the goals that lead to it orbit it.' }), t1);
       if (goals.length) {
         ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin:16px 0 8px', text: 'Goals in its orbit' }));
-        var box = h('div', { class: 'filter-row', style: 'flex-wrap:wrap' });
+        box = h('div', { class: 'filter-row', style: 'flex-wrap:wrap' });
         goals.forEach(function (g) {
           var on = f.goals.indexOf(g.id) >= 0;
-          var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(on), onclick: function () { var i = f.goals.indexOf(g.id); if (i >= 0) f.goals.splice(i, 1); else f.goals.push(g.id); b.setAttribute('aria-pressed', String(i < 0)); } },
+          var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(on), dataset: { gid: g.id }, onclick: function () { ticked = true; var i = f.goals.indexOf(g.id); if (i >= 0) f.goals.splice(i, 1); else f.goals.push(g.id); b.setAttribute('aria-pressed', String(i < 0)); } },
             h('i', { class: 'cal-dot', style: 'background:' + goalColour(g.id) }), g.title);
           box.appendChild(b);
         });
