@@ -3182,7 +3182,8 @@ if (env.workDone) env.workDone('publish');
   });
 
   // ---------- what the website needs from her (LogicSite.gs)
-  var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push });
+  var siteWishes = tideSiteWishes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, checkImage: checkImage, push: publish.push,
+    place: function (route, type, words, pics) { return siteEditor.addContent(route, type, words, pics); } });
   // ---------- the website's shop: checkout, orders and their parcels (LogicShop.gs)
   var shop = tideShop(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push,
     siteData: function (w) { return siteData(w); }, shopPending: function () { return shopPending(); }, recordSales: function (s) { var r = recordOnlineSales(s, 'website'); publishFeed(); return r; }, recordExpense: recordShopExpense });
@@ -7290,6 +7291,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-site-answers', on: '2026-11-19', to: 'artist', icon: 'language', title: 'Your website answers go on by themselves',
+    say: 'What you write or send for your website now goes straight onto its draft, on the right page. You look, then Publish. Your returns promise is a few taps.',
+    steps: ['On Home, tap one of the website asks (like your morning ritual).', 'Write it or add the photo, then Send. It’s on your website’s draft, on the About page.', 'For returns, tap what suits you: Tide Book writes it for you to check.', 'Not ready yet? Tap “Remind me at the weekend”.', 'Open Website to look, then Publish.'],
+    go: { view: 'site', find: '.site-bar', tip: 'Publish here once you’ve had a look.' } },
   { id: '2026-11-19-hand-savings', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'AI costs: Tide Book against doing it all with Claude',
     say: 'One card on Money: what Tide Book spent, beside the same work (its AI jobs and its own work like prices, postage, orders and the website) done entirely by Claude Opus 5.5 through the API.',
     steps: ['Open Money and scroll to “AI costs”.', 'The card shows the saving since the start, and this month underneath. It says what it counts.'],
@@ -8055,8 +8060,28 @@ var TIDE_SITE_WISHES = {
   ]
 };
 
+// Where what she sends goes, so it lands on her website's draft by itself (she looks, then publishes):
+// words as a section of words, photos as a section with the photo. The rest (her pieces, names and prices) belong in Artworks.
+var TIDE_SITE_PLACE = {
+  ritual: { route: '#/about', type: 'text', h: 'My morning ritual' },
+  returns: { route: '#/about', type: 'text', h: 'Delivery and returns' },
+  collections: { route: '#/about', type: 'story', h: 'My collections', p: 'Rocks, shells, sticks and feathers, gathered on my walks. Each one holds a moment I noticed.' },
+  studio: { route: '#/about', type: 'story', h: 'In the studio', p: 'Where the pieces begin.' }
+};
+
 function tideSiteWishes(env, t) {
-  var W = TIDE_SITE_WISHES;
+  var W = TIDE_SITE_WISHES, PL = TIDE_SITE_PLACE;
+  /** "I'll do it at the weekend": the day she means, or '' if her answer isn't a "later". */
+  function laterDay(words, hasPhotos, kind) {
+    var w = String(words || '').toLowerCase(), now = env.now(), d = new Date(now.getTime());
+    function out(n) { d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+    if (hasPhotos || w.length > 240) return '';
+    if (/weekend|saturday|sunday/.test(w)) { var dw = now.getDay(); return out(dw === 6 ? 7 : (6 - dw)); }
+    if (/tomorrow/.test(w)) return out(1);
+    if (/next week/.test(w)) return out(7);
+    if (/\b(later|soon|i will|i'll|i’ll|will (save|send|do|get|take|find)|not yet|haven'?t|need to)\b/.test(w) && (kind === 'photo' || w.length < 120)) return out(3);
+    return '';
+  }
   // kept as JSON text, so it survives the settings sheet on Google too
   function parse(v, d) { if (v && typeof v === 'object') return v; try { return JSON.parse(v) || d; } catch (e) { return d; } }
   function state() { var s = env.settings.get(); return { done: t.list(parse(s.siteWishDone, [])), later: parse(s.siteWishLater, {}) }; }
@@ -8073,20 +8098,54 @@ function tideSiteWishes(env, t) {
     var w = wish(key); p = p || {};
     var words = t.text(p.text, 4000), photos = t.list(p.photos).slice(0, 6);
     if (!words && !photos.length) t.fail(w.kind === 'photo' ? 'Add a photo first.' : 'Write a few words first.');
+    // an answer that says "later" is a reminder, not something for the website
+    var later = p.place === true ? '' : laterDay(words, photos.length > 0, w.kind);
+    if (later) {
+      var stl = state(), lt = Object.assign({}, stl.later); lt[key] = later + 'T08:00:00.000Z';
+      env.settings.set({ siteWishLater: JSON.stringify(lt) });
+      return { ok: true, later: later };
+    }
+    if (w.kind === 'photo' && !photos.length && PL[key]) t.fail('Add a photo first. Or tap “Remind me” and Tide Book asks again.');
     var ids = photos.map(function (d) { return env.files.save(env.files.folder(['Website']), 'Website ' + key, t.checkImage(d)); });
     var thumbs = t.list(p.thumbs).slice(0, 6).map(function (d) { return env.files.save(env.files.folder(['Website']), 'Website ' + key + ' thumb', t.checkImage(d)); });
+    var placed = false, newId = '';
     env.lock(function () {
-      var id = env.nextId('WS', 4);
+      var id = newId = env.nextId('WS', 4);
       env.table('sitecontent').append({ id: id, created: t.nowIso(), by: env.user.role, key: key, title: w.text, text: words, fileIds: ids, thumbIds: thumbs, status: 'New' });
       var st = state(); if (st.done.indexOf(key) < 0 || key === 'pieces') env.settings.set({ siteWishDone: JSON.stringify(key === 'pieces' ? st.done : st.done.concat([key])) });
     });
-    if (t.push) t.push('admin', 'For the website: ' + w.text, (words ? words.slice(0, 120) : '') + (ids.length ? (words ? ' · ' : '') + ids.length + ' photo' + (ids.length === 1 ? '' : 's') : ''));
+    // her words and photos go straight onto her website's draft, where she looks before publishing
+    if (PL[key] && t.place && (w.kind === 'photo' ? ids.length : words)) { place(newId); placed = true; }
+    if (t.push) t.push('admin', (placed ? 'On the website draft: ' : 'For the website: ') + w.text, (words ? words.slice(0, 120) : '') + (ids.length ? (words ? ' · ' : '') + ids.length + ' photo' + (ids.length === 1 ? '' : 's') : ''));
+    return { ok: true, placed: placed };
+  }
+  /** What she sent, as a section on the right page of her website's draft. */
+  function place(id, textIn) {
+    var r = t.find('sitecontent', id), P = PL[r.key];
+    if (!P) t.fail('That one goes in Artworks rather than on a page.');
+    var words = { h: P.h }, pics = {};
+    var body = textIn != null ? t.text(textIn, 4000) : (r.text || P.p || '');
+    if (body) words.p = body;
+    if (P.type === 'story') { var f = t.list(r.fileIds)[0]; if (!f) t.fail('It needs a photo first.'); pics.img = f; }
+    t.place(P.route, P.type, words, pics);
+    env.lock(function () { env.table('sitecontent').update(id, { status: 'Placed', used: t.nowIso() }); });
+    return { ok: true, route: P.route };
+  }
+  /** The admin puts something she sent on the draft (as it is, or tidied up). */
+  function placeSiteContent(id, text) { t.need(['admin', 'artist']); return place(id, text); }
+  /** Back to her: it shows on her list again (what she sent is kept, and leaves the admin's list). */
+  function reopenSiteWish(id, day) {
+    t.need(['admin']);
+    var r = t.find('sitecontent', id), st = state(), lt = Object.assign({}, st.later);
+    if (day) lt[r.key] = String(day).slice(0, 10) + 'T08:00:00.000Z'; else delete lt[r.key];
+    env.settings.set({ siteWishDone: JSON.stringify(st.done.filter(function (k) { return k !== r.key; })), siteWishLater: JSON.stringify(lt) });
+    env.lock(function () { env.table('sitecontent').update(id, { status: 'Back to her', used: t.nowIso() }); });
     return { ok: true };
   }
-  function laterSiteWish(key) {
+  function laterSiteWish(key, day) {
     t.need(['admin', 'artist']); wish(key);
     var st = state(), later = Object.assign({}, st.later);
-    later[key] = new Date(env.now().getTime() + W.LATER_DAYS * 86400000).toISOString();
+    later[key] = /^\d{4}-\d{2}-\d{2}$/.test(String(day || '')) ? day + 'T08:00:00.000Z' : new Date(env.now().getTime() + W.LATER_DAYS * 86400000).toISOString();
     env.settings.set({ siteWishLater: JSON.stringify(later) });
     return { ok: true };
   }
@@ -8107,7 +8166,7 @@ function tideSiteWishes(env, t) {
     });
     return { wishes: role === 'artist' ? current() : [], sent: role === 'admin' ? sent : [] };
   }
-  return { snapshot: snapshot, api: { sendSiteContent: sendSiteContent, laterSiteWish: laterSiteWish, doneSiteWish: doneSiteWish, usedSiteContent: usedSiteContent } };
+  return { snapshot: snapshot, api: { sendSiteContent: sendSiteContent, laterSiteWish: laterSiteWish, doneSiteWish: doneSiteWish, usedSiteContent: usedSiteContent, placeSiteContent: placeSiteContent, reopenSiteWish: reopenSiteWish } };
 }
 
 /**
@@ -8439,7 +8498,18 @@ function tideSiteEditor(env, t) {
     return { ok: true };
   }
 
-  return { snapshot: snapshot, layerFor: layerFor, liveUrl: liveUrl,
+  /** A section put on a page for her, with its words and picture, on her draft. */
+  function addContent(routeIn, type, words, pics) {
+    if (X.BLOCKS.indexOf(type) < 0) t.fail('Pick a kind of section.');
+    var d = draft(), r = route(routeIn), B = d.sections[r] = d.sections[r] || { order: [], hidden: [], added: [] };
+    var nb = { id: 'tb' + id(), type: type, after: '' };
+    B.added.push(nb);
+    Object.keys(words || {}).forEach(function (k) { d.words['b|' + nb.id + ':' + k] = t.text(words[k], 4000); });
+    Object.keys(pics || {}).forEach(function (k) { d.pics['b|' + nb.id + ':' + k] = file(pics[k]); });
+    save(d);
+    return nb.id;
+  }
+  return { snapshot: snapshot, layerFor: layerFor, liveUrl: liveUrl, addContent: addContent,
     api: { setSiteDomain: setSiteDomain, checkSiteDomain: checkSiteDomain, useSiteDomain: useSiteDomain, dropSiteDomain: dropSiteDomain, sendSiteDomainSteps: sendSiteDomainSteps,
       saveSiteEdit: saveSiteEdit, undoSiteEdit: undoSiteEdit, discardSiteDraft: discardSiteDraft, publishSiteDraft: publishSiteDraft, askSiteChange: askSiteChange, siteAskDone: siteAskDone, withdrawSiteAsk: withdrawSiteAsk } };
 }
@@ -17456,7 +17526,53 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ the website's wish list (LogicSite.gs)
   /** One gentle ask: why it helps, then a photo or her words straight from here, or not now. */
+  function nextSaturday() { var d = new Date(), n = d.getDay() === 6 ? 7 : 6 - d.getDay(); d.setDate(d.getDate() + n); return ymd(d); }
+  function siteSent(r) {
+    if (r && r.later) return 'No rush. Tide Book will ask again on ' + K.dayLabel(r.later, true) + '.';
+    if (r && r.placed) return 'It’s on your website’s draft. Have a look in Website, then Publish.';
+    return 'Thank you. ' + adminName() + ' will put it on your website.';
+  }
+  /** Her returns promise, from a few taps: Tide Book writes it, she looks, and it goes on her website's draft. */
+  function returnsText(c) {
+    var out = ['Every piece is packed with care. If yours arrives damaged, send me a photo of it and its packaging within ' + c.damaged + ' days of it arriving, and I’ll replace it or refund you, whichever you’d prefer.'];
+    if (c.change === 'none') out.push('Because each print is made for you, I can’t take returns for a change of mind.');
+    else out.push('Changed your mind? Send it back within ' + c.change + ' days, unused and in its packaging, and I’ll refund you once it’s back with me' + (c.post === 'me' ? '. I’ll cover the return postage.' : ' (the postage back is yours).'));
+    if (c.originals === 'final') out.push('Originals are one of a kind, so they can’t be returned for a change of mind.');
+    if (c.extra) out.push(c.extra);
+    out.push('Your rights under Australian Consumer Law always apply: if something is faulty or not as described, you can choose a refund or a replacement.');
+    return out.join(' ');
+  }
+  function openReturns(fromId, note) {
+    var c = { damaged: '7', change: 'none', post: 'buyer', originals: 'final', extra: '' };
+    K.sheet({ title: 'Your returns promise', tall: true, build: function (ctl) {
+      var B = ctl.body, prev = h('div', { class: 'card pad', style: 'white-space:pre-wrap;margin-top:6px' }), postWrap = h('div');
+      function paint() { prev.textContent = returnsText(c); postWrap.style.display = c.change === 'none' ? 'none' : ''; }
+      if (note) B.appendChild(note2('She said: “' + note + '”'));
+      B.append(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'Tap what suits you. Tide Book writes it, you check it, and it goes on your website’s draft.' }),
+        K.choices({ label: 'If it arrives damaged', value: c.damaged, options: [{ value: '7', label: 'A photo within 7 days, then a replacement or refund (recommended)' }, { value: '14', label: 'A photo within 14 days' }], onChange: function (v) { c.damaged = v || '7'; paint(); } }),
+        h('div', { style: 'height:12px' }),
+        K.choices({ label: 'If they change their mind', value: c.change, options: [{ value: 'none', label: 'No: each print is made for them (recommended)' }, { value: '14', label: 'Within 14 days, unused' }, { value: '30', label: 'Within 30 days, unused' }], onChange: function (v) { c.change = v || 'none'; paint(); } }),
+        postWrap,
+        h('div', { style: 'height:12px' }),
+        K.choices({ label: 'Originals', value: c.originals, options: [{ value: 'final', label: 'No change-of-mind returns (still covered if damaged)' }, { value: 'same', label: 'The same as prints' }], onChange: function (v) { c.originals = v || 'final'; paint(); } }),
+        h('div', { style: 'height:12px' }),
+        K.textField({ label: 'Anything to add? (optional)', maxlength: 400, onInput: function (v) { c.extra = v.trim(); paint(); } }),
+        h('div', { class: 'label-s', style: 'margin:16px 0 4px', text: 'How it reads on your website' }), prev,
+        h('p', { class: 'tf-help', text: 'Plain words, not legal advice. The last line is the law in Australia, so it always stays.' }));
+      postWrap.append(h('div', { style: 'height:12px' }), K.choices({ label: 'The postage back', value: c.post, options: [{ value: 'buyer', label: 'They pay it (recommended)' }, { value: 'me', label: 'I pay it' }], onChange: function (v) { c.post = v || 'buyer'; paint(); } }));
+      paint();
+      var go = btn('filled', 'Put it on my website', { icon: 'check', lg: true, block: true, onclick: function () {
+        K.setBusy(go, true);
+        (fromId ? api('placeSiteContent', fromId, returnsText(c)).then(function () { return { placed: true }; }) : api('sendSiteContent', 'returns', { text: returnsText(c), place: true }))
+          .then(function (r) { return refresh().then(function () { K.haptic('success'); ctl.close(); render(); toast(ADMIN ? 'On her website’s draft, on the About page.' : siteSent(r)); }); })
+          .catch(function (e) { K.setBusy(go, false); fail(e); });
+      } });
+      ctl.foot.appendChild(go);
+    } });
+    function note2(t) { return h('div', { style: 'margin-bottom:12px' }, note(t, 'chat')); }
+  }
   function openSiteWish(t0) {
+    if (t0.site === 'returns') { openReturns(null, ''); return; }
     var photos = [], words = '';
     K.sheet({ title: t0.text, build: function (ctl) {
       ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 14px', text: t0.why }));
@@ -17477,26 +17593,44 @@ var Kit = (function () {
       sendB.addEventListener('click', function () {
         K.setBusy(sendB, true);
         api('sendSiteContent', t0.site, { text: words, photos: photos.map(function (p) { return p.full; }), thumbs: photos.map(function (p) { return p.thumb; }) })
-          .then(refresh).then(function () { K.haptic('success'); toast('Thank you. ' + adminName() + ' will put it on your website.'); ctl.close(); render(); })
+          .then(function (r) { return refresh().then(function () { K.haptic('success'); toast(siteSent(r)); ctl.close(); render(); }); })
           .catch(function (e) { K.setBusy(sendB, false); fail(e); });
       });
       var row = h('div', { class: 'row', style: 'gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap' },
+        btn('text', 'Remind me at the weekend', { onclick: function () { var d = nextSaturday(); api('laterSiteWish', t0.site, d).then(refresh).then(function () { ctl.close(); render(); toast('No rush. Tide Book will ask again on ' + K.dayLabel(d, true) + '.'); }).catch(fail); } }),
         btn('text', 'Not now', { onclick: function () { api('laterSiteWish', t0.site).then(refresh).then(function () { ctl.close(); render(); toast('No rush. It\u2019ll come back in a couple of weeks.'); }).catch(fail); } }));
       if (t0.site === 'pieces') row.appendChild(btn('text', 'I\u2019ve sent them all', { onclick: function () { api('doneSiteWish', t0.site).then(refresh).then(function () { ctl.close(); render(); }).catch(fail); } }));
       ctl.foot.append(sendB, row);
     } });
   }
   /** The admin's side: what she sent, to put on the website. */
+  var SITE_PLACED = { ritual: 'the About page', returns: 'the About page', collections: 'the About page', studio: 'the About page' };
   function openSiteIn(r) {
     K.sheet({ title: r.title, tall: true, build: function (ctl) {
       if (r.text) ctl.body.appendChild(h('div', { class: 'card pad', style: 'white-space:pre-wrap;margin-bottom:12px', text: r.text }));
+      var later = !r.photos.length && /weekend|saturday|sunday|tomorrow|next week|\blater\b|\bsoon\b|i will|i'll|i’ll|will (save|send|do|get|take|find)|not yet/i.test(r.text || '') && (r.text || '').length < 240;
+      var photoWish = /photo/i.test(r.title), place = SITE_PLACED[r.key], acts = h('div', { class: 'next-opts', style: 'margin-bottom:12px' });
+      function act(ic, label, why, main, fn) {
+        acts.appendChild(h('button', { class: 'next-opt' + (main ? ' main' : ''), type: 'button', onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); fn(b); } },
+          h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null)));
+      }
+      function done(msg) { return refresh().then(function () { K.haptic('success'); ctl.close(); render(); if (msg) toast(msg); }); }
+      var reads = r.key === 'returns' && !/^(every piece|if it|changed your mind)/i.test(r.text || '') ? 'She’s asking for help with the wording: what she wants, not the words for the page.'
+        : later ? 'A “later”: she’ll send it when she can.' : place && (r.photos.length || !photoWish) ? 'Ready for her website.' : '';
+      if (reads) ctl.body.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 8px;color:var(--on-surface-variant)', text: 'Tide Book reads this as: ' + reads }));
+      if (r.key === 'returns') act('edit_note', 'Write her returns promise from this', 'A few taps (damaged, change of mind, postage). Tide Book writes it, and it goes on her website’s draft.', true, function (b) { K.setBusy(b, false); ctl.close(); setTimeout(function () { openReturns(r.id, r.text); }, 300); });
+      else if (later) act('event', 'Remind her on ' + K.dayLabel(nextSaturday(), true), 'It comes back on her list then, and this leaves yours.', true, function () { api('reopenSiteWish', r.id, nextSaturday()).then(function () { return done('She’ll be asked again on ' + K.dayLabel(nextSaturday(), true) + '.'); }).catch(fail); });
+      else if (place && (r.photos.length || !photoWish)) act('rocket_launch', 'Put it on her website’s draft', 'A new section on ' + place + ', with her ' + (r.photos.length ? 'photo' : 'words') + '. She looks, then publishes.', true, function () { api('placeSiteContent', r.id).then(function () { return done('On her website’s draft, on ' + place + '.'); }).catch(fail); });
+      else if (/shark|pieces|names/.test(r.key)) act('palette', 'Open Artworks', 'Her pieces, their photos, names and prices live in Artworks, and from there on her website.', true, function (b) { K.setBusy(b, false); ctl.close(); setTimeout(function () { go('prints'); }, 300); });
+      act('reply', 'Send it back to her', 'It shows on her list again.', false, function () { api('reopenSiteWish', r.id).then(function () { return done('It’s back on her list.'); }).catch(fail); });
+      ctl.body.appendChild(acts);
       if (r.photos.length) {
         var g = h('div', { class: 'wish-photos big' });
         r.photos.forEach(function (u) { g.appendChild(h('a', { href: u, target: '_blank', rel: 'noopener' }, h('img', { src: u, alt: '' }))); });
         ctl.body.appendChild(g);
         ctl.body.appendChild(h('p', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'Full size: tap a photo. They\u2019re also in Tide Book\u2019s files, in the Website folder.' }));
       }
-      ctl.foot.appendChild(btn('filled', 'It\u2019s on the website', { icon: 'check', lg: true, block: true, onclick: function (e) {
+      ctl.foot.appendChild(btn('text', 'It\u2019s already on the website', { icon: 'check', block: true, onclick: function (e) {
         K.setBusy(e.currentTarget, true); api('usedSiteContent', r.id).then(refresh).then(function () { ctl.close(); render(); }).catch(fail);
       } }));
     } });
