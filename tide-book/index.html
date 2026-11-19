@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1424,6 +1424,13 @@ body.map-full { overflow: hidden; }
 .ready-ic { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 12px; background: var(--surface-high); color: var(--primary); }
 .ready-row.done .ready-ic { background: var(--secondary-container); color: var(--on-secondary-container); }
 .ready-row.done b { color: var(--on-surface-variant); font-weight: 500; }
+/* the tax guide on an expense */
+.tax-guide { margin: 2px 0 4px; }
+.tax-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; background: var(--surface-high); }
+.tax-row .grow { display: flex; flex-direction: column; gap: 2px; }
+.tax-row.good { background: var(--secondary-container); color: var(--on-secondary-container); }
+.tax-row.warn { background: #FFF3D6; color: #5A4300; }
+.tax-row.plain .ms { color: var(--on-surface-variant); }
 </style>
 
   <script>
@@ -1591,6 +1598,29 @@ var TIDE_SETTING_DEFAULTS = {
  * Column layout of every tab. [key, header, type]. Types: text, number, bool, date (timestamp),
  * day (calendar date), list (comma separated), json.
  */
+// Is an expense likely to be claimable at tax time (an Australian sole trader)? A plain guide, first match wins, so the
+// records are filed for her accountant. Not tax advice: the screens say so.
+var TIDE_TAX_RULES = [
+  { words: '\\b(fines?|penalty|penalties|parking ticket|speeding)\\b', claim: 'no', why: 'Fines and penalties can’t be claimed.' },
+  { words: '\\b(lunch|dinner|breakfast|coffee|caf[eé]|meals?|restaurant|drinks|takeaway|groceries)\\b', claim: 'no', why: 'Food and drink is usually personal, even on a work day. Taking someone out is “entertainment”, usually not claimable.' },
+  { words: '\\b(clothes|clothing|dress|shoes|haircut|make-?up|jewellery)\\b', claim: 'no', why: 'Everyday clothes can’t be claimed. Protective gear (a smock, gloves) can.' },
+  { words: '\\b(phone|mobile|internet|nbn|electricity|power bill|gas bill|rent|home office|car|fuel|petrol|diesel|rego|registration|insurance|parking)\\b', claim: 'part', why: 'Only the business share can be claimed, like the part of the phone bill used for the business.' },
+  { cats: ['Equipment'], words: '\\b(printer|computer|laptop|ipad|tablet|camera|kiln|easel|light ?box|scanner|furniture)\\b', claim: 'capital', why: 'A business tool. Smaller items are claimed this year; dearer ones may be claimed over a few years. Your accountant decides which.' },
+  { cats: ['Travel'], claim: 'part', why: 'The business part of a trip (markets, suppliers, the centre) can be claimed. Say what it was for.' },
+  { cats: ['Printing', 'Art materials', 'Packaging and postage', 'Selling fees', 'Marketing', 'Software and subscriptions', 'Professional fees'], claim: 'yes', why: 'A day-to-day cost of the business: usually claimed in full, in the year you pay it.' },
+  { cats: ['Other expense'], claim: 'ask', why: 'It depends on what it was for. Say a few words about it, and keep the receipt.' }
+];
+function tideTaxGuess(category, description) {
+  var d = String(description || '').toLowerCase();
+  for (var i = 0; i < TIDE_TAX_RULES.length; i++) {
+    var r = TIDE_TAX_RULES[i];
+    var byWords = r.words && new RegExp(r.words, 'i').test(d), byCat = r.cats && r.cats.indexOf(category) >= 0;
+    if (byWords || (byCat && !r.words) || (byCat && r.claim === 'capital')) return { claim: r.claim, why: r.why };
+  }
+  return { claim: 'ask', why: 'It depends on what it was for. Keep the receipt.' };
+}
+var TIDE_TAX_LABEL = { yes: 'Likely claimable', part: 'Only the business share', capital: 'A business tool', no: 'Usually not claimable', ask: 'Ask your accountant' };
+
 var TIDE_SCHEMAS = {
   // the website's shop (LogicShop.gs): each paid order, split into the parcels it makes, and the checkouts started
   orders: {
@@ -1694,7 +1724,7 @@ var TIDE_SCHEMAS = {
       ['receiptThumbId', 'Receipt thumb', 'text'], ['source', 'Source', 'text'],
       ['externalRef', 'External ref', 'text'], ['status', 'Status', 'text'], ['voidReason', 'Void reason', 'text'],
       ['enteredBy', 'Entered by', 'text'], ['created', 'Created', 'date'], ['editedBy', 'Edited by', 'text'],
-      ['edited', 'Edited', 'date'], ['notes', 'Notes', 'text']
+      ['edited', 'Edited', 'date'], ['notes', 'Notes', 'text'], ['taxClaim', 'Tax: likely claimable?', 'text'], ['taxShare', 'Tax: business share %', 'number']
     ]
   },
   footage: {
@@ -2693,6 +2723,11 @@ if (env.workDone) env.workDone('publish');
       out.channel = '';
       out.category = oneOf(p.category, T.EXPENSE_CATEGORIES, 'what it was for');
       out.gst = p.gstInPrice === true ? r2(amount / 11) : 0;
+      // filed for tax time: the guide's answer (or hers), and the business share where only part counts
+      var guess = tideTaxGuess(out.category, out.description);
+      out.taxClaim = TIDE_TAX_LABEL[p.taxClaim] ? p.taxClaim : guess.claim;
+      var share = Number(p.taxShare);
+      out.taxShare = out.taxClaim === 'part' ? (isFinite(share) && share >= 0 && share <= 100 ? Math.round(share) : 50) : out.taxClaim === 'no' ? 0 : 100;
     }
     return out;
   }
@@ -2751,7 +2786,7 @@ if (env.workDone) env.workDone('publish');
       var mNum = (6 + i) % 12 + 1, yr = fy + (i >= 6 ? 1 : 0);
       months.push({ month: yr + '-' + ('0' + mNum).slice(-2), sales: 0, expenses: 0 });
     }
-    var byChannel = {}, byIncome = {}, byExpense = {}, expenseCount = 0, withReceipt = 0;
+    var byChannel = {}, byIncome = {}, byExpense = {}, expenseCount = 0, withReceipt = 0, taxT = {}, taxN = {}, taxNoReceipt = 0;
     inFy.forEach(function (t) {
       var q = quarters[quarterOf(t.date) - 1];
       var m = months.filter(function (x) { return x.month === t.date.slice(0, 7); })[0];
@@ -2769,6 +2804,9 @@ if (env.workDone) env.workDone('publish');
         q.purchases += t.amount; q.gstCredits += credit;
         if (m) m.expenses += netE;
         byExpense[t.category] = (byExpense[t.category] || 0) + netE;
+        var tc = t.taxClaim || tideTaxGuess(t.category, t.description).claim, ts = t.taxShare === '' || t.taxShare == null ? (tc === 'part' ? 50 : tc === 'no' ? 0 : 100) : Number(t.taxShare);
+        taxT[tc] = (taxT[tc] || 0) + netE * ts / 100; taxN[tc] = (taxN[tc] || 0) + 1;
+        if (tc !== 'no' && !t.receiptId) taxNoReceipt++;
         expenseCount++;
         if (t.receiptId) withReceipt++;
       }
@@ -2808,6 +2846,7 @@ if (env.workDone) env.workDone('publish');
       months: months.map(function (m) { return { month: m.month, sales: r2(m.sales), expenses: r2(m.expenses) }; }),
       byChannel: ranked(byChannel), byIncome: ranked(byIncome), byExpense: ranked(byExpense),
       receipts: { expenses: expenseCount, withReceipt: withReceipt },
+      tax: { claimable: r2((taxT.yes || 0) + (taxT.part || 0)), tools: r2(taxT.capital || 0), ask: r2(taxT.ask || 0), notClaimable: taxN.no || 0, counts: taxN, noReceipt: taxNoReceipt },
       txns: all.filter(function (t) { return isDay(t.date) && fyOf(t.date) === fy; })
         .sort(function (a, b) { return a.date === b.date ? (a.created < b.created ? 1 : -1) : (a.date < b.date ? 1 : -1); })
         .map(clientTxn)
@@ -2819,7 +2858,8 @@ if (env.workDone) env.workDone('publish');
       id: t.id, date: t.date, kind: t.kind, channel: t.channel, category: t.category, description: t.description,
       amount: t.amount, gst: t.gst || 0, qty: t.qty || '', printId: t.printId || '', notes: t.notes || '',
       receiptThumbId: t.receiptThumbId || '', receiptUrl: t.receiptId ? env.files.viewUrl(t.receiptId) : '',
-      source: t.source, status: t.status || 'OK', voidReason: t.voidReason || '', created: t.created || ''
+      source: t.source, status: t.status || 'OK', voidReason: t.voidReason || '', created: t.created || '',
+      taxClaim: t.kind === 'Expense' ? (t.taxClaim || tideTaxGuess(t.category, t.description).claim) : '', taxShare: t.taxShare === '' || t.taxShare == null ? '' : Number(t.taxShare)
     };
   }
 
@@ -2969,11 +3009,13 @@ if (env.workDone) env.workDone('publish');
     })).concat([[], ['Expense category', 'Amount']]).concat(m.byExpense.map(function (c) { return [c.name, c.amount]; }))
       .concat([[], ['Sales channel', 'Amount']]).concat(m.byChannel.map(function (c) { return [c.name, c.amount]; }));
     var ledger = [['ID', 'Date', 'Kind', 'Channel', 'Category', 'Description', 'Amount (incl GST)', 'GST included',
-      'Status', 'Cancel reason', 'Source', 'Receipt', 'Notes']]
+      'Status', 'Cancel reason', 'Source', 'Receipt', 'Notes', 'Tax: likely claimable?', 'Tax: business share %']]
       .concat(m.txns.slice().reverse().map(function (t) {
         return [t.id, t.date, t.kind, t.channel, t.category, t.description, t.amount, t.gst, t.status, t.voidReason,
-          t.source, t.receiptUrl, t.notes];
+          t.source, t.receiptUrl, t.notes, t.taxClaim ? TIDE_TAX_LABEL[t.taxClaim] : '', t.kind === 'Expense' ? t.taxShare : ''];
       }));
+    summary = summary.concat([[], ['Tax time (a guide, not tax advice)', ''], ['Likely claimable expenses (excl GST credits, business share)', m.tax.claimable],
+      ['Business tools (may be claimed over several years)', m.tax.tools], ['To ask the accountant about', m.tax.ask], ['Claimable expenses without a receipt photo', m.tax.noReceipt]]);
     return env.exportRecords('Tide Book records FY' + m.fyLabel, [
       { name: 'Summary', rows: summary }, { name: 'Ledger', rows: ledger }
     ]);
@@ -3109,7 +3151,7 @@ if (env.workDone) env.workDone('publish');
       options: {
         kinds: T.KINDS, timelines: T.TIMELINES, priorities: T.PRIORITIES, stages: T.STAGES, sizes: T.SIZES,
         productTypes: T.PRODUCT_TYPES, fulfilment: T.FULFILMENT, series: allSeries(), seriesInfo: seriesInfo(),
-        saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES
+        saleChannels: T.SALE_CHANNELS, incomeCategories: T.INCOME_CATEGORIES, expenseCategories: T.EXPENSE_CATEGORIES, taxRules: TIDE_TAX_RULES, taxLabels: TIDE_TAX_LABEL
       },
       settings: s, gstRegistered: registered, limitedRuns: TIDE.LIMITED_RUNS === true, practice: env.practice === true,
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
@@ -7291,6 +7333,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-tax-guide', on: '2026-11-19', to: 'all', icon: 'receipt_long', title: 'Expenses, filed for tax time',
+    say: 'When you record an expense, Tide Book says whether it’s likely claimable, and files it that way for your accountant.',
+    steps: ['On Money, tap “Record an expense”.', 'Choose what it was for and who was paid. The note underneath says if it’s likely claimable, and why.', 'If only part was for the business (like the phone), tap how much.', 'Money › For tax time shows the year’s claimable total and any receipts still missing.'],
+    go: { view: 'money', find: '.action', tip: 'Record an expense here.' } },
   { id: '2026-11-19-site-answers', on: '2026-11-19', to: 'artist', icon: 'language', title: 'Your website answers go on by themselves',
     say: 'What you write or send for your website now goes straight onto its draft, on the right page. You look, then Publish. Your returns promise is a few taps.',
     steps: ['On Home, tap one of the website asks (like your morning ritual).', 'Write it or add the photo, then Send. It’s on your website’s draft, on the About page.', 'For returns, tap what suits you: Tide Book writes it for you to check.', 'Not ready yet? Tap “Remind me at the weekend”.', 'Open Website to look, then Publish.'],
@@ -14821,6 +14867,18 @@ var Kit = (function () {
       main.appendChild(rise(asec, n++));
     }
 
+    // tax time: what's likely claimable this year, as filed
+    if (m.tax && m.receipts.expenses) {
+      var tx = m.tax, tsec = section('For tax time');
+      tsec.appendChild(h('div', { class: 'card pad tax-card' },
+        h('div', { class: 'label-s', text: 'Likely claimable this year' }), h('div', { class: 'ai-big', text: money(tx.claimable) }),
+        h('p', { class: 'body-s', style: 'margin:6px 0 0;color:var(--on-surface-variant)', text: 'Expenses for the business (the business share of anything that’s partly personal), without GST credits.' +
+          (tx.tools ? ' Plus ' + money(tx.tools) + ' of business tools, which may be claimed over a few years.' : '') + (tx.ask ? ' ' + money(tx.ask) + ' to ask your accountant about.' : '') }),
+        tx.noReceipt ? note(tx.noReceipt + ' claimable expense' + (tx.noReceipt === 1 ? ' has' : 's have') + ' no receipt photo. Add it from the expense, so nothing’s lost by tax time.', 'receipt_long', 'warn') : null,
+        h('p', { class: 'tf-help', style: 'margin:8px 0 0', text: 'Each expense is filed as you record it. “Export for your accountant” includes it. A guide, not tax advice.' })));
+      main.appendChild(rise(tsec, n++));
+    }
+
     // GST
     var g = m.gst, gsec = section('GST');
     if (g.registered) {
@@ -14919,9 +14977,18 @@ var Kit = (function () {
     }).catch(function (err) { K.setBusy(b, false); fail(err); });
   }
 
+  /** The tax guide, as she types: the same rules Tide Book files the expense by. */
+  function taxGuess(cat, desc) {
+    var R = (S.data.options || {}).taxRules || [], d = String(desc || '').toLowerCase();
+    for (var i = 0; i < R.length; i++) {
+      var r = R[i], byWords = r.words && new RegExp(r.words, 'i').test(d), byCat = r.cats && r.cats.indexOf(cat) >= 0;
+      if (byWords || (byCat && !r.words) || (byCat && r.claim === 'capital')) return { claim: r.claim, why: r.why };
+    }
+    return { claim: 'ask', why: 'It depends on what it was for. Keep the receipt.' };
+  }
   function openTxn(kind, t, preset) {
     var sale = kind === 'Sale', o = S.data.options, dirty = false;
-    var f = t ? { amount: t.amount, date: t.date, channel: t.channel, category: t.category, description: t.description, gstInPrice: t.gst > 0, printId: t.printId || '', qty: t.qty || 1 }
+    var f = t ? { amount: t.amount, date: t.date, channel: t.channel, category: t.category, description: t.description, gstInPrice: t.gst > 0, printId: t.printId || '', qty: t.qty || 1, taxShare: t.taxShare === '' ? 50 : t.taxShare }
       : Object.assign({ amount: 0, date: S.data.today, channel: sale ? 'Centre' : '', category: sale ? 'Prints' : '', description: '', gstInPrice: true, printId: '', qty: 1 }, preset || {});
     var files = [];
     var voided = t && t.status === 'Void';
@@ -14934,7 +15001,24 @@ var Kit = (function () {
         ctl.body.appendChild(amount);
         var date = K.textField({ label: 'Date', type: 'date', value: f.date, onInput: function (v) { f.date = v; touch(); } });
         date.input.max = S.data.today;
-        var desc = K.textField({ label: sale ? 'What was it? (optional)' : 'Who was paid, and what for?', value: f.description, maxlength: 300, onInput: function (v) { f.description = v; touch(); } });
+        var taxBox = h('div', { class: 'tax-guide' });
+        function drawTax() {
+          if (sale) return;
+          taxBox.textContent = '';
+          if (!f.category && !String(f.description || '').trim()) { taxBox.appendChild(h('p', { class: 'tf-help', text: 'Choose what it was for, and Tide Book says whether it’s likely claimable at tax time.' })); return; }
+          var g = taxGuess(f.category, f.description), L = (o.taxLabels || {})[g.claim] || '';
+          var tone = g.claim === 'yes' ? 'good' : g.claim === 'no' ? 'plain' : 'warn';
+          taxBox.appendChild(h('div', { class: 'tax-row ' + tone }, icon(g.claim === 'yes' ? 'check_circle' : g.claim === 'no' ? 'block' : g.claim === 'capital' ? 'handyman' : g.claim === 'part' ? 'pie_chart' : 'help'),
+            h('div', { class: 'grow' }, h('b', { text: L }), h('span', { class: 'body-s', text: g.why }))));
+          if (g.claim === 'part') {
+            if (!(f.taxShare >= 0)) f.taxShare = 50;
+            taxBox.appendChild(h('div', { style: 'margin-top:8px' }, K.choices({ row: true, label: 'How much was for the business?', value: String(f.taxShare),
+              options: [{ value: '25', label: 'About a quarter' }, { value: '50', label: 'About half' }, { value: '75', label: 'Most of it' }, { value: '100', label: 'All of it' }],
+              onChange: function (v) { f.taxShare = Number(v || 50); touch(); } })));
+          }
+          taxBox.appendChild(h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: 'Filed this way for tax time. A guide, not tax advice: keep the receipt.' }));
+        }
+        var desc = K.textField({ label: sale ? 'What was it? (optional)' : 'Who was paid, and what for?', value: f.description, maxlength: 300, onInput: function (v) { f.description = v; touch(); drawTax(); } });
         if (sale) {
           var s1 = sheetSection('Where was it sold?'); s1.style.marginTop = '12px';
           s1.appendChild(K.choices({ label: 'Channel', value: f.channel, options: o.saleChannels, onChange: function (v) { f.channel = v; touch(); } }));
@@ -14970,7 +15054,7 @@ var Kit = (function () {
         } else {
           var e1 = sheetSection('Details'); e1.style.marginTop = '12px';
           e1.appendChild(h('div', { class: 'field-gap' },
-            K.pickField({ label: 'What was it for?', value: f.category, options: o.expenseCategories, onChange: function (v) { f.category = v; touch(); } }), desc, date,
+            K.pickField({ label: 'What was it for?', value: f.category, options: o.expenseCategories, onChange: function (v) { f.category = v; touch(); drawTax(); } }), desc, taxBox, date,
             h('div', { class: 'switch-row' }, h('div', {}, h('div', { class: 'title-m', text: 'Price included GST' }), h('div', { class: 'body-m', text: 'Most Australian receipts do. Check the receipt.' })),
               K.switchBtn({ checked: f.gstInPrice, label: 'Price included GST', onChange: function (v) { f.gstInPrice = v; touch(); } }))));
           var e2 = sheetSection('Receipt');
@@ -14999,13 +15083,14 @@ var Kit = (function () {
           K.setBusy(save, true);
           var linked = sale && (f.category === 'Prints' || f.category === 'Originals') ? f.printId : '';
           var payload = { kind: kind, amount: f.amount, date: f.date, channel: f.channel, category: f.category, description: f.description, gstInPrice: f.gstInPrice,
-            printId: linked, qty: linked && f.category === 'Prints' ? f.qty : '' };
+            printId: linked, qty: linked && f.category === 'Prints' ? f.qty : '', taxShare: f.taxShare };
           (t ? api('updateTransaction', t.id, payload).then(function () { return t.id; }) : api('addTransaction', payload).then(function (r) { return r.id; }))
             .then(function (tid) { return uploadAll('receipt', tid, files); }).then(refresh)
             .then(function () { dirty = false; K.haptic('success'); render(); toast(t ? 'Saved.' : (sale ? 'Sale recorded: ' : 'Expense recorded: ') + (t ? '' : money(f.amount))); ctl.close(); })
             .catch(function (e) { K.setBusy(save, false); fail(e); });
         });
         ctl.foot.appendChild(save);
+        drawTax();
         setTimeout(function () { loadThumbs(); if (!t && !('ontouchstart' in window)) amount.input.focus(); }, 60);
       }
     });
