@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1515,6 +1515,10 @@ body.map-full { overflow: hidden; }
 .usage-row { border-top: 1px solid var(--outline-variant); padding: 10px 0 4px; margin-top: 8px; }
 .usage-row .body-s { color: var(--on-surface-variant); }
 .usage-tip { font-style: italic; margin-top: 2px; }
+.exp-idea { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--outline-variant); }
+.exp-idea .body-s { color: var(--on-surface-variant); }
+.exp-from { margin-top: 2px; opacity: .8; }
+.exp-acts { display: flex; flex-direction: column; gap: 2px; align-items: flex-end; flex: none; }
 </style>
 
   <script>
@@ -1674,6 +1678,7 @@ var TIDE_SETTING_DEFAULTS = {
   sitePublishedAt: '',      // when the website was last published from Tide Book
   sitePublishedSig: '',     // what the shop looked like then, to tell when it has changes that aren't on the website yet
   siteDomain: '', siteDomainOn: false, siteDomainCheck: '',  // her own web address (LogicSite.gs): the name, in use or not, the last check
+  expenseIdeasHidden: [],   // suggested expenses she said aren't hers (Money)
   shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false, shopFromPostcode: '2318', shopFromPlace: 'Medowie, NSW',  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
   seriesExtra: ''           // series she added herself, each with a line about it (JSON): each becomes a page on her website
 };
@@ -3270,7 +3275,7 @@ if (env.workDone) env.workDone('publish');
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), shop: shop.snapshot(role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
@@ -3287,7 +3292,7 @@ if (env.workDone) env.workDone('publish');
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
-      usage: role === 'admin' ? usageList() : [],
+      usage: role === 'admin' ? usageList() : [], expenseIdeas: expenseIdeas(),
       plan: planState(), goals: goalSnapshot(), milestones: milestoneSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
@@ -3610,6 +3615,50 @@ if (env.workDone) env.workDone('publish');
       return { ok: true };
     });
   }
+  // ---------- expenses she might have: the usual ones for an artist's business, and what her own records point to
+  var EXPENSE_IDEAS = [
+    { key: 'phone', category: 'Other expense', description: 'Mobile phone bill (business share)', why: 'If you use your phone for the business, part of the bill counts.' },
+    { key: 'internet', category: 'Other expense', description: 'Internet bill (business share)', why: 'The part used for the business: Instagram, the shop, emails.' },
+    { key: 'materials', category: 'Art materials', description: 'Art supplies', why: 'Paint, paper, brushes, canvas and frames. Keep the receipts.' },
+    { key: 'packing', category: 'Packaging and postage', description: 'Mailers, tubes and packing', why: 'What you post prints in, and the stamps.' },
+    { key: 'subs', category: 'Software and subscriptions', description: 'Apps and subscriptions (Canva, Adobe, storage)', why: 'Monthly apps you use for the art or the business.' },
+    { key: 'domain', category: 'Software and subscriptions', description: 'Website address (domain)', why: 'If you bought your own web address, it renews each year.' },
+    { key: 'stall', category: 'Selling fees', description: 'Market stall fee', why: 'Fees for markets and events you sell at.' },
+    { key: 'insurance', category: 'Professional fees', description: 'Public liability insurance', why: 'Most markets ask for it. It’s a business cost.' },
+    { key: 'accountant', category: 'Professional fees', description: 'Accountant or tax agent', why: 'The fee for doing your tax return counts.' },
+    { key: 'cards', category: 'Marketing', description: 'Business cards and flyers', why: 'Anything printed to tell people about your work.' }
+  ];
+  function expenseIdeas() {
+    var s = settings(), hidden = list(s.expenseIdeasHidden), today = env.today(), fy = fyOf(today), month = today.slice(0, 7);
+    var led = rows('ledger').filter(function (t) { return t.status !== 'Void' && isDay(t.date); });
+    var exp = led.filter(function (t) { return t.kind === 'Expense'; }), out = [];
+    function has(re, since) { return exp.some(function (t) { return (!since || t.date >= since) && re.test(String(t.description || '') + ' ' + t.category); }); }
+    // what her own records point to
+    var web = led.filter(function (t) { return t.kind === 'Sale' && t.source === 'website' && fyOf(t.date) === fy && !/^Postage charged/.test(t.description); });
+    var orderRefs = {}; web.forEach(function (t) { orderRefs[String(t.externalRef || '').split(':').slice(0, 2).join(':')] = 1; });
+    var nOrders = Object.keys(orderRefs).length, webTotal = web.reduce(function (n, t) { return n + Number(t.amount || 0); }, 0);
+    if (nOrders && !has(/stripe/i, fy + '-07-01')) out.push({ key: 'stripe-' + fy, category: 'Selling fees', description: 'Stripe fees on website sales', amount: r2(webTotal * (s.paymentFeePct || 1.65) / 100 + nOrders * 0.3),
+      why: 'Stripe takes about ' + (s.paymentFeePct || 1.65) + '% + 30c of each sale. On your ' + nOrders + ' website order' + (nOrders === 1 ? '' : 's') + ' this year that’s about $' + r2(webTotal * (s.paymentFeePct || 1.65) / 100 + nOrders * 0.3) + '. Check it against Stripe’s payout report.', from: 'Your website orders' });
+    var posted = 0; rows('orders').forEach(function (o) { list(o.parts).forEach(function (p) { if ((p.kind === 'self' || p.kind === 'original') && p.status === 'Posted' && String(p.postedAt).slice(0, 7) === month) posted++; }); });
+    if (posted && !has(/post|stamp|aus ?post|sendle/i, month + '-01')) out.push({ key: 'post-' + month, category: 'Packaging and postage', description: 'Postage for ' + posted + ' parcel' + (posted === 1 ? '' : 's') + ' posted this month',
+      why: 'You marked ' + posted + ' parcel' + (posted === 1 ? '' : 's') + ' posted. The postage you paid is a business cost.', from: 'Your orders' });
+    rows('suppliers').filter(function (x) { return !x.deleted; }).forEach(function (sp) {
+      if (has(new RegExp(String(sp.name).replace(/[^a-z0-9 ]/gi, '').split(' ')[0] || 'xyz', 'i'), month + '-01')) return;
+      var mk = list(sp.makes).join(' ').toLowerCase();
+      out.push({ key: 'sup-' + sp.id + '-' + month, category: /print/.test(mk) ? 'Printing' : /pack/.test(mk) ? 'Packaging and postage' : 'Art materials', description: String(sp.name), why: 'One of your suppliers. Anything from them this month?', from: 'Your suppliers' });
+    });
+    // the usual monthly ones, due again
+    var byDesc = {};
+    exp.forEach(function (t) { var k = String(t.description || '').toLowerCase().trim(); if (k) (byDesc[k] = byDesc[k] || { t: t, months: {} }).months[t.date.slice(0, 7)] = 1; });
+    Object.keys(byDesc).forEach(function (k) {
+      var b = byDesc[k], ms = Object.keys(b.months).sort();
+      if (ms.length >= 2 && !b.months[month]) out.push({ key: 'again-' + k.slice(0, 30) + '-' + month, category: b.t.category, description: b.t.description, amount: Number(b.t.amount) || '', why: 'You recorded this in ' + ms.length + ' months. Due again?', from: 'Your usual expenses' });
+    });
+    // and the usual ones for an artist's business, until she says they aren't hers or records one
+    EXPENSE_IDEAS.forEach(function (e) { if (!has(new RegExp(e.description.split(' ')[0], 'i'))) out.push(Object.assign({ from: 'Common for artists' }, e)); });
+    return out.filter(function (e) { return hidden.indexOf(e.key) < 0; }).slice(0, 14);
+  }
+  function hideExpenseIdea(key) { need(['admin', 'artist']); var h0 = list(settings().expenseIdeasHidden); if (h0.indexOf(key) < 0) h0.push(String(key).slice(0, 80)); env.settings.set({ expenseIdeasHidden: h0.slice(-200) }); return { ok: true }; }
   // ---------- how she's using it (admin only): what didn't land where it fits, and how to make that clearer
   function noteUsage(area, what, placed, tip, view) {
     try {
@@ -4209,7 +4258,7 @@ if (env.workDone) env.workDone('publish');
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, usageDone: usageDone, addMilestone: addMilestone, updateMilestone: updateMilestone, deleteMilestone: deleteMilestone, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, usageDone: usageDone, hideExpenseIdea: hideExpenseIdea, addMilestone: addMilestone, updateMilestone: updateMilestone, deleteMilestone: deleteMilestone, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, addSeries: addSeries, updateSeries: updateSeries, printfulForPrint: printfulForPrint, printfulPrintFile: printfulPrintFile, printfulFileUse: printfulFileUse, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -7543,7 +7592,112 @@ var TIDE_BACKLOG = [
  *   steps: how to use it, a few short steps
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
+// Every way to use Tide Book, for Settings › How to. Laid out like What's new: area, what it's for, the steps, and where Show me goes.
+// Keep it up to date with each change (alongside TIDE_CHANGES).
+var TIDE_GUIDE = [
+  { id: 'g-menu', area: 'Getting around', to: 'all', icon: 'apps', title: 'The menu',
+    say: 'The round button, bottom left, says where you are. Tap it for every part of Tide Book.',
+    steps: ['Tap the button in the bottom-left corner.', 'Tap where you want to go.', 'A red number means something is waiting there.'], go: { view: 'home', find: '#menu-bubble', tip: 'Your menu.' } },
+  { id: 'g-home', area: 'Getting around', to: 'all', icon: 'home', title: 'Home',
+    say: 'What needs you today, your plan’s next step, and shortcuts to the things you do most.',
+    steps: ['Open Home from the menu.', 'The cards at the top are what’s waiting for you.', 'Under your plan, “This week” opens your calendar.', 'To change the order of Home, use “Arrange your home page” at the bottom.'], go: { view: 'home', tip: 'Home: what needs you today.' } },
+  { id: 'g-report', area: 'Getting around', to: 'all', icon: 'feedback', title: 'Tell Jye something isn’t right',
+    say: 'The small speech button at the top right of every page sends a note (and a screenshot) straight to Jye.',
+    steps: ['Tap the speech button at the top right.', 'Say what happened or what you’d like.', 'Tap Send. Tide Book may ask a quick question so it’s done the way you mean.'], go: { view: 'home', find: '.fb-bubble', tip: 'Tell Jye here.' } },
+  { id: 'g-park', area: 'Getting around', to: 'all', icon: 'calendar_month', title: 'Park for now, or Remove',
+    say: 'Every idea, product, post and conversation has Park for now (back on a day you pick) and Remove (just this, or not interested ever).',
+    steps: ['Open the thing.', 'Tap Park for now and pick a day, or Remove.', 'Parked things come back by themselves on their day, with a reminder the day before.', 'Everything has an Undo.'] },
+  { id: 'g-goals', area: 'Goals and your plan', to: 'all', icon: 'wb_sunny', title: 'Your goals, as a night sky',
+    say: 'Milestones (big aims) are suns, your goals are the planets around them, and each goal’s steps are its moons.',
+    steps: ['Open Ideas › Goals.', 'Tap “Add a milestone” at the top, name it, and tick its goals (Tide Book ticks the ones that fit).', 'Tap “Add a goal” on the map. Tide Book picks the milestone it fits.', 'Tap a planet to choose it: drag it, or use Open, Shrink or Bin.', 'Drag a sun anywhere: its planets follow when you let go.', 'Full screen is at the top right.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Add a goal here.' } },
+  { id: 'g-order', area: 'Goals and your plan', to: 'all', icon: 'format_list_numbered', title: 'Goals in order of importance',
+    say: '“In order” lines your goals up from the sun, most important nearest. The first one sets the order of everything else.',
+    steps: ['In Ideas › Goals, tap In order.', 'Tap a planet, then drag it left or right.', 'The nearest one is your “Now” goal.'], go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'order' }, tip: 'Most important nearest the sun.' } },
+  { id: 'g-plan', area: 'Goals and your plan', to: 'all', icon: 'flag', title: 'Plan a goal, a step at a time',
+    say: 'Open a goal for its steps. Tide Book can plan them with you, and each step comes with the tools to do it.',
+    steps: ['Tap a goal, then Open.', 'Tap “Plan it with me” for a few questions, or add steps yourself.', 'Tap a step for its tools, and tick it when it’s done.', 'Give a step a day, and it shows on your calendar.'] },
+  { id: 'g-calendar', area: 'Goals and your plan', to: 'all', icon: 'calendar_month', title: 'The calendar',
+    say: 'Your goals’ steps in their colours, your posts, parked things coming back, and anything of your own.',
+    steps: ['Open the menu and tap Calendar.', 'Switch between Month and Week.', 'Tap a day, then Add: your own thing, or a step of a goal.'], go: { view: 'calendar', find: '.cal-top', tip: 'Month or week.' } },
+  { id: 'g-ideas', area: 'Ideas', to: 'all', icon: 'lightbulb', title: 'Save an idea',
+    say: 'Anything you’d like to make or do. Tide Book researches it and tells you plainly if it’s worth it.',
+    steps: ['Open Ideas › Ideas.', 'Tap New idea and say it in a few words.', 'Tide Book looks into it and gives it a score.', 'Open it to take it further: a product, an artwork, or part of your plan.'], go: { view: 'ideas', state: { ideasTab: 'ideas' }, find: '.fab', tip: 'New idea.' } },
+  { id: 'g-talk', area: 'Ideas', to: 'all', icon: 'forum', title: 'Talk it through',
+    say: 'A gentle back and forth to work something out. What you say is yours: only the write-up you choose reaches Jye.',
+    steps: ['Open Ideas › Talk.', 'Start a conversation about anything.', 'Answer the questions with a tap, or in your own words.', 'Check the write-up before anything is shared.'], go: { view: 'ideas', state: { ideasTab: 'talk' }, tip: 'Talk it through here.' } },
+  { id: 'g-products', area: 'Ideas', to: 'all', icon: 'inventory_2', title: 'From a product idea to on sale',
+    say: 'A product goes from idea to on sale one step at a time. Tide Book does what it can; you say go.',
+    steps: ['On an idea, tap “Make it a product”.', 'In Ideas › Products, tap the step at the top each time.', 'When it’s on sale, its shop page is made for you: add a photo, then publish.'], go: { view: 'ideas', state: { ideasTab: 'products' }, tip: 'Each product shows its next step.' } },
+  { id: 'g-inspo', area: 'Ideas', to: 'all', icon: 'favorite', title: 'Save inspiration',
+    say: 'A screenshot, a link or a few words about something that caught your eye.',
+    steps: ['Open Ideas › Inspo, or tap “Save inspiration” on Home.', 'Add the picture or link, and a word on why.'], go: { view: 'ideas', state: { ideasTab: 'inspo' }, tip: 'Your inspiration.' } },
+  { id: 'g-notes', area: 'Ideas', to: 'all', icon: 'edit_note', title: 'Your notes',
+    say: 'Private writing, just for you. Tide Book can help you expand a note when you ask.',
+    steps: ['Open Ideas › Notes.', 'Tap New note.'], go: { view: 'ideas', state: { ideasTab: 'notes' }, tip: 'Your notes are private.' } },
+  { id: 'g-artwork', area: 'Artworks and your shop', to: 'all', icon: 'palette', title: 'Add an artwork',
+    say: 'Photos, its story and its series, once. It goes on your website in its series, the shop and the living gallery.',
+    steps: ['Open Artworks and tap Add an artwork.', 'Add photos, the title, the story, and where it sits (or “A new series…”).', 'Tap Launch, then publish your website.'], go: { view: 'prints', find: '.fab', tip: 'Add an artwork.' } },
+  { id: 'g-sizes', area: 'Artworks and your shop', to: 'all', icon: 'straighten', title: 'Print sizes, and who makes them',
+    say: 'A4 and smaller you post yourself. A3 and up are printed and posted by Printful.',
+    steps: ['On an artwork, tap Add a size and set the price.', 'For A3 and up, tap “Choose Printful’s paper”, match the sizes, then “Send the print file”.'] },
+  { id: 'g-original', area: 'Artworks and your shop', to: 'all', icon: 'workspace_premium', title: 'Selling an original',
+    say: 'Add “The original” with a price, and its size so its postage can be worked out. It’s posted insured.',
+    steps: ['On an artwork, tap Make it into…, then The original.', 'Give it a price, and switch it on sale.', 'Fill in its size in cm (wide, high, deep).'] },
+  { id: 'g-orders', area: 'Artworks and your shop', to: 'all', icon: 'local_shipping', title: 'Orders: post them and tell the buyer',
+    say: 'Every website order lands in Orders: what to post, what Printful is making, and where each one is.',
+    steps: ['Open the menu and tap Orders.', 'For yours: Packing slip, post it, then “It’s posted” with the tracking number.', 'Tap “Tell” to email the buyer their tracking.', 'Printful’s part is sent and followed for you.'], go: { view: 'orders', tip: 'Your orders.' } },
+  { id: 'g-ready', area: 'Artworks and your shop', to: 'all', icon: 'storefront', title: 'Ready to sell',
+    say: 'Everything your shop needs before its first sale, with a button for each: payments, Printful, postage, your first artwork.',
+    steps: ['Open Orders.', 'Work down Ready to sell.', 'For postage, link Australia Post and say where you post from: each buyer’s postage is worked out for them.'], go: { view: 'orders', find: '.ready-card', tip: 'Your steps to the first sale.' } },
+  { id: 'g-website', area: 'Your website', to: 'all', icon: 'language', title: 'Change your website',
+    say: 'Tap anything on your website to change it: words, pictures, colours, sections and pages. Nothing goes live until you publish.',
+    steps: ['Open the menu and tap Website.', 'Tap the thing you want to change and use its controls.', 'For something bigger, tap “Ask for something bigger”.', 'Tap Publish when you’re happy. “Visit” opens it as visitors see it.'], go: { view: 'site', find: '.site-bar', tip: 'Publish here.' } },
+  { id: 'g-address', area: 'Your website', to: 'all', icon: 'link', title: 'Your own web address',
+    say: 'If you own an address, your website can live there.',
+    steps: ['In Website, tap “Your own address”.', 'Copy the lines into where you bought it, or ask Jye.', 'Tap Check, then Switch.'], go: { view: 'site', find: '.site-tools .btn', tip: 'Your own address.' } },
+  { id: 'g-asks', area: 'Your website', to: 'artist', icon: 'add_a_photo', title: 'What your website still needs',
+    say: 'Small asks on Home: a photo, a few words. What you send goes straight onto your website’s draft.',
+    steps: ['Tap one of the website asks on Home.', 'Send the photo or your words. Not ready? “Remind me at the weekend”.', 'Then look in Website and Publish.'] },
+  { id: 'g-posts', area: 'Posts', to: 'all', icon: 'perm_media', title: 'Posts from your photos and clips',
+    say: 'Add photos or video and Tide Book drafts posts in your voice. Nothing goes out until you’ve approved it.',
+    steps: ['Tap “Add photos or video” on Home.', 'Open Posts › Review to read the drafts.', 'Approve, ask for changes, or pick a time to post.'], go: { view: 'content', state: { contentTab: 'review' }, tip: 'Your drafts to review.' } },
+  { id: 'g-sale', area: 'Money', to: 'all', icon: 'point_of_sale', title: 'Record a sale',
+    say: 'Sales at the centre, markets or anywhere else. Website sales are recorded for you.',
+    steps: ['Open Money and tap Record a sale.', 'Say where and what. For an original, pick which one.'], go: { view: 'money', find: '.action', tip: 'Record a sale.' } },
+  { id: 'g-expense', area: 'Money', to: 'all', icon: 'receipt_long', title: 'Record an expense, filed for tax time',
+    say: 'Say who was paid and what for. Tide Book files it, and says if it’s likely claimable.',
+    steps: ['Open Money and tap Record an expense.', 'Write who was paid and what for: Tide Book picks the kind of expense.', 'Photograph the receipt.', '“Expenses you might have” suggests ones you may already pay for.', 'For tax time shows the year’s claimable total.'], go: { view: 'money', find: '.action', tip: 'Record an expense.' } },
+  { id: 'g-gst', area: 'Money', to: 'all', icon: 'account_balance', title: 'GST, and records for your accountant',
+    say: 'GST by quarter if you’re registered, and your records as spreadsheets at any time.',
+    steps: ['Open Money and scroll to GST.', 'Tap “Export for your accountant” for this year’s records.'], go: { view: 'money', tip: 'Money.' } },
+  { id: 'g-setup', area: 'Settings', to: 'all', icon: 'settings', title: 'Your business setup',
+    say: 'Suppliers, prices and how you like to work: Tide Book uses it in everything it does.',
+    steps: ['Open the menu and tap Settings.', 'Use Get set up and the business setup cards.'], go: { view: 'settings', tip: 'Settings.' } },
+  { id: 'g-whatsnew', area: 'Settings', to: 'all', icon: 'campaign', title: 'What’s new',
+    say: 'Every change comes with a short how-to. It opens by itself after something changes.',
+    steps: ['It opens by itself after a change.', 'In Settings › How to, tap “What’s new, lately” to see them again.'] },
+  { id: 'g-admin-usage', area: 'For Jye', to: 'admin', icon: 'insights', title: 'How Denise is using it',
+    say: 'On Home: what Tide Book placed for her, and what might make that screen clearer. Never her private writing.',
+    steps: ['Open Home.', 'Read “How Denise’s using it”.', 'Tap “Talk it through” to make it a suggestion, or “Fine as it is”.'] },
+  { id: 'g-admin-view', area: 'For Jye', to: 'admin', icon: 'visibility', title: 'See it as Denise sees it',
+    say: 'A practice copy of her Tide Book: try anything as her, nothing real changes.',
+    steps: ['In Settings, use “View as Denise”.', 'Switch back the same way.'] },
+  { id: 'g-admin-costs', area: 'For Jye', to: 'admin', icon: 'savings', title: 'AI costs',
+    say: 'What Tide Book spent, beside the same work done entirely with Claude Opus 5.5, in A$.',
+    steps: ['Open Money and scroll to AI costs.'], go: { view: 'money', find: '.ai-cost', tip: 'AI costs.' } }
+];
+function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
+
 var TIDE_CHANGES = [
+  { id: '2026-11-19-how-to', on: '2026-11-19', to: 'all', icon: 'menu_book', title: 'How to: every part of Tide Book',
+    say: 'Settings has a How to page now: every way to use Tide Book, a step at a time, with Show me.',
+    steps: ['Open the menu and tap Settings.', 'Tap “How to” at the top.', 'Tap anything for its steps, then Show me. Or search for a word.'],
+    go: { view: 'settings', state: { adminTab: 'guide' }, tip: 'How to is here.' } },
+  { id: '2026-11-19-expense-ideas', on: '2026-11-19', to: 'all', icon: 'receipt_long', title: 'Expenses you might have',
+    say: 'Money suggests expenses you may already pay for (and ones your own records point to, like Stripe’s fees), so nothing claimable is missed.',
+    steps: ['Open Money and scroll to “Expenses you might have”.', 'Tap Record it, or “Not mine” to hide it.', 'Record an expense now files it by its words, even if you leave it as Other.'],
+    go: { view: 'money', find: '.exp-ideas', tip: 'Suggested expenses.' } },
   { id: '2026-11-19-sky-order', on: '2026-11-19', to: 'all', icon: 'wb_sunny', title: 'Your goals sky: in order, and suns you can move',
     say: 'Tap “In order” and the same planets glide into a line from the sun, most important nearest. Drag a sun anywhere: when you let go, its planets make their way over.',
     steps: ['In Ideas › Goals, switch between Map and In order and watch them move.', 'In order, tap a planet, then drag it left or right to change its place.', 'On the map, drag a sun anywhere. Its planets follow once you let go.', 'Tap “Full screen” at the top right for the whole screen.'],
@@ -7551,7 +7705,7 @@ var TIDE_CHANGES = [
   { id: '2026-11-19-goal-sky', on: '2026-11-19', to: 'all', icon: 'wb_sunny', title: 'Your goals, as a night sky',
     say: 'The goals map is a little solar system now. A milestone (a big aim) is a sun; the goals that lead to it orbit it like planets; each goal’s steps are its moons.',
     steps: ['In Ideas › Goals, tap “Add a milestone” at the top left, name it, and tick the goals that belong to it.', 'Tap a planet to choose it. Then drag it into a sun’s orbit: it glides into place beside the others.', 'Drop a planet on another to work on them together.', 'Chosen planets have Open, Shrink and Bin, kept apart so you never bin one by mistake. Bin has an Undo.', 'Tap a moon to see that step and tick it off.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.sky-add', tip: 'Start with a milestone.' } },
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Start with a milestone.' } },
   { id: '2026-11-19-tax-guide', on: '2026-11-19', to: 'all', icon: 'receipt_long', title: 'Expenses, filed for tax time',
     say: 'When you record an expense, Tide Book says whether it’s likely claimable, and files it that way for your accountant.',
     steps: ['On Money, tap “Record an expense”.', 'Choose what it was for and who was paid. The note underneath says if it’s likely claimable, and why.', 'If only part was for the business (like the phone), tap how much.', 'Money › For tax time shows the year’s claimable total and any receipts still missing.'],
@@ -15129,6 +15283,21 @@ var Kit = (function () {
       main.appendChild(rise(asec, n++));
     }
 
+    // expenses she might have: the usual ones, and what her own records point to
+    var EI = S.data.expenseIdeas || [];
+    if (EI.length && m.isCurrent) {
+      var esec = section('Expenses you might have'), elist = h('div', { class: 'card pad exp-ideas' }), showAll = !!S.allExpIdeas;
+      elist.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 6px;color:var(--on-surface-variant)', text: 'Things you may already pay for, so nothing claimable is missed. Tap one to record it.' }));
+      EI.slice(0, showAll ? 14 : 5).forEach(function (e) {
+        elist.appendChild(h('div', { class: 'exp-idea' }, h('div', { class: 'grow' }, h('b', { text: e.description + (e.amount ? ' · about ' + money(e.amount) : '') }), h('div', { class: 'body-s', text: e.why }), h('div', { class: 'label-s exp-from', text: e.from })),
+          h('div', { class: 'exp-acts' }, btn('tonal', 'Record it', { sm: true, onclick: function () { openTxn('Expense', null, { category: e.category, description: e.description, amount: e.amount || 0 }); } }),
+            btn('text', 'Not mine', { sm: true, onclick: function (ev) { K.setBusy(ev.currentTarget, true); api('hideExpenseIdea', e.key).then(refresh).then(render).catch(fail); } }))));
+      });
+      if (EI.length > 5) elist.appendChild(btn('text', showAll ? 'Fewer' : 'All ' + EI.length, { sm: true, onclick: function () { S.allExpIdeas = !showAll; render(); } }));
+      esec.appendChild(elist);
+      main.appendChild(rise(esec, n++));
+    }
+
     // tax time: what's likely claimable this year, as filed
     if (m.tax && m.receipts.expenses) {
       var tx = m.tax, tsec = section('For tax time');
@@ -18801,12 +18970,49 @@ var Kit = (function () {
     if (!ADMIN && S.adminTab === 'reports') S.adminTab = 'settings';
     var tabs = [{ value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'consent', label: 'Consent' }, { value: 'settings', label: 'Settings' }];
     if (ADMIN) tabs.unshift({ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined });
+    tabs.unshift({ value: 'guide', label: 'How to' });
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.adminTab, onChange: function (v) { S.adminTab = v; S.animate = true; render(); }, options: tabs
     })), 1));
-    ({ reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, consent: tabConsent, settings: viewSettings }[S.adminTab] || tabContacts)(main);
+    ({ guide: tabGuide, reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, consent: tabConsent, settings: viewSettings }[S.adminTab] || tabContacts)(main);
   }
 
+  /** Every way to use Tide Book, laid out like What's new: what it's for, the steps, and Show me. */
+  function guideCards(items) {
+    var wrap = h('div'), open = S.guideOpen || (S.guideOpen = {});
+    items.forEach(function (c) {
+      var card = h('div', { class: 'news-card' });
+      function draw() {
+        card.textContent = '';
+        var head = h('button', { type: 'button', class: 'news-head', 'aria-expanded': String(!!open[c.id]) }, h('span', { class: 'fold-ic' }, icon(c.icon || 'help')),
+          h('span', { class: 'grow' }, h('span', { class: 'news-t', text: c.title }), h('span', { class: 'news-say', text: c.say })), icon(open[c.id] ? 'expand_less' : 'expand_more'));
+        head.addEventListener('click', function () { open[c.id] = !open[c.id]; K.haptic(); draw(); });
+        card.appendChild(head);
+        if (!open[c.id]) return;
+        var ol = h('ol', { class: 'news-steps' }); (c.steps || []).forEach(function (s) { ol.appendChild(h('li', { text: s })); }); card.appendChild(ol);
+        if (c.go) card.appendChild(btn('tonal', 'Show me', { sm: true, icon: 'touch_app', onclick: function () { showMe(c.go); } }));
+      }
+      draw(); wrap.appendChild(card);
+    });
+    return wrap;
+  }
+  function tabGuide(main) {
+    var G = S.data.guide || [], q = S.guideQuery || '';
+    main.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 10px;color:var(--on-surface-variant)', text: 'Every part of Tide Book, a step at a time. Tap one to see how, then “Show me” to go straight there.' }));
+    var search = K.textField({ label: 'Find something', value: q, onInput: function (v) { S.guideQuery = v; draw(); } });
+    var holder = h('div');
+    function draw() {
+      holder.textContent = '';
+      var words = String(S.guideQuery || '').toLowerCase().split(/\s+/).filter(Boolean);
+      var sections = {};
+      G.filter(function (c) { var hay = (c.title + ' ' + c.say + ' ' + (c.steps || []).join(' ')).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); })
+        .forEach(function (c) { (sections[c.area] = sections[c.area] || []).push(c); });
+      Object.keys(sections).forEach(function (a) { holder.append(h('div', { class: 'label-s', style: 'margin:16px 4px 8px', text: a }), guideCards(sections[a])); });
+      if (!Object.keys(sections).length) holder.appendChild(h('p', { class: 'body-m', text: 'Nothing matches. Try another word.' }));
+    }
+    main.append(search, holder); draw();
+    main.appendChild(h('div', { style: 'margin-top:16px' }, btn('text', 'What’s new, lately', { icon: 'campaign', onclick: function () { whatsNew(true); } })));
+  }
   function tabContacts(main) {
     var hub = S.data.hub, listEl = h('div');
     function draw() {
