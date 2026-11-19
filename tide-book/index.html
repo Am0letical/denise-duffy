@@ -15302,7 +15302,7 @@ var Kit = (function () {
         })() })), icon('chevron_right')), 1));
     main.appendChild(rise(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 12px;flex-wrap:wrap' },
       h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; if (SKY.morph && SKY.morph(v)) return; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }] })),
-      btn('filled', 'Add a goal', { icon: 'add', sm: true, onclick: function () { addGoalAsk(null); } })), 1));
+      btn('filled', 'Add a milestone', { icon: 'wb_sunny', sm: true, onclick: function () { openMilestone(null); } })), 1));
     if (!goals.length) {
       var start = h('div', { class: 'card pad' }, h('div', { class: 'title-m', text: 'Where would you like to get to?' }),
         h('p', { class: 'body-m', style: 'margin:4px 0 12px;color:var(--on-surface-variant)', text: 'Add anything, big or small. Then put them in order, and Tide Book helps you plan the steps for each one. Tap one to start, or add your own.' }));
@@ -15315,11 +15315,46 @@ var Kit = (function () {
     }
     skyMap(main, goals);
   }
-  function addGoalAsk(parentId, at) {
-    K.ask({ title: parentId ? 'A smaller goal, as part of this one' : 'Add a goal', label: 'The goal', options: parentId ? [] : GOAL_STARTERS.slice(0, 4), confirmLabel: 'Add it', maxlength: 120 }).then(function (title) {
-      if (!title) return;
-      api('addGoal', Object.assign({ title: title, parentId: parentId || '' }, at || {})).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
+  /** The milestone a goal most likely leads to, from the words in it (and in the goals already orbiting each one). '' if none fits. */
+  function milestoneFor(text) {
+    var stop = /^(the|and|for|with|my|a|an|to|of|in|on|at|by|it|is|be|up|get|make|more|some|one|time|step)$/;
+    function words(s) { return String(s || '').toLowerCase().split(/[^a-z0-9]+/).filter(function (w) { return w.length > 2 && !stop.test(w); }).map(function (w) { return w.replace(/(ing|es|s)$/, ''); }); }
+    var mine = words(text), best = '', top = 0;
+    (S.data.milestones || []).forEach(function (m) {
+      var pool = words(m.title).concat.apply(words(m.title), (S.data.goals || []).filter(function (g) { return g.milestoneId === m.id; }).map(function (g) { return words(g.title); }));
+      var score = mine.filter(function (w) { return pool.indexOf(w) >= 0; }).length;
+      if (score > top) { top = score; best = m.id; }
     });
+    return best;
+  }
+  function addGoalAsk(parentId, at) {
+    at = at || {};
+    var ms = S.data.milestones || [], f = { title: '', milestoneId: at.milestoneId || '' }, picked = !!at.milestoneId;
+    K.sheet({ title: parentId ? 'A smaller goal, as part of this one' : 'Add a goal', build: function (ctl) {
+      var holder = h('div');
+      var t1 = K.textField({ label: 'The goal', maxlength: 120, suggest: parentId ? [] : GOAL_STARTERS.slice(0, 4), onInput: function (v) {
+        f.title = v;
+        // Tide Book's best guess for its milestone, until she picks one herself
+        if (!picked && ms.length) { var g = milestoneFor(v); if (g !== f.milestoneId) { f.milestoneId = g; drawMs(); } }
+      } });
+      function drawMs() {
+        holder.textContent = '';
+        if (parentId || !ms.length) return;
+        holder.append(h('div', { style: 'height:14px' }), K.choices({ label: 'Which milestone does it lead to?', value: f.milestoneId,
+          options: ms.map(function (m) { return { value: m.id, label: m.title, icon: 'wb_sunny' }; }).concat([{ value: '', label: 'None yet' }]),
+          onChange: function (v) { f.milestoneId = v || ''; picked = true; } }),
+          h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: f.milestoneId && !picked ? 'Tide Book’s guess, from the words. Tap another if it’s wrong.' : 'On the map it orbits that milestone’s sun.' }));
+      }
+      ctl.body.append(t1, holder); drawMs();
+      var go = btn('filled', 'Add it', { icon: 'check', lg: true, block: true, onclick: function () {
+        if (!String(f.title || t1.input.value).trim()) { toast('Write the goal first, or tap one of the suggestions.'); t1.input.focus(); return; }
+        K.setBusy(go, true);
+        api('addGoal', Object.assign({}, at, { title: f.title || t1.input.value, parentId: parentId || '', milestoneId: f.milestoneId })).then(refresh)
+          .then(function () { K.haptic('success'); ctl.close(); render(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+      } });
+      ctl.foot.appendChild(go);
+      setTimeout(function () { t1.input.focus(); }, 350);
+    } });
   }
   /** The map: goals as bubbles she drags about. Pinch (or the buttons) to zoom; drag an empty spot to move around.
    *  Drop one goal on another to work on them together, or to make it part of it. Lines show what goes with what. */
@@ -16150,15 +16185,15 @@ var Kit = (function () {
       fs.addEventListener('click', function (e) { e.stopPropagation(); goalMapFull(true); });
       board.appendChild(fs);
     }
-    var add = h('button', { type: 'button', class: 'sky-add' }, icon('wb_sunny'), suns.length ? 'Milestone' : 'Add a milestone');
+    var add = h('button', { type: 'button', class: 'sky-add' }, icon('add'), 'Add a goal');
     add.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-    add.addEventListener('click', function (e) { e.stopPropagation(); openMilestone(null); });
+    add.addEventListener('click', function (e) { e.stopPropagation(); addGoalAsk(null); });
     board.appendChild(add);
     function hintFor() { return mode === 'order' ? 'Most important nearest the sun. Tap a planet, then drag it left or right to change its place.' : suns.length ? 'Tap a planet to choose it, then drag it. Moons are its steps.' : 'Add a milestone, a big aim, and drop your goals into its orbit.'; }
     var HINT = hintFor();
     board.appendChild(h('div', { class: 'sky-hint', 'aria-live': 'polite', text: HINT }));
     if (full) board.appendChild(h('div', { class: 'gm-full-bar' }, h('span', { class: 'gm-full-t', text: 'Your goals' }),
-      btn('tonal', 'Add a goal', { sm: true, icon: 'add', onclick: function () { addGoalAsk(null); } }),
+      btn('tonal', 'Add a milestone', { sm: true, icon: 'wb_sunny', onclick: function () { openMilestone(null); } }),
       btn('filled', 'Done', { sm: true, icon: 'close_fullscreen', onclick: function () { goalMapFull(false); } })));
     main.appendChild(rise(board, 2));
     main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Milestones are the suns, goals the planets, and each goal’s steps its moons. Tap a planet to choose it: then drag it into a milestone’s orbit (it settles in beside the others), onto another goal to work on them together, or use Open, Shrink or Bin. Pinch to zoom.' }));
