@@ -1759,6 +1759,20 @@ body.map-full { overflow: hidden; }
 .nt-ver { display: flex; align-items: center; gap: 8px; padding: 10px 4px; border-bottom: 1px solid var(--outline-variant); }
 .nt-done-toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 9999; display: flex; align-items: center; gap: 10px; width: min(92vw, 460px); padding: 8px 8px 8px 14px; border-radius: 14px; background: #2F3033; color: #F2F0F4; box-shadow: 0 6px 20px rgba(0,0,0,.25); transition: opacity .3s; }
 .nt-done-toast.out { opacity: 0; } .nt-done-toast .btn { color: #A8C8FF; }
+/* ---- the cleanup: symbols for the everyday actions, help behind ⓘ ---- */
+.btn.bare { padding: 0; width: 40px; min-width: 40px; justify-content: center; }
+.btn.bare.sm { width: 34px; min-width: 34px; }
+.btn.bare .ms { margin: 0; }
+.tip-bubble { position: fixed; z-index: 10000; padding: 6px 10px; border-radius: 8px; background: #2F3033; color: #F2F0F4; font: 500 12px/16px var(--font); pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+.page-head { display: flex; align-items: center; gap: 4px; }
+.page-head .page-title { margin-right: 2px; }
+.info-btn, .tk-more { all: unset; box-sizing: border-box; display: inline-grid; place-items: center; cursor: pointer; border-radius: 50%; color: var(--on-surface-variant); }
+.info-btn { width: 32px; height: 32px; flex: none; } .info-btn .ms { font-size: 20px; }
+.info-btn[aria-expanded="true"] { color: var(--primary); background: var(--surface-low); }
+.tk-more { width: 22px; height: 22px; margin-left: 2px; vertical-align: -5px; } .tk-more .ms { font-size: 17px; }
+.tk-more:focus-visible, .info-btn:focus-visible { outline: 2px solid var(--primary); }
+.tk-short { }
+.btn.bare { flex: none !important; }
 </style>
 
   <script>
@@ -2227,7 +2241,7 @@ var TIDE_SCHEMAS = {
       ['expandStatus', 'Claude status', 'text'], ['expansion', 'Claude’s expansion', 'json'], ['expandTries', 'Claude tries', 'number'],
       ['expandNote', 'Claude note', 'text'], ['expandedAt', 'Expanded', 'date'],
       ['expandRoute', 'Expand with', 'text'], ['expandQueued', 'Expand asked', 'date'], ['expandClaimed', 'PC took it', 'date'],
-      ['expandWhy', 'Why Claude', 'text'], ['private', 'Private', 'bool'], ['folder', 'Folder', 'text'], ['colour', 'Colour', 'text'], ['pinned', 'Pinned', 'bool'], ['madeInto', 'Turned into', 'json']
+      ['expandWhy', 'Why Claude', 'text'], ['private', 'Private', 'bool'], ['owner', 'Whose', 'text'], ['folder', 'Folder', 'text'], ['colour', 'Colour', 'text'], ['pinned', 'Pinned', 'bool'], ['madeInto', 'Turned into', 'json']
     ]
   },
   // Talk it through (LogicTalk.gs): topics the artist names and answers questions about
@@ -6180,7 +6194,14 @@ function tideNotes(env, t) {
   /** What a person may see: hers are private, and the admin never gets them. */
   /** Her private writing is for her alone: not the admin, and not the admin viewing the app as her. */
   function herself() { return env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist'; }
-  function visible(role) { return live().filter(function (n) { return herself() || !n.private; }); }
+  /** Whose a note is: hers (what she writes, her private notes, and what her talks file) or the admin's (like the
+   *  notes made when Tide Book was set up). Notes is her own notebook, so she sees only hers; the admin sees all but her private ones. */
+  function ownerOf(n) {
+    if (n.owner === 'artist' || n.owner === 'admin') return n.owner;
+    if (n.private || /^Talk: /.test(n.title || '') || n.updatedBy === 'artist') return 'artist';
+    return herself() && n.createdBy && n.createdBy === env.user.email ? 'artist' : 'admin';
+  }
+  function visible(role) { return live().filter(function (n) { return herself() ? (n.private || ownerOf(n) === 'artist') : !n.private; }); }
   function get(id) {
     var n = t.rows('notebook').filter(function (x) { return x.id === id && !x.deleted; })[0];
     if (!n) t.fail('That note has been removed.');
@@ -6272,7 +6293,7 @@ function tideNotes(env, t) {
       }
       var id = env.nextId('NT', 4), r2 = resolve(body, id);
       env.table('notebook').append({
-        id: id, created: now, createdBy: env.user.email, title: title, body: body, ideaId: ideaId, links: r2.links,
+        id: id, created: now, createdBy: env.user.email, owner: p.owner === 'admin' || p.owner === 'artist' ? p.owner : (env.user.role === 'artist' ? 'artist' : 'admin'), title: title, body: body, ideaId: ideaId, links: r2.links,
         revision: 1, updated: now, updatedBy: env.user.role, deleted: false, private: p.private === true || env.user.role === 'artist',
         expandStatus: '', expansion: null, expandTries: 0, expandNote: '', expandedAt: '', folder: meta.folder || '', colour: meta.colour || '', pinned: meta.pinned === true, madeInto: []
       });
@@ -6498,7 +6519,7 @@ function tideNotes(env, t) {
         created: n.created, updated: n.updated, by: who(n.updatedBy),
         expandStatus: n.expandStatus || '', expansion: n.expansion || null, expandNote: n.expandNote || '', expandedAt: n.expandedAt || '',
         expandRoute: n.expandRoute || '', expandWhy: n.expandWhy || '', private: n.private === true, locked: n.locked === true,
-        folder: n.folder || '', colour: n.colour || '', pinned: n.pinned === true, madeInto: n.locked ? [] : t.list(n.madeInto)
+        folder: n.folder || '', colour: n.colour || '', pinned: n.pinned === true, madeInto: n.locked ? [] : t.list(n.madeInto), owner: ownerOf(n)
       };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
   }
@@ -7153,7 +7174,7 @@ function tideTalk(env, t) {
     var title = t.text('Talk: ' + (o.title || tp.title), 120);
     if (!filed.noteId) {
       var taken = t.rows('notebook').some(function (n) { return !n.deleted && n.title.toLowerCase() === title.toLowerCase(); });
-      try { filed.noteId = t.saveNote({ title: taken ? t.text(title + ' (' + id + ')', 120) : title, body: noteBody(tp), private: tp.private === true }).id; } catch (e) { filed.noteError = String(e.message || e); }
+      try { filed.noteId = t.saveNote({ title: taken ? t.text(title + ' (' + id + ')', 120) : title, body: noteBody(tp), private: tp.private === true, owner: tp.createdBy === 'artist' ? 'artist' : 'admin' }).id; } catch (e) { filed.noteError = String(e.message || e); }
     }
     // a private conversation becomes a product or idea only once she has sent its decisions, and only with those
     var sent = tp.private ? tp.shared : null;
@@ -8162,6 +8183,12 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-19-tidy', on: '2026-11-19', to: 'all', icon: 'info', title: 'Fewer words',
+    say: 'Screens are tidier: longer explanations sit behind ⓘ (tap it to read), everyday buttons are symbols (hold one to see its name), and messages are short, with ✓ or !.',
+    steps: ['Tap ⓘ beside a page’s name, or after a line, for more.', 'Hold a symbol for a moment to see what it does.'], go: { view: 'home', tip: 'Look for ⓘ.' } },
+  { id: '2026-11-19-notes-yours', on: '2026-11-19', to: 'admin', icon: 'sticky_note_2', title: 'Notes are each person’s own',
+    say: 'Her Notes shows only her notes (what she writes, her private notes, and what her talks file). The notes made when Tide Book was set up (Who Denise is, Still to ask Denise…) are in your Notes, and Tide Book still uses them.',
+    steps: ['Open Notes to see yours.'], go: { view: 'notes', tip: 'Your notes.' } },
   { id: '2026-11-19-weekly-limit', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'The Claude limit is weekly now',
     say: 'The Claude limit is A$10 a week, starting again each Monday. When it’s reached, Denise’s mentors keep talking on the PC’s own model (no tools: no goals, drafts or web search) until Monday; other Claude jobs wait as before.',
     steps: ['Open Settings › AI to see this week’s spend and change the limit.'], go: { view: 'settings', tip: 'Settings › AI.' } },
@@ -8404,7 +8431,7 @@ function tideSetup(env, t) {
     (typeof TIDE_STARTER_NOTES !== 'undefined' ? TIDE_STARTER_NOTES : []).forEach(function (n) {
       var title = fill(n.title);
       if (have[title.toLowerCase()]) return;
-      t.addNote({ title: title, body: fill(n.body) });
+      t.addNote({ title: title, body: fill(n.body), owner: 'admin' });
       notes++;
     });
     env.settings.set({ starterLoaded: true });
@@ -11608,14 +11635,39 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ buttons
   /** variant: filled | tonal | outlined | text. opts: {icon, lg, sm, block, danger, onclick, id} */
+  /** The everyday actions are a symbol alone (their name shows on a long press, and to screen readers). */
+  var ICON_ONLY = /^(Remove|Remove it|Delete|Edit|Close|Undo|Copy|Copy the link|Add|Refresh|Read them again|Search|Share|More|Back)$/;
   function btn(variant, label, opts) {
     opts = opts || {};
+    var bare = opts.icon && !opts.block && !opts.lg && opts.bare !== false && ICON_ONLY.test(String(label));
     return h('button', {
       type: 'button', id: opts.id, disabled: opts.disabled,
-      class: 'btn press ' + variant + (opts.lg ? ' lg' : '') + (opts.sm ? ' sm' : '') + (opts.block ? ' block' : '') + (opts.danger ? ' danger' : ''),
+      class: 'btn press ' + variant + (opts.lg ? ' lg' : '') + (opts.sm ? ' sm' : '') + (opts.block ? ' block' : '') + (opts.danger ? ' danger' : '') + (bare ? ' bare' : ''),
+      'aria-label': bare ? label : null, title: bare ? label : null, 'data-tip': bare ? label : null,
       onclick: opts.onclick
-    }, opts.icon ? icon(opts.icon) : null, h('span', { text: label }));
+    }, opts.icon ? icon(opts.icon) : null, bare ? null : h('span', { text: label }));
   }
+  // a long press on a symbol says what it does (and that press doesn't also tap it)
+  (function () {
+    var timer = null, shown = false, tipEl = null;
+    function hide() { if (tipEl) { tipEl.remove(); tipEl = null; } }
+    document.addEventListener('pointerdown', function (e) {
+      var el = e.target.closest && e.target.closest('[data-tip], .icon-btn[aria-label]');
+      clearTimeout(timer); shown = false; hide();
+      if (!el) return;
+      timer = setTimeout(function () {
+        var r = el.getBoundingClientRect(), label = el.getAttribute('data-tip') || el.getAttribute('aria-label');
+        tipEl = h('div', { class: 'tip-bubble', role: 'status', text: label });
+        document.body.appendChild(tipEl);
+        var w = tipEl.offsetWidth, x = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2)), y = r.top - tipEl.offsetHeight - 8;
+        tipEl.style.left = x + 'px'; tipEl.style.top = (y < 8 ? r.bottom + 8 : y) + 'px';
+        shown = true; haptic();
+      }, 450);
+    }, true);
+    ['pointerup', 'pointercancel', 'pointermove'].forEach(function (ev) { document.addEventListener(ev, function (e) { if (ev === 'pointermove' && Math.abs(e.movementX) + Math.abs(e.movementY) < 4) return; clearTimeout(timer); if (ev !== 'pointermove') setTimeout(hide, shown ? 1200 : 0); }, true); });
+    document.addEventListener('click', function (e) { if (shown) { shown = false; e.preventDefault(); e.stopPropagation(); } }, true);
+    document.addEventListener('contextmenu', function (e) { if (e.target.closest && e.target.closest('[data-tip], .icon-btn[aria-label]')) e.preventDefault(); });
+  })();
   function setBusy(button, on) {
     if (!button) return;
     button.classList.toggle('busy', !!on);
@@ -11876,8 +11928,20 @@ var Kit = (function () {
   }
 
   var toastTimer;
+  /** Short messages: the first sentence, with ✓ when something's done and ! when something needs her. Errors stay whole. */
+  function shortMsg(msg, kind) {
+    var s = String(msg == null ? '' : msg).trim();
+    if (kind === 'error') return /^[!✓ⓘ]/.test(s) ? s : '! ' + s;
+    if (kind === 'plain' || /^[!✓ⓘ↺]/.test(s)) return s;
+    var first = s.split(/(?<=[.!?])\s+(?=[A-Z“"(])/)[0];
+    if (first.length >= 12 || s.length < 40) s = first;
+    s = s.replace(/\.$/, '');
+    var ask = /^(Pick|Write|Say|Select|Tap|Choose|Add |Paste|Record|Give|Name|Type|Fill|Check|Try|Open|Unlock|Turn|Link|Ask|Make|Set|Wait|One thing|Nothing|No |Not |That |This |There|Can|Couldn)/.test(s) || /\?$/.test(s);
+    return (ask ? '! ' : '✓ ') + s;
+  }
   function toast(msg, kind) {
     var t = document.getElementById('toast');
+    msg = shortMsg(msg, kind);
     t.textContent = msg;
     t.className = 'toast show' + (kind === 'error' ? ' error' : '') + (stack.length ? ' up' : '');
     if (kind === 'error') haptic('warn');
@@ -12599,7 +12663,7 @@ var Kit = (function () {
     sec.appendChild(btn('tonal', back ? 'Back to your own view' : 'Switch to ' + name, { icon: 'swap_horiz', onclick: function () { K.haptic(); setView(other); } }));
     if (back && me.real === 'admin' && S.data.practice) {
       sec.appendChild(h('p', { class: 'body-m', style: 'margin:14px 0 8px', text: 'This is a practice copy of ' + cap(artist()) + '’s Tide Book. Everything saves here only: no posts go out and her phone doesn’t buzz.' }));
-      sec.appendChild(btn('text', 'Start the practice copy again from hers', { icon: 'refresh', onclick: function (e) {
+      sec.appendChild(btn('text', 'Reset the practice copy', { icon: 'refresh', onclick: function (e) {
         var b = e.currentTarget;
         K.confirm({ title: 'Start again?', text: 'Everything you did in the practice copy goes, and it’s made fresh from ' + cap(artist()) + '’s Tide Book as it is now.', confirmLabel: 'Start again' }).then(function (yes) {
           if (!yes) return;
@@ -12785,7 +12849,7 @@ var Kit = (function () {
           B.appendChild(h('div', { class: 'btn-row', style: 'flex-wrap:wrap' },
             h('a', { class: 'btn tonal press', href: D.url, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Visit it' })),
             (function () { var b = btn('outlined', 'Check again', { icon: 'refresh', onclick: function () { call(b, 'checkSiteDomain'); } }); return b; })()));
-          var stop = btn('text', 'Go back to the old address', { icon: 'link_off', onclick: function () {
+          var stop = btn('text', 'Use the old address', { icon: 'link_off', onclick: function () {
             K.confirm({ title: 'Stop using ' + D.name + '?', text: 'Your website goes back to its old address in a few minutes. ' + D.name + ' stays yours, and you can switch back any time.', confirmLabel: 'Go back' }).then(function (yes) {
               if (yes) call(stop, 'dropSiteDomain', [], function (r) { toast(r.message); });
             });
@@ -12819,7 +12883,7 @@ var Kit = (function () {
           foot.appendChild(go);
         }
         B.appendChild(h('div', { style: 'margin-top:10px' }, chk));
-        var other = btn('text', 'Use a different address', { sm: true, onclick: function () { call(other, 'setSiteDomain', ['']); } });
+        var other = btn('text', 'Another address', { sm: true, onclick: function () { call(other, 'setSiteDomain', ['']); } });
         foot.appendChild(other);
         ctl.foot.appendChild(foot);
         // a first look straight away, once per address, when it hasn't been checked
@@ -12889,7 +12953,7 @@ var Kit = (function () {
         });
         ctl.body.append(up, upB);
         var fid = (p.photoIds || [])[0];
-        if (fid) ctl.body.append(h('div', { style: 'height:8px' }), btn('outlined', 'Use its first photo instead', { icon: 'image', block: true, onclick: function (e) { send(fid, e.currentTarget); } }),
+        if (fid) ctl.body.append(h('div', { style: 'height:8px' }), btn('outlined', 'Use its first photo', { icon: 'image', block: true, onclick: function (e) { send(fid, e.currentTarget); } }),
           h('p', { class: 'tf-help', text: 'Fine to start with. A proper scan prints better at A3 and up.' }));
       }
     });
@@ -13008,12 +13072,12 @@ var Kit = (function () {
   function readyCard(RD) {
     var steps = [
       { done: RD.stripe && RD.stripeLive, part: RD.stripe && !RD.stripeLive, ic: 'credit_card', t: 'Payments, through Stripe',
-        line: !RD.stripe ? 'Buyers pay on Stripe’s own secure page, and the money goes to your bank. Set up a free account, then link it here.' : 'Linked in test mode: checkouts are pretend. Link your live key when you’re ready to take real money.',
+        line: !RD.stripe ? 'Buyers pay on Stripe → money to your bank. Free to set up.' : 'Test mode: checkouts are pretend. Link the live key for real sales.',
         b: RD.stripe ? 'Link the live key' : 'Set up Stripe', go: openStripeLink },
-      { done: RD.printful, ic: 'local_shipping', t: 'Printful, for prints A3 and bigger', line: 'Printful prints and posts the bigger sizes for you. Link your Printful account (it’s free).', b: 'Link Printful',
+      { done: RD.printful, ic: 'local_shipping', t: 'Printful, for prints A3 and bigger', line: 'Prints and posts the big sizes for you. Free.', b: 'Link Printful',
         go: function () { openPrintfulLink(function () { refresh().then(render); }); } },
-      { done: RD.rates, ic: 'package_2', t: 'Postage, worked out for each buyer', line: 'Link Australia Post (free) and say where you post from. Checkout then charges each buyer’s real postage.', b: 'Set up postage', go: openShopSettings },
-      { done: RD.published, ic: 'palette', t: 'Your first artwork on your website', line: !RD.artworks ? 'Add an artwork with its photos, sizes and prices, then Launch it.' : 'Publish your website so your shop shows it.',
+      { done: RD.rates, ic: 'package_2', t: 'Postage, worked out for each buyer', line: 'Link Australia Post (free) → each buyer pays their real postage.', b: 'Set up postage', go: openShopSettings },
+      { done: RD.published, ic: 'palette', t: 'Your first artwork on your website', line: !RD.artworks ? 'Photos, sizes, prices → Launch.' : 'Publish, and your shop shows it.',
         b: !RD.artworks ? 'Add an artwork' : 'Publish your website', go: !RD.artworks ? function () { go('prints'); setTimeout(function () { openPrint(null); }, 350); } : publishSite }
     ];
     if (ADMIN || !RD.reach) steps.push({ done: RD.reach, ic: 'public', t: 'Checkout reachable from the website', line: RD.reach ? 'Done.' : ADMIN ? 'The PC needs a public address for the shop (shopUrl in its config).' : adminName() + ' has this one.', b: '', go: null });
@@ -13124,8 +13188,8 @@ var Kit = (function () {
       btn('tonal', DM.on ? DM.name : 'Your own address', { icon: 'link', sm: true, onclick: openSiteDomain }),
       btn('tonal', 'Colours and fonts', { icon: 'palette', sm: true, onclick: openSiteStyle }),
       btn('tonal', 'Pages', { icon: 'description', sm: true, onclick: openSitePages }),
-      btn('tonal', 'Ask for something bigger', { icon: 'forum', sm: true, onclick: function () { openSiteAsk(null); } })), 3));
-    if (E.changed) main.appendChild(rise(h('div', { style: 'text-align:center;margin-top:4px' }, btn('text', 'Start over from the live website', { sm: true, icon: 'restart_alt', onclick: function () {
+      btn('tonal', 'Ask for more', { icon: 'forum', sm: true, onclick: function () { openSiteAsk(null); } })), 3));
+    if (E.changed) main.appendChild(rise(h('div', { style: 'text-align:center;margin-top:4px' }, btn('text', 'Start again from live', { sm: true, icon: 'restart_alt', onclick: function () {
       K.confirm({ title: 'Start over?', text: 'The changes you haven’t published go, and the preview shows the live website again. You can undo this.', confirmLabel: 'Start over' }).then(function (yes) {
         if (yes) api('discardSiteDraft').then(function (snap) { siteAfter(snap, 'Back to the live website.'); render(); }).catch(fail);
       });
@@ -13298,7 +13362,7 @@ var Kit = (function () {
               sx.index < sx.count - 1 ? btn('outlined', 'Move down', { sm: true, icon: 'arrow_downward', onclick: function () { secOp('down'); } }) : null,
               sx.added ? btn('text', 'Remove it', { sm: true, icon: 'delete', danger: true, onclick: function () { siteOp({ unblock: { route: it.route, id: sx.block } }, 'Removed. Undo is at the top.').then(function () { kept = true; ctl.close(); }).catch(function () {}); } })
                 : btn('text', 'Hide this part', { sm: true, icon: 'visibility_off', onclick: function () { secOp('hide').then(function () { toast('Hidden on your draft. Undo is at the top.'); }); } }))));
-            p.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a new section below', { sm: true, icon: 'add', onclick: function () { kept = true; K.swap(ctl, function () { openSiteBlocks(it.route, sx.key); }); } })));
+            p.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a section', { sm: true, icon: 'add', onclick: function () { kept = true; K.swap(ctl, function () { openSiteBlocks(it.route, sx.key); }); } })));
           });
         }
         function openSitePickAgain() { openSitePick(Object.assign({}, it)); }
@@ -13312,7 +13376,7 @@ var Kit = (function () {
         ctl.body.appendChild(h('div', { class: 'insp-more' },
           it.key ? btn('text', cur.hide ? 'Show it again' : 'Hide it', { sm: true, icon: cur.hide ? 'visibility' : 'visibility_off', onclick: function () { cur.hide = !cur.hide; if (!cur.hide) delete cur.hide; keep(cur.hide ? 'Hidden on your draft. Undo is at the top.' : 'Showing again.'); } }) : null,
           edited ? btn('text', 'Put it back as it was', { sm: true, icon: 'restart_alt', onclick: function () { siteOp({ reset: it.key }, 'Back as it was.').then(function () { kept = true; ctl.close(); }).catch(function () {}); } }) : null,
-          btn('text', 'Ask for something bigger', { sm: true, icon: 'forum', onclick: function () { K.swap(ctl, function () { openSiteAsk(it); }); } })));
+          btn('text', 'Ask for more', { sm: true, icon: 'forum', onclick: function () { K.swap(ctl, function () { openSiteAsk(it); }); } })));
         ctl.foot.appendChild(btn('filled', 'Done', { icon: 'check', lg: true, block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); keep(); } }));
       }
     });
@@ -13359,7 +13423,7 @@ var Kit = (function () {
           fs.appendChild(K.choices({ label: 'Heading font', value: T.font || 'Lora', options: (siteEd().fonts || []).map(function (f) { return { value: f, label: f }; }),
             onChange: function (v) { siteOp({ theme: { font: v } }).then(draw).catch(function () {}); } }));
           ctl.body.appendChild(fs);
-          if (Object.keys(T).length) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Back to the original look', { icon: 'restart_alt', onclick: function () { siteOp({ theme: null }, 'Back to the original look.').then(draw).catch(function () {}); } })));
+          if (Object.keys(T).length) ctl.body.appendChild(h('div', { style: 'margin-top:16px;text-align:center' }, btn('text', 'Reset the look', { icon: 'restart_alt', onclick: function () { siteOp({ theme: null }, 'Back to the original look.').then(draw).catch(function () {}); } })));
         }
         draw();
         ctl.foot.appendChild(btn('filled', 'Done', { icon: 'check', lg: true, block: true, onclick: function () { ctl.close(); } }));
@@ -13444,10 +13508,49 @@ var Kit = (function () {
     lastY = y;
   }, { passive: true });
 
+  /** A page's name, and (behind ⓘ) a line about what it's for. */
   function pageTitle(main, title, sub) {
-    main.appendChild(rise(h('h1', { class: 'page-title', text: title }), 0));
-    if (sub) main.appendChild(rise(h('p', { class: 'page-sub', text: sub }), 0));
+    var key = 'sub:' + title, open = !!(S.subOpen || {})[key];
+    var p = sub ? h('p', { class: 'page-sub', text: sub, hidden: !open }) : null;
+    var info = sub ? h('button', { type: 'button', class: 'info-btn press', 'aria-label': 'About this page', 'aria-expanded': String(open), title: 'About this page' }, icon('info')) : null;
+    if (info) info.addEventListener('click', function () { var o = p.hidden; p.hidden = !o; info.setAttribute('aria-expanded', String(o)); S.subOpen = S.subOpen || {}; S.subOpen[key] = o; K.haptic(); });
+    main.appendChild(rise(h('div', { class: 'page-head' }, h('h1', { class: 'page-title', text: title }), info), 0));
+    if (p) main.appendChild(rise(p, 0));
   }
+  /** Help text that runs long shows its first words, with the rest behind ⓘ (one tap opens it). */
+  var TUCK_AT = 70, TUCK_SEL = '.tf-help, .note, p.body-s[style*="on-surface-variant"], div.body-s[style*="on-surface-variant"], p.body-m[style*="on-surface-variant"], .empty .body-m, .sheet-body p.body-m, .card p.body-m, .card div.body-s';
+  function tuck(el) {
+    if (!el || el.__tucking) return;
+    var target = el.classList.contains('note') ? el.querySelector(':scope > span:not(.ms)') : el;
+    if (!target) return;
+    if (target.__tuckedText !== undefined && target.querySelector('.tk-more') && target.textContent.indexOf(target.__tuckedText) === -1) return;   // already done, unchanged
+    var full = target.__full && target.querySelector('.tk-more') ? target.__full : target.textContent.trim();
+    var at = el.classList.contains('tf-help') || el.classList.contains('note') || /on-surface-variant/.test(el.getAttribute('style') || '') ? TUCK_AT : 120;
+    if (full.length <= at || target.querySelector('a, button, input') || el.closest('.mn-msg, .nt-ed, .nt-paper, .md, .cal-ev, .li')) return;
+    if (!target.querySelector('.tk-more') && target.children.length) return;   // words with their own formatting stay as they are
+    var cut = full.split(/(?<=[.!?])\s+/)[0];
+    if (cut.length > 90 || cut === full) { cut = full.slice(0, 64).replace(/\s+\S*$/, '') + '…'; }
+    var rest = full === cut ? '' : full;
+    el.__tucking = true;
+    target.__full = full; target.__tuckedText = cut;
+    target.textContent = '';
+    var shortEl = h('span', { class: 'tk-short', text: cut }), longEl = h('span', { class: 'tk-long', text: rest, hidden: true });
+    var more = h('button', { type: 'button', class: 'tk-more press', 'aria-label': 'More about this', 'aria-expanded': 'false' }, icon('info'));
+    more.addEventListener('click', function (e) { e.stopPropagation(); e.preventDefault(); var o = longEl.hidden; longEl.hidden = !o; shortEl.hidden = o; more.setAttribute('aria-expanded', String(o)); more.firstChild.replaceWith(icon(o ? 'expand_less' : 'info')); });
+    target.append(shortEl, longEl, more);
+    setTimeout(function () { el.__tucking = false; }, 0);
+  }
+  function tuckAll(root) { if (root && root.querySelectorAll) [].slice.call(root.querySelectorAll(TUCK_SEL)).forEach(tuck); }
+  (function () {
+    var mo = new MutationObserver(function (ms) {
+      ms.forEach(function (m) {
+        [].slice.call(m.addedNodes || []).forEach(function (nd) { if (nd.nodeType === 1) { if (nd.matches && nd.matches(TUCK_SEL)) tuck(nd); tuckAll(nd); } });
+        var t = m.target && m.target.nodeType === 1 ? m.target.closest && m.target.closest(TUCK_SEL) : null;
+        if (t && !t.__tucking && !(m.target.classList && (m.target.classList.contains('tk-long') || m.target.classList.contains('tk-short')))) { var tg = t.classList.contains('note') ? t.querySelector(':scope > span:not(.ms)') : t; if (tg && !tg.querySelector('.tk-more')) tuck(t); }
+      });
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  })();
   function fab(main, label, iconName, onclick) {
     main.appendChild(h('div', { class: 'fab-space', 'aria-hidden': 'true' }));
     main.appendChild(h('button', { class: 'fab press', type: 'button', onclick: onclick }, icon(iconName), label));
@@ -13714,7 +13817,7 @@ var Kit = (function () {
     var insCard = h('div', { class: 'card pad', style: 'margin-bottom:14px' },
       h('div', { class: 'row', style: 'gap:12px;align-items:center' }, h('span', { class: 'ic' }, icon('favorite')),
         h('div', { class: 'grow' }, h('div', { class: 'title-m', text: 'Saw something that inspired you?' }),
-          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'A screenshot, a link, or a word on what caught your eye.' }))),
+          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'A screenshot, a link, or a word.' }))),
       h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' },
         btn('filled', 'Save inspiration', { icon: 'add', onclick: function () { openInspo(null); } }),
         ins.length ? btn('text', 'See your inspo', { onclick: function () { S.ideasTab = 'inspo'; go('ideas'); } }) : null));
@@ -13820,7 +13923,7 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { style: 'margin-top:20px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center' },
       btn('text', 'Arrange your home page', { icon: 'swap_vert', onclick: openHomeOrder }),
       btn('text', 'What’s new' + (newsList(false).length ? ' (' + newsList(false).length + ')' : ''), { icon: 'campaign', onclick: function () { whatsNew(!newsList(false).length); } }),
-      rest ? null : btn('text', 'Taking it easy for a bit?', { icon: 'spa', onclick: openRest })), n++));
+      rest ? null : btn('text', 'Taking it easy?', { icon: 'spa', onclick: openRest })), n++));
   }
   var HOME_SECTIONS = { cover: 'Your artwork, up top', plan: 'Your plan', inspo: 'Inspiration', needs: 'Questions for you', waiting: 'Waiting for you', todo: 'Your to do list',
     website: 'Your website', review: 'Posts to look at', actions: 'What would you like to do?', glance: 'Your work lately' };
@@ -13890,8 +13993,8 @@ var Kit = (function () {
         }
         draw();
         ctl.body.appendChild(list);
-        ctl.body.appendChild(h('div', { style: 'margin-top:12px;text-align:center' }, btn('text', 'Back to the usual order', { icon: 'restart_alt', onclick: function () { order = o.defaults.slice(); dirty = true; draw(); } })));
-        var save = btn('filled', 'Save this order', { icon: 'check', lg: true, block: true });
+        ctl.body.appendChild(h('div', { style: 'margin-top:12px;text-align:center' }, btn('text', 'Reset the order', { icon: 'restart_alt', onclick: function () { order = o.defaults.slice(); dirty = true; draw(); } })));
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           K.setBusy(save, true);
           o.save(order).then(refresh).then(function () { dirty = false; K.haptic('success'); ctl.close(); render(); toast(o.done); })
@@ -13957,7 +14060,7 @@ var Kit = (function () {
       h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' },
         h('span', { class: 'ic' }, icon('explore')),
         h('div', { class: 'grow' }, h('div', { class: 'title-m', text: 'Our direction' }),
-          h('p', { class: 'body-m', text: 'The mission, who it’s for, and what matters. Not ideas to research: Tide Book reads these to steer every idea, product and post.' }))));
+          h('p', { class: 'body-m', text: 'Who it’s for and what matters. Steers every idea, product and post.' }))));
     if (list.length) {
       var l = h('div', { class: 'dir-list' });
       list.forEach(function (d) {
@@ -14147,7 +14250,7 @@ var Kit = (function () {
 
         // optional
         ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin:18px 4px 8px', text: 'When you’re ready' }));
-        ctl.body.appendChild(stepCard(by('buzzes'), btn('text', 'Open notification settings', { icon: 'notifications', onclick: function () { ctl.close(); S.adminTab = 'settings'; setTimeout(function () { go('settings'); }, 260); } })));
+        ctl.body.appendChild(stepCard(by('buzzes'), btn('text', 'Notification settings', { icon: 'notifications', onclick: function () { ctl.close(); S.adminTab = 'settings'; setTimeout(function () { go('settings'); }, 260); } })));
         var reveal = function (which) {
           return btn('text', 'Show the details', { icon: 'visibility', onclick: function (e) {
             K.setBusy(e.currentTarget, true);
@@ -14212,7 +14315,7 @@ var Kit = (function () {
           ctl.body.appendChild(card);
         });
         var got = btn('filled', 'Got it', { icon: 'check', lg: true, block: true, onclick: function () { K.haptic('success'); ctl.close(); } });
-        ctl.foot.appendChild(h('div', {}, got, all ? null : h('div', { style: 'text-align:center;margin-top:6px' }, btn('text', 'Show me again next time', { onclick: function () { ctl.close('later'); } }))));
+        ctl.foot.appendChild(h('div', {}, got, all ? null : h('div', { style: 'text-align:center;margin-top:6px' }, btn('text', 'Show again next time', { onclick: function () { ctl.close('later'); } }))));
       }
     });
   }
@@ -14853,7 +14956,7 @@ var Kit = (function () {
               api('answerRound', id, answers).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (e) { K.setBusy(send, false); fail(e); });
             });
             ctl.foot.appendChild(send);
-            ctl.body.appendChild(h('div', { style: 'text-align:center;margin:6px 0 10px' }, btn('tonal', 'That’s enough. Write it up.', { icon: 'done_all', onclick: function (e) {
+            ctl.body.appendChild(h('div', { style: 'text-align:center;margin:6px 0 10px' }, btn('tonal', 'Write it up', { icon: 'done_all', onclick: function (e) {
               K.setBusy(e.currentTarget, true);
               api('answerRound', id, answers, { wrap: true }).then(refresh).then(reopen).catch(fail);
             } })));
@@ -14872,7 +14975,7 @@ var Kit = (function () {
           }
           list('Decided', o.decisions || []);
           list('Still open', o.open || []);
-          if ((o.open || []).length && myTopic(tp)) ctl.body.appendChild(h('div', { style: 'margin:-4px 0 14px' }, btn('tonal', 'Answer what’s still open', { icon: 'forum', block: true, onclick: function (e) {
+          if ((o.open || []).length && myTopic(tp)) ctl.body.appendChild(h('div', { style: 'margin:-4px 0 14px' }, btn('tonal', 'Answer the rest', { icon: 'forum', block: true, onclick: function (e) {
             var b = e.currentTarget; K.setBusy(b, true);
             api('answerOpenQuestions', id).then(refresh).then(reopen).catch(function (err) { K.setBusy(b, false); fail(err); });
           } })));
@@ -14890,7 +14993,7 @@ var Kit = (function () {
           if (f.noteId && byId(S.data.notebook, f.noteId)) fl.appendChild(btn('outlined', 'Open the note', { icon: 'sticky_note_2', block: true, onclick: function () { K.swap(ctl, function () { openNote(f.noteId); }); } }));
           if (f.pipelineId && byId(talkData().pipeline, f.pipelineId)) fl.appendChild(btn('outlined', 'Open it in Products', { icon: 'sell', block: true, onclick: function () { K.swap(ctl, function () { openItem(f.pipelineId); }); } }));
           if (f.ideaId && byId(S.data.ideas, f.ideaId)) fl.appendChild(btn('outlined', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { K.swap(ctl, function () { openIdea(f.ideaId); }); } }));
-          fl.appendChild(btn('text', 'File it as something else', { icon: 'category', onclick: function () {
+          fl.appendChild(btn('text', 'File differently', { icon: 'category', onclick: function () {
             K.pickFromList({ title: 'What is it?', options: talkData().kinds }).then(function (k) {
               if (k === undefined) return;
               api('refileTopic', id, k).then(refresh).then(function () { toast('Filed as ' + k.toLowerCase() + '.'); reopen(); }).catch(fail);
@@ -15192,7 +15295,7 @@ var Kit = (function () {
           if (!it || !it.help || it.help.state !== 'thinking') { clearInterval(poll); reopen(); }
         }).catch(function () {});
       }, 4000);
-      box.appendChild(h('div', { style: 'margin-top:8px' }, btn('text', 'That’s enough. Leave it as it is.', { icon: 'done_all', onclick: function (e) { clearInterval(poll); send(-2, '', e.currentTarget); } })));
+      box.appendChild(h('div', { style: 'margin-top:8px' }, btn('text', 'Leave it as it is', { icon: 'done_all', onclick: function (e) { clearInterval(poll); send(-2, '', e.currentTarget); } })));
       return box;
     }
     if (hv.state === 'failed') box.appendChild(h('div', { class: 'help-msg tb', text: 'That didn’t come through. Say something below to try again.' }));
@@ -15212,7 +15315,7 @@ var Kit = (function () {
       if (!ta.value.trim()) { ta.focus(); return; }
       send(-1, ta.value.trim(), e.currentTarget);
     } })));
-    box.appendChild(h('div', { style: 'margin-top:8px' }, btn('text', 'That’s enough. Leave it as it is.', { icon: 'done_all', onclick: function (e) { send(-2, '', e.currentTarget); } })));
+    box.appendChild(h('div', { style: 'margin-top:8px' }, btn('text', 'Leave it as it is', { icon: 'done_all', onclick: function (e) { send(-2, '', e.currentTarget); } })));
     return box;
   }
   function readyLine(r) {
@@ -15481,7 +15584,7 @@ var Kit = (function () {
         var s7 = sheetSection('Listing and launch posts');
         s7.appendChild(h('div', { class: 'field-gap' }, K.textField({ label: 'Listing (in ' + artist() + '’s voice)', value: f.listing.copy, multiline: true, maxlength: 3000, onInput: function (v) { f.listing.copy = v; touch(); } }),
           f.listing.posts.map(function (txt, i) { return K.textField({ label: ['Teaser post', 'Reveal post', 'Last-call post'][i] || 'Post', value: txt, multiline: true, compact: true, maxlength: 1200, onInput: function (v) { f.listing.posts[i] = v; touch(); } }); })));
-        s7.appendChild(h('div', { style: 'margin-top:10px' }, btn('tonal', 'Draft the listing and posts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'copy'); }).then(refresh).then(function () { toast('Drafting in ' + artist() + '’s voice.'); reopen(); }).catch(fail); } })));
+        s7.appendChild(h('div', { style: 'margin-top:10px' }, btn('tonal', 'Draft listing + posts', { icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); saveFirst().then(function () { return api('draftItem', id, 'copy'); }).then(refresh).then(function () { toast('Drafting in ' + artist() + '’s voice.'); reopen(); }).catch(fail); } })));
         ctl.body.appendChild(fold(s7, fk('listing'), 'edit_note', f.listing.copy ? 'Written' : 'Not written yet', p.stage === 'Listing & launch'));
 
         // sign-offs and moving on
@@ -15858,7 +15961,7 @@ var Kit = (function () {
         var f = st.files[id]; if (f) ctl.body.appendChild(h('img', { class: 'nt-big', src: f.data, alt: '' }));
         var row = h('div', { class: 'btn-row' });
         if (kind === 'drawing') row.appendChild(btn('filled', 'Draw on it', { icon: 'draw', onclick: function () { ctl.close(); setTimeout(function () { drawSheet(id); }, 280); } }));
-        row.appendChild(btn('text', 'Take it out of the note', { icon: 'delete', onclick: function () { fig.remove(); ctl.close(); changed(); } }));
+        row.appendChild(btn('text', 'Take out', { icon: 'delete', onclick: function () { fig.remove(); ctl.close(); changed(); } }));
         ctl.foot.appendChild(row);
       } });
     }
@@ -15930,7 +16033,7 @@ var Kit = (function () {
         var player = h('div');
         var keep = K.choices({ row: true, label: 'Also type it into the note', value: 'yes', options: [{ value: 'yes', label: 'Type it into the note too' }, { value: 'no', label: 'Just the recording' }], onChange: function (v) { typeOut = v !== 'no'; } });
         ctl.body.append(h('div', { class: 'nt-rec-wrap' }, big, timeEl), said, player, keep);
-        var addB = btn('filled', 'Add to the note', { icon: 'check', block: true, lg: true, onclick: function () {
+        var addB = btn('filled', 'Add', { icon: 'check', block: true, lg: true, onclick: function () {
           if (!blob) { toast('Record something first.'); return; }
           K.setBusy(addB, true);
           var fr = new FileReader();
@@ -16148,7 +16251,7 @@ var Kit = (function () {
           });
         }).catch(function (e) { K.setBusy(go2, false); fail(e); });
       } });
-      ctl.foot.appendChild(h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, go2, btn('text', 'Back to the choices', { onclick: function () { K.swap(ctl, function () { openTurnInto(noteId, onMade); }); } })));
+      ctl.foot.appendChild(h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, go2, btn('text', 'Back', { onclick: function () { K.swap(ctl, function () { openTurnInto(noteId, onMade); }); } })));
     } });
     function undoCardless(made) {
       // a short note with a way to open what was made
@@ -16356,7 +16459,7 @@ var Kit = (function () {
         var ipl = planLine('idea', x, reo); if (ipl) ctl.body.appendChild(ipl);
         var isPlan = S.data.plan && S.data.plan.ideaId === x.id;
         if (isPlan) ctl.body.appendChild(h('div', { style: 'margin:4px 0 12px' }, note('This is your plan. Its steps set the order for everything: anything for a later step waits until you get there.', 'flag')));
-        else if (x.scope.length >= 2) ctl.body.appendChild(h('div', { style: 'margin:0 0 10px' }, btn('text', 'Use this as my plan for the order of things', { sm: true, icon: 'flag', onclick: function (e) {
+        else if (x.scope.length >= 2) ctl.body.appendChild(h('div', { style: 'margin:0 0 10px' }, btn('text', 'Use as my plan', { sm: true, icon: 'flag', onclick: function (e) {
           K.setBusy(e.currentTarget, true);
           api('setPlanIdea', x.id).then(refresh).then(function () { K.haptic('success'); toast('Your plan now sets the order of things.'); reo(); render(); }).catch(fail);
         } })));
@@ -16451,7 +16554,7 @@ var Kit = (function () {
         } }));
         else if (W.status === 'Requested') {
           ws.appendChild(note('Asked for ' + ago(W.at) + '. ' + (ADMIN ? 'Approve it to make the prompt for Claude.' : 'Waiting for ' + adminName() + ' to approve.'), 'language'));
-          if (ADMIN) ws.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Approve, and make the prompt', { icon: 'verified', block: true, onclick: function (e) {
+          if (ADMIN) ws.appendChild(h('div', { style: 'margin-top:10px' }, btn('filled', 'Approve', { icon: 'verified', block: true, onclick: function (e) {
             var b = e.currentTarget; K.setBusy(b, true);
             api('approveWebsite', x.id).then(refresh).then(function () { K.haptic('success'); render(); K.swap(ctl, function () { openIdea(x.id); }, true); })
               .catch(function (err) { K.setBusy(b, false); fail(err); });
@@ -16497,7 +16600,7 @@ var Kit = (function () {
             .catch(function (e) { K.setBusy(mk, false); fail(e); });
         });
         row.appendChild(mk);
-        var dir = btn('outlined', 'It’s our direction, not an idea', { icon: 'explore' });
+        var dir = btn('outlined', 'It’s our direction', { icon: 'explore' });
         dir.addEventListener('click', function () {
           K.confirm({ title: 'Move to Our direction?', text: 'It leaves the ideas list, isn’t researched, and Tide Book uses it to steer ideas, products and posts instead. Your words stay as they are.', confirmLabel: 'Move it' }).then(function (yes) {
             if (!yes) return; K.setBusy(dir, true);
@@ -16519,7 +16622,7 @@ var Kit = (function () {
         s7.appendChild(row);
         ctl.body.appendChild(fold(s7, ik('further'), 'rocket_launch', 'An artwork, a product, or our direction', false));
 
-        var save = btn('filled', 'Save changes', { icon: 'check', lg: true, block: true });
+        var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           if (!f.title.trim()) { toast('Give the idea a name.'); title.input.focus(); return; }
           var ch = { title: f.title, note: f.note, kind: f.kind, timeline: f.timeline, priority: f.priority, scope: f.scope };
@@ -18100,7 +18203,7 @@ var Kit = (function () {
         var dateF = K.textField({ label: 'Pick a day', type: 'date', value: chosen, onInput: function (v) { chosen = v; } });
         ctl.body.append(K.choices({ row: true, label: 'Quick picks', value: '', options: [{ value: today, label: 'Today' }, { value: addDays(today, 1), label: 'Tomorrow' }, { value: addDays(today, 7 - dow(today)), label: 'Next Monday' }, { value: addDays(today, 7), label: 'In a week' }],
           onChange: function (v) { if (v) { chosen = v; dateF.input.value = v; } } }), h('div', { style: 'height:10px' }), dateF);
-        var go = btn('filled', 'Use this day', { icon: 'check', lg: true, block: true, onclick: function () {
+        var go = btn('filled', 'Use', { icon: 'check', lg: true, block: true, onclick: function () {
           if (!chosen) { toast('Pick a day first.'); return; }
           K.setBusy(go, true); onPick(chosen).then(function () { ctl.close(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
         } });
@@ -18132,7 +18235,7 @@ var Kit = (function () {
       } });
       var foot = h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, save);
       var more = h('div', { class: 'btn-row' });
-      if (plan) more.appendChild(btn('tonal', 'Let Tide Book choose', { icon: 'auto_awesome', onclick: function (e) {
+      if (plan) more.appendChild(btn('tonal', 'Tide Book picks', { icon: 'auto_awesome', onclick: function (e) {
         K.setBusy(e.currentTarget, true);
         api('freeStep', g.id, s.id).then(refresh).then(function () { var st = (goalById(g.id) || g).steps.filter(function (x) { return x.id === s.id; })[0]; K.haptic('success'); ctl.close(); render(); toast(st && st.due ? 'Planned for ' + calWhen(st) + '.' : 'No free time for it in the next six weeks. Add some working hours.'); }).catch(fail);
       } }));
@@ -18287,7 +18390,7 @@ var Kit = (function () {
             K.iconBtn('more_vert', 'More', function () { feedMore(fd); })));
         });
         feedsBox.appendChild(h('div', { class: 'btn-row', style: 'margin-top:6px;flex-wrap:wrap' },
-          btn('tonal', 'Link a calendar', { sm: true, icon: 'link', onclick: function () { addCalFeedSheet(function () { paintFeeds(); }); } }),
+          btn('tonal', 'Link', { sm: true, icon: 'link', onclick: function () { addCalFeedSheet(function () { paintFeeds(); }); } }),
           F.length ? btn('text', 'Read them again', { sm: true, icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('refreshCalFeeds').then(refresh).then(function () { paintFeeds(); render(); toast('Read again.'); }).catch(fail); } }) : null));
       }
       function feedMore(fd) {
@@ -18302,7 +18405,7 @@ var Kit = (function () {
       }
       paintFeeds();
       b.append(h('div', { class: 'label-m', style: 'margin:20px 2px 6px', text: 'On your phone' }),
-        btn('tonal', 'Show Tide Book in your phone’s calendar', { icon: 'phone_iphone', onclick: function () { openCalPhone(); } }));
+        btn('tonal', 'On my phone’s calendar', { icon: 'phone_iphone', onclick: function () { openCalPhone(); } }));
       var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
         if (!f.days.length) { toast('Pick at least one day you like to work.'); return; }
         K.setBusy(save, true);
@@ -18517,7 +18620,7 @@ var Kit = (function () {
       // the chosen day, in full
       var dl = byDay[sel] || [], panel = h('div', { class: 'cal-panel' },
         h('div', { class: 'cal-panel-h' }, h('b', { text: new Date(sel + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }) }),
-          btn('text', 'Hour by hour', { sm: true, onclick: function () { S.calMode = 'day'; S.calAt = sel; render(); } }),
+          btn('text', 'Hours', { sm: true, onclick: function () { S.calMode = 'day'; S.calAt = sel; render(); } }),
           btn('filled', 'Add', { sm: true, icon: 'add', onclick: function () { addToDay(sel); } })));
       if (!dl.length) panel.appendChild(h('p', { class: 'body-s', style: 'margin:4px 0 0;color:var(--on-surface-variant)', text: 'Nothing on this day.' }));
       dl.forEach(function (e) { panel.appendChild(calRow(e)); });
@@ -19051,7 +19154,7 @@ var Kit = (function () {
             sx.appendChild(K.choices({ label: 'Part of', value: f.parentId, allowNone: true, options: tops.map(function (x) { return { value: x.id, label: x.title }; }), onChange: function (v) { f.parentId = v || ''; touch(); } }));
           }
         }
-        sx.appendChild(h('div', { style: 'margin-top:10px' }, btn('text', 'Add a smaller goal inside this one', { icon: 'add', sm: true, onclick: function () { ctl.close(); setTimeout(function () { addGoalAsk(id); }, 280); } })));
+        sx.appendChild(h('div', { style: 'margin-top:10px' }, btn('text', 'Add a smaller goal', { icon: 'add', sm: true, onclick: function () { ctl.close(); setTimeout(function () { addGoalAsk(id); }, 280); } })));
         var kids = (S.data.goals || []).filter(function (x) { return x.parentId === id; }).length, par = g.parentId ? goalById(g.parentId) : null;
         ctl.body.appendChild(fold(sx, 'gl:' + id + ':fits', 'link', [par ? 'Part of “' + par.title + '”' : '', (g.group || []).length ? 'In a group with ' + g.group.map(function (l) { var o = goalById(l); return o ? '“' + o.title + '”' : ''; }).filter(String).join(', ') : '', kids ? kids + ' smaller ' + (kids === 1 ? 'goal' : 'goals') + ' inside' : ''].filter(String).join(' · ') || 'On its own for now', false));
         ctl.body.appendChild(h('div', { style: 'margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:4px' },
@@ -19108,7 +19211,7 @@ var Kit = (function () {
             h('span', { class: 'next-opt-ic' }, icon(tl.ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: tl.label }), tl.why ? h('span', { class: 'next-opt-why', text: tl.why }) : null)));
         });
         ctl.body.appendChild(list);
-        if (onDone && !st.done) ctl.foot.appendChild(btn('filled', 'This step is done', { icon: 'check', lg: true, block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); onDone().then(function () { ctl.close(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); }); } }));
+        if (onDone && !st.done) ctl.foot.appendChild(btn('filled', 'Step done', { icon: 'check', lg: true, block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); onDone().then(function () { ctl.close(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); }); } }));
       }
     });
   }
@@ -19160,7 +19263,7 @@ var Kit = (function () {
     var idea = pl.ideaId ? byId(S.data.ideas, pl.ideaId) : null;
     var cur = pl.steps[pl.current - 1];
     var dots = h('div', { class: 'plan-dots' }, pl.steps.map(function (s) { return h('i', { class: s.done ? 'done' : s.n === pl.current ? 'on' : '' }); }));
-    var done = btn('filled', 'This step is done', { icon: 'check', sm: true, onclick: function (e) {
+    var done = btn('filled', 'Step done', { icon: 'check', sm: true, onclick: function (e) {
       var b = e.currentTarget;
       if (pl.goalId) {
         K.setBusy(b, true);
@@ -19398,7 +19501,7 @@ var Kit = (function () {
     // 1 what it makes
     var b1 = P.productId ? h('div', {}, h('p', { class: 'body-m', style: 'margin:2px 0 6px', text: P.title + ' · ' + P.variants.map(function (v) { return v.name.replace(P.title, '').replace(/^[\s\/-]+/, '') + ' ' + pfMoney(v.cost, P.currency); }).join(', ') }),
       btn('text', 'Change', { sm: true, onclick: function () { openPrintfulPick(p, reopen); } }))
-      : btn('filled', 'Choose what Printful makes', { sm: true, icon: 'storefront', onclick: function () { openPrintfulPick(p, reopen); } });
+      : btn('filled', 'Printful options', { sm: true, icon: 'storefront', onclick: function () { openPrintfulPick(p, reopen); } });
     sec.appendChild(step(1, !!P.productId, 'What Printful makes', b1));
     if (!P.productId) return rest(2);
     // 2 the artwork
@@ -19421,7 +19524,7 @@ var Kit = (function () {
     } }));
     var ship = (P.shipping || [])[0];
     b3.appendChild(h('div', { style: 'margin-top:8px' }, ship ? h('p', { class: 'body-s', text: 'Posting to you: from ' + pfMoney(ship.rate, ship.currency) + ' (' + ship.name + (ship.min ? ', ' + ship.min + '–' + ship.max + ' days' : '') + ')' })
-      : btn('text', 'What does posting cost?', { sm: true, icon: 'local_shipping', onclick: function (e) { K.setBusy(e.currentTarget, true); api('printfulShipping', p.id).then(refresh).then(reopen).catch(fail); } })));
+      : btn('text', 'Posting costs', { sm: true, icon: 'local_shipping', onclick: function (e) { K.setBusy(e.currentTarget, true); api('printfulShipping', p.id).then(refresh).then(reopen).catch(fail); } })));
     sec.appendChild(step(3, (P.mockups || []).length > 0, 'See it, and what posting costs', b3));
     // 4 a sample
     var b4;
@@ -19511,7 +19614,7 @@ var Kit = (function () {
           });
           var row = h('div', { style: 'display:flex;gap:8px;justify-content:space-between;margin-top:6px' },
             i > 0 ? btn('text', 'Back', { onclick: function () { i--; draw(); } }) : h('span'),
-            btn('text', 'That’s enough for now', { onclick: function (e) { K.setBusy(e.currentTarget, true); finish().then(function () { render(); K.swap(ctl, openBusiness); }).catch(fail); } }));
+            btn('text', 'Enough for now', { onclick: function (e) { K.setBusy(e.currentTarget, true); finish().then(function () { render(); K.swap(ctl, openBusiness); }).catch(fail); } }));
           ctl.foot.appendChild(h('div', {}, next, row));
         }
         draw();
@@ -19572,7 +19675,7 @@ var Kit = (function () {
           fold(s2, 'biz:money', 'payments', m.defaultMarkupPct + '% markup · ' + ({ dollar: 'to the dollar', five: 'to $5', none: 'not rounded' }[m.priceRounding] || 'to the dollar') + ' · ' + m.taxSetAsidePct + '% for tax', false),
           fold(s3, 'biz:work', 'tune', [f.workPace, f.perRound + ' questions at a time', f.quietDays.length ? 'quiet ' + f.quietDays.map(function (d) { return d.slice(0, 3); }).join(', ') : ''].filter(String).join(' · '), false),
           fold(s4, 'biz:brand', 'verified', 'Voice, direction, and what’s a go or no go', false),
-          h('div', { style: 'margin-top:14px;text-align:center' }, btn('text', 'Walk me through it again', { icon: 'refresh', onclick: function () { dirty = false; K.swap(ctl, openBizGuide); } })));
+          h('div', { style: 'margin-top:14px;text-align:center' }, btn('text', 'Show me again', { icon: 'refresh', onclick: function () { dirty = false; K.swap(ctl, openBizGuide); } })));
         var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           K.setBusy(save, true);
@@ -19780,7 +19883,7 @@ var Kit = (function () {
     if (aside && c.clash) return h('div', {}, h('div', { class: 'btn-row', style: 'flex-wrap:wrap' }, fix), row);
     var ask = aside
       ? note('Suggested: don’t post this one. It was marked to be set aside. Tap “Don’t post it”, or “Post it anyway” if that’s changed.', 'lightbulb')
-      : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: 'Approve posts it. Needs changes has it redone. Or park it for now, or remove it.' });
+      : h('p', { class: 'tf-help', style: 'margin:0 0 8px', text: '“Approve” posts it. “Needs changes” has it redone. Or park it, or remove it.' });
     return h('div', {}, ask, h('div', { class: 'btn-row', style: 'flex-wrap:wrap;margin-top:8px' }, yes, fix, c.type === 'Post' ? null : no), row);
   }
   function shotButtons(c) {
@@ -20527,7 +20630,7 @@ var Kit = (function () {
               .then(function (yes) { if (yes) act(b, 'startAd', [false]); });
           } }));
           else box.appendChild(note(!fbUp ? 'It starts once the post is up: the ad shows that post to more people.' : ADMIN ? (!posting.enabled ? 'Automatic posting is off: start it in Ads Manager, then mark it started.' : 'Add the ad account number below to start it from here.') : 'Starting it from here isn\u2019t switched on yet. ' + adminName() + ' can do that.', 'info'));
-          if (ADMIN) row.appendChild(btn('tonal', 'I started it in Ads Manager', { icon: 'check', onclick: function (e) { act(e.currentTarget, 'startAd', [true]); } }));
+          if (ADMIN) row.appendChild(btn('tonal', 'Started in Ads Manager', { icon: 'check', onclick: function (e) { act(e.currentTarget, 'startAd', [true]); } }));
         }
         row.appendChild(btn('text', 'Change the plan', { icon: 'edit', onclick: function (e) { act(e.currentTarget, 'reopenAd'); } }));
         if (ADMIN && !A.canStartHere) {
@@ -20612,7 +20715,7 @@ var Kit = (function () {
               decide(c, 'reject', [e.currentTarget, ok, changes], function () { dirty = false; ctl.close(); });
             } })));
         } else {
-          var saveBtn = btn('filled', 'Save changes', { icon: 'check', lg: true, block: true });
+          var saveBtn = btn('filled', 'Save', { icon: 'check', lg: true, block: true });
           saveBtn.addEventListener('click', function () {
             K.setBusy(saveBtn, true);
             save().then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); ctl.close(); }).catch(function (e) { K.setBusy(saveBtn, false); if (e) fail(e); });
@@ -20636,7 +20739,7 @@ var Kit = (function () {
       ctl.body.appendChild(h('div', { class: 'field-gap' }, title,
         K.textField({ label: 'What it’s for', value: f.goal, multiline: true, maxlength: 1000, onInput: function (v) { f.goal = v; touch(); }, help: 'The studio reads this when planning posts.' }),
         h('div', { class: 'cols2' }, start, end), target));
-      if (c) ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Mark campaign as finished', { icon: 'done_all', onclick: function () {
+      if (c) ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Finish the campaign', { icon: 'done_all', onclick: function () {
         api('completeCampaign', c.id).then(refresh).then(function () { dirty = false; render(); toast('Campaign finished.'); ctl.close(); }).catch(fail);
       } })));
       var save = btn('filled', c ? 'Save changes' : 'Start campaign', { icon: 'check', lg: true, block: true });
@@ -20972,7 +21075,7 @@ var Kit = (function () {
           .catch(function (e) { K.setBusy(sendB, false); fail(e); });
       });
       var row = h('div', { class: 'row', style: 'gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap' },
-        btn('text', 'Remind me at the weekend', { onclick: function () { var d = nextSaturday(); api('laterSiteWish', t0.site, d).then(refresh).then(function () { ctl.close(); render(); toast('No rush. Tide Book will ask again on ' + K.dayLabel(d, true) + '.'); }).catch(fail); } }),
+        btn('text', 'At the weekend', { onclick: function () { var d = nextSaturday(); api('laterSiteWish', t0.site, d).then(refresh).then(function () { ctl.close(); render(); toast('No rush. Tide Book will ask again on ' + K.dayLabel(d, true) + '.'); }).catch(fail); } }),
         btn('text', 'Not now', { onclick: function () { api('laterSiteWish', t0.site).then(refresh).then(function () { ctl.close(); render(); toast('No rush. It\u2019ll come back in a couple of weeks.'); }).catch(fail); } }));
       if (t0.site === 'pieces') row.appendChild(btn('text', 'I\u2019ve sent them all', { onclick: function () { api('doneSiteWish', t0.site).then(refresh).then(function () { ctl.close(); render(); }).catch(fail); } }));
       ctl.foot.append(sendB, row);
@@ -21005,7 +21108,7 @@ var Kit = (function () {
         ctl.body.appendChild(g);
         ctl.body.appendChild(h('p', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'Full size: tap a photo. They\u2019re also in Tide Book\u2019s files, in the Website folder.' }));
       }
-      ctl.foot.appendChild(btn('text', 'It\u2019s already on the website', { icon: 'check', block: true, onclick: function (e) {
+      ctl.foot.appendChild(btn('text', 'Already on the website', { icon: 'check', block: true, onclick: function (e) {
         K.setBusy(e.currentTarget, true); api('usedSiteContent', r.id).then(refresh).then(function () { ctl.close(); render(); }).catch(fail);
       } }));
     } });
@@ -21070,7 +21173,7 @@ var Kit = (function () {
           } }))));
     } else {
       ps.appendChild(btn('tonal', (S.data.posting.links || {}).appReady ? 'Link accounts (or see where ' + artist() + ' is up to)' : 'Set up the Meta app, then ' + artist() + ' links her accounts', { icon: 'link', block: true, onclick: function () { openLinkAccounts(); } }));
-      ps.appendChild(h('div', { style: 'margin-top:6px' }, btn('text', 'Or paste a token instead', { sm: true, icon: 'key', onclick: openConnect })));
+      ps.appendChild(h('div', { style: 'margin-top:6px' }, btn('text', 'Paste a token', { sm: true, icon: 'key', onclick: openConnect })));
     }
     var f = st.direct ? { postingEnabled: st.enabled, postingDryRun: st.dryRun, slotTimes: st.slotTimes, postsPerDay: st.postsPerDay } : {};
     Object.assign(f, { editEnabled: st.editEnabled, editWeeklyCredits: st.editWeeklyCredits, notifyArtist: st.notifyArtist, notifyAdmin: st.notifyAdmin });
@@ -21147,7 +21250,7 @@ var Kit = (function () {
       h('p', { class: 'body-m', text: 'Uses the free ntfy app. Pick a long private topic name for each phone and subscribe to it in the app.' }),
       K.textField({ label: artist() + '’s topic', value: f.notifyArtist, maxlength: 64, onInput: function (v) { f.notifyArtist = v.trim(); } }),
       K.textField({ label: 'Your topic', value: f.notifyAdmin, maxlength: 64, onInput: function (v) { f.notifyAdmin = v.trim(); } }),
-      btn('text', 'Send me a test buzz', { icon: 'notifications', onclick: function (e) {
+      btn('text', 'Test buzz', { icon: 'notifications', onclick: function (e) {
         var b = e.currentTarget; K.setBusy(b, true);
         api('savePosting', { notifyAdmin: f.notifyAdmin, notifyArtist: f.notifyArtist }).then(function () { return api('testBuzz'); })
           .then(function () { K.setBusy(b, false); toast('Sent. Check your phone.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
@@ -21291,7 +21394,7 @@ var Kit = (function () {
           } }));
       }
       drawBuzz(bz.topic || (bz.mine ? '' : ''));
-      if (bz.mine && !bz.topic) bzBody.appendChild(btn('tonal', 'Send me a test buzz', { icon: 'notifications', block: true, onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); api('testBuzz').then(function () { K.setBusy(b, false); toast('Sent. Did your phone buzz?'); }).catch(function (err) { K.setBusy(b, false); fail(err); }); } }));
+      if (bz.mine && !bz.topic) bzBody.appendChild(btn('tonal', 'Test buzz', { icon: 'notifications', block: true, onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); api('testBuzz').then(function () { K.setBusy(b, false); toast('Sent. Did your phone buzz?'); }).catch(function (err) { K.setBusy(b, false); fail(err); }); } }));
       ctl.body.appendChild(stepCard(n++, 'Buzz my phone', !!bz.mine, bzBody, 'notifications'));
       // back from Facebook: say what got linked, and leave the guide open on whatever is next
       if (back && back.ok && fb.connected) setTimeout(function () { K.haptic('success'); toast('Linked: ' + fb.page + (fb.instagram ? ' and @' + fb.instagram : '') + '.' + (bz.mine ? '' : ' One more step below.')); }, 300);
