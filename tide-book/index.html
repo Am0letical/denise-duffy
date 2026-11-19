@@ -8075,7 +8075,7 @@ var TIDE_GUIDE = [
     say: 'Make a mentor for anything you want to learn or get done, like growing your audience. It teaches a little at a time, gives you something to try, checks in on how it went, and does the busywork: goals and steps on your calendar, posts and ideas drafted for you to approve.',
     steps: ['In Mentors, tap New mentor.', 'Say what you’d like to learn or get done (or tap a suggestion), then Start.', 'Answer its first questions: it sets out your course along the top.', 'Tap a lesson to start it or go over it again.', 'Tap what it made (a goal, a drafted post) to open it.', '⋮ switches it to Deep thinking for big plans, renames it, or removes it.'], go: { view: 'mentors', find: '.mn-h', tip: 'New mentor is here.' } },
   { id: 'g-mentor-admin', area: 'Mentors', to: 'admin', icon: 'lock', title: 'Mentors (private to her)',
-    say: 'Her mentor chats are sealed with her passphrase: you never see them. You see the count and the month’s cost, and what they make (goals, drafted posts, ideas) in their usual places. Quick replies run on Haiku, Deep thinking on Opus, within the monthly Claude limit.',
+    say: 'Her mentor chats are sealed with her passphrase: you never see them. You see the count and the month’s cost, and what they make (goals, drafted posts, ideas) in their usual places. Quick replies run on Haiku, Deep thinking on Opus, within the weekly Claude limit; once it’s reached they carry on in a lighter mode on the PC’s own model (talk only) until Monday.',
     steps: ['Open Mentors to see the count and cost.', 'Mentors need the Claude API key and the month’s limit not reached (Settings › AI).'], go: { view: 'mentors', tip: 'Private to her.' } },
   { id: 'g-cal-day', area: 'Calendar', to: 'all', icon: 'schedule', title: 'Hour by hour',
     say: 'Day shows the day hour by hour, with your working hours shaded. Things without a time sit at the top.',
@@ -8162,6 +8162,12 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-19-weekly-limit', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'The Claude limit is weekly now',
+    say: 'The Claude limit is US$10 a week (about A$' + '15), starting again each Monday. When it’s reached, Denise’s mentors keep talking on the PC’s own model (no tools: no goals, drafts or web search) until Monday; other Claude jobs wait as before.',
+    steps: ['Open Settings › AI to see this week’s spend and change the limit.'], go: { view: 'settings', tip: 'Settings › AI.' } },
+  { id: '2026-11-19-mentors-light', on: '2026-11-19', to: 'artist', icon: 'school', title: 'Your mentors don’t stop',
+    say: 'Each week your mentors have their full help: looking things up, making goals and drafting posts. If that’s used up, they keep talking with you in a lighter way until Monday.',
+    steps: ['Open Mentors. A note at the top says when they’re in their lighter mode.'], go: { view: 'mentors', tip: 'Your mentors.' } },
   { id: '2026-11-19-notes', on: '2026-11-19', to: 'all', icon: 'sticky_note_2', title: 'Notes, with its own place',
     say: 'Notes has moved out of Ideas into its own place in the menu, and works like Samsung Notes: tick lists, bold and highlight, colours, pins, folders, photos, drawings and voice memos. Notes are just for keeping, until you tap “Turn into…” to make one a goal, an idea, a post, a day on the calendar and more.',
     steps: ['Open the menu and tap Notes.', 'Tap New note and write. It saves by itself.', 'Use the bar at the bottom for lists, photos, drawing and voice.', 'Tap “Turn into…” when a note should become something.'], go: { view: 'notes', find: '.nt-top', tip: 'Your notes.' } },
@@ -8174,7 +8180,7 @@ var TIDE_CHANGES = [
     go: { view: 'mentors', find: '.mn-chat', tip: 'Start here.' } },
   { id: '2026-11-19-mentors-admin', on: '2026-11-19', to: 'admin', icon: 'school', title: 'Mentors for Denise (private)',
     say: 'Her own chat and topic mentors, on Haiku (Opus when she picks Deep thinking), with tools: her records, web search, goals and steps, drafted posts and ideas. Chats are sealed with her passphrase; you see only the count and cost.',
-    steps: ['Open Mentors for the count and this month’s cost.', 'They need the Claude API key (Settings › AI) and stop at the monthly limit.'], go: { view: 'mentors', tip: 'Private to her.' } },
+    steps: ['Open Mentors for the count and this month’s cost.', 'They use the Claude API key (Settings › AI) up to the weekly limit, then the PC’s own model (talk only) until Monday.'], go: { view: 'mentors', tip: 'Private to her.' } },
   { id: '2026-11-19-calendar-plan', on: '2026-11-19', to: 'all', icon: 'auto_awesome', title: 'A calendar that plans with you',
     say: 'The calendar can plan your days now: it fits your goals’ steps into the hours you like to work, around everything else, and moves what slips (with Undo). It shows the day hour by hour, and your Google, iPhone or Outlook calendars beside your own things.',
     steps: ['Open Calendar and tap the sliders at the top right.', 'Choose “Plan my days for me” (or “I’ll set the days myself”), your working days and hours, then Save.', 'Tap Day to see it hour by hour: tap a time to add, hold to drag.', 'Tap “Link a calendar” to bring in Google Calendar, your iPhone’s or Outlook’s.', '“Show Tide Book in your phone’s calendar” puts your steps on your phone too.'],
@@ -8430,12 +8436,12 @@ function tideSetup(env, t) {
     return { ok: true, seen: seen.length };
   }
   /** Admin only, and only when asked: the addresses and keys the PC tools and the Everygen task need. */
-  /** Admin: this month's Claude spending, and the monthly cap (US dollars; 0 = Claude off). */
+  /** Admin: this week's Claude spending, and the weekly cap (US dollars; 0 = Claude off). It starts again each Monday. */
   function spend() { t.need(['admin']); return env.setup.spend ? env.setup.spend() : null; }
   function saveClaudeBudget(usd) {
     t.need(['admin']);
     var n = Number(usd);
-    if (!(n >= 0) || n > 500) t.fail('Choose a monthly limit between $0 and $500.');
+    if (!(n >= 0) || n > 500) t.fail('Choose a weekly limit between $0 and $500.');
     return env.setup.setBudget(Math.round(n * 100) / 100);
   }
   function saveClaudeVia(via) { t.need(['admin']); return env.setup.setVia(via === 'chat' ? 'chat' : 'api'); }
@@ -10391,13 +10397,13 @@ function tideMentors(env, t) {
       updated: m.lastAt || m.updated || m.created };
   }
   function clientMsg(x) {
-    return { id: x.id, by: x.by, text: x.locked ? '' : x.text || '', status: x.status || 'done', actions: x.locked ? [] : list(x.actions), replies: x.locked ? [] : list(x.replies), at: x.created, error: x.error || '' };
+    return { id: x.id, by: x.by, light: x.light === true, text: x.locked ? '' : x.text || '', status: x.status || 'done', actions: x.locked ? [] : list(x.actions), replies: x.locked ? [] : list(x.replies), at: x.created, error: x.error || '' };
   }
   function snapshot(role) {
     var all = mentorRows(), month = env.today().slice(0, 7);
     var spent = rows('mentormsgs').filter(function (x) { return String(x.created || '').slice(0, 7) === month; }).reduce(function (n, x) { return n + (Number(x.usd) || 0); }, 0);
     if (role !== 'artist') return { private: true, count: all.length, spentUsd: Math.round(spent * 100) / 100, on: engineOn() };
-    return { private: false, on: engineOn(), why: env.mentorReady ? env.mentorWhy() : 'Not available here.', starters: M.STARTERS,
+    return { private: false, on: engineOn(), why: env.mentorReady ? env.mentorWhy() : 'Not available here.', starters: M.STARTERS, mode: env.mentorMode ? env.mentorMode() : 'off', resets: env.mentorResets ? env.mentorResets() : '',
       list: all.map(clientMentor).sort(function (a, b) { return a.kind === 'chat' ? -1 : b.kind === 'chat' ? 1 : a.updated < b.updated ? 1 : -1; }) };
   }
 
@@ -10500,8 +10506,8 @@ function tideMentors(env, t) {
       var x = rows('mentormsgs').filter(function (r) { return r.id === msgId; })[0]; if (!x) return;
       var words = String(out.text || '').trim(), replies = [];
       var mr = /\n?\s*REPLIES:\s*(.+)\s*$/i.exec(words);
-      if (mr) { replies = mr[1].split('|').map(function (s) { return s.trim().replace(/^["“]|["”]$/g, ''); }).filter(Boolean).slice(0, 3).map(function (s) { return s.slice(0, 80); }); words = words.slice(0, mr.index).trim(); }
-      env.table('mentormsgs').update(msgId, { status: words ? 'done' : 'failed', text: words.slice(0, 20000), replies: replies, actions: list(out.actions), usd: Math.round((Number(out.usd) || 0) * 1e6) / 1e6, error: words ? '' : 'No answer came back.' });
+      if (mr) { replies = mr[1].split('|').map(function (s) { return s.trim().replace(/^["“]|["”]$/g, ''); }).filter(function (s) { return s.length > 2 && /[a-z]{2}/i.test(s); }).slice(0, 3).map(function (s) { return s.slice(0, 80); }); words = words.slice(0, mr.index).trim(); }
+      env.table('mentormsgs').update(msgId, { status: words ? 'done' : 'failed', text: words.slice(0, 20000), replies: replies, actions: list(out.actions), usd: Math.round((Number(out.usd) || 0) * 1e6) / 1e6, light: out.light === true, error: words ? '' : 'No answer came back.' });
       env.table('mentors').update(x.mentorId, { lastAt: nowIso() });
       if (env.workDone) env.workDone('mentor', 1);
     });
@@ -17834,11 +17840,12 @@ var Kit = (function () {
         h('div', { class: 'grow' }, h('b', { text: cap(artist()) + '’s mentors are hers alone' }),
           h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'You never see the conversations (they’re sealed with her passphrase). You see what they make: goals, drafted posts and ideas, in their usual places.' }))),
         h('div', { class: 'mn-stats' }, h('div', {}, h('b', { text: String(M.count) }), h('span', { text: M.count === 1 ? 'mentor' : 'mentors' })), h('div', {}, h('b', { text: audFromUsd(M.spentUsd || 0, true) }), h('span', { text: 'this month' }))),
-        M.on ? null : note('Mentors are off: they need the Claude API key, and this month’s Claude limit not reached (Settings › AI). Quick replies run on Haiku; “Deep thinking” on Opus.', 'warning', 'warn')), n++));
+        M.on ? null : note('Mentors are off: they need the Claude API key (Settings › AI), or the PC’s own model running. Quick replies run on Haiku, “Deep thinking” on Opus; past the weekly limit they carry on in a lighter mode on the PC’s model until Monday.', 'warning', 'warn')), n++));
       return;
     }
     var pb = privacyBar(); if (pb) main.appendChild(rise(pb, n++));
     if (!M.on) main.appendChild(rise(note(M.why || 'Your mentors aren’t switched on yet.', 'info'), n++));
+    else if (M.mode === 'light') main.appendChild(rise(note(lightNote(M), 'spa'), n++));
     var list = M.list || [], chat = list.filter(function (m) { return m.kind === 'chat'; })[0], coaches = list.filter(function (m) { return m.kind !== 'chat'; });
     // just chat
     main.appendChild(rise(h('button', { type: 'button', class: 'mn-chat press soft', onclick: function (e) {
@@ -17860,6 +17867,7 @@ var Kit = (function () {
     });
     main.appendChild(rise(sec, n++));
   }
+  function lightNote(M) { return 'This week’s full help is used up, so your mentors are in a lighter mode until ' + (M.resets ? new Date(M.resets + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'short' }) : 'Monday') + ': they can talk things through, but can’t make goals or drafts, look at your records, or look things up.'; }
   function newMentorSheet(start) {
     var M = mentorsData(), f = { goal: typeof start === 'string' ? start : '', deep: false };
     K.sheet({ title: 'A new mentor', build: function (ctl) {
@@ -17884,7 +17892,10 @@ var Kit = (function () {
     var draft = K.textField({ label: 'Write to your mentor', value: S.mentorDraft || '', maxlength: 4000, multiline: true, onInput: function (v) { S.mentorDraft = v; } });
     var sendB = h('button', { type: 'button', class: 'mn-send press', 'aria-label': 'Send' }, icon('send'));
     var compose = h('div', { class: 'mn-compose' }, draft, sendB);
-    wrap.append(head, strip, feed, quick, compose);
+    var lightBar = mentorsData().mode === 'light' ? note(lightNote(mentorsData()), 'spa') : null;
+    wrap.append(head, strip);
+    if (lightBar) wrap.appendChild(lightBar);
+    wrap.append(feed, quick, compose);
     main.appendChild(wrap);
     var data = S.mentorChat && S.mentorChat.id === id ? S.mentorChat.data : null, timer = null;
     // while it opens: what's already known about it
@@ -21094,10 +21105,10 @@ var Kit = (function () {
       var bud = { v: sp.budget > 0 ? Math.round(sp.budget * fxRate()) : 0 }, pct = sp.budget > 0 ? Math.min(100, Math.round(sp.usd / sp.budget * 100)) : 100;
       var usd = function (x) { return audFromUsd(x, true); };
       as.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest);margin-top:12px' },
-        h('div', { class: 'title-m', text: 'Claude this month: ' + usd(sp.usd) + (sp.budget > 0 ? ' of ' + usd(sp.budget) : '') }),
+        h('div', { class: 'title-m', text: 'Claude this week: ' + usd(sp.usd) + (sp.budget > 0 ? ' of ' + usd(sp.budget) : '') }),
         h('div', { class: 'meter', style: 'height:6px;border-radius:3px;background:var(--surface-high);overflow:hidden' },
           h('div', { style: 'height:100%;width:' + pct + '%;background:' + (sp.paused ? 'var(--error)' : 'var(--primary)') })),
-        h('p', { class: 'body-m', text: sp.budget <= 0 ? 'Claude is off: only the PC’s free model is used.' : sp.paused ? 'The limit’s reached, so Claude has stopped until next month. The PC’s free model carries on; idea research and post drafts wait.' :
+        h('p', { class: 'body-m', text: sp.budget <= 0 ? 'Claude is off: only the PC’s free model is used.' : sp.paused ? 'The limit’s reached, so Claude has stopped until Monday. The PC’s free model carries on (her mentors too, in a lighter mode); idea research and post drafts wait.' :
           sp.calls + ' Claude answer' + (sp.calls === 1 ? '' : 's') + ' so far.' }),
         h('div', { class: 'switch-row', style: 'margin-top:6px' }, h('div', {}, h('div', { class: 'title-m', text: 'Do Claude jobs in Claude chat instead' }),
           h('div', { class: 'body-m', text: sp.via === 'chat' ? (sp.chatWaiting ? sp.chatWaiting + ' job' + (sp.chatWaiting === 1 ? '' : 's') + ' waiting. Tell Claude: “Do the Tide Book prompts”.' : 'On: no API cost. Nothing waiting right now.') : 'No API cost: jobs wait as prompts, and you ask Claude chat to do them.' })),
@@ -21115,7 +21126,7 @@ var Kit = (function () {
               api('saveClaudeUpgrade', j[0], v).then(refresh).then(function () { K.haptic('success'); render(); toast(j[1] + (v ? ': Claude Sonnet.' : ': Claude Haiku.')); }).catch(fail);
             } }));
         }),
-        K.textField({ label: 'Monthly limit (A$)', prefix: 'A$', inputmode: 'decimal', value: bud.v, help: 'Claude stops at this amount until next month. 0 turns Claude off. ' + fxNote(), onInput: function (v) { bud.v = v; } }),
+        K.textField({ label: 'Weekly limit (A$)', prefix: 'A$', inputmode: 'decimal', value: bud.v, help: 'Claude stops at this amount until Monday, when the week starts again. 0 turns Claude off. ' + fxNote(), onInput: function (v) { bud.v = v; } }),
         btn('tonal', 'Save limit', { icon: 'savings', block: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
           api('saveClaudeBudget', Math.round(K.num(bud.v) / fxRate() * 100) / 100).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
