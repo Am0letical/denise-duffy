@@ -1779,6 +1779,11 @@ body.map-full { overflow: hidden; }
 .tk-long { white-space: normal; }
 .tk-folded { display: none !important; }
 .li-head .tk-more, .next-opt-label .tk-more { margin-left: 4px; }
+.todo-x { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 36px; height: 36px; margin-right: -4px; border-radius: 50%; color: var(--on-surface-variant); cursor: pointer; flex: none; }
+.todo-x:hover, .todo-x:focus-visible { background: var(--surface-low); outline: none; }
+.todo-x .ms { font-size: 20px; }
+.todo-show { all: unset; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: var(--r-full); font: 500 12px/16px var(--font); color: var(--on-surface-variant); cursor: pointer; }
+.todo-show .ms { font-size: 16px; }
 </style>
 
   <script>
@@ -1908,6 +1913,7 @@ var TIDE_SETTING_DEFAULTS = {
   // originals first: prints wait while a new original has its head start, then sell as a limited run once it sells
   editionBufferDays: 30, editionSize: 50, quickEditionPct: 50,
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
+  todoHiddenArtist: '', todoHiddenAdmin: '',   // to-dos each person cleared (key → its words then; new words bring it back)
   menuOrderArtist: [], menuOrderAdmin: [], notesFolders: [],   // the notes' folders   // the menu, in each person's own order (empty: the usual order)
   // how she likes to work (the business setup): fed into every plan, question round and draft
   workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
@@ -3460,6 +3466,25 @@ if (env.workDone) env.workDone('publish');
     env.settings.set({ homeOrder: clean });
     return { ok: true, order: clean };
   }
+  /** To-dos she (or the admin) cleared stay hidden until their words change ("2 posts to review" → "3 posts…"). */
+  function todoKey(role) { return role === 'admin' ? 'todoHiddenAdmin' : 'todoHiddenArtist'; }
+  function todoHidden(role) { try { var o = JSON.parse(env.settings.get()[todoKey(role)] || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
+  function todoShown(items, role) { var hid = todoHidden(role); return list(items).filter(function (t) { return !(t.key && hid[t.key] === t.text); }); }
+  function todoClearedCount(items, role) { var hid = todoHidden(role); return list(items).filter(function (t) { return t.key && hid[t.key] === t.text; }).length; }
+  function clearTodo(key, words) {
+    var role = need(['admin', 'artist']), hid = todoHidden(role), o = {};
+    key = text(key, 120); if (!key) fail('That to-do has changed.');
+    hid[key] = String(words || '');
+    var keys = Object.keys(hid); if (keys.length > 200) keys.slice(0, keys.length - 200).forEach(function (k) { delete hid[k]; });
+    o[todoKey(role)] = JSON.stringify(hid); env.settings.set(o);
+    return { ok: true };
+  }
+  function unclearTodo(key) {
+    var role = need(['admin', 'artist']), hid = todoHidden(role), o = {};
+    if (key) delete hid[key]; else hid = {};
+    o[todoKey(role)] = JSON.stringify(hid); env.settings.set(o);
+    return { ok: true };
+  }
   /** The menu, in this person's own order. */
   function saveMenuOrder(order) {
     var role = need(['admin', 'artist']);
@@ -3578,7 +3603,7 @@ if (env.workDone) env.workDone('publish');
       role: role, brand: env.brand, today: today,
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
-      posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
+      posting: publishData.posting, todo: todoShown(publishData.todo, role), todoCleared: todoClearedCount(publishData.todo, role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
       notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
@@ -4599,7 +4624,7 @@ if (env.workDone) env.workDone('publish');
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveMenuOrder: saveMenuOrder, publishWebsite: publishWebsite, chatResult: chatResult,
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveMenuOrder: saveMenuOrder, clearTodo: clearTodo, unclearTodo: unclearTodo, publishWebsite: publishWebsite, chatResult: chatResult,
       websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
     },
     research: research,
@@ -8189,6 +8214,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-clear-todo', on: '2026-11-20', to: 'all', icon: 'close', title: 'Clear a to-do',
+    say: 'Tap × on a to-do to clear it. It stays away unless it changes; “Show cleared” brings them back.',
+    steps: ['On Home, tap × beside a to-do.', 'Changed your mind? Tap Undo, or “Show cleared” by To do.'], go: { view: 'home', tip: 'Tap × to clear.' } },
   { id: '2026-11-19-tidy', on: '2026-11-19', to: 'all', icon: 'info', title: 'Fewer words',
     say: 'Screens are quieter: symbols and a few words, with the rest behind ⓘ (tap it to read). Hold a symbol to see its name. Messages are short, with ✓ or !.',
     steps: ['Tap ⓘ beside a page’s name, or after a line, for more.', 'Hold a symbol for a moment to see what it does.'], go: { view: 'home', tip: 'Look for ⓘ.' } },
@@ -21159,10 +21187,16 @@ var Kit = (function () {
   }
 
   function todoCard() {
-    var items = S.data.todo || [];
-    if (!items.length) return null;
+    var items = S.data.todo || [], cleared = S.data.todoCleared || 0;
+    if (!items.length && !cleared) return null;
     var list = h('div', { class: 'list' });
     items.slice(0, 6).forEach(function (t) {
+      var clear = h('span', { class: 'todo-x press', role: 'button', tabindex: '0', 'aria-label': 'Clear “' + t.text + '”', 'data-tip': 'Clear' }, icon('close'));
+      function doClear(e) {
+        e.stopPropagation(); e.preventDefault();
+        api('clearTodo', t.key, t.text).then(refresh).then(function () { render(); undoCard('Cleared.', function () { return api('unclearTodo', t.key); }, 'Back on your list.'); }).catch(fail);
+      }
+      clear.addEventListener('click', doClear); clear.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') doClear(e); });
       list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () {
         if (t.link) { openLinkAccounts(); return; }
         if (t.site) { openSiteWish(t); return; }
@@ -21172,10 +21206,10 @@ var Kit = (function () {
         else if (/Admin/.test(t.where)) { S.adminTab = 'settings'; go('settings'); }
         else K.confirm({ title: t.text, text: t.why + ' Where: ' + t.where + '.', single: true, confirmLabel: 'OK' });
       } }, h('div', { class: 'th-blank todo-ic' }, icon(t.site ? (t.kind === 'photo' ? 'photo_camera' : 'edit_note') : t.sitein ? 'language' : t.productId ? 'front_hand' : 'radio_button_unchecked')),
-        h('div', { class: 'grow' }, h('div', { class: 'li-head', text: t.text }), h('div', { class: 'li-sup', style: 'white-space:normal', text: t.why })), icon('chevron_right')));
+        h('div', { class: 'grow' }, h('div', { class: 'li-head', text: t.text }), h('div', { class: 'li-sup', style: 'white-space:normal', text: t.why })), t.key ? clear : null, icon('chevron_right')));
     });
-    var sec = section('To do');
-    sec.appendChild(list);
+    var sec = section('To do', cleared ? h('button', { type: 'button', class: 'todo-show press', onclick: function () { api('unclearTodo', '').then(refresh).then(function () { render(); toast('✓ All back'); }).catch(fail); } }, icon('visibility'), 'Show cleared (' + cleared + ')') : null);
+    if (items.length) sec.appendChild(list);
     return sec;
   }
 
