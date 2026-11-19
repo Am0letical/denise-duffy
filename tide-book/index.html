@@ -1773,6 +1773,12 @@ body.map-full { overflow: hidden; }
 .tk-more:focus-visible, .info-btn:focus-visible { outline: 2px solid var(--primary); }
 .tk-short { }
 .btn.bare { flex: none !important; }
+.tk .tk-more { width: 24px; height: 24px; vertical-align: -6px; }
+.li-sup.tk, .next-opt-why.tk, .mn-sub.tk { display: inline-flex !important; align-items: center; gap: 2px; -webkit-line-clamp: unset; white-space: normal; }
+.li-sup.tk.tk-open, .next-opt-why.tk.tk-open, .mn-sub.tk.tk-open { display: block !important; }
+.tk-long { white-space: normal; }
+.tk-folded { display: none !important; }
+.li-head .tk-more, .next-opt-label .tk-more { margin-left: 4px; }
 </style>
 
   <script>
@@ -3559,7 +3565,7 @@ if (env.workDone) env.workDone('publish');
       // one line per product, so the list stays short: the first job, and how many more
       var now = (p.hands || []).filter(function (x) { return x.state === 'now'; });
       if (p.planWaits || p.parked) return;   // waiting for a later step of her plan, or paused: not on her list yet
-      if (now.length) publishData.todo.push({ key: 'pp-' + p.id, productId: p.id, text: p.title + ': ' + (now.length === 1 ? 'one thing for you' : now.length + ' things for you'),
+      if (now.length) publishData.todo.push({ key: 'pp-' + p.id, productId: p.id, text: p.title + ' · ' + now.length,
         why: 'First: ' + now[0].text, where: 'Products' });
     });
     var sw = siteWishes.snapshot(role);
@@ -8184,7 +8190,7 @@ function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.t
 
 var TIDE_CHANGES = [
   { id: '2026-11-19-tidy', on: '2026-11-19', to: 'all', icon: 'info', title: 'Fewer words',
-    say: 'Screens are tidier: longer explanations sit behind ⓘ (tap it to read), everyday buttons are symbols (hold one to see its name), and messages are short, with ✓ or !.',
+    say: 'Screens are quieter: symbols and a few words, with the rest behind ⓘ (tap it to read). Hold a symbol to see its name. Messages are short, with ✓ or !.',
     steps: ['Tap ⓘ beside a page’s name, or after a line, for more.', 'Hold a symbol for a moment to see what it does.'], go: { view: 'home', tip: 'Look for ⓘ.' } },
   { id: '2026-11-19-notes-yours', on: '2026-11-19', to: 'admin', icon: 'sticky_note_2', title: 'Notes are each person’s own',
     say: 'Her Notes shows only her notes (what she writes, her private notes, and what her talks file). The notes made when Tide Book was set up (Who Denise is, Still to ask Denise…) are in your Notes, and Tide Book still uses them.',
@@ -13518,26 +13524,42 @@ var Kit = (function () {
     if (p) main.appendChild(rise(p, 0));
   }
   /** Help text that runs long shows its first words, with the rest behind ⓘ (one tap opens it). */
-  var TUCK_AT = 70, TUCK_SEL = '.tf-help, .note, p.body-s[style*="on-surface-variant"], div.body-s[style*="on-surface-variant"], p.body-m[style*="on-surface-variant"], .empty .body-m, .sheet-body p.body-m, .card p.body-m, .card div.body-s';
+  /** Quiet screens: explanations sit behind ⓘ. A row's line (the title already says what it is) becomes ⓘ alone;
+   *  help, notes and descriptions keep their first few words. Anything with a number or $ in it (prices, dates, counts)
+   *  stays as it is, and so does anything short. One tap on ⓘ shows it all. */
+  var ROW_SEL = '.li-sup, .next-opt-why, .nt-sug-why, .chk-why, .hand-why, .mn-sub, .cal-ev-s, .nt-sug-where span';
+  var TUCK_SEL = '.tf-help, .note, .body-s, .body-m, .empty .body-m, .sheet-body p, .priv-card p, .fc-next, .next-opt-why, ' + ROW_SEL;
+  var TUCK_SKIP = '.mn-msg, .nt-ed, .nt-paper, .md, .nt-card, .cal-blk, .toast, .tip-bubble, .tk-long, .price, .stat, .kpi, .money-big, figure, label, .tf, .ho-card, .nt-ver, .mn-feed';
   function tuck(el) {
-    if (!el || el.__tucking) return;
+    if (!el || el.__tucking || !el.classList) return;
     var target = el.classList.contains('note') ? el.querySelector(':scope > span:not(.ms)') : el;
     if (!target) return;
-    if (target.__tuckedText !== undefined && target.querySelector('.tk-more') && target.textContent.indexOf(target.__tuckedText) === -1) return;   // already done, unchanged
-    var full = target.__full && target.querySelector('.tk-more') ? target.__full : target.textContent.trim();
-    var at = el.classList.contains('tf-help') || el.classList.contains('note') || /on-surface-variant/.test(el.getAttribute('style') || '') ? TUCK_AT : 120;
-    if (full.length <= at || target.querySelector('a, button, input') || el.closest('.mn-msg, .nt-ed, .nt-paper, .md, .cal-ev, .li')) return;
-    if (!target.querySelector('.tk-more') && target.children.length) return;   // words with their own formatting stay as they are
-    var cut = full.split(/(?<=[.!?])\s+/)[0];
-    if (cut.length > 90 || cut === full) { cut = full.slice(0, 64).replace(/\s+\S*$/, '') + '…'; }
-    var rest = full === cut ? '' : full;
+    var done = target.querySelector(':scope > .tk-more');
+    if (done && target.textContent.indexOf(target.__tuckedText || '\u0000') >= 0) return;
+    var full = done ? target.__full : target.textContent.trim();
+    var row = el.matches(ROW_SEL);
+    if (!full || full.length <= 26 || target.querySelector('a, button, input, select, textarea') || el.closest(TUCK_SKIP)) return;
+    if (!done && target.children.length && !el.classList.contains('note')) return;     // words with their own formatting stay
+    if (/[$€£]\s?\d|\d[\d.,]*\s?(%|cm|mm|kg|g\b|min|h\b|am|pm)|\b\d{1,2}:\d{2}\b|\b\d{4}\b/i.test(full) && full.length < 90) return;   // figures stay in sight
+    var words = full.replace(/^(First|Next|Note|Tip):\s*/i, '').split(/\s+/), keep = row ? 0 : Math.min(3, words.length);
+    var cut = keep ? words.slice(0, keep).join(' ').replace(/[,;:.–-]+$/, '') : '';
     el.__tucking = true;
     target.__full = full; target.__tuckedText = cut;
     target.textContent = '';
-    var shortEl = h('span', { class: 'tk-short', text: cut }), longEl = h('span', { class: 'tk-long', text: rest, hidden: true });
-    var more = h('button', { type: 'button', class: 'tk-more press', 'aria-label': 'More about this', 'aria-expanded': 'false' }, icon('info'));
-    more.addEventListener('click', function (e) { e.stopPropagation(); e.preventDefault(); var o = longEl.hidden; longEl.hidden = !o; shortEl.hidden = o; more.setAttribute('aria-expanded', String(o)); more.firstChild.replaceWith(icon(o ? 'expand_less' : 'info')); });
-    target.append(shortEl, longEl, more);
+    var shortEl = cut ? h('span', { class: 'tk-short', text: cut + '…' }) : null, longEl = h('span', { class: 'tk-long', text: full, hidden: true });
+    var more = h('span', { class: 'tk-more press', role: 'button', tabindex: '0', 'aria-label': 'More: ' + full.slice(0, 80), 'aria-expanded': 'false' }, icon('info'));
+    function toggle(e) { e.stopPropagation(); e.preventDefault(); var o = longEl.hidden; longEl.hidden = !o; if (shortEl) shortEl.hidden = o; more.setAttribute('aria-expanded', String(o)); more.firstChild.replaceWith(icon(o ? 'expand_less' : 'info')); target.classList.toggle('tk-open', o); }
+    more.addEventListener('click', toggle);
+    more.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') toggle(e); });
+    if (shortEl) target.appendChild(shortEl);
+    target.appendChild(longEl);
+    // a row's ⓘ goes beside its title, and the line itself only shows once it's opened
+    var head = row && !shortEl ? el.previousElementSibling : null;
+    if (head && /li-head|next-opt-label|title|^b$/i.test(head.className || head.tagName) && !head.querySelector('.tk-more')) {
+      head.appendChild(more); el.classList.add('tk-folded');
+      more.addEventListener('click', function () { el.classList.toggle('tk-folded', longEl.hidden); });
+    } else target.appendChild(more);
+    target.classList.add('tk');
     setTimeout(function () { el.__tucking = false; }, 0);
   }
   function tuckAll(root) { if (root && root.querySelectorAll) [].slice.call(root.querySelectorAll(TUCK_SEL)).forEach(tuck); }
@@ -13546,7 +13568,7 @@ var Kit = (function () {
       ms.forEach(function (m) {
         [].slice.call(m.addedNodes || []).forEach(function (nd) { if (nd.nodeType === 1) { if (nd.matches && nd.matches(TUCK_SEL)) tuck(nd); tuckAll(nd); } });
         var t = m.target && m.target.nodeType === 1 ? m.target.closest && m.target.closest(TUCK_SEL) : null;
-        if (t && !t.__tucking && !(m.target.classList && (m.target.classList.contains('tk-long') || m.target.classList.contains('tk-short')))) { var tg = t.classList.contains('note') ? t.querySelector(':scope > span:not(.ms)') : t; if (tg && !tg.querySelector('.tk-more')) tuck(t); }
+        if (t && !t.__tucking && !(m.target.classList && (m.target.classList.contains('tk-long') || m.target.classList.contains('tk-short')))) { var tg = t.classList.contains('note') ? t.querySelector(':scope > span:not(.ms)') : t; if (tg && !tg.querySelector(':scope > .tk-more')) tuck(t); }
       });
     });
     mo.observe(document.body, { childList: true, subtree: true });
