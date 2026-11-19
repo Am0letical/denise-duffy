@@ -1583,7 +1583,7 @@ var TIDE_SETTING_DEFAULTS = {
   sitePublishedAt: '',      // when the website was last published from Tide Book
   sitePublishedSig: '',     // what the shop looked like then, to tell when it has changes that aren't on the website yet
   siteDomain: '', siteDomainOn: false, siteDomainCheck: '',  // her own web address (LogicSite.gs): the name, in use or not, the last check
-  shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false,  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
+  shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false, shopFromPostcode: '2318',  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
   seriesExtra: ''           // series she added herself, each with a line about it (JSON): each becomes a page on her website
 };
 
@@ -8605,11 +8605,34 @@ function tideShop(env, t) {
     RATE_CACHE[key] = { at: Date.now(), r: list[0] };
     return list[0];
   }
+  /** Her own parcel: flat in a stiff mailer for one or two prints, a box for more; priced by Australia Post from her postcode
+   *  to theirs (her flat rate when Australia Post can't be asked, or there's no postcode yet). */
+  var POST_CACHE = {};
+  function parcelFor(lines) {
+    var prints = 0, other = 0;
+    lines.forEach(function (l) { if (l.p.type === 'Print') prints += l.q; else other += l.q; });
+    var n = prints + other;
+    if (!other && n <= 2) return { l: 35, w: 26, h: 2, kg: Math.round((0.12 + 0.06 * n) * 100) / 100, what: 'a stiff mailer' };
+    return { l: 36, w: 28, h: 6 + 2 * Math.ceil(n / 4), kg: Math.round((0.3 + 0.08 * n) * 100) / 100, what: 'a box' };
+  }
+  function selfPostage(cc, postcode, lines, flat) {
+    var ap = env.auspost, from = String(st().shopFromPostcode || '2318');
+    if (!ap || !ap.linked()) return { amount: flat, note: '' };
+    if (cc === 'AU' && !postcode) return { amount: flat, note: 'Add your postcode for the exact postage' };
+    var p = parcelFor(lines), key = [cc, postcode, from, p.l, p.w, p.h, p.kg].join('|'), c = POST_CACHE[key];
+    if (c && Date.now() - c.at < 6 * 3600000) return c.r;
+    try {
+      var q = cc === 'AU' ? ap.domestic(from, postcode, p) : ap.international(cc, p);
+      var r = { amount: Math.ceil(q.price * 20) / 20, note: 'Australia Post, ' + p.what + (q.service ? ' (' + q.service + ')' : '') };
+      POST_CACHE[key] = { at: Date.now(), r: r };
+      return r;
+    } catch (e) { return { amount: flat, note: '' }; }
+  }
   /** The price of a cart, worked out here: lines, the set discount, postage by parcel, and the total. */
   function quote(cart, to, code) {
     to = to || {};
     var cc = country(to.country);
-    var out = { lines: [], discount: 0, shipping: [], total: 0, currency: 'AUD', errors: [], country: cc, state: String(to.state || '').toUpperCase().slice(0, 3) };
+    var out = { lines: [], discount: 0, shipping: [], total: 0, currency: 'AUD', errors: [], country: cc, state: String(to.state || '').toUpperCase().slice(0, 3), postcode: /^\d{4}$/.test(String(to.postcode || '')) ? String(to.postcode) : '' };
     if (!cc) { out.errors.push('Choose where it’s going.'); return out; }
     var items = t.list(cart).slice(0, X.MAX_LINES);
     if (!items.length) { out.errors.push('Your cart is empty.'); return out; }
@@ -8625,7 +8648,8 @@ function tideShop(env, t) {
     var selfL = out.lines.filter(function (l) { return l.kind === 'self'; }), ogs = out.lines.filter(function (l) { return l.kind === 'original'; }), pfL = out.lines.filter(function (l) { return l.kind === 'printful'; });
     if (selfL.length) {
       var free = zone === 'AU' && (freeCode || (R.freeOverAU > 0 && sub - off >= R.freeOverAU));   // 0: never free
-      out.shipping.push({ kind: 'self', label: 'Posted by Denise', amount: free ? 0 : R.self[zone], note: free ? (freeCode ? 'Free with your code' : 'Free over ' + money(R.freeOverAU) + ' in Australia') : '' });
+      var sp = free ? null : selfPostage(cc, out.postcode, selfL, R.self[zone]);
+      out.shipping.push({ kind: 'self', label: 'Posted by Denise', amount: free ? 0 : sp.amount, note: free ? (freeCode ? 'Free with your code' : 'Free over ' + money(R.freeOverAU) + ' in Australia') : sp.note });
     }
     ogs.forEach(function (l) { out.shipping.push({ kind: 'original', label: 'The original, posted insured', amount: R.original[zone], note: l.title }); });
     if (pfL.length) {
@@ -8654,13 +8678,13 @@ function tideShop(env, t) {
     if (practice() && env.stripe.mode() === 'live') return { open: false, why: 'Checkout is off in the practice copy.' };
     return { open: true, test: env.stripe.mode() !== 'live' };
   }
-  function siteQuote(p) { p = p || {}; if (env.workDone) env.workDone('quote'); return publicQuote(quote(p.cart, { country: p.country, state: p.state }, p.code)); }
+  function siteQuote(p) { p = p || {}; if (env.workDone) env.workDone('quote'); return publicQuote(quote(p.cart, { country: p.country, state: p.state, postcode: p.postcode }, p.code)); }
   /** Starts a Stripe checkout for the cart: priced here, the address locked to the country it was priced for. */
   function startCheckout(p, back) {
     p = p || {}; if (env.workDone) env.workDone('checkout');
     var o = open();
     if (!o.open) t.fail(o.why);
-    var q = quote(p.cart, { country: p.country, state: p.state }, p.code);
+    var q = quote(p.cart, { country: p.country, state: p.state, postcode: p.postcode }, p.code);
     if (q.errors.length) t.fail(q.errors[0]);
     if (!q.lines.length) t.fail('Your cart is empty.');
     var origin = String(back || '').replace(/#.*$/, '');
@@ -8830,6 +8854,7 @@ function tideShop(env, t) {
     if (p.selfSizes) ch.shopSelfSizes = t.list(p.selfSizes).map(function (s) { return t.text(s, 20); }).filter(String).slice(0, 12);
     if ('printfulAuto' in p) ch.shopPrintfulAuto = p.printfulAuto === true;
     if (p.rates) ch.shopRatesChecked = true;
+    if ('fromPostcode' in p) { if (!/^\d{4}$/.test(String(p.fromPostcode || ''))) t.fail('Her postcode is four numbers.'); ch.shopFromPostcode = String(p.fromPostcode); }
     env.settings.set(ch);
     return { ok: true };
   }
@@ -8843,11 +8868,14 @@ function tideShop(env, t) {
     return r;
   }
   function unlinkStripe() { t.need(['admin', 'artist']); if (env.stripe) env.stripe.unlink(); return { ok: true }; }
+  function linkAusPost(key) { t.need(['admin', 'artist']); if (!env.auspost) t.fail('Australia Post works on the PC version of Tide Book.'); return env.auspost.link(key); }
+  function unlinkAusPost() { t.need(['admin', 'artist']); if (env.auspost) env.auspost.unlink(); return { ok: true }; }
   /** Ready to sell? Each step, done or not, so Orders can show what's left and the button for it. */
   function readiness() {
     var s = st(), live = t.rows('prints').filter(function (p) { return p.status === 'Live' && t.list(p.photoIds).length; }).length;
     var stripe = env.stripe ? { linked: env.stripe.linked(), mode: env.stripe.mode() } : { linked: false, mode: '' };
-    return { stripe: stripe.linked, stripeLive: stripe.mode === 'live', printful: !!(env.printful && env.printful.linked()), rates: s.shopRatesChecked === true,
+    return { stripe: stripe.linked, stripeLive: stripe.mode === 'live', printful: !!(env.printful && env.printful.linked()), rates: s.shopRatesChecked === true || !!(env.auspost && env.auspost.linked()),
+      auspost: !!(env.auspost && env.auspost.linked()),
       artworks: live, published: live > 0 && !!s.sitePublishedAt && !(t.shopPending && t.shopPending()), reach: !!(env.site && env.site.shopUrl && env.site.shopUrl(false)) };
   }
   function snapshot(role) {
@@ -8856,7 +8884,8 @@ function tideShop(env, t) {
     var todo = 0; orders.forEach(function (o) { t.list(o.parts).forEach(function (p) { if (/^(To post|To send|Needs you|Needs your OK)$/.test(p.status)) todo++; }); });
     var o = open();
     return { orders: orders, todo: todo, rates: rates(), selfSizes: selfSizes(), printfulAuto: printfulAuto(), stripe: env.stripe ? { linked: env.stripe.linked(), mode: env.stripe.mode(), name: env.stripe.name() } : null,
-      open: o.open, why: o.why || '', zones: X.ZONE_NAMES, carriers: Object.keys(CARRIERS), ready: readiness() };
+      open: o.open, why: o.why || '', zones: X.ZONE_NAMES, carriers: Object.keys(CARRIERS), ready: readiness(),
+      auspost: !!(env.auspost && env.auspost.linked()), fromPostcode: String(st().shopFromPostcode || '2318') };
   }
   /** The pages allowed to ask for prices and checkouts: her website (both addresses), plus what the PC adds (its preview). */
   function origins(extra) {
@@ -8867,7 +8896,7 @@ function tideShop(env, t) {
     return out;
   }
   return { quote: quote, siteQuote: siteQuote, origins: origins, rates: rates, open: open, startCheckout: startCheckout, sync: sync, thanks: thanks, snapshot: snapshot, selfSize: selfSize, COUNTRIES: X.COUNTRIES, AU_STATES: X.AU_STATES, NEEDS_STATE: X.NEEDS_STATE,
-    api: { checkShop: function () { t.need(['admin']); return sync(); }, shopSiteData: function (w) { t.need(['admin']); return t.siteData(w === 'draft' ? 'draft' : 'live'); }, markPosted: markPosted, undoPosted: undoPosted, retryPrintful: retryPrintful, orderNote: orderNote, saveShopSettings: saveShopSettings, linkStripe: linkStripe, unlinkStripe: unlinkStripe } };
+    api: { checkShop: function () { t.need(['admin']); return sync(); }, shopSiteData: function (w) { t.need(['admin']); return t.siteData(w === 'draft' ? 'draft' : 'live'); }, markPosted: markPosted, undoPosted: undoPosted, linkAusPost: linkAusPost, unlinkAusPost: unlinkAusPost, retryPrintful: retryPrintful, orderNote: orderNote, saveShopSettings: saveShopSettings, linkStripe: linkStripe, unlinkStripe: unlinkStripe } };
 }
 
 </script>
@@ -11090,7 +11119,7 @@ var Kit = (function () {
         b: RD.stripe ? 'Link the live key' : 'Set up Stripe', go: openStripeLink },
       { done: RD.printful, ic: 'local_shipping', t: 'Printful, for prints A3 and bigger', line: 'Printful prints and posts the bigger sizes for you. Link your Printful account (it’s free).', b: 'Link Printful',
         go: function () { openPrintfulLink(function () { refresh().then(render); }); } },
-      { done: RD.rates, ic: 'package_2', t: 'Your postage', line: 'Check the rates for the parcels you post, against Australia Post’s prices.', b: 'Check postage', go: openShopSettings },
+      { done: RD.rates, ic: 'package_2', t: 'Your postage', line: 'Link Australia Post (free) and checkout charges its real price from your postcode to each buyer’s.', b: 'Set up postage', go: openShopSettings },
       { done: RD.published, ic: 'palette', t: 'Your first artwork on your website', line: !RD.artworks ? 'Add an artwork with its photos, sizes and prices, then Launch it.' : 'Publish your website so your shop shows it.',
         b: !RD.artworks ? 'Add an artwork' : 'Publish your website', go: !RD.artworks ? function () { go('prints'); setTimeout(function () { openPrint(null); }, 350); } : publishSite }
     ];
@@ -11111,9 +11140,17 @@ var Kit = (function () {
     K.sheet({
       title: 'Postage and orders', tall: true,
       build: function (ctl) {
-        var B = ctl.body;
+        var B = ctl.body, fromPc = SH.fromPostcode || '2318', keyIn = '';
         function money(label, get, set, help) { return K.textField({ label: label, prefix: '$', inputmode: 'decimal', value: get(), help: help, onInput: function (v) { set(K.num(v)); } }); }
-        B.append(h('div', { class: 'title-s', text: 'Your own parcels' }), h('p', { class: 'tf-help', text: 'One parcel per order, whatever’s in it. Check Australia Post’s prices for a tube or a stiff envelope, then set these.' }),
+        // Australia Post's own price, from her postcode to the buyer's address
+        B.append(h('div', { class: 'title-s', text: 'Postage from Australia Post' }),
+          SH.auspost ? note('Linked: checkout asks Australia Post for each buyer’s postage. One or two prints go flat in a stiff mailer; more go in a box.', 'check_circle', 'good')
+            : h('div', {}, h('p', { class: 'tf-help', text: 'Free. Sign up on Australia Post’s developer site for a “Postage Assessment Calculator” key (it arrives by email), then paste it here.' }),
+              h('a', { class: 'btn tonal sm press', href: 'https://developers.auspost.com.au/apis/pacpcs-registration', target: '_blank', rel: 'noopener', style: 'margin:4px 0 10px' }, icon('open_in_new'), h('span', { text: 'Get the free key' })),
+              K.textField({ label: 'Australia Post key', autocomplete: 'off', onInput: function (v) { keyIn = v.trim(); } })),
+          K.textField({ label: 'Your postcode (where you post from)', inputmode: 'numeric', value: fromPc, maxlength: 4, onInput: function (v) { fromPc = v.trim(); } }),
+          h('div', { class: 'title-s', style: 'margin-top:16px', text: SH.auspost ? 'If Australia Post can’t be reached' : 'Your own parcels, until Australia Post is linked' }),
+          h('p', { class: 'tf-help', text: 'Flat rates, one parcel per order, so checkout always works.' }),
           money('In Australia', function () { return R.self.AU; }, function (v) { R.self.AU = v; }), money('To New Zealand', function () { return R.self.NZ; }, function (v) { R.self.NZ = v; }),
           money('Everywhere else', function () { return R.self.WORLD; }, function (v) { R.self.WORLD = v; }),
           money('Free in Australia over', function () { return R.freeOverAU; }, function (v) { R.freeOverAU = v; }, 'Put 0 for never free.'),
@@ -11132,7 +11169,7 @@ var Kit = (function () {
         var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
           if (!sizes.length) { toast('Pick at least one size you post, or A4 if unsure.'); return; }
           K.setBusy(save, true);
-          api('saveShopSettings', { rates: R, selfSizes: sizes, printfulAuto: auto }).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast('Saved. Checkout uses these now.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+          (keyIn ? api('linkAusPost', keyIn) : Promise.resolve()).then(function () { return api('saveShopSettings', { rates: R, selfSizes: sizes, printfulAuto: auto, fromPostcode: fromPc }); }).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast('Saved. Checkout uses these now.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
         } });
         ctl.foot.appendChild(save);
       }

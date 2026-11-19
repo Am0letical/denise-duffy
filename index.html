@@ -520,6 +520,7 @@ html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 .cart-err { color: #a3342b; font-size: 14px; margin: 8px 0; }
 .cart-sec { color: var(--muted); font-size: 12px; text-align: center; margin: 10px 0 0; }
 .btn[disabled] { opacity: .45; pointer-events: none; }
+.shipto #shipPost { width: 96px; }
 
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
@@ -3828,7 +3829,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   }
   function getQuote() {
     if (!REAL_SHOP || !cart.length) { QUOTE = null; return; }
-    var body = { cart: shopLines(), country: SHIPTO.country, state: SHIPTO.state, code: code }, key = JSON.stringify(body);
+    var body = { cart: shopLines(), country: SHIPTO.country, state: SHIPTO.state, postcode: SHIPTO.postcode || '', code: code }, key = JSON.stringify(body);
     if (key === QUOTE_KEY || QUOTE_BUSY) return;
     QUOTE_KEY = key; QUOTE_BUSY = true;
     shopCall('quote', body).then(function (q) { QUOTE_BUSY = false; QUOTE = q && !q.error ? q : { errors: [q && q.error || 'Prices can’t be checked right now.'] }; if (key === QUOTE_KEY) drawCart(true); })
@@ -3838,7 +3839,8 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (!REAL_SHOP) return '';
     var cs = (SHOPC.countries || []).map(function (c) { return '<option value="' + c[0] + '"' + (c[0] === SHIPTO.country ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('');
     var needs = (SHOPC.needsState || []).indexOf(SHIPTO.country) >= 0, st = '';
-    if (needs && SHIPTO.country === 'AU') st = '<select id="shipState" aria-label="State"><option value="">State</option>' + (SHOPC.auStates || []).map(function (s) { return '<option' + (s === SHIPTO.state ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>';
+    if (needs && SHIPTO.country === 'AU') st = '<select id="shipState" aria-label="State"><option value="">State</option>' + (SHOPC.auStates || []).map(function (s) { return '<option' + (s === SHIPTO.state ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' +
+      '<input id="shipPost" inputmode="numeric" maxlength="4" placeholder="Postcode" value="' + esc(SHIPTO.postcode || '') + '" aria-label="Postcode">';
     else if (needs) st = '<input id="shipState" maxlength="3" placeholder="State code" value="' + esc(SHIPTO.state || '') + '" aria-label="State or province code">';
     return '<div class="shipto"><span>Sending to</span><select id="shipCountry" aria-label="Country">' + cs + '</select>' + st + '</div>';
   }
@@ -3846,14 +3848,15 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (!REAL_SHOP) { toast('This is a preview of the shop: nothing is for sale yet.'); return; }
     if (!SHOPC.url) { toast('Checkout opens very soon. Message Denise on Instagram in the meantime.'); return; }
     if (b) { b.disabled = true; b.textContent = 'Opening the secure checkout…'; }
-    shopCall('checkout', { cart: shopLines(), country: SHIPTO.country, state: SHIPTO.state, code: code, back: location.href.split('#')[0] }).then(function (r) {
+    shopCall('checkout', { cart: shopLines(), country: SHIPTO.country, state: SHIPTO.state, postcode: SHIPTO.postcode || '', code: code, back: location.href.split('#')[0] }).then(function (r) {
       if (r && r.url) { location.href = r.url; return; }
       throw new Error(r && r.error || 'The checkout couldn’t open.');
     }).catch(function (e) { if (b) { b.disabled = false; b.textContent = 'Check out'; } toast(e.message === 'closed' || /fetch/i.test(e.message) ? 'Checkout is resting for a moment. Try again shortly, or message Denise on Instagram.' : e.message); });
   }
   document.addEventListener('change', function (e) {
-    if (e.target.id === 'shipCountry') { SHIPTO = { country: e.target.value, state: '' }; }
+    if (e.target.id === 'shipCountry') { SHIPTO = { country: e.target.value, state: '', postcode: '' }; }
     else if (e.target.id === 'shipState') SHIPTO.state = String(e.target.value || '').toUpperCase();
+    else if (e.target.id === 'shipPost') { SHIPTO.postcode = String(e.target.value || '').replace(/\D/g, '').slice(0, 4); if (SHIPTO.postcode.length !== 4 && SHIPTO.postcode) return; }
     else return;
     try { localStorage.setItem('dd_shipto', JSON.stringify(SHIPTO)); } catch (er) {}
     drawCart();
