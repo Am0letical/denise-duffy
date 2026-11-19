@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1811,6 +1811,22 @@ body.map-full { overflow: hidden; }
 .hm-link { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--r-full); font: 500 13px/16px var(--font); color: var(--on-surface-variant); cursor: pointer; }
 .hm-link:hover, .hm-link:focus-visible { background: var(--surface-low); outline: none; }
 .hm-link .ms { font-size: 18px; }
+/* the month fits any phone: cells may shrink */
+.cal-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.cal-day { min-width: 0; }
+.cal-marks { max-width: 100%; overflow: hidden; flex-wrap: nowrap; }
+/* Home: today's own things */
+.hm-today { padding: 12px 14px; margin-bottom: 14px; border-radius: 20px; background: var(--surface-lowest); box-shadow: var(--shadow-1); }
+.hm-today-h { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; } .hm-today-h > .ms { color: var(--primary); }
+.hm-td { display: flex; align-items: center; gap: 4px; min-height: 40px; }
+.hm-tick { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--on-surface-variant); cursor: pointer; flex: none; }
+.hm-tick .ms { font-size: 24px; } .hm-td.done .hm-tick { color: var(--primary); }
+.hm-td-t { all: unset; box-sizing: border-box; flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; padding: 6px 2px; font: 400 15px/20px var(--font); cursor: pointer; }
+.hm-td-t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .hm-td-t em { flex: none; font-style: normal; font-size: 12px; color: var(--on-surface-variant); } .hm-td-t .ms { font-size: 16px; color: var(--on-surface-variant); }
+.hm-td.done .hm-td-t span { text-decoration: line-through; color: var(--on-surface-variant); }
+.hm-add { display: flex; align-items: center; gap: 6px; margin-top: 4px; padding: 2px 2px 2px 8px; border-radius: 14px; background: var(--surface-low); }
+.hm-add > .ms { color: var(--on-surface-variant); font-size: 20px; }
+.hm-add-in { flex: 1; min-width: 0; padding: 10px 0; border: 0; background: transparent; font: 400 15px/20px var(--font); color: inherit; outline: none; }
 </style>
 
   <script>
@@ -2063,7 +2079,7 @@ var TIDE_SCHEMAS = {
     sheet: 'Calendar Own',
     columns: [
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['by', 'By', 'text'], ['day', 'Day', 'day'], ['text', 'What', 'text'], ['goalId', 'Goal', 'text'],
-      ['done', 'Done', 'bool'], ['reminded', 'Reminded for', 'text'], ['at', 'At', 'text'], ['mins', 'Minutes', 'number'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+      ['done', 'Done', 'bool'], ['reminded', 'Reminded for', 'text'], ['at', 'At', 'text'], ['mins', 'Minutes', 'number'], ['note', 'Note', 'text'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
   // Mentors (LogicMentor.gs): hers alone, sealed with her private-writing passphrase on the PC
@@ -3945,7 +3961,7 @@ if (env.workDone) env.workDone('publish');
   // ---------- her own things on the calendar: a few words on a day, ticked off when done. Hers alone.
   function ownDays(role) {
     return rows('days').filter(function (d) { return d.deleted !== true && d.by === role; })
-      .map(function (d) { return { id: d.id, day: d.day, text: d.text, goalId: d.goalId || '', done: d.done === true, at: d.at || '', mins: Number(d.mins) || 0 }; });
+      .map(function (d) { return { id: d.id, day: d.day, text: d.text, goalId: d.goalId || '', done: d.done === true, at: d.at || '', mins: Number(d.mins) || 0, note: d.note || '' }; });
   }
   function saveOwnDay(id, p) {
     var role = need(['admin', 'artist']);
@@ -3963,6 +3979,7 @@ if (env.workDone) env.workDone('publish');
       if ('done' in p) out.done = p.done === true;
       if ('at' in p) { out.at = /^\d{2}:\d{2}$/.test(String(p.at || '')) ? String(p.at) : ''; if (p.at && !out.at) fail('That time doesn’t look right.'); if (old && old.at !== out.at) out.reminded = ''; }
       if ('mins' in p) { var mn = Number(p.mins); out.mins = mn > 0 ? Math.min(720, Math.round(mn)) : 0; }
+      if ('note' in p) out.note = text(p.note, 2000);
       if (old) { env.table('days').update(id, out); return { id: id }; }
       var nid = env.nextId('DY', 4);
       env.table('days').append(Object.assign({ id: nid, created: now, by: role, goalId: '', done: false, reminded: '', deleted: false }, out));
@@ -8241,6 +8258,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-today-list', on: '2026-11-20', to: 'artist', icon: 'today', title: 'Your own list for today',
+    say: 'Home has a Today list: your own things for the day, to tick off, and a line to add one. In Calendar, the big Add button adds your own things to any day (one per line makes a list), with a note if you like.',
+    steps: ['On Home, type in “Add to today…” and press Enter.', 'Tap a circle to tick one off.', 'In Calendar, tap Add for another day, or a list.'], go: { view: 'home', find: '.hm-today', tip: 'Your list for today.' } },
   { id: '2026-11-20-home-essentials', on: '2026-11-20', to: 'artist', icon: 'home', title: 'A simpler Home',
     say: 'Home shows just the essentials: your milestone and its next step (Do it, or Done), anything waiting, and Start something. The rest is behind “Everything”.',
     steps: ['Open Home.', 'Tap Do it for the next step, or Done when it’s finished.', 'Start something new from the four symbols.', '“Everything” at the bottom shows the full Home.'], go: { view: 'home', tip: 'Your next step.' } },
@@ -13875,6 +13895,7 @@ var Kit = (function () {
     pageTitle(main, hello + ', ' + artist());
     if (rest) main.appendChild(rise(h('div', { class: 'hm-rest' }, icon('spa'), h('span', { class: 'grow', text: 'Taking it easy' + (rest.until ? ' · ' + restDay(rest.until) : '') }), btn('tonal', 'I’m back', { sm: true, icon: 'wb_sunny', onclick: function (e) { setRest(e.currentTarget, 0); } })), n++));
     var f = rest ? null : focusCard(); if (f) main.appendChild(rise(f, n++));
+    main.appendChild(rise(todayCard(), n++));
     var nw = needsStrip(); if (nw) main.appendChild(rise(nw, n++));
     main.appendChild(rise(startTiles(), n++));
     var unseen = newsList(false).length;
@@ -18355,7 +18376,7 @@ var Kit = (function () {
     (S.data.ownDays || []).forEach(function (d) {
       var g = d.goalId ? goalById(d.goalId) : null;
       out.push({ day: d.day, at: d.at || '', mins: d.mins || 60, kind: 'own', own: d, goalId: g ? g.id : '', done: d.done, icon: d.done ? 'check_circle' : 'event', title: d.text,
-        sub: (d.at ? fmtAt(d.at) + ' · ' : '') + (g ? 'Yours · for “' + g.title + '”' : 'Your own'), open: function () { openOwnDay(d); } });
+        sub: (d.at ? fmtAt(d.at) + ' · ' : '') + (g ? 'Yours · for “' + g.title + '”' : 'Your own') + (d.note ? ' · ' + d.note.slice(0, 60) : ''), open: function () { openOwnDay(d); } });
     });
     // her other calendars: only read, in their own colours
     var feeds = {}; (C.feeds || []).forEach(function (f) { feeds[f.id] = f; });
@@ -18459,31 +18480,36 @@ var Kit = (function () {
   }
   /** Her own thing on a day: what it is, the day, a time if it has one, and (if she likes) the goal it's for. */
   function openOwnDay(d, day, at) {
-    var f = { text: d ? d.text : '', day: d ? d.day : (day || ymd(new Date())), goalId: d ? d.goalId : '', at: d ? d.at || '' : at || '', mins: d ? d.mins || 60 : 60 };
+    var f = { text: d ? d.text : '', day: d ? d.day : (day || ymd(new Date())), goalId: d ? d.goalId : '', at: d ? d.at || '' : at || '', mins: d ? d.mins || 60 : 60, note: d ? d.note || '' : '' };
     var goals = (S.data.goals || []).filter(function (g) { return !g.parentId && g.status !== 'Done'; });
     K.sheet({
-      title: d ? 'On your calendar' : 'Add your own', tall: goals.length > 3,
+      title: d ? 'On your calendar' : 'Add to your calendar', tall: true,
       build: function (ctl) {
         var today = ymd(new Date());
-        var what = K.textField({ label: 'What is it?', value: f.text, maxlength: 200, placeholder: 'For example: order more mailing tubes', onInput: function (v) { f.text = v; } });
+        // a new one can be a list: one thing per line, each its own to tick off
+        var what = K.textField({ label: d ? 'What is it?' : 'What is it? (one per line for a list)', value: f.text, maxlength: d ? 200 : 2000, multiline: !d, placeholder: d ? '' : 'Order mailing tubes\nRing the framer\nPost the market photos', onInput: function (v) { f.text = v; } });
         var dateF = K.textField({ label: 'Which day?', type: 'date', value: f.day, onInput: function (v) { f.day = v; } });
         var timeF = K.textField({ label: 'Time (empty is any time that day)', type: 'time', value: f.at, onInput: function (v) { f.at = v; } });
+        var noteF = K.textField({ label: 'A note (if you like)', value: f.note, maxlength: 2000, multiline: true, onInput: function (v) { f.note = v; } });
         ctl.body.append(what, h('div', { style: 'height:12px' }),
           K.choices({ row: true, label: 'Quick picks', value: '', options: [{ value: today, label: 'Today' }, { value: addDays(today, 1), label: 'Tomorrow' }, { value: addDays(today, 7 - dow(today)), label: 'Next Monday' }, { value: addDays(today, 7), label: 'In a week' }],
             onChange: function (v) { if (v) { f.day = v; dateF.input.value = v; } } }), h('div', { style: 'height:10px' }), dateF, h('div', { style: 'height:12px' }), timeF,
           h('div', { style: 'height:8px' }),
           K.choices({ row: true, label: 'How long', value: f.mins, options: [30, 60, 90, 120, 180, 240].map(function (n) { return { value: n, label: lenLabel(n) }; }), onChange: function (v) { if (v) f.mins = v; } }),
-          h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: 'With a time, Tide Book keeps that time free when it plans your steps.' }));
+          h('div', { style: 'height:12px' }), noteF);
         if (goals.length) ctl.body.append(h('div', { style: 'height:14px' }),
           K.choices({ label: 'Is it for one of your goals?', value: f.goalId || '', options: [{ value: '', label: 'No, it’s on its own' }].concat(goals.slice(0, 8).map(function (g) { return { value: g.id, label: g.title }; })),
-            onChange: function (v) { f.goalId = v || ''; } }),
-          h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: 'With a goal, it shows in that goal’s colour.' }));
+            onChange: function (v) { f.goalId = v || ''; } }));
         function done(msg) { return refresh().then(function () { K.haptic('success'); ctl.close(); render(); if (msg) toast(msg); }); }
         var save = btn('filled', d ? 'Save' : 'Add it', { icon: 'check', lg: true, block: true, onclick: function () {
-          if (!f.text.trim()) { toast('Say what it is first.'); what.input.focus(); return; }
+          var lines = String(f.text || '').split('\n').map(function (x) { return x.replace(/^\s*([-*•]|\[\s?\]|\d+[.)])\s*/, '').trim(); }).filter(String);
+          if (!lines.length) { toast('Say what it is first.'); what.input.focus(); return; }
           if (!f.day) { toast('Pick a day first.'); return; }
           K.setBusy(save, true);
-          api('saveOwnDay', d ? d.id : null, { text: f.text, day: f.day, goalId: f.goalId, at: f.at || '', mins: f.mins }).then(function () { S.calSel = f.day; return done('On your calendar for ' + calWhen({ due: f.day, at: f.at }) + '.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+          var p0 = { day: f.day, goalId: f.goalId, at: f.at || '', mins: f.mins, note: f.note || '' };
+          var run = d ? api('saveOwnDay', d.id, Object.assign({ text: lines.join(' ') }, p0))
+            : lines.reduce(function (pr, line) { return pr.then(function () { return api('saveOwnDay', null, Object.assign({ text: line }, p0)); }); }, Promise.resolve());
+          run.then(function () { S.calSel = f.day; return done(lines.length > 1 && !d ? lines.length + ' things on ' + calWhen({ due: f.day }) : 'On your calendar for ' + calWhen({ due: f.day, at: f.at }) + '.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
         } });
         var foot = h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, save);
         if (d) foot.appendChild(h('div', { class: 'btn-row' },
@@ -18496,6 +18522,32 @@ var Kit = (function () {
         if (!d) setTimeout(function () { what.input.focus(); }, 350);
       }
     });
+  }
+  /** Home: her own things for today (and any from before not ticked yet), to tick off, and a line to add one. */
+  function todayCard() {
+    var today = ymd(new Date()), mine = (S.data.ownDays || []).filter(function (d) { return d.day === today || (d.day < today && !d.done && d.day >= addDays(today, -14)); })
+      .sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.day < b.day ? -1 : a.day > b.day ? 1 : (a.at || '99') < (b.at || '99') ? -1 : 1); });
+    var card = h('div', { class: 'hm-today' }, h('div', { class: 'hm-today-h' }, icon('today'), h('b', { text: 'Today' }), h('span', { class: 'grow' }),
+      K.iconBtn('calendar_month', 'Your calendar', function () { S.calMode = 'day'; S.calAt = today; S.calSel = today; go('calendar'); })));
+    mine.forEach(function (d) {
+      var row = h('div', { class: 'hm-td' + (d.done ? ' done' : '') },
+        h('button', { type: 'button', class: 'hm-tick press', role: 'checkbox', 'aria-checked': String(!!d.done), 'aria-label': (d.done ? 'Not done: ' : 'Done: ') + d.text, onclick: function (e) {
+          e.currentTarget.disabled = true;
+          api('saveOwnDay', d.id, { done: !d.done }).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
+        } }, icon(d.done ? 'check_circle' : 'radio_button_unchecked')),
+        h('button', { type: 'button', class: 'hm-td-t press', onclick: function () { openOwnDay(d); } },
+          h('span', { text: d.text }), d.day < today ? h('em', { text: ' · ' + K.dayLabel(d.day) }) : d.at ? h('em', { text: ' · ' + fmtAt(d.at) }) : null, d.note ? icon('sticky_note_2') : null));
+      card.appendChild(row);
+    });
+    var inp = h('input', { type: 'text', class: 'hm-add-in', placeholder: 'Add to today…', maxlength: '200', 'aria-label': 'Add something to today', enterkeyhint: 'done' });
+    function add() {
+      var v = inp.value.trim(); if (!v) { inp.focus(); return; }
+      inp.disabled = true;
+      api('saveOwnDay', null, { text: v, day: today }).then(refresh).then(function () { K.haptic('success'); render(); setTimeout(function () { var x = document.querySelector('.hm-add-in'); if (x) x.focus(); }, 50); }).catch(function (e) { inp.disabled = false; fail(e); });
+    }
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+    card.appendChild(h('div', { class: 'hm-add' }, icon('add'), inp, K.iconBtn('arrow_upward', 'Add', add)));
+    return card;
   }
   /** Give a goal step a day (and a time, when she tapped one): her goals' steps still to do, the most important goal first. */
   function planStepOn(day, at) {
@@ -18838,6 +18890,7 @@ var Kit = (function () {
       })(addDays(start, j));
       main.appendChild(rise(wk, 3));
     }
+    fab(main, 'Add', 'add', function () { openOwnDay(null, mode === 'day' ? at : sel); });
     var undated = (S.data.goals || []).reduce(function (n2, g) { return n2 + (g.status === 'Done' ? 0 : g.steps.filter(function (s) { return !s.done && !s.due; }).length); }, 0);
     main.appendChild(h('p', { class: 'tf-help', style: 'margin:10px 4px', text: undated ? undated + ' goal ' + (undated === 1 ? 'step has' : 'steps have') + ' no day yet. ' + (C.mode === 'plan' ? 'Tide Book places them when there’s room in your working hours.' : 'A check-in gives them days.') : 'Every goal step has a day.' }));
   }
