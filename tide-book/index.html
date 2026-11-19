@@ -1671,7 +1671,7 @@ var TIDE_SETTING_DEFAULTS = {
   sitePublishedAt: '',      // when the website was last published from Tide Book
   sitePublishedSig: '',     // what the shop looked like then, to tell when it has changes that aren't on the website yet
   siteDomain: '', siteDomainOn: false, siteDomainCheck: '',  // her own web address (LogicSite.gs): the name, in use or not, the last check
-  shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false, shopFromPostcode: '2318',  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
+  shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false, shopFromPostcode: '2318', shopFromPlace: 'Medowie, NSW',  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
   seriesExtra: ''           // series she added herself, each with a line about it (JSON): each becomes a page on her website
 };
 
@@ -1790,7 +1790,7 @@ var TIDE_SCHEMAS = {
       ['approvalRequest', 'Approval request', 'text'], ['approvalState', 'Approval state', 'text'],
       ['artistComment', 'Artist comment', 'text'], ['approvalAnswered', 'Approval answered', 'date'],
       ['adminNotes', 'Admin notes', 'text'], ['sourceIdea', 'From idea', 'text'],
-      ['series', 'Series', 'text'], ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date'], ['printful', 'Printful sizes and file', 'json'],
+      ['series', 'Series', 'text'], ['edition', 'Original and edition', 'json'], ['wentLive', 'Went live', 'date'], ['updated', 'Updated', 'date'], ['printful', 'Printful sizes and file', 'json'], ['ogSize', 'Size of the original (cm)', 'json'],
       ['approvalLater', 'Request parked until', 'day']
     ]
   },
@@ -2399,6 +2399,7 @@ function createTideLogic(env) {
       if ('products' in ch) out.products = normaliseProducts(ch.products, id, settings());
       if ('edition' in ch) out.edition = readEdition(ch.edition, pr.edition || {}, pr);
       if ('series' in ch) out.series = oneOf(ch.series, allSeries(), 'a series');
+      if ('ogSize' in ch) { var oz = ch.ogSize || {}, cl = function (v) { v = Number(v); return isFinite(v) && v > 0 && v < 500 ? Math.round(v * 10) / 10 : ''; }; out.ogSize = { w: cl(oz.w), h: cl(oz.h), d: cl(oz.d) }; }
       if (role === 'admin' && 'adminNotes' in ch) out.adminNotes = text(ch.adminNotes, 5000);
       if (pr.status === 'Live') {
         var missing = liveGaps(Object.assign({}, pr, out));
@@ -2768,7 +2769,7 @@ if (env.workDone) env.workDone('publish');
           options: opts.map(function (v) { return { id: String(v.option).toLowerCase().replace(/[^a-z0-9]+/g, '') || 'one', label: v.option, note: FULFIL[pd.fulfilment] || '', price: v.price,
             ship: pd.type === 'Original' || pd.fulfilment === 'One-off' ? 'original' : pd.fulfilment === 'Digital download' ? 'download' : 'self' }; }) });
       });
-      return { id: slugOf(pr.title, pr.id), printId: pr.id, title: pr.title, story: pr.description || '', series: pr.series || 'Forest', seriesKey: seriesKey(pr.series || 'Forest'),
+      return { id: slugOf(pr.title, pr.id), printId: pr.id, ogSize: pr.ogSize || null, title: pr.title, story: pr.description || '', series: pr.series || 'Forest', seriesKey: seriesKey(pr.series || 'Forest'),
         photos: list(pr.photoIds).slice(0, 3), scan: pr.scanId || '', ed: ed, ogSold: !!st.sold, products: products, wentLive: pr.wentLive || '' };
     }).sort(function (a, b) { return a.wentLive < b.wentLive ? 1 : -1; });
     // an original is for sale only when "The original" has a price. Live pieces with nothing to buy are still shown in the
@@ -3179,6 +3180,7 @@ if (env.workDone) env.workDone('publish');
     var photoIds = list(pr.photoIds);
     var out = {
       id: pr.id, created: pr.created, updated: pr.updated, title: pr.title, description: pr.description || '', series: pr.series || 'Forest',
+      ogSize: pr.ogSize || { w: '', h: '', d: '' },
       printful: pr.printful ? { productId: pr.printful.productId || 0, title: pr.printful.title || '', sizes: pr.printful.sizes || {}, file: pr.printful.file ? { id: pr.printful.file.id || '', status: pr.printful.file.status || '', error: pr.printful.file.error || '' } : null } : null,
       status: pr.status, thumbIds: list(pr.thumbIds), scanUrl: pr.scanId ? env.files.viewUrl(pr.scanId) : '',
       variants: list(pr.variants).map(function (v) {
@@ -8779,7 +8781,7 @@ function tideShop(env, t) {
   var RATE_CACHE = {};
   function printfulRate(to, items) {
     if (!env.printful || !env.printful.linked()) throw new Error('Printed-to-order pieces can’t be priced right now.');
-    var key = JSON.stringify([to.country, to.state || '', items]);
+    var key = JSON.stringify([to.country, to.state || '', to.zip || '', items]);
     var c = RATE_CACHE[key];
     if (c && Date.now() - c.at < X.RATE_MINUTES * 60000) return c.r;
     var list = env.printful.rates({ country: to.country, state: to.state || '', zip: to.zip || '' }, items);
@@ -8810,6 +8812,21 @@ function tideShop(env, t) {
       return r;
     } catch (e) { return { amount: flat, note: '' }; }
   }
+  /** An original, posted on its own: a parcel the size of the piece (plus packing), insured for its price, from her postcode. */
+  function originalPostage(cc, postcode, l, flat) {
+    var ap = env.auspost, from = String(st().shopFromPostcode || '2318'), sz = l.a.ogSize || {};
+    if (!ap || !ap.linked() || (cc === 'AU' && !postcode)) return { amount: flat, note: cc === 'AU' && !postcode && ap && ap.linked() ? 'add your postcode for the exact postage' : '' };
+    var w = Number(sz.w) || 42, hh = Number(sz.h) || 30, d = Number(sz.d) || 2;
+    var p = { l: Math.round(Math.max(w, hh) + 10), w: Math.round(Math.min(w, hh) + 10), h: Math.round(d + 8), kg: Math.round((0.6 + w * hh / 10000 * 1.5 + (d > 3 ? 1 : 0)) * 100) / 100 };
+    var key = ['og', cc, postcode, from, p.l, p.w, p.h, p.kg, l.unit].join('|'), c = POST_CACHE[key];
+    if (c && Date.now() - c.at < 6 * 3600000) return c.r;
+    try {
+      var q = ap.insured(from, postcode, cc, p, l.unit);
+      var r = { amount: Math.ceil(q.price * 20) / 20, note: 'Australia Post' + (q.insured ? ', insured for its price' : '') };
+      POST_CACHE[key] = { at: Date.now(), r: r };
+      return r;
+    } catch (e) { return { amount: flat, note: '' }; }
+  }
   /** The price of a cart, worked out here: lines, the set discount, postage by parcel, and the total. */
   function quote(cart, to, code) {
     to = to || {};
@@ -8833,12 +8850,12 @@ function tideShop(env, t) {
       var sp = free ? null : selfPostage(cc, out.postcode, selfL, R.self[zone]);
       out.shipping.push({ kind: 'self', label: 'Posted by Denise', amount: free ? 0 : sp.amount, note: free ? (freeCode ? 'Free with your code' : 'Free over ' + money(R.freeOverAU) + ' in Australia') : sp.note });
     }
-    ogs.forEach(function (l) { out.shipping.push({ kind: 'original', label: 'The original, posted insured', amount: R.original[zone], note: l.title }); });
+    ogs.forEach(function (l) { var op = originalPostage(cc, out.postcode, l, R.original[zone]); out.shipping.push({ kind: 'original', label: 'The original, posted insured', amount: op.amount, note: l.title + (op.note ? ' · ' + op.note : '') }); });
     if (pfL.length) {
       if (X.NEEDS_STATE.indexOf(cc) >= 0 && !out.state) out.errors.push('Choose the state it’s going to.');
       else {
         try {
-          var pr = printfulRate({ country: cc, state: out.state }, pfL.map(function (l) { return { variant_id: l.o.pf, quantity: l.q }; }));
+          var pr = printfulRate({ country: cc, state: out.state, zip: out.postcode }, pfL.map(function (l) { return { variant_id: l.o.pf, quantity: l.q }; }));
           out.shipping.push({ kind: 'printful', label: 'Printed to order and posted', amount: r2(pr.rate), note: pr.min && pr.max ? pr.min + ' to ' + pr.max + ' days after printing' : '' });
         } catch (e) { out.errors.push(String(e.message || e)); }
       }
@@ -9036,7 +9053,8 @@ function tideShop(env, t) {
     if (p.selfSizes) ch.shopSelfSizes = t.list(p.selfSizes).map(function (s) { return t.text(s, 20); }).filter(String).slice(0, 12);
     if ('printfulAuto' in p) ch.shopPrintfulAuto = p.printfulAuto === true;
     if (p.rates) ch.shopRatesChecked = true;
-    if ('fromPostcode' in p) { if (!/^\d{4}$/.test(String(p.fromPostcode || ''))) t.fail('Her postcode is four numbers.'); ch.shopFromPostcode = String(p.fromPostcode); }
+    if ('fromPostcode' in p) { if (!/^\d{4}$/.test(String(p.fromPostcode || ''))) t.fail('The postcode is four numbers.'); ch.shopFromPostcode = String(p.fromPostcode); }
+    if ('fromPlace' in p) ch.shopFromPlace = t.text(p.fromPlace, 60);
     env.settings.set(ch);
     return { ok: true };
   }
@@ -9056,7 +9074,7 @@ function tideShop(env, t) {
   function readiness() {
     var s = st(), live = t.rows('prints').filter(function (p) { return p.status === 'Live' && t.list(p.photoIds).length; }).length;
     var stripe = env.stripe ? { linked: env.stripe.linked(), mode: env.stripe.mode() } : { linked: false, mode: '' };
-    return { stripe: stripe.linked, stripeLive: stripe.mode === 'live', printful: !!(env.printful && env.printful.linked()), rates: s.shopRatesChecked === true || !!(env.auspost && env.auspost.linked()),
+    return { stripe: stripe.linked, stripeLive: stripe.mode === 'live', printful: !!(env.printful && env.printful.linked()), rates: !!(env.auspost && env.auspost.linked()),
       auspost: !!(env.auspost && env.auspost.linked()),
       artworks: live, published: live > 0 && !!s.sitePublishedAt && !(t.shopPending && t.shopPending()), reach: !!(env.site && env.site.shopUrl && env.site.shopUrl(false)) };
   }
@@ -9067,7 +9085,7 @@ function tideShop(env, t) {
     var o = open();
     return { orders: orders, todo: todo, rates: rates(), selfSizes: selfSizes(), printfulAuto: printfulAuto(), stripe: env.stripe ? { linked: env.stripe.linked(), mode: env.stripe.mode(), name: env.stripe.name() } : null,
       open: o.open, why: o.why || '', zones: X.ZONE_NAMES, carriers: Object.keys(CARRIERS), ready: readiness(),
-      auspost: !!(env.auspost && env.auspost.linked()), fromPostcode: String(st().shopFromPostcode || '2318') };
+      auspost: !!(env.auspost && env.auspost.linked()), fromPostcode: String(st().shopFromPostcode || '2318'), fromPlace: String(st().shopFromPlace || 'Medowie, NSW') };
   }
   /** The pages allowed to ask for prices and checkouts: her website (both addresses), plus what the PC adds (its preview). */
   function origins(extra) {
@@ -11301,7 +11319,7 @@ var Kit = (function () {
         b: RD.stripe ? 'Link the live key' : 'Set up Stripe', go: openStripeLink },
       { done: RD.printful, ic: 'local_shipping', t: 'Printful, for prints A3 and bigger', line: 'Printful prints and posts the bigger sizes for you. Link your Printful account (it’s free).', b: 'Link Printful',
         go: function () { openPrintfulLink(function () { refresh().then(render); }); } },
-      { done: RD.rates, ic: 'package_2', t: 'Your postage', line: 'Link Australia Post (free) and checkout charges its real price from your postcode to each buyer’s.', b: 'Set up postage', go: openShopSettings },
+      { done: RD.rates, ic: 'package_2', t: 'Postage, worked out for each buyer', line: 'Link Australia Post (free) and say where you post from. Checkout then charges each buyer’s real postage.', b: 'Set up postage', go: openShopSettings },
       { done: RD.published, ic: 'palette', t: 'Your first artwork on your website', line: !RD.artworks ? 'Add an artwork with its photos, sizes and prices, then Launch it.' : 'Publish your website so your shop shows it.',
         b: !RD.artworks ? 'Add an artwork' : 'Publish your website', go: !RD.artworks ? function () { go('prints'); setTimeout(function () { openPrint(null); }, 350); } : publishSite }
     ];
@@ -11322,7 +11340,7 @@ var Kit = (function () {
     K.sheet({
       title: 'Postage and orders', tall: true,
       build: function (ctl) {
-        var B = ctl.body, fromPc = SH.fromPostcode || '2318', keyIn = '';
+        var B = ctl.body, fromPc = SH.fromPostcode || '2318', fromPlace = SH.fromPlace || 'Medowie, NSW', keyIn = '';
         function money(label, get, set, help) { return K.textField({ label: label, prefix: '$', inputmode: 'decimal', value: get(), help: help, onInput: function (v) { set(K.num(v)); } }); }
         // Australia Post's own price, from her postcode to the buyer's address
         B.append(h('div', { class: 'title-s', text: 'Postage from Australia Post' }),
@@ -11330,9 +11348,14 @@ var Kit = (function () {
             : h('div', {}, h('p', { class: 'tf-help', text: 'Free. Sign up on Australia Post’s developer site for a “Postage Assessment Calculator” key (it arrives by email), then paste it here.' }),
               h('a', { class: 'btn tonal sm press', href: 'https://developers.auspost.com.au/apis/pacpcs-registration', target: '_blank', rel: 'noopener', style: 'margin:4px 0 10px' }, icon('open_in_new'), h('span', { text: 'Get the free key' })),
               K.textField({ label: 'Australia Post key', autocomplete: 'off', onInput: function (v) { keyIn = v.trim(); } })),
-          K.textField({ label: 'Your postcode (where you post from)', inputmode: 'numeric', value: fromPc, maxlength: 4, onInput: function (v) { fromPc = v.trim(); } }),
-          h('div', { class: 'title-s', style: 'margin-top:16px', text: SH.auspost ? 'If Australia Post can’t be reached' : 'Your own parcels, until Australia Post is linked' }),
-          h('p', { class: 'tf-help', text: 'Flat rates, one parcel per order, so checkout always works.' }),
+          h('div', { class: 'title-s', style: 'margin-top:16px', text: 'Where you post from' }),
+          h('div', { class: 'cols' }, K.textField({ label: 'Suburb and state', value: fromPlace, maxlength: 60, onInput: function (v) { fromPlace = v.trim(); } }),
+            K.textField({ label: 'Postcode', inputmode: 'numeric', value: fromPc, maxlength: 4, onInput: function (v) { fromPc = v.trim(); } })),
+          h('p', { class: 'tf-help', text: 'That’s all you need. Every buyer’s postage is worked out from here to their address: your parcels, your originals (insured, by their size) and Printful’s.' }));
+        var adv = h('details', { class: 'order-more', style: 'margin-top:14px' }, h('summary', { text: ADMIN ? 'Stand-by rates, if Australia Post can’t be reached' : 'If Australia Post can’t be reached (rarely needed)' }));
+        B.appendChild(adv);
+        B = adv;
+        B.append(h('p', { class: 'tf-help', text: 'Used only when Australia Post can’t be asked, so checkout always works.' }),
           money('In Australia', function () { return R.self.AU; }, function (v) { R.self.AU = v; }), money('To New Zealand', function () { return R.self.NZ; }, function (v) { R.self.NZ = v; }),
           money('Everywhere else', function () { return R.self.WORLD; }, function (v) { R.self.WORLD = v; }),
           money('Free in Australia over', function () { return R.freeOverAU; }, function (v) { R.freeOverAU = v; }, 'Put 0 for never free.'),
@@ -11351,7 +11374,7 @@ var Kit = (function () {
         var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
           if (!sizes.length) { toast('Pick at least one size you post, or A4 if unsure.'); return; }
           K.setBusy(save, true);
-          (keyIn ? api('linkAusPost', keyIn) : Promise.resolve()).then(function () { return api('saveShopSettings', { rates: R, selfSizes: sizes, printfulAuto: auto, fromPostcode: fromPc }); }).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast('Saved. Checkout uses these now.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+          (keyIn ? api('linkAusPost', keyIn) : Promise.resolve()).then(function () { return api('saveShopSettings', { rates: R, selfSizes: sizes, printfulAuto: auto, fromPostcode: fromPc, fromPlace: fromPlace }); }).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); toast('Saved. Checkout uses these now.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
         } });
         ctl.foot.appendChild(save);
       }
@@ -14726,7 +14749,8 @@ var Kit = (function () {
     var s = S.data.settings;
     var f = { title: p ? p.title : '', description: p ? p.description : '', adminNotes: p ? (p.adminNotes || '') : '', files: [],
       variants: p ? p.variants.map(function (v) { return { size: v.size, cost: v.cost, markupPct: v.markupPct, price: v.price }; }) : [],
-      products: p ? JSON.parse(JSON.stringify(p.products || [])) : [], series: p ? (p.series || 'Studio') : 'Studio', editionSize: p && p.edition ? p.edition.size : 0, editionChanged: false };
+      products: p ? JSON.parse(JSON.stringify(p.products || [])) : [], series: p ? (p.series || 'Studio') : 'Studio', editionSize: p && p.edition ? p.edition.size : 0, editionChanged: false,
+      ogSize: p && p.ogSize ? { w: p.ogSize.w, h: p.ogSize.h, d: p.ogSize.d } : { w: '', h: '', d: '' } };
     var dirty = false, status = p ? p.status : 'Draft';
     K.sheet({
       title: p ? p.title : 'New artwork', tall: true, guard: function () { return dirty; },
@@ -14860,6 +14884,10 @@ var Kit = (function () {
           f.products.forEach(function (pd, i) { plist.appendChild(productRow(pd, function () { openProduct(pd, f.products, i, function () { drawProducts(); touch(); }); })); });
           // her originals are hers unless she chooses to sell one
           var ogSale = f.products.some(function (pd) { return pd.type === 'Original' && pd.status === 'Live' && (pd.variants || []).some(function (v) { return v.price > 0; }); });
+          if (ogSale) plist.appendChild(h('div', { class: 'og-size' }, h('div', { class: 'label-s', style: 'margin:4px 4px 6px', text: 'Size of the original, for its postage (cm)' }),
+            h('div', { class: 'cols' }, K.textField({ label: 'Wide', inputmode: 'decimal', compact: true, value: f.ogSize.w, onInput: function (v) { f.ogSize.w = v; touch(); } }),
+              K.textField({ label: 'High', inputmode: 'decimal', compact: true, value: f.ogSize.h, onInput: function (v) { f.ogSize.h = v; touch(); } }),
+              K.textField({ label: 'Deep', inputmode: 'decimal', compact: true, value: f.ogSize.d, onInput: function (v) { f.ogSize.d = v; touch(); } }))));
           plist.appendChild(h('p', { class: 'tf-help', style: 'margin:4px 4px 10px', text: ogSale
             ? 'The original is for sale on your website.'
             : 'The original stays in your own collection. It still hangs in your website’s gallery, just without a price. Add “The original” with a price only if you’d like to sell it.' }));
@@ -14907,7 +14935,7 @@ var Kit = (function () {
         var goBtn = status === 'Live' ? btn('outlined', 'Park', { icon: 'pause_circle', lg: true })
           : btn('filled', status === 'Parked' ? 'Put back live' : 'Launch', { icon: 'rocket_launch', lg: true });
         function persist(active) {
-          var payload = { title: f.title, description: f.description, variants: f.variants, products: f.products, series: f.series };
+          var payload = { title: f.title, description: f.description, variants: f.variants, products: f.products, series: f.series, ogSize: f.ogSize };
           if (ADMIN) payload.adminNotes = f.adminNotes;
           if (f.editionChanged && f.editionSize > 0 && !(p && p.edition && p.edition.locked)) payload.edition = { size: f.editionSize };
           var step = p ? api('updatePrint', p.id, payload).then(function () { return p.id; })
