@@ -1431,6 +1431,63 @@ body.map-full { overflow: hidden; }
 .tax-row.good { background: var(--secondary-container); color: var(--on-secondary-container); }
 .tax-row.warn { background: #FFF3D6; color: #5A4300; }
 .tax-row.plain .ms { color: var(--on-surface-variant); }
+/* ---------- the goals map as a night sky: milestones are suns, goals planets, steps moons ---------- */
+.goal-map.sky { background-color: #070d1f; color: #fff; box-shadow: inset 0 0 80px rgba(0,0,0,.6);
+  background-image: radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.8), transparent 60%), radial-gradient(1px 1px at 72% 34%, rgba(255,255,255,.6), transparent 60%),
+    radial-gradient(1.5px 1.5px at 38% 72%, rgba(255,255,255,.7), transparent 60%), radial-gradient(1px 1px at 88% 82%, rgba(255,255,255,.5), transparent 60%),
+    radial-gradient(1px 1px at 55% 8%, rgba(255,255,255,.6), transparent 60%), radial-gradient(1px 1px at 22% 52%, rgba(255,255,255,.45), transparent 60%),
+    radial-gradient(ellipse at 20% 0%, rgba(80,110,200,.28), transparent 55%), radial-gradient(ellipse at 90% 100%, rgba(160,70,140,.22), transparent 55%);
+  background-size: 180px 180px, 230px 230px, 260px 260px, 200px 200px, 310px 310px, 150px 150px, 100% 100%, 100% 100%; }
+.sky-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.sky-world .goal-lines { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.sky-world .goal-lines .orbit { fill: none; stroke: rgba(255,255,255,.2); stroke-width: 1.2; stroke-dasharray: 3 6; }
+.sky-world .goal-lines .moonring { fill: none; stroke: rgba(255,255,255,.1); stroke-width: 1; }
+.sky-world .goal-lines .link { stroke: rgba(255,214,120,.55); stroke-width: 2; stroke-dasharray: 2 5; stroke-linecap: round; }
+.sky-world .goal-lines .part { stroke: rgba(255,255,255,.3); stroke-width: 1.4; }
+.sky-world.settle .sky-planet, .sky-world.settle .sky-sun, .sky-world.settle .sky-moon { transition: left .6s cubic-bezier(.2,.9,.3,1.15), top .6s cubic-bezier(.2,.9,.3,1.15), opacity .3s; }
+.sky-world.dragging .lifted { transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .sky-world.settle .sky-planet, .sky-world.settle .sky-sun, .sky-world.settle .sky-moon { transition: none; } }
+.sky-sun { position: absolute; width: 68px; height: 68px; cursor: pointer; -webkit-tap-highlight-color: transparent; z-index: 2; }
+.sky-sun-core { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff8d6, #ffd166 40%, #f4a23b 72%, #e0702a);
+  box-shadow: 0 0 24px 6px rgba(255,190,90,.55), 0 0 70px 20px rgba(255,150,60,.22); animation: skyglow 5s ease-in-out infinite; }
+@keyframes skyglow { 50% { box-shadow: 0 0 30px 9px rgba(255,190,90,.65), 0 0 80px 26px rgba(255,150,60,.26); } }
+@media (prefers-reduced-motion: reduce) { .sky-sun-core { animation: none; } }
+.sky-planet { position: absolute; width: 40px; height: 40px; cursor: pointer; -webkit-tap-highlight-color: transparent; z-index: 3; }
+.sky-planet.mini { width: 18px; height: 18px; }
+.sky-ball { position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center; font: 700 13px/1 var(--font); color: #fff;
+  background: radial-gradient(circle at 34% 30%, color-mix(in srgb, var(--gc) 45%, #fff), var(--gc) 55%, color-mix(in srgb, var(--gc) 70%, #000));
+  box-shadow: inset -4px -5px 10px rgba(0,0,0,.35), 0 0 12px color-mix(in srgb, var(--gc) 60%, transparent); }
+.sky-ball .ms { font-size: 18px; }
+.sky-planet.now .sky-ball { box-shadow: inset -4px -5px 10px rgba(0,0,0,.35), 0 0 0 3px #ffd76a, 0 0 18px rgba(255,215,106,.6); }
+.sky-planet.along .sky-ball { box-shadow: inset -4px -5px 10px rgba(0,0,0,.35), 0 0 0 2px rgba(255,215,106,.7); }
+.sky-planet.done .sky-ball { filter: saturate(.5); opacity: .75; }
+.sky-planet.sub { transform: scale(.8); }
+.sky-label { position: absolute; left: 50%; top: calc(100% + 18px); transform: translateX(-50%); width: 112px; text-align: center; pointer-events: none;
+  font: 500 12px/15px var(--font); color: rgba(255,255,255,.92); text-shadow: 0 1px 3px rgba(0,0,0,.9); }
+.sky-label.sun { top: calc(100% + 8px); width: 140px; font: 600 14px/18px var(--display); color: #ffe7b0; }
+.sky-t { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sky-now { display: inline-block; margin-bottom: 2px; padding: 1px 7px; border-radius: 8px; background: #ffd76a; color: #3a2a00; font: 700 10px/14px var(--font); letter-spacing: .04em; text-transform: uppercase; text-shadow: none; }
+.sky-moon { all: unset; position: absolute; width: 10px; height: 10px; border-radius: 50%; cursor: pointer; z-index: 4; box-sizing: border-box;
+  border: 1.5px solid color-mix(in srgb, var(--gc) 40%, #fff); background: rgba(10,15,35,.8); }
+.sky-moon::after { content: ''; position: absolute; inset: -9px; }   /* a bigger target than it looks */
+.sky-moon.done { background: #fff; border-color: #fff; }
+.sky-planet.chosen .sky-ball, .sky-sun.chosen .sky-sun-core { outline: 2px solid #fff; outline-offset: 5px; }
+.sky-planet.target .sky-ball, .sky-sun.target .sky-sun-core { outline: 3px dashed #ffd76a; outline-offset: 8px; }
+.sky-planet.lifted, .sky-sun.lifted { z-index: 10; filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
+.sky-bar { position: absolute; z-index: 12; display: flex; gap: 4px; padding: 4px; border-radius: 22px; background: rgba(20,28,55,.94); box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+.sky-act { all: unset; display: inline-flex; align-items: center; gap: 4px; padding: 8px 11px; border-radius: 18px; cursor: pointer; color: #fff; font: 500 13px/16px var(--font); }
+.sky-act:active { background: rgba(255,255,255,.12); }
+.sky-act .ms { font-size: 18px; }
+.sky-act.bin { color: #ffb4a8; }
+.sky-add { all: unset; position: absolute; z-index: 5; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 10px; border-radius: 20px; cursor: pointer;
+  background: rgba(255,209,102,.16); color: #ffe7b0; font: 600 13px/16px var(--font); box-shadow: 0 0 0 1px rgba(255,209,102,.35); }
+.goal-map.full .sky-add { top: calc(env(safe-area-inset-top) + 74px); }
+.sky-hint { position: absolute; z-index: 5; left: 12px; right: 12px; bottom: 64px; text-align: center; pointer-events: none; font: 400 12px/16px var(--font); color: rgba(255,255,255,.6); }
+.goal-map.sky .gz { background: rgba(20,28,55,.85); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.goal-map.sky .gz .gz-btn, .goal-map.sky .gz .gz-level { color: #fff; }
+.sky-ghost { position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 4px; padding: 6px; border-radius: 18px; background: rgba(20,28,55,.95); box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+.sky-ghost button { all: unset; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 14px; cursor: pointer; color: #fff; font: 500 13px/16px var(--font); }
+.sky-ghost button:active { background: rgba(255,255,255,.12); }
 </style>
 
   <script>
@@ -1622,6 +1679,14 @@ function tideTaxGuess(category, description) {
 var TIDE_TAX_LABEL = { yes: 'Likely claimable', part: 'Only the business share', capital: 'A business tool', no: 'Usually not claimable', ask: 'Ask your accountant' };
 
 var TIDE_SCHEMAS = {
+  // her milestones: the big aims her goals orbit on the map (the sun, with goals as planets and steps as moons)
+  milestones: {
+    sheet: 'Milestones',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['title', 'Milestone', 'text'],
+      ['x', 'Map across', 'number'], ['y', 'Map down', 'number'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
   // the website's shop (LogicShop.gs): each paid order, split into the parcels it makes, and the checkouts started
   orders: {
     sheet: 'Orders',
@@ -1846,7 +1911,7 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['title', 'Goal', 'text'], ['why', 'Why it matters', 'text'],
       ['x', 'Map across', 'number'], ['y', 'Map down', 'number'], ['links', 'Linked to', 'list'], ['parentId', 'Part of', 'text'],
       ['rank', 'Importance', 'number'], ['status', 'Status', 'text'], ['steps', 'Plan steps', 'json'], ['topicId', 'Planned in talk', 'text'], ['targetOn', 'Aim to reach it by', 'day'], ['remindedTarget', 'Reminded of its day', 'day'], ['mini', 'Shrunk to a dot on the map', 'bool'],
-      ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+      ['milestoneId', 'In the orbit of', 'text'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
   topics: {
@@ -3157,7 +3222,7 @@ if (env.workDone) env.workDone('publish');
       suppliers: supplierList().map(function (x) { return { id: x.id, name: x.name, makes: list(x.makes), defaultFor: list(x.defaultFor), contact: x.contact || '', website: x.website || '',
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
-      plan: planState(), goals: goalSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
+      plan: planState(), goals: goalSnapshot(), milestones: milestoneSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -3312,7 +3377,7 @@ if (env.workDone) env.workDone('publish');
       var id = env.nextId('GL', 3), now = nowIso(), all = goalList();
       env.table('goals').append({ id: id, created: now, createdBy: role, title: title, why: text(p.why, 1000), x: clamp01(p.x, 0.15 + Math.random() * 0.7), y: clamp01(p.y, 0.15 + Math.random() * 0.7),
         links: [], parentId: p.parentId && all.some(function (g) { return g.id === p.parentId; }) ? p.parentId : '', rank: all.length + 1, status: 'Open',
-        steps: cleanSteps(p.steps), topicId: '', deleted: false, updated: now });
+        steps: cleanSteps(p.steps), topicId: '', milestoneId: p.milestoneId && milestoneRows().some(function (m) { return m.id === p.milestoneId; }) ? String(p.milestoneId) : '', deleted: false, updated: now });
       return { id: id };
     });
   }
@@ -3330,6 +3395,7 @@ if (env.workDone) env.workDone('publish');
       if ('status' in ch) out.status = ch.status === 'Done' ? 'Done' : 'Open';
       if ('steps' in ch) out.steps = cleanSteps(ch.steps);
       if ('mini' in ch) out.mini = ch.mini === true;
+      if ('milestoneId' in ch) out.milestoneId = ch.milestoneId && milestoneRows().some(function (m) { return m.id === ch.milestoneId; }) ? String(ch.milestoneId) : '';
       if ('targetOn' in ch) { var tg = String(ch.targetOn || '').slice(0, 10); if (tg && !/^\d{4}-\d{2}-\d{2}$/.test(tg)) fail('That date doesn\u2019t look right.'); out.targetOn = tg; }
       env.table('goals').update(id, out);
       if (out.links) syncLinks(id, out.links);
@@ -3453,6 +3519,44 @@ if (env.workDone) env.workDone('publish');
       return { ok: true };
     });
   }
+  // ---------- milestones: the suns her goals orbit on the map
+  function milestoneRows() { return rows('milestones').filter(function (m) { return m.deleted !== true; }); }
+  function milestoneSnapshot() { return milestoneRows().map(function (m) { return { id: m.id, title: m.title, x: Number(m.x), y: Number(m.y) }; }); }
+  function addMilestone(p) {
+    var role = need(['admin', 'artist']); p = p || {};
+    var title = text(p.title, 120); if (!title) fail('Name the milestone.');
+    return env.lock(function () {
+      var id = env.nextId('MS', 3), now = nowIso();
+      env.table('milestones').append({ id: id, created: now, createdBy: role, title: title, x: clamp01(p.x, 0.5), y: clamp01(p.y, 0.3), deleted: false, updated: now });
+      var ids = goalList().map(function (g) { return g.id; });
+      list(p.goals).forEach(function (gid) { if (ids.indexOf(gid) >= 0) env.table('goals').update(gid, { milestoneId: id, updated: now }); });
+      return { id: id };
+    });
+  }
+  function updateMilestone(id, ch) {
+    need(['admin', 'artist']); ch = ch || {};
+    return env.lock(function () {
+      var m = milestoneRows().filter(function (x) { return x.id === id; })[0]; if (!m) fail('That milestone has been removed.');
+      var out = { updated: nowIso() };
+      if ('title' in ch) { out.title = text(ch.title, 120); if (!out.title) fail('Name the milestone.'); }
+      if ('x' in ch) out.x = clamp01(ch.x, m.x);
+      if ('y' in ch) out.y = clamp01(ch.y, m.y);
+      env.table('milestones').update(id, out);
+      if ('goals' in ch) {
+        var want = list(ch.goals);
+        goalList().forEach(function (g) {
+          var inIt = g.milestoneId === id, should = want.indexOf(g.id) >= 0;
+          if (inIt !== should) env.table('goals').update(g.id, { milestoneId: should ? id : '', updated: nowIso() });
+        });
+      }
+      return { ok: true };
+    });
+  }
+  /** Removed (Undo puts it back); its goals float free meanwhile, and return to its orbit if it comes back. */
+  function deleteMilestone(id) {
+    need(['admin', 'artist']);
+    return env.lock(function () { if (!milestoneRows().some(function (m) { return m.id === id; })) fail('That milestone has been removed.'); env.table('milestones').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
+  }
   function deleteGoal(id) {
     need(['admin', 'artist']);
     return env.lock(function () { goalRow(id); env.table('goals').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
@@ -3476,7 +3580,7 @@ if (env.workDone) env.workDone('publish');
       var steps = list(g.steps), next = steps.filter(function (s) { return !s.done; })[0];
       var tp = g.topicId ? rows('topics').filter(function (x) { return x.id === g.topicId && !x.deleted; })[0] : null;
       return { id: g.id, title: g.title, why: g.why || '', x: Number(g.x), y: Number(g.y), links: list(g.links), parentId: g.parentId || '', rank: Number(g.rank) || 0,
-        status: g.status || 'Open', steps: steps, next: next ? next.text : '', active: !!(top && top.id === g.id), targetOn: g.targetOn || '', mini: g.mini === true,
+        status: g.status || 'Open', steps: steps, next: next ? next.text : '', active: !!(top && top.id === g.id), targetOn: g.targetOn || '', mini: g.mini === true, milestoneId: g.milestoneId || '',
         alongside: !!(top && top.id !== g.id && togetherWith(top).some(function (o) { return o.id === g.id; })),
         group: groupOf(g).map(function (o) { return o.id; }),
         planning: tp ? { id: tp.id, status: tp.status } : null };
@@ -3972,7 +4076,7 @@ if (env.workDone) env.workDone('publish');
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
   var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], post: ['content', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
-    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], milestone: ['milestones', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
     var b = BIN[kind];
@@ -3998,7 +4102,7 @@ if (env.workDone) env.workDone('publish');
       getData: getData, getThumbs: getThumbs, uploadPhoto: uploadPhoto,
       createIdea: createIdea, updateIdea: updateIdea, addToCalendar: addToCalendar, deleteIdea: deleteIdea, undoDelete: undoDelete, pauseIdea: pauseIdea, printfulStatus: printfulStatus, linkPrintful: linkPrintful, unlinkPrintful: unlinkPrintful,
       printfulSearch: printfulSearch, printfulProduct: printfulProduct, printfulPick: printfulPick, printfulShipping: printfulShipping, printfulSendArt: printfulSendArt,
-      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
+      printfulMockups: printfulMockups, printfulMockupCheck: printfulMockupCheck, printfulSample: printfulSample, printfulConfirm: printfulConfirm, saveSupplier: saveSupplier, deleteSupplier: deleteSupplier, saveWorkPrefs: saveWorkPrefs, setPlanStep: setPlanStep, setPlanIdea: setPlanIdea, addGoal: addGoal, updateGoal: updateGoal, orderGoals: orderGoals, linkGoals: linkGoals, leaveGroup: leaveGroup, setStepDay: setStepDay, addMilestone: addMilestone, updateMilestone: updateMilestone, deleteMilestone: deleteMilestone, saveOwnDay: saveOwnDay, deleteOwnDay: deleteOwnDay, miniGoals: miniGoals, decideItem: decideItem, undoDecision: undoDecision, deleteGoal: deleteGoal, planGoal: planGoal, tickGoalStep: tickGoalStep, wakePausedNow: function (asOf) { need(['admin']); return wakePaused(asOf); },
       createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, addSeries: addSeries, updateSeries: updateSeries, printfulForPrint: printfulForPrint, printfulPrintFile: printfulPrintFile, printfulFileUse: printfulFileUse, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
@@ -7333,6 +7437,10 @@ var TIDE_BACKLOG = [
  *   go:    where "Show me" takes her: { view, state: { ...S fields }, find: CSS selector, text: words the element holds, tip }
  */
 var TIDE_CHANGES = [
+  { id: '2026-11-19-goal-sky', on: '2026-11-19', to: 'all', icon: 'wb_sunny', title: 'Your goals, as a night sky',
+    say: 'The goals map is a little solar system now. A milestone (a big aim) is a sun; the goals that lead to it orbit it like planets; each goal’s steps are its moons.',
+    steps: ['In Ideas › Goals, tap “Add a milestone” at the top left, name it, and tick the goals that belong to it.', 'Tap a planet to choose it. Then drag it into a sun’s orbit: it glides into place beside the others.', 'Drop a planet on another to work on them together.', 'Chosen planets have Open, Shrink and Bin, kept apart so you never bin one by mistake. Bin has an Undo.', 'Tap a moon to see that step and tick it off.'],
+    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.sky-add', tip: 'Start with a milestone.' } },
   { id: '2026-11-19-tax-guide', on: '2026-11-19', to: 'all', icon: 'receipt_long', title: 'Expenses, filed for tax time',
     say: 'When you record an expense, Tide Book says whether it’s likely claimable, and files it that way for your accountant.',
     steps: ['On Money, tap “Record an expense”.', 'Choose what it was for and who was paid. The note underneath says if it’s likely claimable, and why.', 'If only part was for the business (like the phone), tap how much.', 'Money › For tax time shows the year’s claimable total and any receipts still missing.'],
@@ -15178,7 +15286,7 @@ var Kit = (function () {
       return;
     }
     if (mode === 'order') return goalOrder(main, goals);
-    goalMap(main, goals);
+    skyMap(main, goals);
   }
   function addGoalAsk(parentId, at) {
     K.ask({ title: parentId ? 'A smaller goal, as part of this one' : 'Add a goal', label: 'The goal', options: parentId ? [] : GOAL_STARTERS.slice(0, 4), confirmLabel: 'Add it', maxlength: 120 }).then(function (title) {
@@ -15687,6 +15795,339 @@ var Kit = (function () {
     }
     var undated = (S.data.goals || []).reduce(function (n, g) { return n + (g.status === 'Done' ? 0 : g.steps.filter(function (s) { return !s.done && !s.due; }).length); }, 0);
     main.appendChild(h('p', { class: 'tf-help', style: 'margin:10px 4px', text: undated ? undated + ' goal ' + (undated === 1 ? 'step has' : 'steps have') + ' no day yet. Tap a day, then “Add”, to give one a day.' : 'Every goal step has a day.' }));
+  }
+  /** The goals map as a night sky: her milestones are suns, her goals planets in their orbits, and each goal's steps
+   *  its moons. Tap a planet or sun to choose it (then drag it, open it, shrink it or put it in the bin); drop a planet
+   *  into a sun's orbit and it glides into place beside the others, evenly spaced. Pinch or the buttons to zoom. */
+  var SKY = { sel: null };
+  var SKY_SIZE = { sun: 34, planet: 20, mini: 9, moonRing: 30, moon: 5, foot: 52, ref: 900 };
+  function skyMap(main, goals) {
+    var full = !!S.mapFull, Z = SKY_SIZE, REF = Z.ref;
+    var H = full ? window.innerHeight : Math.max(440, Math.min(620, window.innerHeight - 380));
+    var suns = (S.data.milestones || []).slice();
+    var sunIds = suns.map(function (m) { return m.id; });
+    var board = h('div', { class: 'goal-map sky' + (full ? ' full' : ''), style: 'height:' + H + 'px' });
+    document.body.classList.toggle('map-full', full);
+    var world = h('div', { class: 'goal-world sky-world' });
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); world.appendChild(svg);
+    board.appendChild(world);
+    var WW = 0, HW = 0, pos = {}, els = {}, pinching = false, ghost = null, bar = null;
+    function W() { return board.clientWidth || 360; }
+    // ---------- where everything goes: suns where she put them, their planets evenly round them, free planets where she put them
+    function inOrbit(g) { return !g.parentId && g.milestoneId && sunIds.indexOf(g.milestoneId) >= 0; }
+    function radiusOf(g) { return g.mini ? Z.mini : Z.planet; }
+    function orbitR(n) { return Math.max(Z.sun + 74, n * (2 * Z.foot) / (2 * Math.PI)); }
+    function layout() {
+      WW = Math.max(W(), 360);
+      var bodies = [];
+      suns.forEach(function (m) {
+        var members = goals.filter(function (g) { return inOrbit(g) && g.milestoneId === m.id; });
+        bodies.push({ kind: 'sun', id: m.id, x: m.x * WW, y: m.y * REF, r: (members.length ? orbitR(members.length) : Z.sun) + Z.foot, members: members });
+      });
+      goals.forEach(function (g) { if (!inOrbit(g)) bodies.push({ kind: 'goal', id: g.id, x: g.x * WW, y: g.y * REF, r: Z.foot }); });
+      // gravity, gently: anything overlapping is pushed apart until each has its own space
+      for (var it = 0; it < 160; it++) {
+        var moved = false;
+        for (var i = 0; i < bodies.length; i++) for (var j = i + 1; j < bodies.length; j++) {
+          var a = bodies[i], b = bodies[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 0.01, need = a.r + b.r - d;
+          if (need <= 0) continue;
+          moved = true;
+          var ux = dx / d, uy = dy / d, wa = a.kind === 'sun' && b.kind !== 'sun' ? 0.2 : b.kind === 'sun' && a.kind !== 'sun' ? 0.8 : 0.5;
+          a.x -= ux * need * wa; a.y -= uy * need * wa; b.x += ux * need * (1 - wa); b.y += uy * need * (1 - wa);
+        }
+        bodies.forEach(function (o) { o.x = Math.max(o.r * 0.6, Math.min(WW - o.r * 0.6, o.x)); o.y = Math.max(o.r * 0.6 + (full ? 60 : 8), o.y); });
+        if (!moved) break;
+      }
+      pos = {};
+      var bottom = 0;
+      bodies.forEach(function (o) {
+        if (o.kind === 'sun') {
+          pos['s:' + o.id] = { x: o.x, y: o.y };
+          var n = o.members.length, R = orbitR(n), step = 2 * Math.PI / Math.max(1, n);
+          // each planet keeps its place in the order she gave it (the angle she dropped it at), evenly spaced
+          var withA = o.members.map(function (g) { return { g: g, a: Math.atan2(g.y * REF - o.y, g.x * WW - o.x) }; }).sort(function (p, q) { return p.a - q.a; });
+          var sx = 0, sy = 0; withA.forEach(function (p, k) { sx += Math.cos(p.a - k * step); sy += Math.sin(p.a - k * step); });
+          var base = n ? Math.atan2(sy, sx) : 0;
+          withA.forEach(function (p, k) { var a = base + k * step; pos['g:' + p.g.id] = { x: o.x + R * Math.cos(a), y: o.y + R * Math.sin(a), sun: o.id, R: R }; });
+          o.R = R;
+        } else pos['g:' + o.id] = { x: o.x, y: o.y };
+        bottom = Math.max(bottom, o.y + o.r);
+      });
+      HW = Math.max(H, bottom + 70);
+      world.style.width = WW + 'px'; world.style.height = HW + 'px';
+      // where it settled becomes where it is (so it opens the same way next time)
+      bodies.forEach(function (o) {
+        var nx = o.x / WW, ny = o.y / REF;
+        if (o.kind === 'sun') { var m = suns.filter(function (s) { return s.id === o.id; })[0]; if (Math.abs(nx - m.x) > 0.01 || Math.abs(ny - m.y) > 0.01) { m.x = nx; m.y = ny; api('updateMilestone', m.id, { x: Math.max(0, Math.min(1, nx)), y: Math.max(0, Math.min(1, ny)) }).catch(function () {}); } }
+        else { var g = goalById(o.id); if (g && (Math.abs(nx - g.x) > 0.01 || Math.abs(ny - g.y) > 0.01)) { g.x = nx; g.y = ny; api('updateGoal', g.id, { x: Math.max(0, Math.min(1, nx)), y: Math.max(0, Math.min(1, ny)) }).catch(function () {}); } }
+      });
+      return bodies;
+    }
+    function place(el, p, size) { el.style.left = (p.x - size) + 'px'; el.style.top = (p.y - size) + 'px'; }
+    function draw() {
+      var bodies = layout();
+      svg.setAttribute('width', WW); svg.setAttribute('height', HW); svg.textContent = '';
+      function line(x1, y1, x2, y2, cls) { var l = document.createElementNS('http://www.w3.org/2000/svg', 'line'); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); l.setAttribute('class', cls); svg.appendChild(l); }
+      function ring(x, y, r, cls) { var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', r); c.setAttribute('class', cls); svg.appendChild(c); }
+      bodies.forEach(function (o) { if (o.kind === 'sun' && o.members.length) ring(o.x, o.y, o.R, 'orbit'); });
+      // goals worked on together, and smaller goals with their bigger one
+      var done = {};
+      goals.forEach(function (g) {
+        [].concat(g.parentId ? [[g.parentId, 'part']] : [], (g.links || []).map(function (l) { return [l, 'link']; })).forEach(function (pr) {
+          var k = [g.id, pr[0]].sort().join() + pr[1], a = pos['g:' + g.id], b = pos['g:' + pr[0]];
+          if (done[k] || !a || !b) return; done[k] = 1; line(a.x, a.y, b.x, b.y, pr[1]);
+        });
+      });
+      suns.forEach(function (m) { var p = pos['s:' + m.id], el = els['s:' + m.id]; if (el) place(el, p, Z.sun); });
+      goals.forEach(function (g) {
+        var p = pos['g:' + g.id], el = els['g:' + g.id]; if (!p || !el) return;
+        place(el, p, radiusOf(g));
+        if (!g.mini && g.steps.length) ring(p.x, p.y, Z.moonRing, 'moonring');
+        (el._moons || []).forEach(function (mn, i) {
+          var a = -Math.PI / 2 + i * 2 * Math.PI / el._moons.length;
+          mn.style.left = (p.x + Z.moonRing * Math.cos(a) - Z.moon) + 'px'; mn.style.top = (p.y + Z.moonRing * Math.sin(a) - Z.moon) + 'px';
+        });
+      });
+      paintBar();
+    }
+    // ---------- the bodies
+    suns.forEach(function (m) {
+      var members = goals.filter(function (g) { return inOrbit(g) && g.milestoneId === m.id; });
+      var el = h('div', { class: 'sky-sun', role: 'button', tabindex: '0', 'aria-label': 'Milestone: ' + m.title + '. ' + members.length + ' goal' + (members.length === 1 ? '' : 's') + ' in its orbit.' },
+        h('span', { class: 'sky-sun-core' }), h('span', { class: 'sky-label sun', text: m.title }));
+      el.dataset.k = 's:' + m.id;
+      els['s:' + m.id] = el; world.appendChild(el); body(el, { kind: 'sun', id: m.id });
+    });
+    goals.forEach(function (g) {
+      var isDone = g.status === 'Done', gc = goalColour(g.id);
+      var el = h('div', { class: 'sky-planet' + (g.mini ? ' mini' : '') + (g.active ? ' now' : '') + (g.alongside ? ' along' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', style: '--gc:' + gc,
+          'aria-label': g.title + (g.active ? ', the goal you’re working on now' : '') + (g.steps.length ? ', ' + g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : ', no plan yet') },
+        h('span', { class: 'sky-ball' }, isDone ? icon('check') : g.mini || g.parentId ? null : h('span', { text: String(g.rank) })),
+        g.mini ? null : h('span', { class: 'sky-label' }, g.active || g.alongside ? h('b', { class: 'sky-now', text: g.alongside ? 'Now, together' : 'Now' }) : null, h('span', { class: 'sky-t', text: g.title })));
+      el.dataset.k = 'g:' + g.id;
+      els['g:' + g.id] = el; world.appendChild(el); body(el, { kind: 'goal', id: g.id });
+      // its steps: moons in a ring, filled in when done. Tap one for the step.
+      el._moons = [];
+      if (!g.mini) g.steps.forEach(function (st, i) {
+        var mn = h('button', { type: 'button', class: 'sky-moon' + (st.done ? ' done' : ''), style: '--gc:' + gc, 'aria-label': 'Step ' + (i + 1) + ': ' + st.text + (st.done ? ' (done)' : ''), title: st.text });
+        mn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+        mn.addEventListener('click', function (e) {
+          e.stopPropagation(); K.haptic();
+          openStepTools({ n: i + 1, id: st.id, text: st.text, done: st.done }, function () { return api('tickGoalStep', g.id, st.id, true).then(refresh).then(function () { render(); }); });
+        });
+        el._moons.push(mn); world.appendChild(mn);
+      });
+    });
+    // ---------- choosing, dragging, dropping
+    function selKey() { return SKY.sel ? (SKY.sel.kind === 'sun' ? 's:' : 'g:') + SKY.sel.id : ''; }
+    function choose(s) {
+      SKY.sel = s;
+      Object.keys(els).forEach(function (k) { els[k].classList.toggle('chosen', k === selKey()); });
+      paintBar();
+    }
+    function paintBar() {
+      if (bar) { bar.remove(); bar = null; }
+      var k = selKey(), el = els[k]; if (!el) return;
+      var p = pos[k], s = SKY.sel, g = s.kind === 'goal' ? goalById(s.id) : null, m = s.kind === 'sun' ? suns.filter(function (x) { return x.id === s.id; })[0] : null;
+      if (!p || (!g && !m)) return;
+      function b(ic, label, fn, cls) { var x = h('button', { type: 'button', class: 'sky-act' + (cls ? ' ' + cls : ''), 'aria-label': label, title: label }, icon(ic), h('span', { text: label })); x.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); x.addEventListener('click', function (e) { e.stopPropagation(); fn(); }); return x; }
+      bar = h('div', { class: 'sky-bar', role: 'toolbar', 'aria-label': 'For ' + (g ? g.title : m.title) },
+        b('open_in_new', 'Open', function () { if (g) openGoal(g.id); else openMilestone(m.id); }),
+        g ? b(g.mini ? 'open_in_full' : 'close_fullscreen', g.mini ? 'Full size' : 'Shrink', function () { api('updateGoal', g.id, { mini: !g.mini }).then(refresh).then(function () { render(); }).catch(fail); }) : null,
+        b('delete', 'Bin', function () {
+          SKY.sel = null;
+          if (g) api('deleteGoal', g.id).then(refresh).then(function () { render(); binUndo('Goal in the bin.', 'goal', g.id); }).catch(fail);
+          else api('deleteMilestone', m.id).then(refresh).then(function () { render(); binUndo('Milestone in the bin. Its goals float free.', 'milestone', m.id); }).catch(fail);
+        }, 'bin'));
+      var size = g ? radiusOf(g) : Z.sun;
+      bar.style.left = Math.max(6, Math.min(WW - 230, p.x - 115)) + 'px';
+      bar.style.top = (p.y + size + (g && !g.mini ? 46 : 26)) + 'px';
+      world.appendChild(bar);
+      board.querySelector('.sky-hint').textContent = 'Drag it anywhere' + (g ? ': into a milestone’s orbit, or onto another goal to work on them together.' : '. Its planets come with it.');
+    }
+    function targetAt(wx, wy, me) {
+      // a planet under the finger first, then a sun's system
+      var gl = goals.filter(function (o) { var p = pos['g:' + o.id]; return o.id !== me.id && p && Math.hypot(p.x - wx, p.y - wy) < radiusOf(o) + 14; })[0];
+      if (gl) return { kind: 'goal', g: gl };
+      var sn = suns.filter(function (m) { var p = pos['s:' + m.id], n = goals.filter(function (g) { return inOrbit(g) && g.milestoneId === m.id && g.id !== me.id; }).length; return p && Math.hypot(p.x - wx, p.y - wy) < (n ? orbitR(n) + 30 : Z.sun + 90); })[0];
+      return sn ? { kind: 'sun', m: sn } : null;
+    }
+    function body(el, who) {
+      var down = null;
+      el.addEventListener('click', function (e) {
+        if (board.dataset.dragged) { delete board.dataset.dragged; return; }
+        e.stopPropagation(); K.haptic();
+        var k = (who.kind === 'sun' ? 's:' : 'g:') + who.id;
+        if (selKey() === k) { if (who.kind === 'goal') { var g = goalById(who.id); if (g && g.mini) { api('updateGoal', g.id, { mini: false }).then(refresh).then(function () { render(); }).catch(fail); return; } openGoal(who.id); } else openMilestone(who.id); return; }
+        choose(who);
+      });
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') el.click(); });
+      // only a chosen one moves: anywhere else, a finger scrolls the page or moves the map
+      el.addEventListener('pointerdown', function (e) {
+        var k = (who.kind === 'sun' ? 's:' : 'g:') + who.id;
+        if (pinching || selKey() !== k) return;
+        e.stopPropagation(); el.setPointerCapture(e.pointerId);
+        var p = pos[k];
+        down = { sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, moved: false };
+      });
+      el.addEventListener('pointermove', function (e) {
+        if (!down || pinching) return;
+        var dx = (e.clientX - down.sx) / GZ.s, dy = (e.clientY - down.sy) / GZ.s;
+        if (!down.moved && Math.abs(dx) + Math.abs(dy) < 8) return;
+        if (!down.moved) { down.moved = true; el.classList.add('lifted'); world.classList.add('dragging'); if (bar) bar.style.display = 'none'; }
+        var nx = down.x + dx, ny = down.y + dy, size = who.kind === 'sun' ? Z.sun : radiusOf(goalById(who.id) || {});
+        el.style.left = (nx - size) + 'px'; el.style.top = (ny - size) + 'px';
+        if (who.kind === 'goal') {
+          (el._moons || []).forEach(function (mn) { mn.style.opacity = '0'; });
+          var tg = targetAt(nx, ny, { id: who.id });
+          Object.keys(els).forEach(function (kk) { els[kk].classList.toggle('target', !!tg && kk === (tg.kind === 'sun' ? 's:' + tg.m.id : 'g:' + tg.g.id)); });
+        }
+        down.nx = nx; down.ny = ny;
+      });
+      el.addEventListener('pointerup', function () {
+        if (!down) return;
+        var d = down; down = null; el.classList.remove('lifted'); world.classList.remove('dragging');
+        Object.keys(els).forEach(function (kk) { els[kk].classList.remove('target'); });
+        if (!d.moved) return;
+        board.dataset.dragged = '1'; setTimeout(function () { delete board.dataset.dragged; }, 400);
+        var x = Math.max(0, Math.min(1, d.nx / WW)), y = Math.max(0, Math.min(1, d.ny / REF));
+        if (who.kind === 'sun') { var m = suns.filter(function (s) { return s.id === who.id; })[0]; m.x = x; m.y = y; api('updateMilestone', m.id, { x: x, y: y }).catch(fail); draw(); return; }
+        var g = goalById(who.id), tg = targetAt(d.nx, d.ny, { id: who.id });
+        if (tg && tg.kind === 'goal') { draw(); skyDropped(g, tg.g); return; }
+        var ms = tg && tg.kind === 'sun' ? tg.m.id : '';
+        var was = g.milestoneId && sunIds.indexOf(g.milestoneId) >= 0 ? g.milestoneId : '';
+        g.x = x; g.y = y; g.milestoneId = ms;
+        api('updateGoal', g.id, { x: x, y: y, milestoneId: ms }).then(function () { if (ms && ms !== was) toast('In the orbit of “' + tg.m.title + '”.'); else if (!ms && was) toast('Out of its milestone’s orbit, on its own now.'); }).catch(fail);
+        draw();     // and gravity does the rest: it glides into place
+      });
+      el.addEventListener('pointercancel', function () { if (down) { down = null; el.classList.remove('lifted'); world.classList.remove('dragging'); draw(); } });
+    }
+    /** Dropped one goal on another: work on them together, or make it part of it. */
+    function skyDropped(g, o) {
+      K.sheet({ title: '“' + g.title + '” and “' + o.title + '”', build: function (ctl) {
+        var list = h('div', { class: 'next-opts' });
+        function opt(ic, label, why, main, fn) {
+          list.appendChild(h('button', { class: 'next-opt' + (main ? ' main' : ''), type: 'button', onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); fn().then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); }).catch(function (er) { K.setBusy(b, false); fail(er); }); } },
+            h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), h('span', { class: 'next-opt-why', text: why }))));
+        }
+        var together = (g.links || []).indexOf(o.id) >= 0 || (g.group || []).indexOf(o.id) >= 0;
+        if (together) opt('link_off', 'Take “' + g.title + '” out of the group', 'It goes back to waiting its own turn.', true, function () { return api('leaveGroup', g.id); });
+        else opt('link', 'Work on them together', 'Each keeps its own steps. Both show what’s next on Home, and neither waits for the other.', true, function () { return api('linkGoals', g.id, o.id, true); });
+        if (!o.parentId && g.parentId !== o.id) opt('subdirectory_arrow_right', 'Make it part of “' + o.title + '”', 'A smaller goal inside the bigger one.', false, function () { return api('updateGoal', g.id, { parentId: o.id }); });
+        opt('open_with', 'Just leave it near', 'Nothing changes but where it sits.', false, function () { return Promise.resolve(); });
+        ctl.body.appendChild(list);
+      } });
+    }
+    // ---------- the board: pinch to zoom, drag an empty spot to move about, tap an empty spot to add something there
+    var ptrs = {}, pin = null, pan = null;
+    function paintZoom() {
+      var w = W(), lo = Math.min(0, w - WW * GZ.s), hi = Math.max(0, w - WW * GZ.s), lo2 = Math.min(0, H - HW * GZ.s), hi2 = Math.max(0, H - HW * GZ.s);
+      GZ.x = Math.max(lo - 40, Math.min(hi + 40, GZ.x)); GZ.y = Math.max(lo2 - 40, Math.min(hi2 + 40, GZ.y));
+      world.style.transform = 'translate(' + GZ.x + 'px,' + GZ.y + 'px) scale(' + GZ.s + ')';
+      zl.textContent = Math.round(GZ.s * 100) + '%';
+    }
+    function zoomAt(s, cx, cy) { s = Math.max(0.3, Math.min(2.5, s)); var wx = (cx - GZ.x) / GZ.s, wy = (cy - GZ.y) / GZ.s; GZ = { s: s, x: cx - wx * s, y: cy - wy * s }; paintZoom(); }
+    function track(e) { ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; var k = Object.keys(ptrs); if (k.length === 2) { var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect(); pinching = true; pan = null; pin = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: GZ.s, mx: (a.x + b.x) / 2 - r.left, my: (a.y + b.y) / 2 - r.top, gx: GZ.x, gy: GZ.y }; } }
+    function untrack(e) { delete ptrs[e.pointerId]; if (Object.keys(ptrs).length < 2 && pin) { pin = null; setTimeout(function () { pinching = false; }, 0); } }
+    board.addEventListener('pointerdown', function (e) {
+      track(e);
+      if (pinching || e.target.closest('.sky-bar, .gz, .gm-full-bar, .goal-ghost, .sky-add')) return;
+      var onBody = e.target.closest('.sky-planet, .sky-sun');
+      if (onBody && onBody.dataset.k === selKey()) return;
+      pan = { x: e.clientX, y: e.clientY, gx: GZ.x, gy: GZ.y, sy: window.scrollY, moved: false };
+    });
+    board.addEventListener('pointermove', function (e) {
+      if (ptrs[e.pointerId]) ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
+      if (pin) {
+        var k = Object.keys(ptrs); if (k.length < 2) return;
+        var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect();
+        var s = Math.max(0.3, Math.min(2.5, pin.s * Math.hypot(a.x - b.x, a.y - b.y) / pin.d)), mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
+        var wx = (pin.mx - pin.gx) / pin.s, wy = (pin.my - pin.gy) / pin.s; GZ = { s: s, x: mx - wx * s, y: my - wy * s }; paintZoom(); return;
+      }
+      if (!pan) return;
+      var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+      if (!pan.moved && Math.abs(dx) + Math.abs(dy) < 6) return;
+      if (!pan.moved) { pan.moved = true; board.setPointerCapture(e.pointerId); }
+      if ((GZ.s === 1 || GZ.fit) && Math.abs(dy) > Math.abs(dx)) window.scrollTo(0, pan.sy - dy);
+      else { GZ = { s: GZ.s, x: pan.gx + dx, y: pan.gy + dy }; paintZoom(); }
+    });
+    function endPan(e) { untrack(e); if (pan && pan.moved) { board.dataset.dragged = '1'; setTimeout(function () { delete board.dataset.dragged; }, 300); } pan = null; }
+    board.addEventListener('pointerup', endPan); board.addEventListener('pointercancel', endPan);
+    board.addEventListener('wheel', function (e) { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); var r = board.getBoundingClientRect(); zoomAt(GZ.s * (e.deltaY < 0 ? 1.1 : 0.9), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+    board.addEventListener('click', function (e) {
+      if (board.dataset.dragged) { delete board.dataset.dragged; return; }
+      if (e.target !== board && e.target !== world && e.target !== svg && !(e.target.closest && e.target.closest('svg'))) return;
+      if (SKY.sel) { choose(null); board.querySelector('.sky-hint').textContent = HINT; return; }
+      var r = board.getBoundingClientRect(), wx = (e.clientX - r.left - GZ.x) / GZ.s, wy = (e.clientY - r.top - GZ.y) / GZ.s;
+      if (ghost) ghost.remove();
+      var near = suns.filter(function (m) { var p = pos['s:' + m.id]; return p && Math.hypot(p.x - wx, p.y - wy) < 170; })[0];
+      var x = Math.max(0, Math.min(1, wx / WW)), y = Math.max(0, Math.min(1, wy / REF));
+      var mine = ghost = h('div', { class: 'goal-ghost sky-ghost' },
+        h('button', { type: 'button', onclick: function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: x, y: y, milestoneId: near ? near.id : '' }); } }, icon('add'), near ? 'A goal for “' + near.title.slice(0, 24) + '”' : 'A goal here'),
+        near ? null : h('button', { type: 'button', onclick: function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; openMilestone(null, { x: x, y: y }); } }, icon('wb_sunny'), 'A milestone here'));
+      mine.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });
+      world.appendChild(mine);
+      mine.style.left = Math.max(6, Math.min(WW - 230, wx - 100)) + 'px'; mine.style.top = Math.max(6, wy - 24) + 'px';
+      setTimeout(function () { if (ghost === mine) { mine.remove(); ghost = null; } }, 6000);
+    });
+    var zl = h('span', { class: 'gz-level', 'aria-live': 'polite' });
+    function zb(ic, label, fn) { var b = h('button', { type: 'button', class: 'gz-btn', 'aria-label': label, title: label }, icon(ic)); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); b.addEventListener('click', function (e) { e.stopPropagation(); fn(); }); return b; }
+    function fitZoom() { var f = Math.min(1, (H - 8) / HW, W() / WW); return { s: f, x: (W() - WW * f) / 2, y: 0, fit: true }; }
+    board.appendChild(h('div', { class: 'gz' },
+      zb('zoom_out', 'Zoom out', function () { zoomAt(GZ.s / 1.25, W() / 2, H / 2); }), zl,
+      zb('zoom_in', 'Zoom in', function () { zoomAt(GZ.s * 1.25, W() / 2, H / 2); }),
+      zb('fit_screen', 'Show the whole sky', function () { GZ = fitZoom(); paintZoom(); }),
+      full ? null : zb('open_in_full', 'Full screen', function () { goalMapFull(true); })));
+    var add = h('button', { type: 'button', class: 'sky-add' }, icon('wb_sunny'), suns.length ? 'Milestone' : 'Add a milestone');
+    add.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+    add.addEventListener('click', function (e) { e.stopPropagation(); openMilestone(null); });
+    board.appendChild(add);
+    var HINT = suns.length ? 'Tap a planet to choose it, then drag it. Moons are its steps.' : 'Add a milestone, a big aim, and drop your goals into its orbit.';
+    board.appendChild(h('div', { class: 'sky-hint', 'aria-live': 'polite', text: HINT }));
+    if (full) board.appendChild(h('div', { class: 'gm-full-bar' }, h('span', { class: 'gm-full-t', text: 'Your goals' }),
+      btn('tonal', 'Add a goal', { sm: true, icon: 'add', onclick: function () { addGoalAsk(null); } }),
+      btn('filled', 'Done', { sm: true, icon: 'close_fullscreen', onclick: function () { goalMapFull(false); } })));
+    main.appendChild(rise(board, 2));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Milestones are the suns, goals the planets, and each goal’s steps its moons. Tap a planet to choose it: then drag it into a milestone’s orbit (it settles in beside the others), onto another goal to work on them together, or use Open, Shrink or Bin. Pinch to zoom.' }));
+    if (SKY.sel && !els[selKey()]) SKY.sel = null;
+    setTimeout(function () {
+      draw();
+      if (!GZ || GZ.fit || (GZ.s === 1 && !GZ.x && !GZ.y)) GZ = fitZoom();
+      paintZoom();
+      if (SKY.sel) choose(SKY.sel);
+      requestAnimationFrame(function () { world.classList.add('settle'); });   // from now on, moves glide
+    }, 0);
+  }
+  /** A milestone: the big aim (its name) and the goals in its orbit. */
+  function openMilestone(id, at) {
+    var m = id ? (S.data.milestones || []).filter(function (x) { return x.id === id; })[0] : null;
+    var goals = (S.data.goals || []).filter(function (g) { return !g.parentId; });
+    var f = { title: m ? m.title : '', goals: goals.filter(function (g) { return m && g.milestoneId === m.id; }).map(function (g) { return g.id; }) };
+    K.sheet({ title: m ? 'Milestone' : 'A new milestone', tall: goals.length > 4, build: function (ctl) {
+      var t1 = K.textField({ label: 'The milestone', value: f.title, maxlength: 120, placeholder: 'For example: the shop open by Christmas', onInput: function (v) { f.title = v; } });
+      ctl.body.append(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'A big aim. On the map it’s a sun, and the goals that lead to it orbit it.' }), t1);
+      if (goals.length) {
+        ctl.body.appendChild(h('div', { class: 'label-s', style: 'margin:16px 0 8px', text: 'Goals in its orbit' }));
+        var box = h('div', { class: 'filter-row', style: 'flex-wrap:wrap' });
+        goals.forEach(function (g) {
+          var on = f.goals.indexOf(g.id) >= 0;
+          var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(on), onclick: function () { var i = f.goals.indexOf(g.id); if (i >= 0) f.goals.splice(i, 1); else f.goals.push(g.id); b.setAttribute('aria-pressed', String(i < 0)); } },
+            h('i', { class: 'cal-dot', style: 'background:' + goalColour(g.id) }), g.title);
+          box.appendChild(b);
+        });
+        ctl.body.appendChild(box);
+      }
+      var save = btn('filled', m ? 'Save' : 'Add it', { icon: 'check', lg: true, block: true, onclick: function () {
+        if (!f.title.trim()) { toast('Name the milestone first.'); t1.input.focus(); return; }
+        K.setBusy(save, true);
+        var p = m ? api('updateMilestone', m.id, { title: f.title, goals: f.goals }) : api('addMilestone', Object.assign({ title: f.title, goals: f.goals }, at || { x: 0.5, y: 0.25 }));
+        p.then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+      } });
+      var foot = h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, save);
+      if (m) foot.appendChild(btn('text', 'Put it in the bin', { icon: 'delete', onclick: function (e) { K.setBusy(e.currentTarget, true); api('deleteMilestone', m.id).then(refresh).then(function () { ctl.close(); render(); binUndo('Milestone in the bin. Its goals float free.', 'milestone', m.id); }).catch(fail); } }));
+      ctl.foot.appendChild(foot);
+      if (!m) setTimeout(function () { t1.input.focus(); }, 350);
+    } });
   }
   /** In order: drag the goal cards into order of importance. The top one sets the order of work. */
   function goalOrder(main, goals) {
