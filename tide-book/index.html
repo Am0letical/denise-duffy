@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_italic,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,play_arrow,play_circle,point_of_sale,print,psychology,public,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1664,6 +1664,101 @@ body.map-full { overflow: hidden; }
 .mn-practice { margin: 12px 0; padding: 12px 14px; border-radius: 12px; background: var(--secondary-container); color: var(--on-secondary-container); }
 .mn-practice p { margin: 4px 0 0; font: 400 14px/20px var(--font); }
 .mn-compose .tf textarea { min-height: 56px; height: 56px; resize: none; }
+.menu-foot { display: flex; justify-content: center; margin-top: 6px; }
+/* ---- Notes (like Samsung Notes) ---- */
+.nt-top { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.nt-tools { display: flex; align-items: center; gap: 6px; }
+.nt-folders .choice .ms { font-size: 18px; }
+.nt-group { margin: 6px 4px 8px; color: var(--on-surface-variant); }
+.nt-grid { columns: 2 160px; column-gap: 10px; margin-bottom: 14px; }
+.nt-grid .nt-card { break-inside: avoid; margin-bottom: 10px; }
+.nt-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.nt-card { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; width: 100%; padding: 12px 14px 10px; border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.08), inset 0 0 0 1px rgba(0,0,0,.05); cursor: pointer; color: #1F1B16; }
+.nt-card:focus-visible { outline: 2px solid var(--primary); }
+.nt-ct { display: flex; align-items: center; gap: 4px; }
+.nt-ct b { font: 600 15px/20px var(--font); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.nt-ct .ms { font-size: 16px; color: #8A6D3B; }
+.nt-prev { display: flex; flex-direction: column; gap: 2px; font: 400 13px/18px var(--font); color: #4A4540; }
+.nt-pl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nt-pl.chk { display: flex; align-items: center; gap: 4px; } .nt-pl.chk .ms { font-size: 16px; flex: none; }
+.nt-pl.chk.done span { text-decoration: line-through; opacity: .6; }
+.nt-meta { display: flex; align-items: center; gap: 6px; font: 400 11px/14px var(--font); color: #6F6A63; }
+.nt-meta .ms { font-size: 15px; }
+.nt-fold { padding: 0 6px; border-radius: 8px; background: rgba(0,0,0,.06); }
+.nt-made .ms { color: var(--primary); }
+.nt-page { display: flex; flex-direction: column; min-height: calc(100vh - 120px); }
+.nt-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 6px 0; background: var(--surface, #FDF8F3); }
+.nt-bar .on { color: #8A6D3B; background: rgba(138,109,59,.12); }
+.nt-saved { font: 400 12px/16px var(--font); color: var(--on-surface-variant); padding-left: 4px; }
+.nt-paper { flex: 1; border-radius: 20px; padding: 14px 16px 24px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); color: #1F1B16; transition: background .25s; }
+.nt-title { all: unset; box-sizing: border-box; width: 100%; font: 500 22px/30px var(--display); padding: 2px 0 8px; }
+.nt-title::placeholder { color: rgba(31,27,22,.4); }
+.nt-ed { min-height: 50vh; outline: none; font: 400 16px/25px var(--font); overflow-wrap: anywhere; }
+.nt-ed:empty::before { content: attr(data-ph); color: rgba(31,27,22,.4); }
+.nt-ed h3 { font: 600 19px/26px var(--font); margin: 8px 0 2px; }
+.nt-ed ul, .nt-ed ol { margin: 2px 0; padding-left: 24px; }
+.nt-ed mark { background: #FFE36E; color: inherit; border-radius: 3px; padding: 0 1px; }
+.nt-chk { display: flex; align-items: flex-start; gap: 6px; min-height: 25px; }
+.nt-box { flex: none; cursor: pointer; user-select: none; -webkit-user-select: none; color: #6F6A63; line-height: 0; padding-top: 1px; }
+.nt-box .ms { font-size: 22px; }
+.nt-chk.done { color: rgba(31,27,22,.5); text-decoration: line-through; }
+.nt-chk.done .nt-box { color: var(--primary); text-decoration: none; }
+.nt-att { margin: 8px 0; user-select: none; }
+.nt-att img { display: block; max-width: 100%; max-height: 420px; border-radius: 12px; cursor: pointer; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.nt-att.voice { padding: 8px 10px; border-radius: 14px; background: rgba(0,0,0,.05); }
+.nt-voice { display: flex; align-items: center; gap: 8px; } .nt-voice audio { flex: 1; min-width: 0; height: 36px; }
+.nt-att figcaption { margin-top: 6px; font: italic 400 13px/18px var(--font); color: #4A4540; }
+.nt-att-wait { display: inline-block; padding: 10px 14px; border-radius: 12px; background: rgba(0,0,0,.05); font: 400 13px/18px var(--font); color: #6F6A63; }
+.nt-madebox { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.nt-madebox .label-s { width: 100%; color: #6F6A63; }
+.nt-madechip { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 6px 12px 6px 8px; margin: 0 6px 6px 0; border-radius: var(--r-full); background: rgba(255,255,255,.7); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); font: 500 12px/16px var(--font); cursor: pointer; }
+.nt-madechip .ms { font-size: 18px; color: var(--primary); } .nt-madechip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nt-toolbar { position: sticky; bottom: 84px; z-index: 5; display: flex; align-items: center; gap: 2px; margin-top: 10px; padding: 6px; border-radius: 18px; background: var(--surface-lowest, #fff); box-shadow: 0 2px 10px rgba(0,0,0,.12); overflow-x: auto; scrollbar-width: none; }
+.nt-tb { all: unset; box-sizing: border-box; flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; color: var(--on-surface); }
+.nt-tb:hover, .nt-tb:focus-visible { background: var(--surface-low); }
+.nt-tb-sep { flex: none; width: 1px; height: 24px; margin: 0 4px; background: var(--outline-variant); }
+.nt-swatches { display: flex; flex-wrap: wrap; gap: 12px; padding: 6px 2px; }
+.nt-sw { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); cursor: pointer; }
+.nt-sw.on { box-shadow: inset 0 0 0 3px var(--primary); }
+.nt-big { display: block; max-width: 100%; border-radius: 12px; margin-bottom: 8px; }
+.nt-pens { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.nt-pen { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; box-shadow: inset 0 0 0 2px rgba(255,255,255,.7); }
+.nt-pen.hl { background: #FFE36E; } .nt-pen.er { background: var(--surface-low); }
+.nt-pen.on { outline: 3px solid var(--primary); outline-offset: 2px; }
+.nt-canvas-wrap { margin-top: 10px; border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--outline-variant); background: #fff; }
+.nt-canvas { display: block; touch-action: none; cursor: crosshair; }
+.nt-rec-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 6px 0 12px; }
+.nt-rec { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; background: var(--primary); color: var(--on-primary); cursor: pointer; }
+.nt-rec .ms { font-size: 38px; }
+.nt-rec.on { background: #B3261E; animation: ntPulse 1.4s infinite; }
+@keyframes ntPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(179,38,30,.35); } 50% { box-shadow: 0 0 0 14px rgba(179,38,30,0); } }
+@media (prefers-reduced-motion: reduce) { .nt-rec.on { animation: none; } }
+.nt-rec-time { font: 500 20px/24px var(--display); }
+.nt-rec-said { min-height: 40px; margin: 0 2px 10px; font: 400 15px/22px var(--font); color: var(--on-surface-variant); }
+.nt-turn-wait { display: flex; align-items: center; gap: 10px; padding: 20px 4px; color: var(--on-surface-variant); }
+.nt-sug { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 12px 12px 14px; margin-bottom: 8px; border-radius: 16px; background: var(--surface-low); cursor: pointer; }
+.nt-sug.best { background: var(--secondary-container); }
+.nt-sug > .grow { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.nt-sug b { font: 500 15px/20px var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nt-sug-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-lowest, #fff); color: var(--primary); flex: none; }
+.nt-sug-why { font: 400 13px/18px var(--font); color: var(--on-surface-variant); }
+.nt-sug-where { display: flex; align-items: flex-start; gap: 4px; font: 400 12px/16px var(--font); color: var(--on-surface-variant); }
+.nt-sug-where .ms { font-size: 15px; }
+.nt-where { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; margin-bottom: 12px; border-radius: 12px; background: var(--surface-low); font: 400 13px/18px var(--font); }
+.nt-where .ms { color: var(--primary); font-size: 18px; }
+.nt-ask:not(:empty) { padding: 12px; margin-bottom: 14px; border-radius: 16px; background: #FFF4C2; box-shadow: inset 0 0 0 1px rgba(125,87,0,.2); }
+.nt-ask-h { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; color: #7D5700; } .nt-ask-h .ms { font-size: 18px; }
+.nt-q p { margin: 0 0 6px; font: 500 14px/20px var(--font); }
+.nt-q, .nt-f { margin-bottom: 12px; }
+.nt-f > .label-m { margin: 0 2px 6px; }
+.nt-steps { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 12px; }
+.nt-step { display: flex; align-items: center; gap: 6px; }
+.nt-step-n { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--secondary-container); font: 500 12px/1 var(--font); }
+.nt-step-in { flex: 1; min-width: 0; padding: 10px 12px; border: 0; border-radius: 12px; background: var(--surface-low); font: 400 15px/20px var(--font); color: inherit; }
+.nt-step-in:focus { outline: 2px solid var(--primary); }
+.nt-ver { display: flex; align-items: center; gap: 8px; padding: 10px 4px; border-bottom: 1px solid var(--outline-variant); }
+.nt-done-toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 9999; display: flex; align-items: center; gap: 10px; width: min(92vw, 460px); padding: 8px 8px 8px 14px; border-radius: 14px; background: #2F3033; color: #F2F0F4; box-shadow: 0 6px 20px rgba(0,0,0,.25); transition: opacity .3s; }
+.nt-done-toast.out { opacity: 0; } .nt-done-toast .btn { color: #A8C8FF; }
 </style>
 
   <script>
@@ -1793,6 +1888,7 @@ var TIDE_SETTING_DEFAULTS = {
   // originals first: prints wait while a new original has its head start, then sell as a limited run once it sells
   editionBufferDays: 30, editionSize: 50, quickEditionPct: 50,
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
+  menuOrderArtist: [], menuOrderAdmin: [], notesFolders: [],   // the notes' folders   // the menu, in each person's own order (empty: the usual order)
   // how she likes to work (the business setup): fed into every plan, question round and draft
   workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
   electricityKwhAud: 0.35,   // what the PC's electricity costs, per kWh (a typical NSW rate: change it to the rate on the power bill)
@@ -2131,7 +2227,7 @@ var TIDE_SCHEMAS = {
       ['expandStatus', 'Claude status', 'text'], ['expansion', 'Claude’s expansion', 'json'], ['expandTries', 'Claude tries', 'number'],
       ['expandNote', 'Claude note', 'text'], ['expandedAt', 'Expanded', 'date'],
       ['expandRoute', 'Expand with', 'text'], ['expandQueued', 'Expand asked', 'date'], ['expandClaimed', 'PC took it', 'date'],
-      ['expandWhy', 'Why Claude', 'text']
+      ['expandWhy', 'Why Claude', 'text'], ['private', 'Private', 'bool'], ['folder', 'Folder', 'text'], ['colour', 'Colour', 'text'], ['pinned', 'Pinned', 'bool'], ['madeInto', 'Turned into', 'json']
     ]
   },
   // Talk it through (LogicTalk.gs): topics the artist names and answers questions about
@@ -2203,6 +2299,14 @@ var TIDE_SCHEMAS = {
       ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['topicId', 'Talked through', 'text'], ['ideaId', 'Idea', 'text'],
       ['embed', 'Shows here', 'text'], ['embedTries', 'Embed checks', 'number'],
       ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
+  // photos, drawings and voice memos in her notes (sealed with her passphrase, like the notes)
+  noteattach: {
+    sheet: 'Note Files',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['noteId', 'Note', 'text'], ['kind', 'Kind', 'text'], ['data', 'File', 'text'], ['transcript', 'Typed out', 'text'],
+      ['private', 'Private', 'bool'], ['deleted', 'Removed', 'bool'], ['by', 'By', 'text']
     ]
   },
   notebookHistory: {
@@ -3336,6 +3440,14 @@ if (env.workDone) env.workDone('publish');
     env.settings.set({ homeOrder: clean });
     return { ok: true, order: clean };
   }
+  /** The menu, in this person's own order. */
+  function saveMenuOrder(order) {
+    var role = need(['admin', 'artist']);
+    var clean = list(order).map(String).filter(function (k, i, a) { return /^[a-z]{2,20}$/.test(k) && a.indexOf(k) === i; }).slice(0, 20);
+    var o = {}; o[role === 'admin' ? 'menuOrderAdmin' : 'menuOrderArtist'] = clean;
+    env.settings.set(o);
+    return { ok: true, order: clean };
+  }
   function saveSettings(ch) {
     need(['admin', 'artist']);
     ch = ch || {};
@@ -3447,7 +3559,7 @@ if (env.workDone) env.workDone('publish');
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: publishData.todo, rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
@@ -3465,7 +3577,7 @@ if (env.workDone) env.workDone('publish');
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
       usage: role === 'admin' ? usageList() : [], expenseIdeas: expenseIdeas(),
-      plan: planState(), goals: goalSnapshot(), milestones: milestoneSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder),
+      plan: planState(), goals: goalSnapshot(), milestones: milestoneSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder), menuOrder: list(env.settings.get()[env.user.role === 'admin' ? 'menuOrderAdmin' : 'menuOrderArtist']),
       ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
@@ -3538,16 +3650,25 @@ if (env.workDone) env.workDone('publish');
   // ---------- Mentors (LogicMentor.gs; Mentor.gs does the talking)
   var mentors = tideMentors(env, { fail: fail, text: text, list: list, rows: rows, nowIso: nowIso,
     goalList: function () { return goalList(); }, addGoal: function (p) { return addGoal(p); }, updateGoal: function (id, ch) { return updateGoal(id, ch); }, makeIdea: function (p) { return makeIdea(p); },
-    draftPost: function (p) {
-      return env.lock(function () {
-        var now = nowIso(), id = env.nextId('CN', 4);
-        env.table('content').append({ id: id, created: now, type: 'Post', platform: 'Instagram and Facebook', format: ['Photo post', 'Carousel', 'Reel', 'Story'].indexOf(p.format) >= 0 ? p.format : 'Photo post', pillar: '',
-          title: text(p.title, 70) || 'A post', caption: text(p.caption, 2200), hashtags: text(p.hashtags, 500), onScreen: '', plan: [], footageIds: [], cta: '', why: text(p.why, 500),
-          purpose: 'Drafted with your mentor (' + text(p.from, 60) + '). Add a photo when you approve it.', checks: [], revisions: 0, feedback: [], nudges: [], campaign: '', round: '', tries: 0,
-          status: 'Suggested', artistDecision: '', adminDecision: '', rejectedBy: '', rejectReason: '', source: 'Mentor', updated: now });
-        return id;
-      });
-    } });
+    draftPost: function (p) { return draftPostCore(Object.assign({ purpose: 'Drafted with your mentor (' + text(p.from, 60) + '). Add a photo when you approve it.', source: 'Mentor' }, p)); } });
+  /** A post drafted for her to approve in Posts (from a mentor or a note): no photo yet, nothing goes out by itself. */
+  function draftPostCore(p) {
+    return env.lock(function () {
+      var now = nowIso(), id = env.nextId('CN', 4);
+      env.table('content').append({ id: id, created: now, type: 'Post', platform: 'Instagram and Facebook', format: ['Photo post', 'Carousel', 'Reel', 'Story'].indexOf(p.format) >= 0 ? p.format : 'Photo post', pillar: '',
+        title: text(p.title, 70) || 'A post', caption: text(p.caption, 2200), hashtags: text(p.hashtags, 500), onScreen: '', plan: [], footageIds: [], cta: '', why: text(p.why, 500),
+        purpose: text(p.purpose, 300), checks: [], revisions: 0, feedback: [], nudges: [], campaign: '', round: '', tries: 0,
+        status: 'Suggested', artistDecision: '', adminDecision: '', rejectedBy: '', rejectReason: '', source: text(p.source, 20) || 'Note', updated: now });
+      return id;
+    });
+  }
+  // ---------- "Turn into…" for a note (LogicNoteTurn.gs)
+  var noteTurn = tideNoteTurn(env, { fail: fail, need: need, text: text, list: list, notebook: function () { return notebook; },
+    goalList: function () { return goalList(); }, milestones: function () { return milestoneRows(); }, milestoneByWords: function (w) { return milestoneByWords(w); },
+    addGoal: function (p) { return addGoal(p); }, updateGoal: function (id, ch) { return updateGoal(id, ch); }, addMilestone: function (p) { return addMilestone(p); },
+    makeIdea: function (p) { return makeIdea(p); }, draftPost: function (p) { return draftPostCore(p); }, saveOwnDay: function (id, p) { return saveOwnDay(id, p); },
+    addTransaction: function (p) { return addTransaction(p); }, createPrint: function (p) { return createPrint(p); }, allSeries: function () { return allSeries(); },
+    expenseCategories: function () { return T.EXPENSE_CATEGORIES.slice(); }, siteAddContent: function (r, ty, w, pi) { return siteEditor.addContent(r, ty, w, pi); } });
   // ---------- the calendar: planning her days, her other calendars, and Tide Book in her phone's calendar (LogicCal.gs)
   var cal = tideCal(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: function (who, a, b) { return publish.push(who, a, b); },
     goalList: function () { return goalList(); }, goalRow: function (id) { return goalRow(id); } });
@@ -4458,7 +4579,7 @@ if (env.workDone) env.workDone('publish');
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, publishWebsite: publishWebsite, chatResult: chatResult,
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveMenuOrder: saveMenuOrder, publishWebsite: publishWebsite, chatResult: chatResult,
       websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
     },
     research: research,
@@ -4492,6 +4613,7 @@ if (env.workDone) env.workDone('publish');
   out.shop = shop;
   Object.keys(cal.api).forEach(function (k) { out.api[k] = cal.api[k]; });
   Object.keys(mentors.api).forEach(function (k) { out.api[k] = mentors.api[k]; });
+  Object.keys(noteTurn.api).forEach(function (k) { out.api[k] = noteTurn.api[k]; });
   out.mentors = mentors;
   out.cal = cal;
   return out;
@@ -6041,6 +6163,9 @@ var TIDE_NOTES = {
   CONTEXT_NOTES: 4,           // the note plus up to 3 it links to (Development HQ's limits)
   CONTEXT_CHARS: 2400,        // per note sent to Claude
   MAX_TRIES: 3,
+  COLOURS: ['', 'yellow', 'green', 'blue', 'pink', 'purple', 'orange', 'grey'],   // a note's colour, like Samsung Notes
+  MAX_FILE: 4 * 1024 * 1024, MAX_FILES: 30,   // photos, drawings and voice memos in one note
+  VERSION_GAP_MINS: 10,       // while she's writing, it saves every few seconds: a version is kept at most every 10 minutes
   LOCAL_TRIES: 2,             // local failures before Claude takes it
   LOCAL_CLAIM_MINS: 15,       // a job the PC took but never answered goes back in the queue
   // Notes about these need current facts a model on the PC doesn't have, whatever it says about itself.
@@ -6115,34 +6240,45 @@ function tideNotes(env, t) {
   /** Also used by Talk it through, which files topics from background jobs (no signed-in user). */
   function saveNoteCore(p) {
     p = p || {};
-    var title = t.text(p.title, 120), body = String(p.body == null ? '' : p.body).replace(/\r\n/g, '\n').slice(0, N.MAX_BODY);
-    if (!title && !body.trim()) t.fail('Write something first.');
-    if (!title) title = body.trim().split('\n')[0].replace(/[#*_\[\]]/g, '').slice(0, 60) || 'Untitled';
+    var title = t.text(p.title, 120), body = String(p.body == null ? '' : p.body).replace(/\r\n/g, '\n').slice(0, N.MAX_BODY), auto = !title;
+    if (!title && !body.trim() && !p.allowEmpty) t.fail('Write something first.');
+    if (!title) title = firstLine(body) || 'Untitled note';
     return env.lock(function () {
       var now = t.nowIso(), ideaId = checkIdea(t.text(p.ideaId, 20));
-      var clash = live().filter(function (n) { return n.id !== p.id && key(n.title) === key(title); })[0];
-      if (clash) t.fail('There’s already a note called “' + clash.title + '”. Give this one a different name so links stay clear.');
+      var clashes = function (tt) { return live().filter(function (n) { return n.id !== p.id && key(n.title) === key(tt); })[0]; };
+      var clash = clashes(title);
+      if (clash && !auto) t.fail('There’s already a note called “' + clash.title + '”. Give this one a different name so links stay clear.');
+      if (clash) { var base = title.slice(0, 110), k = 2; while (clashes(base + ' (' + k + ')')) k++; title = base + ' (' + k + ')'; }
+      var meta = {};
+      if ('folder' in p) meta.folder = t.text(p.folder, 40);
+      if ('colour' in p) meta.colour = N.COLOURS.indexOf(p.colour) >= 0 ? p.colour : '';
+      if ('pinned' in p) meta.pinned = p.pinned === true;
       if (p.id) {
         var n = get(p.id);
         if (n.locked) t.fail('Unlock your private writing first.');
         if (n.private && !herself()) t.fail('That note is private.');
         if (Number(p.revision) !== Number(n.revision)) t.fail('This note was changed on another phone. Close it and open it again to see the latest, then make your change.');
-        if (n.title === title && n.body === body && (n.ideaId || '') === ideaId) return { id: n.id, revision: n.revision, unchanged: true };
-        keepVersion(n);
+        if (n.title === title && n.body === body && (n.ideaId || '') === ideaId && !Object.keys(meta).length) return { id: n.id, revision: n.revision, unchanged: true, title: n.title };
+        if (n.title !== title || n.body !== body) {
+          var lastV = t.rows('notebookHistory').filter(function (v) { return v.noteId === n.id; }).sort(function (a, b) { return a.revision - b.revision; }).pop();
+          if (!lastV || Date.now() - new Date(lastV.saved || 0).getTime() > N.VERSION_GAP_MINS * 60000 || p.keepVersion) keepVersion(n);
+        }
         // read everything needed before updating: the row object is updated in place
         var r = resolve(body, n.id), next = (Number(n.revision) || 1) + 1, renamed = n.title !== title;
-        env.table('notebook').update(n.id, { title: title, body: body, ideaId: ideaId, links: r.links, revision: next, updated: now, updatedBy: env.user.role });
+        env.table('notebook').update(n.id, Object.assign({ title: title, body: body, ideaId: ideaId, links: r.links, revision: next, updated: now, updatedBy: env.user.role }, meta));
+        if (meta.folder) addFolder(meta.folder);
         if (renamed) relinkAll();
-        return { id: n.id, revision: next, unresolved: r.unresolved };
+        return { id: n.id, revision: next, unresolved: r.unresolved, title: title };
       }
       var id = env.nextId('NT', 4), r2 = resolve(body, id);
       env.table('notebook').append({
         id: id, created: now, createdBy: env.user.email, title: title, body: body, ideaId: ideaId, links: r2.links,
         revision: 1, updated: now, updatedBy: env.user.role, deleted: false, private: p.private === true || env.user.role === 'artist',
-        expandStatus: '', expansion: null, expandTries: 0, expandNote: '', expandedAt: ''
+        expandStatus: '', expansion: null, expandTries: 0, expandNote: '', expandedAt: '', folder: meta.folder || '', colour: meta.colour || '', pinned: meta.pinned === true, madeInto: []
       });
       relinkAll();
-      return { id: id, revision: 1, unresolved: r2.unresolved };
+      if (meta.folder) addFolder(meta.folder);
+      return { id: id, revision: 1, unresolved: r2.unresolved, title: title };
     });
   }
 
@@ -6250,7 +6386,100 @@ function tideNotes(env, t) {
     return { ideaId: made.id };
   }
 
-  function plain(body) { return String(body || '').replace(/\[\[([^\[\]|]+)(?:\|([^\[\]]*))?\]\]/g, function (m, a, b) { return b || a; }); }
+  function plain(body) {
+    return String(body || '').replace(/\[\[([^\[\]|]+)(?:\|([^\[\]]*))?\]\]/g, function (m, a, b) { return b || a; })
+      .replace(/!?\[[^\]]*\]\(att:[\w-]+\)/g, '').replace(/^\s*\[( |x)\]\s+/gim, function (m, x) { return x === 'x' ? '(done) ' : '- '; }).replace(/==([^=]+)==/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
+  }
+  /** A title from the first line she wrote, without its formatting. */
+  function firstLine(body) {
+    var line = String(body || '').split('\n').map(function (l) { return l.replace(/!?\[[^\]]*\]\(att:[\w-]+\)/g, '').replace(/^\s*(#+|[-*•]|\d+[.)]|\[( |x)\])\s*/i, '').replace(/[*_=\[\]]/g, '').trim(); }).filter(String)[0] || '';
+    return line.slice(0, 60);
+  }
+
+  // ---------------------------------------------------------------- folders, colours, pins, and what a note has in it
+  function noteMeta(id, p) {
+    t.need(['admin', 'artist']);
+    p = p || {};
+    return env.lock(function () {
+      var n = get(id), out = {};
+      if (n.locked) t.fail('Unlock your private writing first.');
+      if (n.private && !herself()) t.fail('That note is private.');
+      if ('folder' in p) out.folder = t.text(p.folder, 40);
+      if ('colour' in p) out.colour = N.COLOURS.indexOf(p.colour) >= 0 ? p.colour : '';
+      if ('pinned' in p) out.pinned = p.pinned === true;
+      env.table('notebook').update(id, out);
+      if (out.folder) addFolder(out.folder);
+      return { ok: true };
+    });
+  }
+  function folders() { return t.list(env.settings.get().notesFolders).map(String).filter(String); }
+  function addFolder(name) { var f = folders(); if (f.indexOf(name) < 0) { f.push(name); env.settings.set({ notesFolders: f.slice(0, 40) }); } }
+  function saveNoteFolder(name, was) {
+    t.need(['admin', 'artist']);
+    name = t.text(name, 40); was = t.text(was, 40);
+    if (!name) t.fail('Name the folder.');
+    return env.lock(function () {
+      var f = folders();
+      if (was) {
+        f = f.map(function (x) { return x === was ? name : x; });
+        live().forEach(function (n) { if (n.folder === was && (herself() || !n.private)) env.table('notebook').update(n.id, { folder: name }); });
+      } else if (f.indexOf(name) >= 0) t.fail('There’s already a folder called “' + name + '”.');
+      else f.push(name);
+      env.settings.set({ notesFolders: f.filter(function (x, i, a) { return a.indexOf(x) === i; }).slice(0, 40) });
+      return { ok: true };
+    });
+  }
+  function deleteNoteFolder(name) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      live().forEach(function (n) { if (n.folder === name && (herself() || !n.private)) env.table('notebook').update(n.id, { folder: '' }); });
+      env.settings.set({ notesFolders: folders().filter(function (x) { return x !== name; }) });
+      return { ok: true };
+    });
+  }
+  function filesOf(noteId) { return t.rows('noteattach').filter(function (a) { return a.noteId === noteId && !a.deleted; }); }
+  function checkFile(kind, data) {
+    data = String(data || '');
+    var ok = kind === 'voice' ? /^data:audio\/(webm|mp4|ogg|mpeg|aac|x-m4a|wav)(;[\w=.-]+)*;base64,[A-Za-z0-9+/=]+$/.test(data) : /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(data);
+    if (!ok) t.fail(kind === 'voice' ? 'That recording couldn’t be kept. Try again.' : 'That picture couldn’t be read. Try a different one.');
+    if (data.length * 0.75 > N.MAX_FILE) t.fail(kind === 'voice' ? 'That recording is too long. Keep it under about 3 minutes.' : 'That picture is too large.');
+    return data;
+  }
+  function addNoteFile(noteId, kind, data, transcript) {
+    t.need(['admin', 'artist']);
+    kind = ['photo', 'drawing', 'voice'].indexOf(kind) >= 0 ? kind : 'photo';
+    data = checkFile(kind, data);
+    return env.lock(function () {
+      var n = get(noteId);
+      if (n.locked) t.fail('Unlock your private writing first.');
+      if (n.private && !herself()) t.fail('That note is private.');
+      if (filesOf(noteId).length >= N.MAX_FILES) t.fail('That note has as many pictures and recordings as it can hold. Start another note.');
+      var id = env.nextId('NA', 5);
+      env.table('noteattach').append({ id: id, created: t.nowIso(), noteId: noteId, kind: kind, data: data, transcript: t.text(transcript, 4000), private: n.private === true, deleted: false, by: env.user.role });
+      return { id: id };
+    });
+  }
+  function updateNoteFile(id, data) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var a = t.rows('noteattach').filter(function (x) { return x.id === id && !x.deleted; })[0]; if (!a) t.fail('That drawing has been removed.');
+      var n = get(a.noteId); if (n.private && !herself()) t.fail('That note is private.');
+      env.table('noteattach').update(id, { data: checkFile(a.kind, data) });
+      return { ok: true };
+    });
+  }
+  function noteFiles(noteId) {
+    t.need(['admin', 'artist']);
+    var n = get(noteId);
+    if (n.private && !herself()) t.fail('That note is private.');
+    if (n.locked) return [];
+    var out = {}; filesOf(noteId).forEach(function (a) { if (!a.locked) out[a.id] = { kind: a.kind, data: a.data, transcript: a.transcript || '' }; });
+    return out;
+  }
+  /** "Turn into…": a note keeps a list of what it became. */
+  function markMade(noteId, made) {
+    env.lock(function () { var n = get(noteId); env.table('notebook').update(noteId, { madeInto: t.list(n.madeInto).concat([Object.assign({ at: t.nowIso() }, made)]).slice(-20) }); });
+  }
   /** Edits are recorded by role, so they can be shown as the artist's name or the admin's. */
   function who(role) {
     if (role === 'artist') return env.brand.artistName;
@@ -6268,7 +6497,8 @@ function tideNotes(env, t) {
         unresolved: resolve(n.body, n.id, notes).unresolved, revision: Number(n.revision) || 1,
         created: n.created, updated: n.updated, by: who(n.updatedBy),
         expandStatus: n.expandStatus || '', expansion: n.expansion || null, expandNote: n.expandNote || '', expandedAt: n.expandedAt || '',
-        expandRoute: n.expandRoute || '', expandWhy: n.expandWhy || '', private: n.private === true, locked: n.locked === true
+        expandRoute: n.expandRoute || '', expandWhy: n.expandWhy || '', private: n.private === true, locked: n.locked === true,
+        folder: n.folder || '', colour: n.colour || '', pinned: n.pinned === true, madeInto: n.locked ? [] : t.list(n.madeInto)
       };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
   }
@@ -6412,7 +6642,11 @@ function tideNotes(env, t) {
     ai: ai,
     local: local,
     addNote: saveNoteCore,
-    api: { saveNote: saveNote, deleteNote: deleteNote, noteHistory: noteHistory, restoreVersion: restoreVersion, expandNote: expandNote, askClaude: askClaude, saveAi: saveAi, keepSuggestion: keepSuggestion, answerNoteQuestion: answerNoteQuestion, noteToIdea: noteToIdea },
+    get: function (id) { var n = get(id); if (n.private && !herself()) t.fail('That note is private.'); if (n.locked) t.fail('Unlock your private writing first.'); return n; },
+    plain: plain, markMade: markMade, folders: folders, colours: N.COLOURS,
+    filesText: function (noteId) { return filesOf(noteId).filter(function (a) { return a.transcript && !a.locked; }).map(function (a) { return a.transcript; }).join('\n'); },
+    api: { saveNote: saveNote, deleteNote: deleteNote, noteHistory: noteHistory, restoreVersion: restoreVersion, expandNote: expandNote, askClaude: askClaude, saveAi: saveAi, keepSuggestion: keepSuggestion, answerNoteQuestion: answerNoteQuestion, noteToIdea: noteToIdea,
+      noteMeta: noteMeta, saveNoteFolder: saveNoteFolder, deleteNoteFolder: deleteNoteFolder, addNoteFile: addNoteFile, updateNoteFile: updateNoteFile, noteFiles: noteFiles },
     expand: expand,
     snapshot: snapshot
   };
@@ -7822,6 +8056,18 @@ var TIDE_GUIDE = [
   { id: 'g-calendar', area: 'Calendar', to: 'all', icon: 'calendar_month', title: 'The calendar',
     say: 'Your goals’ steps in their colours, your posts, parked things coming back, your own things and your other calendars.',
     steps: ['Open the menu and tap Calendar.', 'Switch between Day, Week and Month.', 'Tap a day, then Add: your own thing (with a time if it has one), or a step of a goal.'], go: { view: 'calendar', find: '.cal-top', tip: 'Day, week or month.' } },
+  { id: 'g-notes', area: 'Notes', to: 'all', icon: 'sticky_note_2', title: 'Notes, just for keeping',
+    say: 'Notes is your notebook: lists, thoughts, photos, sketches and voice memos. Nothing in it is used for anything until you tap “Turn into…”.',
+    steps: ['Open the menu and tap Notes, then New note.', 'Write anything. It saves by itself.', 'The bar at the bottom makes tick lists, bullets, headings, bold and highlight, and adds a photo, a drawing or a voice memo.', 'Pin a note to keep it at the top, or give it a colour (the palette).', 'Search at the top, or keep notes in folders: tap “Folder”, then ⋮ › Put it in a folder.'], go: { view: 'notes', find: '.nt-top', tip: 'Search and folders.' } },
+  { id: 'g-notes-turn', area: 'Notes', to: 'all', icon: 'auto_awesome', title: 'Turn a note into something',
+    say: 'Any note can become a goal (with its steps), steps for a goal you have, a milestone, an idea, a post, something on your calendar, an expense, an artwork, or words for your website. Tide Book suggests what fits and where it goes, asks only what the note doesn’t say, and the note stays as it is.',
+    steps: ['Open a note and tap “Turn into…” at the top.', 'Tap the suggestion that fits (the best fit is first), or pick something else.', 'Answer anything in the yellow box, check the details, then tap Make it.', 'Tap “Open it” to see it. The note shows what it turned into.'], go: { view: 'notes', tip: 'Open a note, then Turn into….' } },
+  { id: 'g-notes-voice', area: 'Notes', to: 'all', icon: 'mic', title: 'Voice memos and drawings',
+    say: 'Record a voice memo (up to 3 minutes) and it’s typed out as you speak, where your phone can. Or draw with your finger: pens, a highlighter, an eraser and Undo.',
+    steps: ['In a note, tap the microphone on the bar at the bottom, then the big button. Tap again to stop.', 'Choose whether it’s typed into the note too, then Add to the note.', 'For a drawing, tap the pen on the bar. Tap a drawing later to draw on it again.'], go: { view: 'notes', tip: 'Open a note.' } },
+  { id: 'g-menu-order', area: 'Getting around', to: 'all', icon: 'swap_vert', title: 'Put the menu in your order',
+    say: 'The menu (the round button at the bottom) can be in whatever order suits you.',
+    steps: ['Tap the menu button, then Arrange at the bottom.', 'Hold the dotted handle and drag each one up or down.', 'Tap Save this order.'], go: { view: 'home', tip: 'The menu button is bottom left.' } },
   { id: 'g-mentor-chat', area: 'Mentors', to: 'artist', icon: 'forum', title: 'Just chat',
     say: 'A conversation about anything: ask a question, think out loud, talk something through. It’s yours alone.',
     steps: ['Open the menu and tap Mentors.', 'Tap Just chat.', 'Write, or tap one of the replies it offers. Your own words always work.'], go: { view: 'mentors', find: '.mn-chat', tip: 'Just chat.' } },
@@ -7860,7 +8106,7 @@ var TIDE_GUIDE = [
     steps: ['Open Ideas › Inspo, or tap “Save inspiration” on Home.', 'Add the picture or link, and a word on why.'], go: { view: 'ideas', state: { ideasTab: 'inspo' }, tip: 'Your inspiration.' } },
   { id: 'g-notes', area: 'Ideas', to: 'all', icon: 'edit_note', title: 'Your notes',
     say: 'Private writing, just for you. Tide Book can help you expand a note when you ask.',
-    steps: ['Open Ideas › Notes.', 'Tap New note.'], go: { view: 'ideas', state: { ideasTab: 'notes' }, tip: 'Your notes are private.' } },
+    steps: ['Open the menu and tap Notes.', 'Tap New note.'], go: { view: 'notes', tip: 'Your notes are private.' } },
   { id: 'g-artwork', area: 'Artworks and your shop', to: 'all', icon: 'palette', title: 'Add an artwork',
     say: 'Photos, its story and its series, once. It goes on your website in its series, the shop and the living gallery.',
     steps: ['Open Artworks and tap Add an artwork.', 'Add photos, the title, the story, and where it sits (or “A new series…”).', 'Tap Launch, then publish your website.'], go: { view: 'prints', find: '.fab', tip: 'Add an artwork.' } },
@@ -7916,6 +8162,12 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-19-notes', on: '2026-11-19', to: 'all', icon: 'sticky_note_2', title: 'Notes, with its own place',
+    say: 'Notes has moved out of Ideas into its own place in the menu, and works like Samsung Notes: tick lists, bold and highlight, colours, pins, folders, photos, drawings and voice memos. Notes are just for keeping, until you tap “Turn into…” to make one a goal, an idea, a post, a day on the calendar and more.',
+    steps: ['Open the menu and tap Notes.', 'Tap New note and write. It saves by itself.', 'Use the bar at the bottom for lists, photos, drawing and voice.', 'Tap “Turn into…” when a note should become something.'], go: { view: 'notes', find: '.nt-top', tip: 'Your notes.' } },
+  { id: '2026-11-19-menu-order', on: '2026-11-19', to: 'all', icon: 'swap_vert', title: 'The menu, in your order',
+    say: 'Tap the menu button, then Arrange, and drag the sections into the order you like.',
+    steps: ['Tap the menu button (bottom left).', 'Tap Arrange.', 'Drag them into your order, then Save.'], go: { view: 'home', tip: 'Menu, then Arrange.' } },
   { id: '2026-11-19-mentors', on: '2026-11-19', to: 'artist', icon: 'school', title: 'Mentors: chat, or learn something properly',
     say: 'A new place in the menu. Just chat is for anything at all. A mentor is for something you want to learn or get done: it teaches you a little at a time, gives you something to try, and does the busywork for you. It’s all yours alone.',
     steps: ['Open the menu and tap Mentors.', 'Tap Just chat to talk about anything.', 'Or tap New mentor, say what you’d like to learn (like “grow my audience”), and Start.', 'Your course shows along the top as it goes.'],
@@ -10344,6 +10596,186 @@ function tideMentors(env, t) {
   };
 }
 
+/**
+ * Tide Book: "Turn into…" for a note. A note is just a note until she taps it; then Tide Book reads it and suggests
+ * what it could become and where it would go (a goal under the right milestone, a step of a goal she has, a day on
+ * the calendar, an expense, an artwork, words for a page of her website…), she checks the details (only what's
+ * missing is asked, each with answers to tap), and it's made. The note stays as it was, and remembers what it became.
+ * Suggestions come from the quick model when it's on (NoteTurn.gs), or from Tide Book's own reading of the words.
+ */
+
+var TIDE_TURN = {
+  KINDS: ['goal', 'steps', 'milestone', 'idea', 'post', 'event', 'expense', 'artwork', 'website'],
+  PAGES: [['#/', 'Home page'], ['#/about', 'About me'], ['#/gallery', 'Gallery'], ['#/originals', 'Originals']],
+  FIELDS: {
+    goal: ['title', 'why', 'steps', 'milestoneId', 'aimBy'], steps: ['goalId', 'steps'], milestone: ['title', 'goalIds'],
+    idea: ['title', 'note', 'ideaKind'], post: ['title', 'caption', 'hashtags', 'format'], event: ['text', 'day', 'at', 'mins'],
+    expense: ['description', 'amount', 'date', 'category'], artwork: ['title', 'story', 'series'], website: ['page', 'heading', 'words']
+  }
+};
+
+function tideNoteTurn(env, t) {
+  var fail = t.fail, text = t.text, list = t.list, X = TIDE_TURN;
+  function isDay(d) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d || '')); if (!m) return false;
+    var x = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); return x.getUTCMonth() === +m[2] - 1 && x.getUTCDate() === +m[3];
+  }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function addDays(day, n) { var p = day.split('-').map(Number), d = new Date(Date.UTC(p[0], p[1] - 1, p[2] + n)); return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); }
+  function dowOf(day) { var p = day.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay(); }
+  function goals() { return t.goalList().filter(function (g) { return g.status !== 'Done'; }).map(function (g) { return { id: g.id, title: g.title, milestoneId: g.milestoneId || '' }; }); }
+  function milestones() { return t.milestones().map(function (m) { return { id: m.id, title: m.title }; }); }
+
+  /** What the note says, as plain words: the writing, then anything typed out of its voice memos. */
+  function words(n) { var w = (n.title + '\n' + t.notebook().plain(n.body)).trim(), v = t.notebook().filesText(n.id); return (w + (v ? '\n' + v : '')).slice(0, 6000); }
+  function lines(body) { return String(body || '').split('\n'); }
+  function listItems(body) {
+    return lines(body).map(function (l) { var m = /^\s*(?:\[( |x)\]|[-*•]|\d+[.)])\s+(.+)$/i.exec(l); return m && m[1] !== 'x' ? text(m[2].replace(/[*=_]/g, ''), 200) : ''; }).filter(String).slice(0, 12);
+  }
+
+  // ---------- Tide Book's own reading (always works; used when the quick model is off, and to fill gaps)
+  function dayFrom(w) {
+    var today = env.today(), s = String(w).toLowerCase(), m;
+    if (/\btoday\b|\btonight\b/.test(s)) return today;
+    if (/\btomorrow\b/.test(s)) return addDays(today, 1);
+    var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    for (var i = 0; i < 7; i++) if (new RegExp('\\b(next |this |on )?' + days[i] + '\\b').test(s)) { var diff = (i - dowOf(today) + 7) % 7 || 7; return addDays(today, diff); }
+    if ((m = /(?:^|[^$\d.])(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/.exec(s))) { var y = m[3] ? (m[3].length === 2 ? '20' + m[3] : m[3]) : today.slice(0, 4), d = y + '-' + pad(+m[2]) + '-' + pad(+m[1]); if (isDay(d)) return d < today && !m[3] ? addDays(d, 365) : d; }
+    var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    if ((m = /\b(\d{1,2})(?:st|nd|rd|th)?\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*/.exec(s))) { var d2 = today.slice(0, 4) + '-' + pad(months.indexOf(m[2]) + 1) + '-' + pad(+m[1]); return d2 < today ? addDays(d2, 365) : d2; }
+    return '';
+  }
+  function timeFrom(w) {
+    var m = /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i.exec(String(w));
+    if (!m) return '';
+    var h = +m[1] % 12 + (/pm/i.test(m[3]) ? 12 : 0);
+    return pad(h) + ':' + (m[2] || '00');
+  }
+  function amountFrom(w) { var m = /\$\s?(\d+(?:[.,]\d{1,2})?)|(\d+(?:\.\d{1,2})?)\s?(?:dollars|aud)\b/i.exec(String(w)); return m ? Number(String(m[1] || m[2]).replace(',', '.')) : 0; }
+  function rules(n) {
+    var w = words(n), lw = w.toLowerCase(), items = listItems(n.body), title = text(n.title, 120), out = [];
+    var amt = amountFrom(w), day = dayFrom(w), at = timeFrom(w), ms = t.milestoneByWords(w), gHit = goals().filter(function (g) { var gw = g.title.toLowerCase().split(/\W+/).filter(function (x) { return x.length > 3; }); return gw.length && gw.filter(function (x) { return lw.indexOf(x) >= 0; }).length >= Math.min(2, gw.length); })[0];
+    if (amt && /\b(bought|paid|cost|receipt|spent|purchase|bill|invoice|fee|subscription)\b/.test(lw)) out.push({ kind: 'expense', fields: { description: title, amount: amt, date: day || env.today(), category: tideExpenseCategory(w) || '' }, why: 'It mentions $' + amt + ' spent.' });
+    if (day && !/\b(goal|someday|one day)\b/.test(lw)) out.push({ kind: 'event', fields: { text: title, day: day, at: at, mins: 60 }, why: 'It mentions a day' + (at ? ' and a time' : '') + '.' });
+    if (gHit && items.length) out.push({ kind: 'steps', fields: { goalId: gHit.id, steps: items }, why: 'Its list fits your goal “' + gHit.title + '”.' });
+    if (items.length >= 1) out.push({ kind: 'goal', fields: { title: title, why: '', steps: items, milestoneId: ms || '', aimBy: '' }, why: 'It has a list of things to do: those can be its steps.' });
+    if (/\b(post|instagram|caption|reel|story|facebook|hashtag)\b/.test(lw)) out.push({ kind: 'post', fields: { title: title, caption: t.notebook().plain(n.body).trim().slice(0, 2000), hashtags: '', format: /\breel\b/.test(lw) ? 'Reel' : /\bstory\b/.test(lw) ? 'Story' : 'Photo post' }, why: 'It reads like something to post.' });
+    if (/\b(website|about page|about me|bio|my site|homepage)\b/.test(lw)) out.push({ kind: 'website', fields: { page: /about|bio/.test(lw) ? '#/about' : '#/', heading: title, words: t.notebook().plain(n.body).trim().slice(0, 3000) }, why: 'It mentions your website.' });
+    if (/\b(painting|print|canvas|artwork|watercolou?r|acrylic|original)\b/.test(lw) && /\b(cm|mm|a\d|framed|size|\$)\b/.test(lw)) out.push({ kind: 'artwork', fields: { title: title, story: t.notebook().plain(n.body).trim().slice(0, 2000), series: '' }, why: 'It describes an artwork.' });
+    if (/\b(milestone|big goal|this year|by christmas|by the end of)\b/.test(lw)) out.push({ kind: 'milestone', fields: { title: title, goalIds: [] }, why: 'It sounds like a big aim, with goals under it.' });
+    out.push({ kind: 'idea', fields: { title: title, note: t.notebook().plain(n.body).trim().slice(0, 4000), ideaKind: /\b(product|sell|make|print|card|mug|bag)\b/.test(lw) ? 'Product' : /\b(post|video|reel)\b/.test(lw) ? 'Content' : 'Other' }, why: 'Ideas get looked into for you, then you decide.' });
+    if (!items.length && !out.some(function (s) { return s.kind === 'goal'; })) out.push({ kind: 'goal', fields: { title: title, why: '', steps: [], milestoneId: ms || '', aimBy: '' }, why: 'A goal you can plan steps for.' });
+    return out;
+  }
+
+  // ---------- tidy a suggestion: only its kind's fields, real ids, and where it will go
+  function clean(s) {
+    s = s || {};
+    var kind = X.KINDS.indexOf(s.kind) >= 0 ? s.kind : '';
+    if (!kind) return null;
+    var f = s.fields || {}, out = {}, G = goals(), M = milestones();
+    X.FIELDS[kind].forEach(function (k) { if (f[k] != null && f[k] !== '') out[k] = f[k]; });
+    if (out.steps) out.steps = list(out.steps).map(function (x) { return text(x, 200); }).filter(String).slice(0, 12);
+    if (out.goalIds) out.goalIds = list(out.goalIds).filter(function (id) { return G.some(function (g) { return g.id === id; }); });
+    if (out.goalId && !G.some(function (g) { return g.id === out.goalId; })) delete out.goalId;
+    if (out.milestoneId && !M.some(function (m) { return m.id === out.milestoneId; })) delete out.milestoneId;
+    if (out.day && !isDay(out.day)) delete out.day;
+    if (out.date && !isDay(out.date)) delete out.date;
+    if (out.aimBy && !isDay(out.aimBy)) delete out.aimBy;
+    if (out.at && !/^\d{2}:\d{2}$/.test(out.at)) delete out.at;
+    if (out.amount) out.amount = Math.round(Number(out.amount) * 100) / 100 || '';
+    if (out.page && !X.PAGES.some(function (p) { return p[0] === out.page; })) out.page = '#/';
+    if (out.category && T_EXP().indexOf(out.category) < 0) delete out.category;
+    if (out.series && t.allSeries().indexOf(out.series) < 0) delete out.series;
+    var qs = list(s.questions).slice(0, 3).map(function (q) { return { key: text(q && q.key, 30), ask: text(q && q.ask, 200), options: list(q && q.options).slice(0, 4).map(function (o) { return text(o, 80); }).filter(String) }; }).filter(function (q) { return q.ask && X.FIELDS[kind].indexOf(q.key) >= 0; });
+    return { kind: kind, fields: out, why: text(s.why, 300), where: where(kind, out), questions: qs };
+  }
+  function T_EXP() { return t.expenseCategories(); }
+  function where(kind, f) {
+    var G = goals(), M = milestones(), g = f.goalId ? G.filter(function (x) { return x.id === f.goalId; })[0] : null, m = f.milestoneId ? M.filter(function (x) { return x.id === f.milestoneId; })[0] : null;
+    return {
+      goal: 'A goal on your Goals page' + (m ? ', in the orbit of “' + m.title + '”' : '') + '. Its steps go on your calendar.',
+      steps: g ? 'Steps added to your goal “' + g.title + '”, and onto your calendar.' : 'Steps added to one of your goals.',
+      milestone: 'A milestone (a sun) on your Goals page' + (list(f.goalIds).length ? ', with ' + list(f.goalIds).length + ' goal' + (list(f.goalIds).length === 1 ? '' : 's') + ' around it' : '') + '.',
+      idea: 'An idea in Ideas, looked into for you.',
+      post: 'A post drafted in Posts, for you to add a photo and approve. Nothing goes out by itself.',
+      event: 'On your calendar' + (f.day ? ', ' + f.day : '') + '.',
+      expense: 'An expense in Money, with its tax guide.',
+      artwork: 'A new artwork in Artworks (a draft until you put it on sale).',
+      website: 'A new section on your website’s draft (' + ((X.PAGES.filter(function (p) { return p[0] === f.page; })[0] || X.PAGES[0])[1]) + '). You look before publishing.'
+    }[kind];
+  }
+
+  function noteSuggest(id) {
+    t.need(['admin', 'artist']);
+    var n = t.notebook().get(id), by = 'tide book', got = [];
+    if (env.noteSuggestAi) {
+      try {
+        var ai = env.noteSuggestAi({ words: words(n), goals: goals(), milestones: milestones(), series: t.allSeries(), pages: X.PAGES, categories: T_EXP(), today: env.today(), artist: env.brand.artistName });
+        if (ai && ai.length) { got = ai.map(clean).filter(Boolean); if (got.length) by = 'quick'; }
+      } catch (e) { got = []; }
+    }
+    // Tide Book's own reading fills in, so there's always something sensible
+    rules(n).map(clean).filter(Boolean).forEach(function (s) { if (!got.some(function (x) { return x.kind === s.kind; })) got.push(s); });
+    return { suggestions: got.slice(0, 4), by: by, made: list(n.madeInto),
+      options: { goals: goals(), milestones: milestones(), series: t.allSeries(), pages: X.PAGES.map(function (p) { return { value: p[0], label: p[1] }; }), categories: T_EXP() } };
+  }
+
+  /** Makes what she chose, from the details she checked. */
+  function noteMake(id, kind, f) {
+    t.need(['admin', 'artist']);
+    var n = t.notebook().get(id), s = clean({ kind: kind, fields: f || {} });
+    if (!s) fail('Pick what to turn it into.');
+    f = s.fields;
+    var made;
+    if (kind === 'goal') {
+      if (!f.title) fail('Give the goal a name.');
+      var r = t.addGoal({ title: f.title, why: f.why || '', steps: list(f.steps).map(function (x) { return { text: x }; }), milestoneId: f.milestoneId || '' });
+      if (f.aimBy) t.updateGoal(r.id, { targetOn: f.aimBy });
+      made = { kind: 'goal', id: r.id, label: 'Goal: ' + f.title };
+    } else if (kind === 'steps') {
+      if (!f.goalId) fail('Pick which goal the steps are for.');
+      if (!list(f.steps).length) fail('Add at least one step.');
+      var g = t.goalList().filter(function (x) { return x.id === f.goalId; })[0];
+      t.updateGoal(g.id, { steps: list(g.steps).concat(list(f.steps).map(function (x) { return { text: x }; })) });
+      made = { kind: 'goal', id: g.id, label: list(f.steps).length + ' step' + (list(f.steps).length === 1 ? '' : 's') + ' for “' + g.title + '”' };
+    } else if (kind === 'milestone') {
+      if (!f.title) fail('Name the milestone.');
+      var mr = t.addMilestone({ title: f.title, goals: list(f.goalIds) });
+      made = { kind: 'milestone', id: mr.id, label: 'Milestone: ' + f.title };
+    } else if (kind === 'idea') {
+      if (!f.title) fail('Give the idea a name.');
+      var ir = t.makeIdea({ title: f.title, note: f.note || '', kind: ['Product', 'Content', 'Other'].indexOf(f.ideaKind) >= 0 ? f.ideaKind : 'Other' });
+      made = { kind: 'idea', id: ir.id, label: 'Idea: ' + f.title };
+    } else if (kind === 'post') {
+      if (!f.caption) fail('Write the words for the post.');
+      var cid = t.draftPost({ title: f.title || 'A post', caption: f.caption, hashtags: f.hashtags || '', format: f.format, why: '', purpose: 'From your note “' + text(n.title, 60) + '”. Add a photo when you approve it.' });
+      made = { kind: 'post', id: cid, label: 'Post: ' + (f.title || 'a post') };
+    } else if (kind === 'event') {
+      if (!f.text) fail('Say what it is.');
+      if (!f.day) fail('Pick the day.');
+      var dr = t.saveOwnDay(null, { text: f.text, day: f.day, at: f.at || '', mins: Number(f.mins) || 60 });
+      made = { kind: 'event', id: dr.id, day: f.day, label: 'On your calendar: ' + f.text };
+    } else if (kind === 'expense') {
+      if (!f.description) fail('Say what it was.');
+      if (!(Number(f.amount) > 0)) fail('How much was it?');
+      var tr = t.addTransaction({ kind: 'Expense', date: f.date || env.today(), amount: Number(f.amount), description: f.description, category: f.category || '' });
+      made = { kind: 'expense', id: tr && tr.id || '', label: 'Expense: ' + f.description + ' $' + Number(f.amount).toFixed(2) };
+    } else if (kind === 'artwork') {
+      if (!f.title) fail('Give the artwork a title.');
+      var pr = t.createPrint({ title: f.title, description: f.story || '', series: f.series || '' });
+      made = { kind: 'artwork', id: pr.id, label: 'Artwork: ' + f.title };
+    } else if (kind === 'website') {
+      if (!f.words) fail('Write the words for the page.');
+      t.siteAddContent(f.page || '#/', 'text', { h: f.heading || '', p: f.words }, {});
+      made = { kind: 'website', id: f.page || '#/', label: 'Website draft: ' + (f.heading || 'a new section') };
+    }
+    t.notebook().markMade(id, made);
+    return made;
+  }
+  return { api: { noteSuggest: noteSuggest, noteMake: noteMake }, rules: rules };
+}
+
 </script>
 <script>
 /**
@@ -12111,10 +12543,18 @@ var Kit = (function () {
   function note(text, iconName, tone) { return h('div', { class: 'note' + (tone ? ' ' + tone : '') }, icon(iconName || 'info'), h('span', { text: text })); }
 
   // ------------------------------------------------------------------ navigation
-  var NAV = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
+  var NAV_ALL = ADMIN
+    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
+  var NAV = NAV_ALL.slice();
+  /** The menu in this person's order (anything new goes where it sits by default). */
+  function navOrder() {
+    var want = ((S.data && S.data.menuOrder) || []).filter(function (x) { return NAV_ALL.some(function (n) { return n[0] === x; }); });
+    var keys = NAV_ALL.map(function (n) { return n[0]; });
+    keys.forEach(function (x, i) { if (want.indexOf(x) >= 0) return; var before = i > 0 ? want.indexOf(keys[i - 1]) : -1; want.splice(before + 1, 0, x); });
+    NAV = want.map(function (x) { return NAV_ALL.filter(function (n) { return n[0] === x; })[0]; });
+  }
   // Settings is a button at the bottom of Home, so the bottom bar stays at five. The back-end parts are admin-only.
   function homeGear() {
     return h('div', { class: 'home-gear' }, btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
@@ -12166,6 +12606,7 @@ var Kit = (function () {
   }
 
   function renderNav() {
+    navOrder();
     viewSwitch();
     var nav = $('#nav');
     nav.textContent = '';
@@ -12217,6 +12658,7 @@ var Kit = (function () {
         h('span', { class: 'menu-ic' }, icon(n[2], here), c ? h('span', { class: 'nav-badge', text: String(c) }) : null), h('span', { class: 'menu-l', text: n[1] })));
     });
     pop.appendChild(grid);
+    pop.appendChild(h('div', { class: 'menu-foot' }, btn('text', 'Arrange', { sm: true, icon: 'swap_vert', onclick: function () { close(); setTimeout(openMenuOrder, 180); } })));
     document.body.append(scrim, pop);
     document.addEventListener('keydown', esc);
     var first = pop.querySelector('.menu-item.here') || pop.querySelector('.menu-item'); if (first) first.focus({ preventScroll: true });
@@ -12982,7 +13424,7 @@ var Kit = (function () {
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, mentors: viewMentors, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, notes: viewNotes, mentors: viewMentors, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
     if (S.view === 'home' || !S.view) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -13385,19 +13827,32 @@ var Kit = (function () {
   }
   /** Her home page, in her order: move any section up or down. */
   function openHomeOrder() {
-    var order = homeOrder(), dirty = false;
+    var HO_ICON = { plan: 'flag', cover: 'palette', inspo: 'favorite', needs: 'help', waiting: 'hourglass_top', todo: 'fact_check', website: 'language', review: 'perm_media', actions: 'add', glance: 'insights' };
+    arrangeSheet({ title: 'Arrange your home page', intro: 'Hold the dotted handle on the right of a card and drag it to where you want it. Sections with nothing in them stay hidden.',
+      order: homeOrder(), defaults: HOME_DEFAULT, label: function (k) { return k === 'needs' ? 'Questions from ' + adminName() : HOME_SECTIONS[k]; }, icon: function (k) { return HO_ICON[k] || 'home'; },
+      save: function (order) { return api('saveHomeOrder', order); }, done: 'Your home page is in your order.' });
+  }
+  /** The menu, in her own order (each person has their own). */
+  function openMenuOrder() {
+    var all = NAV_ALL.slice(), byK = {}; all.forEach(function (n) { byK[n[0]] = n; });
+    arrangeSheet({ title: 'Arrange the menu', intro: 'Hold the dotted handle on the right and drag each one to where you want it. The first ones are nearest to hand.',
+      order: NAV.map(function (n) { return n[0]; }), defaults: all.map(function (n) { return n[0]; }), label: function (k) { return byK[k][1]; }, icon: function (k) { return byK[k][2]; },
+      save: function (order) { return api('saveMenuOrder', order); }, done: 'The menu is in your order.' });
+  }
+  /** A list to put in her own order: hold the handle, drag, Save. o: title, intro, order, defaults, label(k), icon(k), save(order) → promise, done (toast). */
+  function arrangeSheet(o) {
+    var order = o.order.slice(), dirty = false;
     K.sheet({
-      title: 'Arrange your home page', guard: function () { return dirty; },
+      title: o.title, guard: function () { return dirty; },
       build: function (ctl) {
-        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: 'Hold the dotted handle on the right of a card and drag it to where you want it. Sections with nothing in them stay hidden.' }));
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px;color:var(--on-surface-variant)', text: o.intro }));
         var list = h('div', { class: 'ho-list' });
-        var HO_ICON = { plan: 'flag', cover: 'palette', inspo: 'favorite', needs: 'help', waiting: 'hourglass_top', todo: 'fact_check', website: 'language', review: 'perm_media', actions: 'add', glance: 'insights' };
         function draw() {
           list.textContent = '';
           order.forEach(function (k) {
-            var label = k === 'needs' ? 'Questions from ' + adminName() : HOME_SECTIONS[k];
+            var label = o.label(k);
             var card = h('div', { class: 'ho-card', dataset: { k: k }, role: 'listitem', 'aria-label': label },
-              h('span', { class: 'ho-ic' }, icon(HO_ICON[k] || 'home')), h('span', { class: 'grow ho-t', text: label }), h('span', { class: 'ho-grip', 'aria-label': 'Drag to move', title: 'Drag to move' }, icon('drag_indicator')));
+              h('span', { class: 'ho-ic' }, icon(o.icon(k))), h('span', { class: 'grow ho-t', text: label }), h('span', { class: 'ho-grip', 'aria-label': 'Drag to move', title: 'Drag to move' }, icon('drag_indicator')));
             list.appendChild(card);
             pickUp(card);
           });
@@ -13429,11 +13884,11 @@ var Kit = (function () {
         }
         draw();
         ctl.body.appendChild(list);
-        ctl.body.appendChild(h('div', { style: 'margin-top:12px;text-align:center' }, btn('text', 'Back to the usual order', { icon: 'restart_alt', onclick: function () { order = HOME_DEFAULT.slice(); dirty = true; draw(); } })));
+        ctl.body.appendChild(h('div', { style: 'margin-top:12px;text-align:center' }, btn('text', 'Back to the usual order', { icon: 'restart_alt', onclick: function () { order = o.defaults.slice(); dirty = true; draw(); } })));
         var save = btn('filled', 'Save this order', { icon: 'check', lg: true, block: true });
         save.addEventListener('click', function () {
           K.setBusy(save, true);
-          api('saveHomeOrder', order).then(refresh).then(function () { dirty = false; K.haptic('success'); ctl.close(); render(); toast('Your home page is in your order.'); })
+          o.save(order).then(refresh).then(function () { dirty = false; K.haptic('success'); ctl.close(); render(); toast(o.done); })
             .catch(function (e) { K.setBusy(save, false); fail(e); });
         });
         ctl.foot.appendChild(save);
@@ -13539,7 +13994,8 @@ var Kit = (function () {
   }
 
   function viewIdeas(main) {
-    var tab = ['goals', 'talk', 'products', 'notebook', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = tab === 'notebook', T = talkData();
+    if (S.ideasTab === 'notebook') { S.ideasTab = 'ideas'; S.view = 'notes'; render(); return; }
+    var tab = ['goals', 'talk', 'products', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = false, T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
     pageTitle(main, 'Ideas', tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
@@ -13547,9 +14003,8 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: tab, fit: true, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
       options: [{ value: 'goals', label: 'Goals' }, { value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
-        { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }, { value: 'notebook', label: 'Notes' }]
+        { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }]
     })), 1));
-    if (nb) return viewNotebook(main);
     if (tab === 'goals') return viewGoals(main);
     if (tab === 'talk') return viewTalk(main);
     if (tab === 'products') return viewProducts(main);
@@ -15073,7 +15528,6 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ Notebook (making and expanding ideas)
   function notesFor(ideaId) { return S.data.notebook.filter(function (n) { return n.ideaId === ideaId; }); }
-  function noteSnippet(n) { return String(n.body || '').replace(/\[\[([^\[\]|]+)(?:\|([^\[\]]*))?\]\]/g, function (m, a, b) { return b || a; }).replace(/\s+/g, ' ').trim().slice(0, 140); }
   function ago(iso) {
     var d = (Date.now() - Date.parse(iso)) / 60000;
     if (!isFinite(d)) return '';
@@ -15097,309 +15551,604 @@ var Kit = (function () {
         n.expandStatus === 'Queued' || n.expandStatus === 'Expanding' ? chip('Thinking', 'pending', 'hourglass_top') : null));
   }
 
-  function viewNotebook(main) {
-    var pbn = privacyBar();
-    if (pbn) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pbn), 1));
-    if (isLocked() && !S.data.notebook.some(function (n) { return !n.locked; })) return;
-    var listEl = h('div');
+  // ------------------------------------------------------------------ Notes: a place to keep things, like Samsung Notes
+  // Folders, colours, pins and search; checklists, headings, bold and highlight; photos, drawings and voice memos.
+  // A note is never used for anything until she taps "Turn into…" (LogicNoteTurn.gs).
+  var NOTE_COLOURS = { '': '#FFFFFF', yellow: '#FFF4C2', green: '#DDF2D8', blue: '#DCEBFA', pink: '#FADDE6', purple: '#E9DFF7', orange: '#FDE3CC', grey: '#ECEAE6' };
+  var NOTE_COLOUR_NAMES = { '': 'White', yellow: 'Yellow', green: 'Green', blue: 'Blue', pink: 'Pink', purple: 'Purple', orange: 'Orange', grey: 'Grey' };
+  /** "Open a note": the Notes page, with that note (or a new one) open. */
+  function openNote(id, preset) {
+    S.noteId = id || 'new'; S.notePreset = preset || null; S.noteDraft = null;
+    if (S.view !== 'notes') go('notes'); else render();
+  }
+  function noteSnippet(n) {
+    return String(n.body || '').replace(/\[\[([^\[\]|]+)(?:\|([^\[\]]*))?\]\]/g, function (m, a, b) { return b || a; }).replace(/!?\[[^\]]*\]\(att:[\w-]+\)/g, '')
+      .replace(/^\s*\[(x| )\]\s+/gim, '').replace(/^#+\s+/gm, '').replace(/[*=]{2}/g, '').replace(/\s+/g, ' ').trim().slice(0, 140);
+  }
+  function viewNotes(main) {
+    if (S.noteId) { noteEditor(main); return; }
+    pageTitle(main, 'Notes', 'Anything you want to keep: lists, thoughts, photos, sketches and voice memos. Nothing here is used for anything until you tap “Turn into…”.');
+    var pb = privacyBar(); if (pb) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, pb), 1));
+    var all = (S.data.notebook || []).filter(function (n) { return !n.locked; }), folders = (S.data.noteFolders || []).slice();
+    all.forEach(function (n) { if (n.folder && folders.indexOf(n.folder) < 0) folders.push(n.folder); });
+    if (S.noteFolder && folders.indexOf(S.noteFolder) < 0) S.noteFolder = '';
+    var search = K.textField({ label: 'Search your notes', compact: true, value: S.noteQuery || '', onInput: function (v) { S.noteQuery = v; draw(); } });
+    var tools = h('div', { class: 'nt-tools' }, h('div', { class: 'grow' }, search),
+      K.iconBtn(S.noteGrid === false ? 'grid_view' : 'view_agenda', S.noteGrid === false ? 'Show as a grid' : 'Show as a list', function () { S.noteGrid = S.noteGrid === false; render(); }));
+    var fr = h('div', { class: 'filter-row nt-folders' });
+    [['', 'All notes']].concat(folders.map(function (f) { return [f, f]; })).forEach(function (f) {
+      var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String((S.noteFolder || '') === f[0]) }, f[0] ? icon('folder_open') : null, f[1]);
+      b.addEventListener('click', function () { if ((S.noteFolder || '') === f[0] && f[0]) { folderMore(f[0]); return; } S.noteFolder = f[0]; render(); });
+      fr.appendChild(b);
+    });
+    fr.appendChild(h('button', { type: 'button', class: 'choice press soft', 'aria-label': 'New folder', onclick: function () {
+      K.ask({ title: 'A new folder', label: 'Its name', maxlength: 40, confirmLabel: 'Make it' }).then(function (v) { if (v) api('saveNoteFolder', v).then(refresh).then(function () { S.noteFolder = v.trim(); render(); }).catch(fail); });
+    } }, icon('create_new_folder'), 'Folder'));
+    main.appendChild(rise(h('div', { class: 'nt-top' }, tools, fr), 2));
+    var box = h('div');
+    main.appendChild(rise(box, 3));
     function draw() {
       var q = (S.noteQuery || '').trim().toLowerCase();
-      var shown = S.data.notebook.filter(function (n) {
-        if (S.noteFilter === 'loose' && n.ideaId) return false;
-        return !q || (n.title + ' ' + n.body).toLowerCase().indexOf(q) >= 0;
-      });
-      listEl.textContent = '';
-      if (!shown.length) {
-        listEl.appendChild(emptyState('sticky_note_2', S.data.notebook.length ? 'No notes match' : 'No notes yet',
-          'Jot an idea down however it comes, then tap Expand to grow it.'));
-        return;
+      var shown = all.filter(function (n) { return (!S.noteFolder || n.folder === S.noteFolder) && (!q || (n.title + ' ' + n.body + ' ' + (n.folder || '')).toLowerCase().indexOf(q) >= 0); });
+      box.textContent = '';
+      if (!shown.length) { box.appendChild(emptyState('sticky_note_2', all.length ? 'Nothing matches' : 'No notes yet', all.length ? 'Try another word, or another folder.' : 'Tap “New note” to write something down. It’s just for keeping.')); return; }
+      var pinned = shown.filter(function (n) { return n.pinned; }), rest = shown.filter(function (n) { return !n.pinned; });
+      function group(label, items) {
+        if (!items.length) return;
+        if (label) box.appendChild(h('div', { class: 'label-m nt-group', text: label }));
+        var g = h('div', { class: S.noteGrid === false ? 'nt-list' : 'nt-grid' });
+        items.forEach(function (n) { g.appendChild(noteCard(n)); });
+        box.appendChild(g);
       }
-      var l = h('div', { class: 'list' });
-      shown.forEach(function (n) { l.appendChild(noteRow(n)); });
-      listEl.appendChild(l);
+      group(pinned.length ? 'Pinned' : '', pinned); group(pinned.length && rest.length ? 'Others' : '', rest);
     }
-    main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.textField({ label: 'Search notes', compact: true, value: S.noteQuery || '',
-      onInput: function (v) { S.noteQuery = v; draw(); } })), 2));
-    main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({
-      row: true, label: 'Show', value: S.noteFilter || 'all',
-      options: [{ value: 'all', label: 'All notes' }, { value: 'loose', label: 'Not in an idea yet' }],
-      onChange: function (v) { S.noteFilter = v; draw(); }
-    })), 2));
     draw();
-    main.appendChild(rise(listEl, 3));
-    fab(main, 'New note', 'edit_note', function () { openNote(null); });
+    fab(main, 'New note', 'edit_note', function () { openNote(null, { folder: S.noteFolder || '' }); });
   }
-
-  /** The note sheet: write, link, expand with Claude, keep suggestions, make it an idea, history. */
-  function openNote(id, preset) {
-    var n = id ? byId(S.data.notebook, id) : null;
-    preset = preset || {};
-    var f = { title: n ? n.title : (preset.title || ''), body: n ? n.body : (preset.body || ''), ideaId: n ? n.ideaId : (preset.ideaId || '') };
-    var revision = n ? n.revision : 0, dirty = false, poll = null;
-    function reopen(nid) { K.swap(ctlRef, function () { openNote(nid); }, true); }
-    var ctlRef = null;
-
-    function save() {
-      return api('saveNote', { id: n ? n.id : '', revision: revision, title: f.title, body: f.body, ideaId: f.ideaId })
-        .then(function (r) { dirty = false; revision = r.revision; return refresh().then(function () { return r; }); });
-    }
-
-    K.sheet({
-      title: n ? n.title : 'New note', tall: true, guard: function () { return dirty; },
-      onClose: function () { if (poll) clearInterval(poll); render(); },
-      build: function (ctl) {
-        if (n) {
-          var ex0 = n.expansion || {}, qs0 = (ex0.questions || []).filter(function (q) { return !(q && q.answer); });
-          ctl.body.appendChild(tldr([
-            firstBit(ex0.summary || n.body, 90),
-            qs0.length ? qs0.length + ' question' + (qs0.length === 1 ? '' : 's') + ' to answer below' : ex0.nextStep ? 'Next: ' + firstBit(ex0.nextStep, 80) : '',
-            (n.links.length + n.backlinks.length) ? (n.links.length + n.backlinks.length) + ' linked note' + (n.links.length + n.backlinks.length === 1 ? '' : 's') : ''
-          ]));
-        }
-        ctlRef = ctl;
-        var title = K.textField({ label: 'Title', maxlength: 120, value: f.title, onInput: function (v) { f.title = v; dirty = true; } });
-        var body = K.textField({ label: 'Write freely', multiline: true, maxlength: 20000, value: f.body, onInput: function (v) { f.body = v; dirty = true; suggest(); } });
-        body.input.classList.add('note-body');
-        var hint = h('div', { class: 'link-hint' });
-
-        // [[ … typed: offer matching notes as chips
-        function suggest() {
-          hint.textContent = '';
-          var el = body.input, before = el.value.slice(0, el.selectionStart || 0), m = /\[\[([^\[\]\n|]{0,40})$/.exec(before);
-          if (!m) return;
-          var q = m[1].toLowerCase();
-          var hits = S.data.notebook.filter(function (x) { return (!n || x.id !== n.id) && x.title.toLowerCase().indexOf(q) >= 0; }).slice(0, 6);
-          hits.forEach(function (x) { hint.appendChild(chipBtn(x.title, function () { insertLink(x.title, m[0].length); })); });
-          if (m[1].trim() && !hits.some(function (x) { return x.title.toLowerCase() === q.trim(); })) {
-            hint.appendChild(chipBtn('New note: ' + m[1].trim(), function () { insertLink(m[1].trim(), m[0].length); }));
-          }
-        }
-        function chipBtn(label, fn) { return h('button', { type: 'button', class: 'choice press soft', onclick: fn, text: label }); }
-        function insertLink(name, typed) {
-          var el = body.input, at = el.selectionStart || el.value.length, start = at - (typed || 0);
-          el.value = el.value.slice(0, start) + '[[' + name + ']]' + el.value.slice(at);
-          var pos = start + name.length + 4;
-          el.setSelectionRange(pos, pos); el.focus();
-          f.body = el.value; dirty = true; hint.textContent = '';
-        }
-        var linkBtn = btn('text', 'Link another note', { sm: true, icon: 'link', onclick: function () {
-          var others = S.data.notebook.filter(function (x) { return !n || x.id !== n.id; });
-          if (!others.length) { toast('Make another note first, or type [[ and a new name.'); return; }
-          K.sheet({ title: 'Link a note', build: function (c2) {
-            var l = h('div', { class: 'list' });
-            others.forEach(function (x) {
-              l.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { c2.close(); insertLink(x.title, 0); } },
-                h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.title }), h('div', { class: 'li-sup', text: noteSnippet(x) }))));
-            });
-            c2.body.appendChild(l);
-          } });
-        } });
-
-        var ideaOpts = [{ value: 'none', label: 'Not part of an idea yet' }].concat(S.data.ideas.map(function (x) { return { value: x.id, label: x.title }; }));
-        var s1 = sheetSection('');
-        s1.appendChild(h('div', { class: 'field-gap' }, title, body, hint,
-          h('div', { class: 'row', style: 'justify-content:space-between;flex-wrap:wrap;gap:4px' }, linkBtn,
-            h('span', { class: 'label-s', text: 'Tip: tap the microphone on your keyboard to speak' })),
-          K.pickField({ label: 'Belongs to', value: f.ideaId || 'none', options: ideaOpts, onChange: function (v) { f.ideaId = v === 'none' ? '' : v; dirty = true; } })));
-        // a note of questions: asked the Talk it through way, with answers to tap
-        if (n && /\?/.test(n.body || '')) s1.appendChild(h('div', { style: 'margin-top:10px' }, btn('tonal', ADMIN ? 'Ask ' + artist() + ' these as questions' : 'Answer these as questions', { icon: 'forum', block: true, onclick: function (e) {
-          if (dirty) { toast('Save first.'); return; }
-          var b = e.currentTarget; K.setBusy(b, true);
-          api('noteToQuestions', n.id).then(function (r) { return refresh().then(function () { return r; }); }).then(function (r) {
-            ctl.close(); render();
-            if (r.forArtist) toast('Sent to ' + artist() + '. She’ll get them in Talk, with answers to tap.');
-            else setTimeout(function () { openTopic(r.id); }, 260);
-          }).catch(function (err) { K.setBusy(b, false); fail(err); });
-        } })));
-        ctl.body.appendChild(s1);
-
-        if (n) {
-          // Connections
-          var s2 = sheetSection('Connections');
-          function noteChip(nid) {
-            var x = byId(S.data.notebook, nid);
-            return x ? h('button', { type: 'button', class: 'choice press soft', onclick: function () { if (dirty) { toast('Save first.'); return; } reopen(nid); } }, icon('sticky_note_2'), x.title) : null;
-          }
-          var conn = h('div', { class: 'field-gap' });
-          if (n.links.length) conn.appendChild(h('div', {}, h('div', { class: 'label-s', text: 'Links to' }), h('div', { class: 'chip-wrap' }, n.links.map(noteChip))));
-          if (n.backlinks.length) conn.appendChild(h('div', {}, h('div', { class: 'label-s', text: 'Linked from' }), h('div', { class: 'chip-wrap' }, n.backlinks.map(noteChip))));
-          if (n.unresolved.length) {
-            conn.appendChild(h('div', {}, h('div', { class: 'label-s', text: 'Not made yet' }), h('div', { class: 'chip-wrap' }, n.unresolved.map(function (name) {
-              return h('button', { type: 'button', class: 'choice press soft', onclick: function () { K.swap(ctl, function () { openNote(null, { title: name, ideaId: n.ideaId }); }, true); } }, icon('add'), name);
-            }))));
-          }
-          if (!conn.children.length) conn.appendChild(note('Type [[ and a note’s name to link it. Links show up on both notes.', 'link'));
-          s2.appendChild(conn);
-          ctl.body.appendChild(s2);
-
-          // Claude
-          var ai = S.data.ai || {}, s3 = sheetSection('Thoughts on this note');
-          var thinking = n.expandStatus === 'Queued' || n.expandStatus === 'Expanding';
-          if (thinking) {
-            var onPc = n.expandRoute === 'local', also = n.links.length + n.backlinks.length ? ' and the notes linked to it' : '';
-            s3.appendChild(!ADMIN ? note('Working on it' + also + '. Usually under a minute.', 'auto_awesome') : note(onPc
-              ? 'The PC is thinking about this note' + also + '.' + (ai.pcOnline ? ' It usually takes under a minute.' : ' The PC hasn’t checked in lately' + (ai.fallbackMins && ai.claude ? ', so Claude will take it if it’s not picked up within ' + ai.fallbackMins + ' minutes.' : '; it will be done when the PC is back on.'))
-              : 'Claude is thinking about this note' + also + '. It usually takes under a minute.' + (n.expandWhy && n.expandWhy !== 'Asked for Claude' ? ' Sent to Claude because: ' + n.expandWhy + '.' : ''), onPc ? 'computer' : 'hourglass_top'));
-            poll = setInterval(function () {
-              refresh().then(function () {
-                var now = byId(S.data.notebook, n.id);
-                if (now && now.expandStatus !== n.expandStatus && !dirty) { clearInterval(poll); reopen(n.id); }
-              }).catch(function () {});
-            }, 4000);
-          } else if (n.expandStatus === 'Failed') {
-            s3.appendChild(note(ADMIN ? n.expandNote || 'Claude couldn’t finish this one.' : 'That one didn’t come through. Try again.', 'error', 'warn'));
-          }
-          var ex = n.expansion;
-          if (ex) s3.appendChild(expansionCard(n, ex, ctl));
-          if (!thinking) {
-            var local = ai.localFirst;
-            function run(b, method) {
-              if (method === 'askClaude' || !local) { if (!ai.claude) { toast(ADMIN ? 'Claude isn’t switched on yet (setup guide, step 8).' : 'Expanding isn’t available right now.', 'error'); return; } }
-              K.setBusy(b, true);
-              (dirty ? save() : Promise.resolve()).then(function () { return api(method, n.id); })
-                .then(refresh).then(function () { reopen(n.id); })
-                .catch(function (e) { K.setBusy(b, false); fail(e); });
-            }
-            var expand = btn(ex ? 'tonal' : 'filled', ex ? 'Expand again' : local || !ADMIN ? 'Expand this idea' : 'Expand with Claude', { icon: 'auto_awesome', block: true });
-            expand.addEventListener('click', function () { run(expand, 'expandNote'); });
-            var row = h('div', { class: 'field-gap', style: 'margin-top:12px' }, expand);
-            var fromPc = ex && /^PC/.test(ex.by || '');
-            if (local && ai.claude && (fromPc || !ex)) {
-              var claudeBtn = btn('outlined', ADMIN ? 'Ask Claude instead' : 'Go deeper', { icon: 'auto_awesome', block: true });
-              claudeBtn.addEventListener('click', function () { run(claudeBtn, 'askClaude'); });
-              row.appendChild(claudeBtn);
-            }
-            s3.appendChild(row);
-            if (!ex) s3.appendChild(h('p', { class: 'label-s', style: 'margin:8px 4px 0', text: !ADMIN ? 'Turns your note into goals, questions and a next step. Your words stay as you wrote them.' : (local
-              ? 'The PC’s own model reads this note and the ones linked to it first, free. Anything about prices, suppliers or rules, or that it isn’t sure of, goes on to Claude. '
-              : 'Claude reads this note and the ones linked to it. ') + 'It sorts goals from guesses, asks what it needs to, and suggests a next step. Your words stay as you wrote them.' }));
-          }
-          ctl.body.appendChild(s3);
-
-          // More
-          var s4 = sheetSection('More');
-          var more = h('div', { class: 'field-gap' });
-          if (!n.ideaId) more.appendChild(btn('outlined', 'Make it an idea', { icon: 'lightbulb', block: true, onclick: function (e) { makeIdea(n, e.currentTarget, ctl); } }));
-          else more.appendChild(btn('text', 'Open the idea', { icon: 'lightbulb', block: true, onclick: function () { K.swap(ctl, function () { openIdea(n.ideaId); }); } }));
-          more.appendChild(btn('text', 'Earlier versions', { icon: 'history', block: true, onclick: function () { openHistory(n, ctl); } }));
-          more.appendChild(btn('text', 'Remove note', { icon: 'delete', block: true, danger: true, onclick: function () {
-            K.confirm({ title: 'Remove this note?', text: ADMIN ? 'Links to it will show as not made yet. The earlier versions are kept in the Sheet.' : 'It will be gone from your notebook.', confirmLabel: 'Remove', danger: true })
-              .then(function (yes) { if (yes) api('deleteNote', n.id).then(refresh).then(function () { dirty = false; ctl.close(); render(); binUndo('Note deleted.', 'note', n.id); }).catch(fail); });
-          } }));
-          s4.appendChild(more);
-          ctl.body.appendChild(s4);
-        }
-
-        var saveBtn = btn('filled', n ? 'Save' : 'Save note', { icon: 'check', lg: true, block: true });
-        saveBtn.addEventListener('click', function () {
-          if (!f.title.trim() && !f.body.trim()) { toast('Write something first.'); body.input.focus(); return; }
-          K.setBusy(saveBtn, true);
-          save().then(function (r) {
-            K.haptic('success');
-            if (r.unresolved && r.unresolved.length) toast('Saved. ' + r.unresolved.length + ' link' + (r.unresolved.length === 1 ? ' is' : 's are') + ' to notes not made yet.');
-            else toast('Saved.');
-            reopen(r.id);
-          }).catch(function (e) { K.setBusy(saveBtn, false); fail(e); });
-        });
-        ctl.foot.appendChild(saveBtn);
-      }
-    });
-  }
-
-  /** The questions about a note: each with answers to tap (or your own words); an answer is added to the note. */
-  function noteQuestions(n, ex, ctl) {
-    var qs = (ex.questions || []).map(function (q) { return typeof q === 'string' ? { question: q, options: [] } : q; });
-    if (!qs.length) return null;
-    var box = h('div', { class: 'ex-block' }, h('div', { class: 'label-s' }, icon('forum'), 'Questions for you'));
-    qs.forEach(function (q, i) {
-      var c = h('div', { class: 'ex-q' }, h('div', { class: 'body-m', style: 'font-weight:500;margin-bottom:6px', text: q.question }));
-      if (q.answer) { c.appendChild(h('div', { class: 'body-m', text: '→ ' + q.answer })); box.appendChild(c); return; }
-      function send(text) {
-        api('answerNoteQuestion', n.id, i, text).then(refresh).then(function () { K.haptic('success'); toast('Added to the note.'); K.swap(ctl, function () { openNote(n.id); }); }).catch(fail);
-      }
-      var opts = (q.options && q.options.length >= 2 ? q.options : ['Yes', 'Not yet']).slice(0, 2);
-      var own = '';
-      c.appendChild(h('div', { class: 'chip-wrap' }, opts.map(function (o) { return h('button', { type: 'button', class: 'choice press soft', onclick: function () { send(o); } }, o); })));
-      c.appendChild(h('div', { class: 'row', style: 'gap:8px;align-items:flex-end;margin-top:6px' },
-        h('div', { class: 'grow' }, K.textField({ label: 'Or in your own words', compact: true, maxlength: 1000, onInput: function (v) { own = v; } })),
-        btn('text', 'Add', { sm: true, onclick: function () { if (own.trim()) send(own); else toast('Write a few words first.'); } })));
-      box.appendChild(c);
-    });
-    return box;
-  }
-
-  function expansionCard(n, ex, ctl) {
-    function block(label, items, iconName) {
-      if (!items || !items.length) return null;
-      return h('div', { class: 'ex-block' }, h('div', { class: 'label-s' }, icon(iconName), label),
-        h('ul', {}, items.map(function (x) { return h('li', { text: x }); })));
-    }
-    var card = h('div', { class: 'card pad expansion' },
-      ex.summary ? h('p', { class: 'body-m ex-summary', text: ex.summary }) : null,
-      block('What you’re after', ex.goals, 'flag'),
-      block('Worth checking first', ex.guesses, 'help'),
-      noteQuestions(n, ex, ctl),
-      ex.nextStep ? h('div', { class: 'ex-next' }, h('div', { class: 'label-s' }, icon('directions_walk'), 'One next step'), h('p', { class: 'body-m', text: ex.nextStep })) : null);
-    if (ex.notes && ex.notes.length) {
-      var ns = h('div', { class: 'ex-block' }, h('div', { class: 'label-s' }, icon('sticky_note_2'), 'Notes it suggests'));
-      ex.notes.forEach(function (s, i) {
-        var keep = s.kept
-          ? h('div', { style: 'margin-top:8px' }, chip('Kept as a note', 'approved', 'check'))
-          : h('div', { style: 'margin-top:8px' }, btn('tonal', 'Keep as a note', { sm: true, icon: 'add', onclick: function (e) {
-            var b = e.currentTarget; K.setBusy(b, true);
-            api('keepSuggestion', n.id, i).then(refresh).then(function () { K.haptic('success'); toast('Kept, and linked from this note.'); K.swap(ctl, function () { openNote(n.id); }); })
-              .catch(function (err) { K.setBusy(b, false); fail(err); });
-          } }));
-        ns.appendChild(h('div', { class: 'ex-suggest' }, h('div', { class: 'title-m', text: s.title }), h('p', { class: 'body-m', text: s.body }), keep));
-      });
-      card.appendChild(ns);
-    }
-    var nx = h('div', { class: 'ex-block' }, h('div', { class: 'label-s' }, icon('alt_route'), 'What next?'), h('div', { class: 'chip-wrap' },
-      h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { makeIdea(n, e.target.closest('button'), ctl); } }, icon('lightbulb'), 'Make it an idea'),
-      h('button', { type: 'button', class: 'choice press soft', onclick: function () {
-        api('startTopic', { title: n.title, detail: String(n.body || '').slice(0, 1800) }).then(function (r) { return refresh().then(function () { return r; }); })
-          .then(function (r) { render(); K.swap(ctl, function () { openTopic(r.id); }); }).catch(fail);
-      } }, icon('forum'), 'Talk it through'),
-      h('button', { type: 'button', class: 'choice press soft', onclick: function () {
-        api('addDirection', { title: n.title, body: String(n.body || '').slice(0, 4000) }).then(refresh).then(function () { toast('Added to Our direction.'); }).catch(fail);
-      } }, icon('explore'), 'Add to Our direction')));
-    card.appendChild(nx);
-    if (n.expandedAt) card.appendChild(h('div', { class: 'label-s', style: 'margin-top:10px;opacity:.7', text: (ADMIN ? 'From ' + (ex.by || 'Claude') + ' · ' : '') + ago(n.expandedAt) + ' · kept separate from your note' }));
-    return card;
-  }
-
-  function makeIdea(n, b, ctl) {
-    K.sheet({ title: 'What kind of idea?', build: function (c2) {
-      c2.body.appendChild(h('p', { class: 'body-m', style: 'margin-bottom:12px', text: '“' + n.title + '” becomes an idea' + (S.data.features.research ? ' and gets researched' : '') + '. The note stays with it.' }));
-      S.data.options.kinds.forEach(function (k) {
-        c2.body.appendChild(h('div', { style: 'margin-bottom:8px' }, btn('tonal', k, { block: true, icon: KIND_ICON[k] || 'category', onclick: function (e) {
-          K.setBusy(e.currentTarget, true);
-          api('noteToIdea', n.id, k).then(refresh).then(function (r) {
-            c2.close(); ctl.close(); K.haptic('success');
-            toast(S.data.features.research ? 'It’s an idea now, and being researched.' : 'It’s an idea now.');
-          }).catch(function (err) { K.setBusy(e.target.closest('button'), false); fail(err); });
-        } })));
-      });
+  function folderMore(name) {
+    K.sheet({ title: name, build: function (ctl) {
+      var acts = h('div', { class: 'next-opts' });
+      function a(ic, label, why, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null))); }
+      a('edit', 'Rename the folder', '', function () { K.ask({ title: 'The folder’s name', label: 'Name', value: name, maxlength: 40, confirmLabel: 'Save' }).then(function (v) { if (v) api('saveNoteFolder', v, name).then(refresh).then(function () { S.noteFolder = v.trim(); render(); }).catch(fail); }); });
+      a('folder_open', 'Remove the folder', 'Its notes stay, in All notes.', function () { api('deleteNoteFolder', name).then(refresh).then(function () { S.noteFolder = ''; render(); toast('Folder removed. Its notes are in All notes.'); }).catch(fail); });
+      ctl.body.appendChild(acts);
     } });
   }
+  /** A note as a card: its colour, title, the start of it (lists show their ticks), and what's in it. */
+  function noteCard(n) {
+    var body = String(n.body || ''), lines = body.split('\n').filter(function (l) { return l.trim() && !/^!?\[[^\]]*\]\(att:/.test(l.trim()); });
+    if (lines.length && noteSnippet({ body: lines[0] }) === n.title) lines.shift();
+    lines = lines.slice(0, 6);
+    var prev = h('div', { class: 'nt-prev' });
+    lines.forEach(function (l) {
+      var m = /^\s*\[(x| )\]\s+(.*)$/i.exec(l);
+      if (m) prev.appendChild(h('div', { class: 'nt-pl chk' + (m[1] === 'x' ? ' done' : '') }, icon(m[1] === 'x' ? 'check_box' : 'check_box_outline_blank'), h('span', { text: noteSnippet({ body: m[2] }) })));
+      else prev.appendChild(h('div', { class: 'nt-pl', text: noteSnippet({ body: l }) }));
+    });
+    var has = { photo: /!\[photo\]\(att:/.test(body), drawing: /!\[drawing\]\(att:/.test(body), voice: /\[voice\]\(att:/.test(body) };
+    var made = (n.madeInto || []).length;
+    return h('button', { type: 'button', class: 'nt-card press soft', style: 'background:' + (NOTE_COLOURS[n.colour] || '#fff'), onclick: function () { openNote(n.id); } },
+      h('div', { class: 'nt-ct' }, n.pinned ? icon('push_pin') : null, h('b', { text: n.title })), prev,
+      h('div', { class: 'nt-meta' }, h('span', { text: ago(n.updated) }), n.folder && !S.noteFolder ? h('span', { class: 'nt-fold', text: n.folder }) : null, h('span', { class: 'grow' }),
+        has.photo ? icon('image') : null, has.drawing ? icon('draw') : null, has.voice ? icon('mic') : null, made ? h('span', { class: 'nt-made', title: 'Turned into something' }, icon('auto_awesome')) : null));
+  }
 
-  function openHistory(n, ctl) {
-    api('noteHistory', n.id).then(function (versions) {
-      K.sheet({ title: 'Earlier versions', tall: true, build: function (c2) {
-        if (!versions.length) { c2.body.appendChild(note('No earlier versions yet. One is kept every time the note is saved.', 'history')); return; }
-        versions.forEach(function (v) {
-          c2.body.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
-            h('div', { class: 'row', style: 'justify-content:space-between' }, h('div', { class: 'title-m', text: v.title }),
-              h('span', { class: 'label-s', text: (v.savedBy ? v.savedBy + ' · ' : '') + K.dateLabel(v.saved) })),
-            h('p', { class: 'body-m', style: 'white-space:pre-wrap;margin:6px 0 10px;max-height:9em;overflow:hidden', text: v.body }),
-            btn('text', 'Bring this version back', { sm: true, icon: 'restore', onclick: function (e) {
-              K.setBusy(e.currentTarget, true);
-              api('restoreVersion', n.id, v.id).then(refresh).then(function () { c2.close(); ctl.close(); toast('Brought back. The version before is kept too.'); setTimeout(function () { openNote(n.id); }, 300); })
-                .catch(fail);
-            } })));
+  // ---------- the note itself
+  /** Her note's words as the editor shows them (and back again): a few marks only, so it stays plain text underneath. */
+  function noteInline(el, s) {
+    String(s || '').split(/(\*\*[^*]+\*\*|==[^=]+==|\*[^*\s][^*]*\*)/).forEach(function (p) {
+      if (!p) return;
+      var b = /^\*\*([^*]+)\*\*$/.exec(p), m = /^==([^=]+)==$/.exec(p), i = /^\*([^*]+)\*$/.exec(p);
+      el.appendChild(b ? h('b', { text: b[1] }) : m ? h('mark', { text: m[1] }) : i ? h('i', { text: i[1] }) : document.createTextNode(p));
+    });
+  }
+  function noteBlocks(md, files) {
+    var frag = document.createDocumentFragment(), list = null;
+    String(md || '').split('\n').forEach(function (l) {
+      var m;
+      if ((m = /^\s*([-*•]|\d+[.)])\s+(.*)$/.exec(l)) && !/^\s*\[( |x)\]/i.test(l)) {
+        var ol = /\d/.test(m[1]);
+        if (!list || (list.tagName === 'OL') !== ol) { list = h(ol ? 'ol' : 'ul'); frag.appendChild(list); }
+        var li = h('li'); noteInline(li, m[2]); list.appendChild(li); return;
+      }
+      list = null;
+      if ((m = /^!\[(photo|drawing)\]\(att:([\w-]+)\)\s*$/.exec(l)) || (m = /^\[(voice)\]\(att:([\w-]+)\)\s*$/.exec(l))) { frag.appendChild(noteFigure(m[1], m[2], files)); return; }
+      if ((m = /^\s*\[( |x)\]\s?(.*)$/i.exec(l))) { frag.appendChild(noteCheck(m[1].toLowerCase() === 'x', m[2])); return; }
+      if ((m = /^#+\s+(.*)$/.exec(l))) { var hd = h('h3'); noteInline(hd, m[1]); frag.appendChild(hd); return; }
+      var d = h('div'); if (l) noteInline(d, l); else d.appendChild(h('br')); frag.appendChild(d);
+    });
+    return frag;
+  }
+  function noteCheck(done, words) {
+    var d = h('div', { class: 'nt-chk' + (done ? ' done' : '') });
+    d.appendChild(h('span', { class: 'nt-box', contenteditable: 'false', role: 'checkbox', 'aria-checked': String(done), 'aria-label': done ? 'Done' : 'Not done yet' }, icon(done ? 'check_box' : 'check_box_outline_blank')));
+    if (words) noteInline(d, words); else d.appendChild(h('br'));
+    return d;
+  }
+  function noteFigure(kind, id, files) {
+    var f = files && files[id], fig = h('figure', { class: 'nt-att ' + kind, contenteditable: 'false', dataset: { att: id, kind: kind } });
+    if (!f) fig.appendChild(h('span', { class: 'nt-att-wait', text: kind === 'voice' ? 'Voice memo' : 'Picture' }));
+    else if (kind === 'voice') { fig.append(h('div', { class: 'nt-voice' }, icon('mic'), h('audio', { controls: true, preload: 'metadata', src: f.data }))); if (f.transcript) fig.appendChild(h('figcaption', { text: f.transcript })); }
+    else fig.appendChild(h('img', { src: f.data, alt: kind === 'drawing' ? 'Your drawing' : 'Your photo' }));
+    return fig;
+  }
+  function noteMarkdown(ed) {
+    var out = [];
+    function inline(el) {
+      var s = '';
+      [].slice.call(el.childNodes).forEach(function (c) {
+        if (c.nodeType === 3) { s += c.nodeValue.replace(/ /g, ' ').replace(/\n/g, ' '); return; }
+        if (c.nodeType !== 1 || c.classList.contains('nt-box')) return;
+        var tg = c.tagName, inner = inline(c);
+        if (tg === 'BR') return;
+        if (!inner.trim()) { s += inner; return; }
+        if (tg === 'B' || tg === 'STRONG' || (tg === 'SPAN' && /font-weight:\s*(bold|[6-9]00)/.test(c.getAttribute('style') || ''))) s += '**' + inner + '**';
+        else if (tg === 'MARK' || (tg === 'SPAN' && /background/.test(c.getAttribute('style') || ''))) s += '==' + inner + '==';
+        else if (tg === 'I' || tg === 'EM') s += '*' + inner + '*';
+        else s += inner;
+      });
+      return s.replace(/\*\*\*\*|====/g, '');
+    }
+    function block(el) {
+      if (el.nodeType === 3) { if (el.nodeValue.trim()) out.push(el.nodeValue.replace(/ /g, ' ')); return; }
+      if (el.nodeType !== 1) return;
+      var tg = el.tagName;
+      if (tg === 'BR') { out.push(''); return; }
+      if (tg === 'FIGURE' && el.dataset.att) { out.push(el.dataset.kind === 'voice' ? '[voice](att:' + el.dataset.att + ')' : '![' + el.dataset.kind + '](att:' + el.dataset.att + ')'); return; }
+      if (tg === 'UL' || tg === 'OL') { [].slice.call(el.children).forEach(function (li, i) { out.push((tg === 'OL' ? (i + 1) + '. ' : '- ') + inline(li).trim()); }); return; }
+      if (/^H[1-6]$/.test(tg)) { out.push('# ' + inline(el).trim()); return; }
+      if (el.classList.contains('nt-chk')) { out.push('[' + (el.classList.contains('done') ? 'x' : ' ') + '] ' + inline(el).trim()); return; }
+      // a block holding blocks (browsers sometimes nest them): each its own line
+      if ([].slice.call(el.children).some(function (c) { return /^(DIV|P|UL|OL|H[1-6]|FIGURE)$/.test(c.tagName); })) { [].slice.call(el.childNodes).forEach(block); return; }
+      out.push(inline(el));
+    }
+    [].slice.call(ed.childNodes).forEach(block);
+    while (out.length && !out[out.length - 1].trim()) out.pop();
+    return out.join('\n');
+  }
+  function noteEditor(main) {
+    var isNew = S.noteId === 'new', n = isNew ? null : byId(S.data.notebook || [], S.noteId), pre = S.notePreset || {};
+    if (!isNew && !n) { S.noteId = ''; render(); return; }
+    var st = { id: n ? n.id : '', revision: n ? n.revision : 0, title: n ? n.title : (pre.title || ''), titleSet: !!(n && n.title && n.title !== noteFirstLine(n.body)), folder: n ? n.folder : (pre.folder || ''), colour: n ? n.colour : '', pinned: n ? n.pinned : false,
+      saved: n ? n.body : '', dirty: false, timer: null, saving: null, files: {}, ideaId: n ? n.ideaId : (pre.ideaId || '') };
+    var wrap = h('div', { class: 'nt-page' }), paper = h('div', { class: 'nt-paper' });
+    function paint() { paper.style.background = NOTE_COLOURS[st.colour] || '#fff'; }
+    var titleIn = h('input', { class: 'nt-title', type: 'text', placeholder: 'Title', maxlength: '120', value: st.titleSet ? st.title : '', 'aria-label': 'Title' });
+    var ed = h('div', { class: 'nt-ed', contenteditable: 'true', role: 'textbox', 'aria-multiline': 'true', 'aria-label': 'Your note', spellcheck: 'true', 'data-ph': 'Write anything…' });
+    ed.appendChild(noteBlocks(n ? n.body : (pre.body || ''), {}));
+    var madeBox = h('div', { class: 'nt-madebox' });
+    function paintMade(list) {
+      madeBox.textContent = '';
+      (list || []).slice().reverse().forEach(function (m) { madeBox.appendChild(h('button', { type: 'button', class: 'nt-madechip press soft', onclick: function () { openMade(m); } }, icon(TURN_ICONS[m.kind === 'goal' && /step/.test(m.label) ? 'steps' : m.kind] || 'auto_awesome'), h('span', { text: m.label }))); });
+      if ((list || []).length) madeBox.insertBefore(h('div', { class: 'label-s', text: 'Turned into' }), madeBox.firstChild);
+    }
+    paintMade(n ? n.madeInto : []);
+    // the top bar
+    var pinB = K.iconBtn('push_pin', st.pinned ? 'Unpin it' : 'Pin it to the top', function () { st.pinned = !st.pinned; pinB.classList.toggle('on', st.pinned); pinB.setAttribute('aria-label', st.pinned ? 'Unpin it' : 'Pin it to the top'); meta({ pinned: st.pinned }); K.haptic(); });
+    pinB.classList.toggle('on', !!st.pinned);
+    var top = h('div', { class: 'nt-bar' },
+      K.iconBtn('arrow_back', 'Back to your notes', function () { leave(); }),
+      h('span', { class: 'grow nt-saved', 'aria-live': 'polite' }),
+      pinB,
+      K.iconBtn('palette', 'Its colour', function () { pickColour(); }),
+      btn('tonal', 'Turn into…', { sm: true, icon: 'auto_awesome', onclick: function () { saveNow().then(function () { if (st.id) openTurnInto(st.id, function (made) { paintMade(made); }); }); } }),
+      K.iconBtn('more_vert', 'More', function () { more(); }));
+    var savedEl = top.querySelector('.nt-saved');
+    paper.append(titleIn, ed, madeBox);
+    // the toolbar: lists, headings, bold, highlight, and what can go in a note
+    function tb(ic, label, fn) { var b = h('button', { type: 'button', class: 'nt-tb press', 'aria-label': label, title: label }, icon(ic)); b.addEventListener('mousedown', function (e) { e.preventDefault(); }); b.addEventListener('click', function () { fn(); changed(); }); return b; }
+    var bar = h('div', { class: 'nt-toolbar', role: 'toolbar', 'aria-label': 'Formatting' },
+      tb('checklist', 'Tick list', toggleCheck), tb('add_a_photo', 'Add a photo', addPhoto), tb('draw', 'Draw', function () { drawSheet(null); }), tb('mic', 'Record a voice memo', function () { voiceSheet(); }),
+      h('span', { class: 'nt-tb-sep' }),
+      tb('format_list_bulleted', 'Bullet list', function () { focusEd(); document.execCommand('insertUnorderedList'); }),
+      tb('format_list_numbered', 'Numbered list', function () { focusEd(); document.execCommand('insertOrderedList'); }), tb('title', 'Heading', toggleHeading),
+      tb('format_bold', 'Bold', function () { focusEd(); document.execCommand('bold'); }), tb('format_italic', 'Italic', function () { focusEd(); document.execCommand('italic'); }),
+      tb('format_ink_highlighter', 'Highlight', highlight));
+    wrap.append(top, paper, bar);
+    main.appendChild(wrap);
+    paint();
+    try { document.execCommand('styleWithCSS', false, false); } catch (e) {}
+    // its pictures and recordings
+    if (st.id) api('noteFiles', st.id).then(function (files) { st.files = files || {}; [].slice.call(ed.querySelectorAll('figure.nt-att')).forEach(function (fg) { fg.replaceWith(noteFigure(fg.dataset.kind, fg.dataset.att, st.files)); }); }).catch(function () {});
+    if (isNew) setTimeout(function () { ed.focus(); }, 300);
+    // saving: a moment after she stops, and when she leaves
+    function changed() { st.dirty = true; savedEl.textContent = ''; clearTimeout(st.timer); st.timer = setTimeout(saveNow, 1500); }
+    function saveNow() {
+      clearTimeout(st.timer);
+      if (st.saving) return st.saving.then(function () { return st.dirty ? saveNow() : null; });
+      normalise();
+      var body = noteMarkdown(ed), title = titleIn.value.trim();
+      if (!st.dirty && st.id) return Promise.resolve();
+      if (!st.id && !body.trim() && !title) { st.dirty = false; return Promise.resolve(); }
+      st.dirty = false;
+      var p = { id: st.id || undefined, revision: st.revision, title: title, body: body, ideaId: st.ideaId || '', allowEmpty: true };
+      if (!st.id) { p.folder = st.folder; p.colour = st.colour; p.pinned = st.pinned; }
+      savedEl.textContent = 'Saving…';
+      st.saving = api('saveNote', p).then(function (r) {
+        st.id = r.id; st.revision = r.revision; st.saved = body; S.noteId = r.id; savedEl.textContent = 'Saved';
+        if (!titleIn.value.trim() && r.title) titleIn.placeholder = r.title;
+      }).catch(function (e) { savedEl.textContent = ''; fail(e); }).then(function () { st.saving = null; });
+      return st.saving;
+    }
+    function meta(p) { if (!st.id) { changed(); return; } api('noteMeta', st.id, p).catch(fail); }
+    function leave() { saveNow().then(refresh).then(function () { S.noteId = ''; S.notePreset = null; render(); }); }
+    ed.addEventListener('input', changed); titleIn.addEventListener('input', changed);
+    // ticking a box; Enter on an empty tick-list line ends the list (as in Samsung Notes)
+    ed.addEventListener('click', function (e) {
+      var box = e.target.closest && e.target.closest('.nt-box');
+      if (box) { var row = box.parentNode, done = !row.classList.contains('done'); row.classList.toggle('done', done); box.replaceWith(noteCheck(done, '').firstChild); K.haptic(); changed(); return; }
+      var fig = e.target.closest && e.target.closest('figure.nt-att');
+      if (fig && fig.dataset.kind !== 'voice') figureMore(fig);
+    });
+    ed.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== 'Backspace') return;
+      var b = currentBlock(); if (!b || !b.classList || !b.classList.contains('nt-chk')) return;
+      var empty = !b.textContent.replace(/[​\s]/g, '') || b.textContent.trim() === iconText(b);
+      if (e.key === 'Enter' && empty) { e.preventDefault(); var d = h('div', {}, h('br')); b.replaceWith(d); caretIn(d); changed(); }
+      else if (e.key === 'Backspace' && atStart(b)) { e.preventDefault(); var d2 = h('div'); [].slice.call(b.childNodes).forEach(function (c) { if (!c.classList || !c.classList.contains('nt-box')) d2.appendChild(c); }); if (!d2.childNodes.length) d2.appendChild(h('br')); b.replaceWith(d2); caretIn(d2); changed(); }
+    });
+    function iconText(b) { var bx = b.querySelector('.nt-box'); return bx ? bx.textContent.trim() : ''; }
+    function atStart(b) { var s = window.getSelection(); if (!s.rangeCount || !s.isCollapsed) return false; var r = document.createRange(); r.selectNodeContents(b); r.setEnd(s.getRangeAt(0).startContainer, s.getRangeAt(0).startOffset); return !r.toString().replace(iconText(b), '').length; }
+    function normalise() {
+      // a new tick-list line (made by Enter) has no box yet, and starts unticked
+      [].slice.call(ed.querySelectorAll('.nt-chk')).forEach(function (c) { if (!c.querySelector('.nt-box')) { c.classList.remove('done'); c.insertBefore(noteCheck(false, '').firstChild, c.firstChild); } });
+      // loose words at the top level get a line of their own
+      [].slice.call(ed.childNodes).forEach(function (c) { if (c.nodeType === 3 && c.nodeValue.trim()) { var d = h('div'); c.replaceWith(d); d.appendChild(c); } });
+    }
+    ed.addEventListener('input', function () { setTimeout(normalise, 0); });
+    function focusEd() { if (document.activeElement !== ed && !ed.contains(document.activeElement)) { ed.focus(); } }
+    function currentBlock() {
+      var s = window.getSelection(); if (!s.rangeCount) return null;
+      var node = s.getRangeAt(0).startContainer; if (!ed.contains(node)) return null;
+      while (node && node.parentNode !== ed && !(node.tagName === 'LI')) node = node.parentNode;
+      return node && node.nodeType === 1 ? node : null;
+    }
+    function caretIn(el) { var r = document.createRange(), s = window.getSelection(); r.selectNodeContents(el); r.collapse(false); s.removeAllRanges(); s.addRange(r); }
+    function toggleCheck() {
+      focusEd();
+      var b = currentBlock();
+      if (!b) { var d0 = noteCheck(false, ''); ed.appendChild(d0); caretIn(d0); return; }
+      if (b.tagName === 'LI') { var lst = b.parentNode, c1 = noteCheck(false, b.textContent); lst.parentNode.insertBefore(c1, lst.nextSibling); b.remove(); if (!lst.children.length) lst.remove(); caretIn(c1); return; }
+      if (b.classList.contains('nt-chk')) { var d = h('div'); [].slice.call(b.childNodes).forEach(function (c) { if (!c.classList || !c.classList.contains('nt-box')) d.appendChild(c); }); if (!d.childNodes.length) d.appendChild(h('br')); b.replaceWith(d); caretIn(d); return; }
+      if (b.tagName === 'FIGURE') return;
+      var c = noteCheck(false, ''); c.removeChild(c.lastChild); [].slice.call(b.childNodes).forEach(function (x) { c.appendChild(x); }); if (c.childNodes.length === 1) c.appendChild(h('br')); b.replaceWith(c); caretIn(c);
+    }
+    function toggleHeading() { focusEd(); var b = currentBlock(); if (b && /^H\d$/.test(b.tagName)) document.execCommand('formatBlock', false, 'div'); else document.execCommand('formatBlock', false, 'h3'); }
+    function highlight() {
+      focusEd();
+      var s = window.getSelection(); if (!s.rangeCount || s.isCollapsed) { toast('Select some words first, then tap highlight.'); return; }
+      var r = s.getRangeAt(0), anc = r.commonAncestorContainer, mk = anc.nodeType === 1 ? anc.closest('mark') : anc.parentNode.closest('mark');
+      if (mk) { mk.replaceWith.apply(mk, [].slice.call(mk.childNodes)); return; }
+      try { var m = h('mark'); r.surroundContents(m); } catch (e) { document.execCommand('hiliteColor', false, '#FFE36E'); }
+    }
+    // pictures, drawings and voice memos go in where she's writing
+    var lastRange = null;
+    ed.addEventListener('blur', function () { var s = window.getSelection(); if (s.rangeCount && ed.contains(s.getRangeAt(0).startContainer)) lastRange = s.getRangeAt(0).cloneRange(); });
+    function insertFigure(kind, id, extraText) {
+      var fig = noteFigure(kind, id, st.files), after = h('div', {}, h('br'));
+      var at = null;
+      if (lastRange && ed.contains(lastRange.startContainer)) { at = lastRange.startContainer; while (at && at.parentNode !== ed) at = at.parentNode; }
+      if (at) { ed.insertBefore(fig, at.nextSibling); } else ed.appendChild(fig);
+      ed.insertBefore(after, fig.nextSibling);
+      if (extraText) { var tx = h('div', { text: extraText }); ed.insertBefore(tx, after); }
+      caretIn(after); st.dirty = true; return saveNow();
+    }
+    function ensureNote() { if (st.id) return Promise.resolve(st.id); st.dirty = true; return saveNow().then(function () { if (!st.id) throw new Error('Write something first.'); return st.id; }); }
+    function upload(kind, data, transcript) {
+      return ensureNote().then(function (id) { return api('addNoteFile', id, kind, data, transcript || ''); }).then(function (r) { st.files[r.id] = { kind: kind, data: data, transcript: transcript || '' }; return r.id; });
+    }
+    function addPhoto() {
+      var inp = h('input', { type: 'file', accept: 'image/*', style: 'display:none' });
+      inp.addEventListener('change', function () {
+        var f = inp.files && inp.files[0]; inp.remove(); if (!f) return;
+        toast('Adding the photo…');
+        K.prepareImage(f).then(function (im) { return upload('photo', im.full); }).then(function (id) { return insertFigure('photo', id); }).catch(fail);
+      });
+      document.body.appendChild(inp); inp.click();
+    }
+    function figureMore(fig) {
+      var id = fig.dataset.att, kind = fig.dataset.kind;
+      K.sheet({ title: kind === 'drawing' ? 'Your drawing' : 'Your photo', build: function (ctl) {
+        var f = st.files[id]; if (f) ctl.body.appendChild(h('img', { class: 'nt-big', src: f.data, alt: '' }));
+        var row = h('div', { class: 'btn-row' });
+        if (kind === 'drawing') row.appendChild(btn('filled', 'Draw on it', { icon: 'draw', onclick: function () { ctl.close(); setTimeout(function () { drawSheet(id); }, 280); } }));
+        row.appendChild(btn('text', 'Take it out of the note', { icon: 'delete', onclick: function () { fig.remove(); ctl.close(); changed(); } }));
+        ctl.foot.appendChild(row);
+      } });
+    }
+    /** Draw with a finger or pen: colours, a highlighter, sizes, an eraser, and Undo. */
+    function drawSheet(editId) {
+      var C = { colour: '#1F1F1F', size: 4, hl: false, erase: false }, strokes = [], cur = null, bg = null;
+      K.sheet({ title: editId ? 'Draw on it' : 'Draw', tall: true, build: function (ctl) {
+        var cv = h('canvas', { class: 'nt-canvas', 'aria-label': 'Drawing space' }), ctx = cv.getContext('2d');
+        var pens = h('div', { class: 'nt-pens' });
+        [['#1F1F1F', 'Black'], ['#1B4F86', 'Blue'], ['#B3261E', 'Red'], ['#2E7D32', 'Green'], ['#7D5700', 'Brown']].forEach(function (p) {
+          pens.appendChild(h('button', { type: 'button', class: 'nt-pen', style: 'background:' + p[0], 'aria-label': p[1] + ' pen', onclick: function (e) { C.colour = p[0]; C.hl = false; C.erase = false; mark(e.currentTarget); } }));
+        });
+        pens.appendChild(h('button', { type: 'button', class: 'nt-pen hl', 'aria-label': 'Highlighter', onclick: function (e) { C.colour = '#FFE36E'; C.hl = true; C.erase = false; mark(e.currentTarget); } }, icon('format_ink_highlighter')));
+        pens.appendChild(h('button', { type: 'button', class: 'nt-pen er', 'aria-label': 'Eraser', onclick: function (e) { C.erase = true; C.hl = false; mark(e.currentTarget); } }, icon('ink_eraser')));
+        function mark(b) { [].slice.call(pens.children).forEach(function (x) { x.classList.toggle('on', x === b); }); K.haptic(); }
+        mark(pens.firstChild);
+        var sizes = K.segmented({ label: 'Size', value: 4, options: [{ value: 2, label: 'Fine' }, { value: 4, label: 'Medium' }, { value: 9, label: 'Thick' }], onChange: function (v) { C.size = v; } });
+        ctl.body.append(pens, sizes, h('div', { class: 'nt-canvas-wrap' }, cv));
+        function size() {
+          var w = cv.parentNode.clientWidth || 320, hgt = Math.round(Math.min(window.innerHeight * 0.55, w * 1.3)), r = window.devicePixelRatio || 1;
+          cv.width = w * r; cv.height = hgt * r; cv.style.width = w + 'px'; cv.style.height = hgt + 'px'; ctx.setTransform(r, 0, 0, r, 0, 0); redraw();
+        }
+        function redraw() {
+          var w = cv.width / (window.devicePixelRatio || 1), hgt = cv.height / (window.devicePixelRatio || 1);
+          ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, hgt);
+          if (bg) { var k = Math.min(w / bg.naturalWidth, hgt / bg.naturalHeight); ctx.drawImage(bg, 0, 0, bg.naturalWidth * k, bg.naturalHeight * k); }
+          strokes.forEach(paintStroke);
+        }
+        function paintStroke(sk) {
+          if (sk.pts.length < 1) return;
+          ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          ctx.strokeStyle = sk.erase ? '#ffffff' : sk.colour; ctx.globalAlpha = sk.hl ? 0.38 : 1;
+          for (var i = 1; i < sk.pts.length; i++) {
+            var a = sk.pts[i - 1], b = sk.pts[i];
+            ctx.lineWidth = sk.size * (sk.hl ? 4 : sk.erase ? 5 : 1) * (0.6 + 0.8 * (b.p || 0.5));
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+          if (sk.pts.length === 1) { ctx.fillStyle = sk.erase ? '#fff' : sk.colour; ctx.beginPath(); ctx.arc(sk.pts[0].x, sk.pts[0].y, sk.size / 2, 0, 7); ctx.fill(); }
+          ctx.restore();
+        }
+        function pt(e) { var r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, p: e.pressure || 0.5 }; }
+        cv.addEventListener('pointerdown', function (e) { e.preventDefault(); cv.setPointerCapture(e.pointerId); cur = { colour: C.colour, size: C.size, hl: C.hl, erase: C.erase, pts: [pt(e)] }; strokes.push(cur); paintStroke(cur); });
+        cv.addEventListener('pointermove', function (e) { if (!cur) return; e.preventDefault(); cur.pts.push(pt(e)); var last = { colour: cur.colour, size: cur.size, hl: cur.hl, erase: cur.erase, pts: cur.pts.slice(-2) }; if (cur.hl) redraw(); else paintStroke(last); });
+        function up() { cur = null; }
+        cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+        ctl.foot.appendChild(h('div', { class: 'btn-row' },
+          K.iconBtn('undo', 'Undo', function () { strokes.pop(); redraw(); }),
+          btn('text', 'Clear', { onclick: function () { strokes = []; redraw(); } }),
+          h('span', { class: 'grow' }),
+          btn('filled', editId ? 'Save it' : 'Add to the note', { icon: 'check', onclick: function (e) {
+            if (!strokes.length) { ctl.close(); return; }
+            var b = e.currentTarget; K.setBusy(b, true);
+            var data = cv.toDataURL('image/jpeg', 0.88);
+            (editId ? api('updateNoteFile', editId, data).then(function () { st.files[editId] = { kind: 'drawing', data: data }; [].slice.call(ed.querySelectorAll('figure[data-att="' + editId + '"]')).forEach(function (fg) { fg.replaceWith(noteFigure('drawing', editId, st.files)); }); })
+              : upload('drawing', data).then(function (id) { return insertFigure('drawing', id); }))
+              .then(function () { ctl.close(); toast(editId ? 'Drawing saved.' : 'Added to your note.'); }).catch(function (er) { K.setBusy(b, false); fail(er); });
+          } })));
+        if (editId && st.files[editId]) { bg = new Image(); bg.onload = function () { redraw(); }; bg.src = st.files[editId].data; }
+        setTimeout(size, 60);
+      } });
+    }
+    /** A voice memo: kept as a recording, and typed out as she speaks (where the phone can). */
+    function voiceSheet() {
+      if (!window.MediaRecorder || !navigator.mediaDevices) { toast('This phone can’t record here. Use the microphone on the keyboard instead.'); return; }
+      var rec = null, chunks = [], stream = null, words = '', interim = '', started = 0, tick = null, sr = null, blob = null, typeOut = true, stopper = function () {};
+      K.sheet({ title: 'Voice memo', onClose: function () { stopper(); }, build: function (ctl) {
+        var timeEl = h('div', { class: 'nt-rec-time', text: '0:00' }), said = h('p', { class: 'nt-rec-said', text: 'Tap the button and talk. It’s typed out as you go, where your phone can.' });
+        var big = h('button', { type: 'button', class: 'nt-rec press', 'aria-label': 'Start recording' }, icon('mic'));
+        var player = h('div');
+        var keep = K.choices({ row: true, label: 'Also type it into the note', value: 'yes', options: [{ value: 'yes', label: 'Type it into the note too' }, { value: 'no', label: 'Just the recording' }], onChange: function (v) { typeOut = v !== 'no'; } });
+        ctl.body.append(h('div', { class: 'nt-rec-wrap' }, big, timeEl), said, player, keep);
+        var addB = btn('filled', 'Add to the note', { icon: 'check', block: true, lg: true, onclick: function () {
+          if (!blob) { toast('Record something first.'); return; }
+          K.setBusy(addB, true);
+          var fr = new FileReader();
+          fr.onload = function () {
+            var text = (words + ' ' + interim).trim();
+            upload('voice', String(fr.result).replace(/^data:audio\/([\w-]+);.*?base64,/, 'data:audio/$1;base64,'), text).then(function (id) { return insertFigure('voice', id, typeOut && text ? text : ''); })
+              .then(function () { ctl.close(); toast('Voice memo added.'); }).catch(function (e) { K.setBusy(addB, false); fail(e); });
+          };
+          fr.readAsDataURL(blob);
+        } });
+        ctl.foot.appendChild(addB);
+        function stopAll() { try { if (rec && rec.state !== 'inactive') rec.stop(); } catch (e) {} try { if (sr) sr.stop(); } catch (e) {} clearInterval(tick); if (stream) stream.getTracks().forEach(function (tr) { tr.stop(); }); big.classList.remove('on'); big.setAttribute('aria-label', 'Record again'); big.firstChild.replaceWith(icon('mic')); }
+        big.addEventListener('click', function () {
+          if (rec && rec.state === 'recording') { stopAll(); return; }
+          words = ''; interim = ''; blob = null; chunks = []; player.textContent = '';
+          navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+            stream = s;
+            var type = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].filter(function (x) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x); })[0];
+            rec = new MediaRecorder(s, type ? { mimeType: type, audioBitsPerSecond: 32000 } : undefined);
+            rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+            rec.onstop = function () { blob = new Blob(chunks, { type: (rec.mimeType || 'audio/webm').split(';')[0] }); player.appendChild(h('audio', { controls: true, src: URL.createObjectURL(blob) })); };
+            rec.start(1000); started = Date.now(); big.classList.add('on'); big.setAttribute('aria-label', 'Stop'); big.firstChild.replaceWith(icon('stop'));
+            tick = setInterval(function () { var s2 = Math.round((Date.now() - started) / 1000); timeEl.textContent = Math.floor(s2 / 60) + ':' + pad2(s2 % 60); if (s2 >= 180) stopAll(); }, 500);
+            var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SR) {
+              sr = new SR(); sr.lang = 'en-AU'; sr.continuous = true; sr.interimResults = true;
+              sr.onresult = function (ev) { interim = ''; for (var i = ev.resultIndex; i < ev.results.length; i++) { if (ev.results[i].isFinal) words += ' ' + ev.results[i][0].transcript; else interim += ev.results[i][0].transcript; } said.textContent = (words + ' ' + interim).trim() || '…'; };
+              sr.onend = function () { if (rec && rec.state === 'recording') try { sr.start(); } catch (e) {} };
+              try { sr.start(); } catch (e) {}
+            }
+          }).catch(function () { toast('The microphone wasn’t allowed. Check the phone’s settings for this app.'); });
+        });
+        stopper = stopAll;
+      } });
+    }
+    function pickColour() {
+      K.sheet({ title: 'Its colour', build: function (ctl) {
+        var row = h('div', { class: 'nt-swatches' });
+        Object.keys(NOTE_COLOURS).forEach(function (k) {
+          row.appendChild(h('button', { type: 'button', class: 'nt-sw' + ((st.colour || '') === k ? ' on' : ''), style: 'background:' + NOTE_COLOURS[k], 'aria-label': NOTE_COLOUR_NAMES[k], onclick: function () { st.colour = k; paint(); meta({ colour: k }); ctl.close(); } }, (st.colour || '') === k ? icon('check') : null));
+        });
+        ctl.body.appendChild(row);
+      } });
+    }
+    function more() {
+      K.sheet({ title: titleIn.value || titleIn.placeholder || 'This note', build: function (ctl) {
+        var acts = h('div', { class: 'next-opts' });
+        function a(ic, label, why, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null))); }
+        a('folder_open', st.folder ? 'Move to another folder (now in ' + st.folder + ')' : 'Put it in a folder', '', function () {
+          var fs = (S.data.noteFolders || []).slice();
+          K.pickFromList({ title: 'Which folder?', options: ['No folder'].concat(fs).concat(['A new folder…']) }).then(function (pick) {
+            if (!pick) return;
+            if (pick === 'A new folder…') return K.ask({ title: 'A new folder', label: 'Its name', maxlength: 40, confirmLabel: 'Make it' }).then(function (v) { if (v) { st.folder = v.trim(); meta({ folder: st.folder }); toast('In ' + st.folder + '.'); } });
+            st.folder = pick === 'No folder' ? '' : pick; meta({ folder: st.folder }); toast(st.folder ? 'In ' + st.folder + '.' : 'Out of its folder.');
+          });
+        });
+        if (st.id) a('history', 'Earlier versions', 'Bring back how it was before.', function () { saveNow().then(function () { noteVersions(st.id); }); });
+        if (st.id && S.data.mentors && S.data.mentors.on && !ADMIN) a('forum', 'Talk it through', 'Opens Just chat with this note, to think it over.', function () {
+          saveNow().then(function () { return api('newMentor', { kind: 'chat' }); }).then(function (r) { return api('sendMentor', r.id, 'Can you help me think about this note of mine?\n\n' + (titleIn.value || titleIn.placeholder) + '\n' + noteMarkdown(ed).slice(0, 3500)).then(function () { S.noteId = ''; S.mentorId = r.id; S.mentorChat = null; go('mentors'); }); }).catch(fail);
+        });
+        if (st.id) a('delete', 'Remove it', 'It goes in the bin, so you can bring it back.', function () {
+          var id = st.id; clearTimeout(st.timer);
+          api('deleteNote', id).then(refresh).then(function () { S.noteId = ''; render(); undoCard('Note removed.', function () { return api('undoDelete', 'note', id); }, 'Back in your notes.'); }).catch(fail);
+        });
+        ctl.body.appendChild(acts);
+      } });
+    }
+  }
+  function noteFirstLine(body) {
+    return (String(body || '').split('\n').map(function (l) { return l.replace(/!?\[[^\]]*\]\(att:[\w-]+\)/g, '').replace(/^\s*(#+|[-*•]|\d+[.)]|\[( |x)\])\s*/i, '').replace(/[*_=\[\]]/g, '').trim(); }).filter(String)[0] || '').slice(0, 60);
+  }
+  function noteVersions(id) {
+    api('noteHistory', id).then(function (vs) {
+      K.sheet({ title: 'Earlier versions', build: function (ctl) {
+        if (!vs || !vs.length) { ctl.body.appendChild(note('No earlier versions yet. One is kept every so often as you write.', 'history')); return; }
+        vs.forEach(function (v) {
+          ctl.body.appendChild(h('div', { class: 'nt-ver' }, h('div', { class: 'grow' }, h('b', { text: v.title }), h('div', { class: 'body-s', text: K.dateLabel(v.saved) + ' · ' + noteSnippet({ body: v.body }).slice(0, 90) })),
+            btn('text', 'Bring back', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('restoreVersion', id, v.id).then(refresh).then(function () { ctl.close(); S.noteDraft = null; render(); toast('Brought back. The version before is kept too.'); }).catch(fail); } })));
         });
       } });
     }).catch(fail);
+  }
+
+  // ---------- "Turn into…": what it could become, where it would go, the details checked, then made
+  var TURN_LABEL = { goal: 'A goal', steps: 'Steps for a goal', milestone: 'A milestone', idea: 'An idea', post: 'A post', event: 'On the calendar', expense: 'An expense', artwork: 'An artwork', website: 'Words for my website' };
+  var TURN_ICONS = { goal: 'flag', steps: 'checklist', milestone: 'wb_sunny', idea: 'lightbulb', post: 'perm_media', event: 'event', expense: 'receipt_long', artwork: 'palette', website: 'language' };
+  var TURN_NEED = { goal: ['title'], steps: ['goalId', 'steps'], milestone: ['title'], idea: ['title'], post: ['caption'], event: ['text', 'day'], expense: ['description', 'amount', 'date'], artwork: ['title'], website: ['page', 'words'] };
+  function openMade(m) {
+    if (m.kind === 'goal') openGoal(m.id);
+    else if (m.kind === 'milestone') { S.ideasTab = 'goals'; go('ideas'); }
+    else if (m.kind === 'idea') openIdea(m.id);
+    else if (m.kind === 'post') { S.contentTab = 'review'; go('content'); }
+    else if (m.kind === 'event') { S.calMode = 'day'; S.calAt = m.day || ymd(new Date()); S.calSel = S.calAt; go('calendar'); }
+    else if (m.kind === 'expense') go('money');
+    else if (m.kind === 'artwork') { go('prints'); setTimeout(function () { openPrint(m.id); }, 300); }
+    else if (m.kind === 'website') go('site');
+  }
+  function openTurnInto(noteId, onMade) {
+    K.sheet({ title: 'Turn into…', tall: true, build: function (ctl) {
+      ctl.body.appendChild(h('div', { class: 'nt-turn-wait' }, h('span', { class: 'mn-dots' }, h('i'), h('i'), h('i')), h('span', { text: 'Reading your note…' })));
+      api('noteSuggest', noteId).then(function (r) {
+        ctl.body.textContent = '';
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 2px 10px;color:var(--on-surface-variant)', text: 'Your note stays as it is. Pick what it should become: you’ll check the details before anything’s made.' }));
+        (r.suggestions || []).forEach(function (s, i) {
+          ctl.body.appendChild(h('button', { type: 'button', class: 'nt-sug press soft' + (i === 0 ? ' best' : ''), onclick: function () { K.swap(ctl, function () { turnForm(noteId, s, r.options, onMade); }); } },
+            h('span', { class: 'nt-sug-ic' }, icon(TURN_ICONS[s.kind])),
+            h('span', { class: 'grow' }, h('span', { class: 'label-s', text: (i === 0 ? 'Best fit · ' : '') + TURN_LABEL[s.kind] }), h('b', { text: s.fields.title || s.fields.text || s.fields.description || s.fields.heading || (s.kind === 'steps' ? (s.fields.steps || []).length + ' steps' : '') }),
+              h('span', { class: 'nt-sug-why', text: s.why }), h('span', { class: 'nt-sug-where' }, icon('place'), h('span', { text: s.where }))),
+            icon('chevron_right')));
+        });
+        var others = h('div', { class: 'filter-row', style: 'margin-top:10px' });
+        Object.keys(TURN_LABEL).forEach(function (k) {
+          others.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { var have = (r.suggestions || []).filter(function (s) { return s.kind === k; })[0]; K.swap(ctl, function () { turnForm(noteId, have || { kind: k, fields: {}, questions: [], where: '' }, r.options, onMade); }); } }, icon(TURN_ICONS[k]), TURN_LABEL[k]));
+        });
+        ctl.body.append(h('div', { class: 'label-m', style: 'margin:14px 2px 2px', text: 'Or something else' }), others);
+        if ((r.made || []).length) ctl.body.append(h('div', { class: 'label-m', style: 'margin:16px 2px 6px', text: 'Already made from this note' }),
+          h('div', {}, r.made.map(function (m) { return h('button', { type: 'button', class: 'nt-madechip press soft', onclick: function () { ctl.close(); openMade(m); } }, icon(TURN_ICONS[m.kind] || 'auto_awesome'), h('span', { text: m.label })); })));
+      }).catch(function (e) { ctl.close(); fail(e); });
+    } });
+  }
+  /** The details for what she picked: filled in from the note; anything missing asked first, with answers to tap. */
+  function turnForm(noteId, sug, opts, onMade) {
+    var k = sug.kind, f = JSON.parse(JSON.stringify(sug.fields || {})), O = opts || {}, today = ymd(new Date());
+    if (k === 'goal' && !f.steps) f.steps = [];
+    if (k === 'steps' && !f.steps) f.steps = [];
+    if (k === 'milestone' && !f.goalIds) f.goalIds = [];
+    if (k === 'event' && !f.mins) f.mins = 60;
+    if (k === 'expense' && !f.date) f.date = today;
+    if (k === 'post' && !f.format) f.format = 'Photo post';
+    if (k === 'idea' && !f.ideaKind) f.ideaKind = 'Other';
+    if (k === 'website' && !f.page) f.page = '#/';
+    K.sheet({ title: TURN_LABEL[k], tall: true, build: function (ctl) {
+      var b = ctl.body, ask = h('div', { class: 'nt-ask' }), form = h('div');
+      if (sug.where) b.appendChild(h('div', { class: 'nt-where' }, icon('place'), h('span', { text: sug.where })));
+      b.append(ask, form);
+      function quickDays(key) { return K.choices({ row: true, label: 'Quick picks', value: f[key] || '', options: [{ value: today, label: 'Today' }, { value: addDays(today, 1), label: 'Tomorrow' }, { value: addDays(today, 7 - dow(today)), label: 'Next Monday' }, { value: addDays(today, 7), label: 'In a week' }], onChange: function (v) { if (v) { f[key] = v; paint(); } } }); }
+      function field(key) {
+        var L = { title: 'Name', why: 'Why it matters (if you like)', note: 'More about it', caption: 'The words for the post', hashtags: 'Hashtags', text: 'What is it?', description: 'What was it?', amount: 'How much (A$)', heading: 'A heading', words: 'The words', story: 'About the artwork' }[key];
+        if (['title', 'text', 'description', 'heading', 'hashtags'].indexOf(key) >= 0) return K.textField({ label: L, value: f[key] || '', maxlength: 200, onInput: function (v) { f[key] = v; } });
+        if (['why', 'note', 'caption', 'words', 'story'].indexOf(key) >= 0) return K.textField({ label: L, value: f[key] || '', multiline: true, maxlength: 3000, onInput: function (v) { f[key] = v; } });
+        if (key === 'amount') return K.textField({ label: L, value: f.amount || '', prefix: '$', inputmode: 'decimal', onInput: function (v) { f.amount = K.num(v); } });
+        if (key === 'steps') {
+          var box = h('div', { class: 'nt-steps' });
+          function drawSteps() {
+            box.textContent = '';
+            box.appendChild(h('div', { class: 'label-m', text: 'Its steps' }));
+            f.steps.forEach(function (s, i) {
+              var inp = h('input', { type: 'text', class: 'nt-step-in', value: s, maxlength: '200', 'aria-label': 'Step ' + (i + 1) });
+              inp.addEventListener('input', function () { f.steps[i] = inp.value; });
+              box.appendChild(h('div', { class: 'nt-step' }, h('span', { class: 'nt-step-n', text: String(i + 1) }), inp, K.iconBtn('close', 'Take this step out', function () { f.steps.splice(i, 1); drawSteps(); })));
+            });
+            box.appendChild(btn('text', 'Add a step', { sm: true, icon: 'add', onclick: function () { f.steps.push(''); drawSteps(); var all = box.querySelectorAll('.nt-step-in'); if (all.length) all[all.length - 1].focus(); } }));
+          }
+          drawSteps(); return box;
+        }
+        var lab = { milestoneId: 'Which milestone does it lead to?', goalId: 'Which goal are these steps for?', goalIds: 'Which goals go around it?', aimBy: 'Aim to reach it by (if you like)', day: 'Which day?', date: 'When was it?', at: 'What time? (empty is any time that day)', mins: 'How long?', category: 'What was it for?', ideaKind: 'What kind of idea?', format: 'What kind of post?', series: 'Which series?', page: 'Which page?' }[key];
+        var wrap = h('div', { class: 'nt-f' }, h('div', { class: 'label-m', text: lab }));
+        function ch(options, own) { wrap.appendChild(K.choices({ row: options.length > 4, label: lab, value: f[key] == null ? '' : f[key], options: options, own: own, onChange: function (v) { f[key] = v; paint(); } })); }
+        if (key === 'milestoneId') ch([{ value: '', label: 'None yet' }].concat((O.milestones || []).map(function (m) { return { value: m.id, label: m.title }; })));
+        else if (key === 'goalId') ch((O.goals || []).map(function (g) { return { value: g.id, label: g.title }; }));
+        else if (key === 'goalIds') {
+          var row = h('div', { class: 'filter-row' });
+          (O.goals || []).forEach(function (g) { var on = f.goalIds.indexOf(g.id) >= 0; row.appendChild(h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(on), text: g.title, onclick: function () { var i = f.goalIds.indexOf(g.id); if (i >= 0) f.goalIds.splice(i, 1); else f.goalIds.push(g.id); paint(); } })); });
+          wrap.appendChild(row);
+        }
+        else if (key === 'aimBy' || key === 'day' || key === 'date') { wrap.append(quickDays(key), h('div', { style: 'height:8px' }), K.textField({ label: 'Pick a day', type: 'date', value: f[key] || '', onInput: function (v) { f[key] = v; } })); }
+        else if (key === 'at') wrap.appendChild(K.textField({ label: 'Time', type: 'time', value: f.at || '', onInput: function (v) { f.at = v; } }));
+        else if (key === 'mins') ch([30, 60, 90, 120, 180, 240].map(function (n) { return { value: n, label: lenLabel(n) }; }));
+        else if (key === 'category') ch((O.categories || []).map(function (c) { return { value: c, label: c }; }));
+        else if (key === 'ideaKind') ch([{ value: 'Product', label: 'Something to sell' }, { value: 'Content', label: 'Something to post' }, { value: 'Other', label: 'Something else' }]);
+        else if (key === 'format') ch(['Photo post', 'Carousel', 'Reel', 'Story'].map(function (x) { return { value: x, label: x }; }));
+        else if (key === 'series') ch([{ value: '', label: 'Not in a series' }].concat((O.series || []).map(function (x) { return { value: x, label: x }; })));
+        else if (key === 'page') ch(O.pages || []);
+        return wrap;
+      }
+      var FIELDS = { goal: ['title', 'steps', 'milestoneId', 'why', 'aimBy'], steps: ['goalId', 'steps'], milestone: ['title', 'goalIds'], idea: ['title', 'ideaKind', 'note'], post: ['title', 'caption', 'hashtags', 'format'],
+        event: ['text', 'day', 'at', 'mins'], expense: ['description', 'amount', 'date', 'category'], artwork: ['title', 'series', 'story'], website: ['page', 'heading', 'words'] }[k];
+      function missing(key) { var v = f[key]; return v == null || v === '' || (Array.isArray(v) && !v.filter(String).length) || (key === 'amount' && !(Number(v) > 0)); }
+      function paint() {
+        var y = b.scrollTop;
+        ask.textContent = ''; form.textContent = '';
+        // first: what the note doesn't say (its own questions, then anything required)
+        var asks = (sug.questions || []).filter(function (q) { return missing(q.key); });
+        var req = (TURN_NEED[k] || []).filter(function (key) { return missing(key) && !asks.some(function (q) { return q.key === key; }); });
+        if (asks.length || req.length) {
+          ask.appendChild(h('div', { class: 'label-m nt-ask-h' }, icon('help'), h('span', { text: asks.length + req.length === 1 ? 'One thing to check' : 'A few things to check' })));
+          asks.forEach(function (q) {
+            ask.appendChild(h('div', { class: 'nt-q' }, h('p', { text: q.ask }), K.choices({ row: true, label: q.ask, value: '', own: true, options: q.options.map(function (o) { return { value: o, label: o }; }), onChange: function (v) { if (v) { f[q.key] = resolveAnswer(q.key, v); paint(); } } })));
+          });
+          req.forEach(function (key) { ask.appendChild(field(key)); });
+        }
+        FIELDS.forEach(function (key) { if (req.indexOf(key) < 0 && !asks.some(function (q) { return q.key === key; })) form.appendChild(field(key)); });
+        b.scrollTop = y;
+      }
+      /** A tapped answer to its value: a goal's or milestone's name to its id, a day word to a date. */
+      function resolveAnswer(key, v) {
+        if (key === 'goalId') { var g = (O.goals || []).filter(function (x) { return x.title === v; })[0]; return g ? g.id : ''; }
+        if (key === 'milestoneId') { var m = (O.milestones || []).filter(function (x) { return x.title === v; })[0]; return m ? m.id : ''; }
+        if (key === 'day' || key === 'date' || key === 'aimBy') { if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v; if (/today/i.test(v)) return today; if (/tomorrow/i.test(v)) return addDays(today, 1); return ''; }
+        if (key === 'amount' || key === 'mins') return K.num(v);
+        if (key === 'steps') return [v];
+        return v;
+      }
+      paint();
+      var go2 = btn('filled', 'Make it', { icon: 'auto_awesome', lg: true, block: true, onclick: function () {
+        var out = JSON.parse(JSON.stringify(f)); if (out.steps) out.steps = out.steps.map(function (s) { return String(s).trim(); }).filter(String);
+        var miss = (TURN_NEED[k] || []).filter(function (key) { var v = out[key]; return v == null || v === '' || (Array.isArray(v) && !v.length) || (key === 'amount' && !(Number(v) > 0)); });
+        if (miss.length) { toast('One thing still to fill in, at the top.'); b.scrollTop = 0; return; }
+        K.setBusy(go2, true);
+        api('noteMake', noteId, k, out).then(function (made) {
+          return refresh().then(function () {
+            K.haptic('success'); ctl.close();
+            var n = byId(S.data.notebook || [], noteId); if (onMade && n) onMade(n.madeInto);
+            undoCardless(made);
+          });
+        }).catch(function (e) { K.setBusy(go2, false); fail(e); });
+      } });
+      ctl.foot.appendChild(h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, go2, btn('text', 'Back to the choices', { onclick: function () { K.swap(ctl, function () { openTurnInto(noteId, onMade); }); } })));
+    } });
+    function undoCardless(made) {
+      // a short note with a way to open what was made
+      var t0 = h('div', { class: 'nt-done-toast', role: 'status' }, icon(TURN_ICONS[k] || 'check'), h('span', { class: 'grow', text: 'Made: ' + made.label }), btn('text', 'Open it', { sm: true, onclick: function () { t0.remove(); openMade(made); } }));
+      document.body.appendChild(t0); setTimeout(function () { t0.classList.add('out'); setTimeout(function () { t0.remove(); }, 300); }, 6000);
+    }
   }
 
   function emptyState(iconName, title, text) {
