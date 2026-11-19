@@ -1784,6 +1784,33 @@ body.map-full { overflow: hidden; }
 .todo-x .ms { font-size: 20px; }
 .todo-show { all: unset; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: var(--r-full); font: 500 12px/16px var(--font); color: var(--on-surface-variant); cursor: pointer; }
 .todo-show .ms { font-size: 16px; }
+/* ---- Home, distilled ---- */
+.hm-rest { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 12px; border-radius: 16px; background: var(--surface-low); }
+.hm-focus { padding: 16px; margin-bottom: 14px; border-radius: 24px; background: var(--surface-lowest); box-shadow: var(--shadow-1); }
+.hm-k { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; font: 500 13px/18px var(--font); color: var(--on-surface-variant); cursor: pointer; }
+.hm-k .ms { font-size: 18px; color: #B5651D; } .hm-k .ms:last-child { color: var(--on-surface-variant); font-size: 18px; }
+.hm-k span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hm-row { display: flex; align-items: center; gap: 14px; margin: 12px 0 14px; }
+.hm-ring { width: 56px; height: 56px; flex: none; transform: rotate(-90deg); }
+.hm-ring circle { fill: none; stroke-width: 5; } .hm-ring .bg { stroke: var(--surface-high, #E6E0E9); } .hm-ring .fg { stroke: var(--primary); stroke-linecap: round; transition: stroke-dashoffset .6s; }
+.hm-ring text { transform: rotate(90deg); transform-origin: 28px 28px; font: 600 12px var(--font); fill: var(--on-surface); }
+.hm-step { font: 500 20px/26px var(--display); }
+.hm-sub { margin-top: 2px; font: 400 13px/18px var(--font); color: var(--on-surface-variant); }
+.hm-acts { display: flex; align-items: center; gap: 8px; }
+.hm-acts .btn.filled { flex: 1; }
+.hm-needs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 2px 16px; }
+.hm-needs .label-s { color: var(--on-surface-variant); margin-right: 2px; }
+.hm-chip { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px 8px 10px; border-radius: var(--r-full); background: var(--secondary-container); color: var(--on-secondary-container); font: 500 13px/18px var(--font); cursor: pointer; }
+.hm-chip .ms { font-size: 18px; } .hm-chip b { min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--primary); color: var(--on-primary); font: 600 11px/18px var(--font); text-align: center; }
+.hm-startwrap .label-s { margin: 0 4px 8px; color: var(--on-surface-variant); }
+.hm-start { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.hm-tile { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px; border-radius: 20px; background: var(--surface-lowest); box-shadow: var(--shadow-1); cursor: pointer; font: 500 13px/16px var(--font); }
+.hm-ic { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: var(--primary-container); color: var(--on-primary-container); }
+.hm-ic .ms { font-size: 26px; }
+.hm-foot { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 22px; }
+.hm-link { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--r-full); font: 500 13px/16px var(--font); color: var(--on-surface-variant); cursor: pointer; }
+.hm-link:hover, .hm-link:focus-visible { background: var(--surface-low); outline: none; }
+.hm-link .ms { font-size: 18px; }
 </style>
 
   <script>
@@ -8214,6 +8241,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-home-essentials', on: '2026-11-20', to: 'artist', icon: 'home', title: 'A simpler Home',
+    say: 'Home shows just the essentials: your milestone and its next step (Do it, or Done), anything waiting, and Start something. The rest is behind “Everything”.',
+    steps: ['Open Home.', 'Tap Do it for the next step, or Done when it’s finished.', 'Start something new from the four symbols.', '“Everything” at the bottom shows the full Home.'], go: { view: 'home', tip: 'Your next step.' } },
   { id: '2026-11-20-clear-todo', on: '2026-11-20', to: 'all', icon: 'close', title: 'Clear a to-do',
     say: 'Tap × on a to-do to clear it. It stays away unless it changes; “Show cleared” brings them back.',
     steps: ['On Home, tap × beside a to-do.', 'Changed your mind? Tap Undo, or “Show cleared” by To do.'], go: { view: 'home', tip: 'Tap × to clear.' } },
@@ -13529,7 +13559,7 @@ var Kit = (function () {
     var main = $('#main');
     main.textContent = '';
     ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, notes: viewNotes, mentors: viewMentors, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
-    if (S.view === 'home' || !S.view) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
+    if ((S.view === 'home' || !S.view) && !main.querySelector('.hm-foot')) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
   }
@@ -13838,7 +13868,115 @@ var Kit = (function () {
     card.appendChild(l);
     return card;
   }
+  /** Her home: only what starts something new and finishes the milestone she's on. Everything else is one tap away. */
   function viewHomeArtist(main, hello) {
+    if (S.homeFull) return viewHomeArtistFull(main, hello);
+    var rest = S.data.rest, n = 1;
+    pageTitle(main, hello + ', ' + artist());
+    if (rest) main.appendChild(rise(h('div', { class: 'hm-rest' }, icon('spa'), h('span', { class: 'grow', text: 'Taking it easy' + (rest.until ? ' · ' + restDay(rest.until) : '') }), btn('tonal', 'I’m back', { sm: true, icon: 'wb_sunny', onclick: function (e) { setRest(e.currentTarget, 0); } })), n++));
+    var f = rest ? null : focusCard(); if (f) main.appendChild(rise(f, n++));
+    var nw = needsStrip(); if (nw) main.appendChild(rise(nw, n++));
+    main.appendChild(rise(startTiles(), n++));
+    var unseen = newsList(false).length;
+    main.appendChild(rise(h('div', { class: 'hm-foot' },
+      h('button', { type: 'button', class: 'hm-link press', onclick: function () { S.homeFull = true; render(); } }, icon('apps'), 'Everything'),
+      unseen ? h('button', { type: 'button', class: 'hm-link press', onclick: function () { whatsNew(false); } }, icon('campaign'), 'New · ' + unseen) : null,
+      rest ? null : h('button', { type: 'button', class: 'hm-link press', 'aria-label': 'Taking it easy?', onclick: openRest }, icon('spa'), 'Rest'),
+      h('button', { type: 'button', class: 'hm-link press', onclick: function () { K.haptic(); go('settings'); } }, icon('settings'), 'Settings')), n++));
+  }
+  /** The milestone she's on, and the one next step towards it: do it, or tick it off. */
+  function focusCard() {
+    var goals = (S.data.goals || []).filter(function (g) { return g.status !== 'Done'; }), ms = S.data.milestones || [], today = ymd(new Date());
+    function nextOf(gs) {
+      var best = null;
+      gs.forEach(function (g) { var i = g.steps.findIndex ? g.steps.findIndex(function (s) { return !s.done; }) : -1; if (i < 0) return; var s = g.steps[i];
+        var score = (s.due ? (s.due <= today ? 0 : 1) : 2) * 1e6 + (s.due ? Number(s.due.replace(/-/g, '')) % 1e6 : 0) + (Number(g.rank) || 99);
+        if (!best || score < best.score) best = { g: g, s: s, i: i, score: score }; });
+      return best;
+    }
+    var m = null, pick = null;
+    ms.forEach(function (mm) { var gs = goals.filter(function (g) { return g.milestoneId === mm.id; }); var nx = nextOf(gs); if (nx && (!pick || nx.score < pick.score)) { pick = nx; m = mm; } });
+    var card = h('div', { class: 'hm-focus' });
+    // the milestone she's on, even when its goals have no steps yet: then the next thing is to plan one
+    var mOpen = ms.filter(function (mm) { return goals.some(function (g) { return g.milestoneId === mm.id; }); })[0];
+    if (!pick && mOpen) {
+      var gm = goals.filter(function (g) { return g.milestoneId === mOpen.id; }).sort(function (a, b) { return (Number(a.rank) || 99) - (Number(b.rank) || 99); })[0];
+      card.append(h('button', { type: 'button', class: 'hm-k press', onclick: function () { S.ideasTab = 'goals'; go('ideas'); } }, icon('wb_sunny'), h('span', { text: mOpen.title }), icon('chevron_right')),
+        h('div', { class: 'hm-row' }, svgRing(0, 22, 2 * Math.PI * 22), h('div', { class: 'grow' }, h('div', { class: 'hm-step', text: gm.title }), h('div', { class: 'hm-sub', text: 'No steps yet' }))),
+        h('div', { class: 'hm-acts' }, btn('filled', 'Plan it', { icon: 'forum', onclick: function () { openGoal(gm.id); } }), btn('tonal', 'Steps', { icon: 'checklist', onclick: function () { S.ideasTab = 'goals'; go('ideas'); setTimeout(function () { var e = document.querySelector('.gsteps'); if (e) e.scrollIntoView({ block: 'start' }); }, 500); } })));
+      return card;
+    }
+    if (!pick) pick = nextOf(goals.filter(function (g) { return !g.parentId; }));
+    if (!pick) {
+      var g0 = goals[0];
+      card.append(h('div', { class: 'hm-k' }, icon('flag'), h('span', { text: g0 ? g0.title : 'Your next goal' })),
+        h('div', { class: 'hm-step', text: g0 ? 'Plan the next step' : 'What do you want to get to?' }),
+        h('div', { class: 'hm-acts' }, btn('filled', g0 ? 'Plan it' : 'Add a goal', { icon: g0 ? 'forum' : 'add', onclick: function () { if (g0) openGoal(g0.id); else { S.ideasTab = 'goals'; go('ideas'); } } })));
+      return card;
+    }
+    var all = m ? goals.filter(function (g) { return g.milestoneId === m.id; }).concat((S.data.goals || []).filter(function (g) { return g.status === 'Done' && g.milestoneId === m.id; })) : [pick.g];
+    var tot = 0, dn = 0; all.forEach(function (g) { tot += g.steps.length; dn += g.steps.filter(function (s) { return s.done; }).length; });
+    var pct = tot ? dn / tot : 0, R = 22, C = 2 * Math.PI * R;
+    var ring = svgRing(pct, R, C);
+    var g = pick.g, s = pick.s;
+    card.append(
+      h('button', { type: 'button', class: 'hm-k press', onclick: function () { S.ideasTab = 'goals'; go('ideas'); } }, icon(m ? 'wb_sunny' : 'flag'), h('span', { text: m ? m.title : g.title }), icon('chevron_right')),
+      h('div', { class: 'hm-row' }, ring, h('div', { class: 'grow' },
+        h('div', { class: 'hm-step', text: s.text }),
+        h('div', { class: 'hm-sub', text: (m ? g.title + ' · ' : '') + (s.due ? calWhen(s) : 'Next') }))),
+      h('div', { class: 'hm-acts' },
+        btn('filled', 'Do it', { icon: 'play_arrow', onclick: function () { openStepTools({ n: pick.i + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); } }),
+        btn('tonal', 'Done', { icon: 'check', onclick: function (e) {
+          K.setBusy(e.currentTarget, true);
+          api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { K.haptic('success'); render(); undoCard('✓ ' + s.text, function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on.'); }).catch(fail);
+        } }),
+        K.iconBtn('calendar_month', 'When', function () { openStepWhen(g, s); })));
+    return card;
+  }
+  function svgRing(pct, R, C) {
+    var NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg');
+    sv.setAttribute('viewBox', '0 0 56 56'); sv.setAttribute('class', 'hm-ring'); sv.setAttribute('aria-label', Math.round(pct * 100) + '% done');
+    function c(cls, dash) { var e = document.createElementNS(NS, 'circle'); e.setAttribute('cx', 28); e.setAttribute('cy', 28); e.setAttribute('r', R); e.setAttribute('class', cls); if (dash != null) { e.setAttribute('stroke-dasharray', C); e.setAttribute('stroke-dashoffset', C * (1 - dash)); } sv.appendChild(e); }
+    c('bg'); c('fg', pct);
+    var t = document.createElementNS(NS, 'text'); t.setAttribute('x', 28); t.setAttribute('y', 32); t.setAttribute('text-anchor', 'middle'); t.textContent = Math.round(pct * 100) + '%'; sv.appendChild(t);
+    return sv;
+  }
+  /** What's waiting for her, as a few counts (nothing shows when nothing waits). */
+  function needsStrip() {
+    var T = talkData(), chips = [];
+    var posts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length + (S.data.questions || []).length;
+    var qs = needsList().length + (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }).length;
+    var talks = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length;
+    var todo = (S.data.todo || []).length;
+    if (posts) chips.push(['perm_media', 'Posts', posts, function () { S.contentTab = 'review'; go('content'); }]);
+    if (qs) chips.push(['help', 'Questions', qs, function () { listSheet('Questions', function (b) { needsList().forEach(function (e) { b.appendChild(needsCard(e, function () { refresh().then(render); })); }); (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }).forEach(function (r) { b.appendChild(btn('tonal', 'About your suggestion', { icon: 'help', onclick: function () { openReportQuestions(r); } })); }); }); }]);
+    if (talks) chips.push(['forum', 'Talks', talks, function () { S.ideasTab = 'talk'; go('ideas'); }]);
+    if (todo) chips.push(['checklist', 'To do', todo, function () { listSheet('To do', function (b) { var td = todoCard(); if (td) { var tt = td.querySelector('.section-title'); if (tt) tt.textContent = ''; b.appendChild(td); } }); }]);
+    if (!chips.length) return null;
+    var row = h('div', { class: 'hm-needs' }, h('span', { class: 'label-s', text: 'Waiting' }));
+    chips.forEach(function (c) { row.appendChild(h('button', { type: 'button', class: 'hm-chip press soft', onclick: c[3], 'aria-label': c[2] + ' ' + c[1] }, icon(c[0]), h('span', { text: c[1] }), h('b', { text: String(c[2]) }))); });
+    return row;
+  }
+  function listSheet(title, fill) { K.sheet({ title: title, tall: true, build: function (ctl) { fill(ctl.body); } }); }
+  /** Start something: the four things she starts most (an idea and an artwork always among them). */
+  function startTiles() {
+    var mine = function (arr) { return (arr || []).filter(function (x) { return Date.parse(x.created || x.updated || 0) > Date.now() - 45 * 86400000; }).length; };
+    var opts = [
+      { k: 'idea', ic: 'lightbulb', t: 'Idea', use: mine(S.data.ideas) + 0.5, go: function () { openIdeaForm(); } },
+      { k: 'art', ic: 'brush', t: 'Artwork', use: mine(S.data.prints) + 0.4, go: function () { openPrint(null); } },
+      { k: 'inspo', ic: 'favorite', t: 'Inspo', use: mine(S.data.inspiration), go: function () { openInspo(null); } },
+      { k: 'note', ic: 'edit_note', t: 'Note', use: mine((S.data.notebook || []).filter(function (n) { return n.owner === 'artist'; })), go: function () { openNote(null); } },
+      { k: 'photo', ic: 'add_a_photo', t: 'Photos', use: mine((S.data.content || []).filter(function (c) { return c.source === 'Picked'; })) + 0.1, go: function () { openAddFootage(); } },
+      { k: 'goal', ic: 'flag', t: 'Goal', use: mine(S.data.goals) * 0.5, go: function () { addGoalAsk(null); } }
+    ];
+    var must = opts.filter(function (o) { return o.k === 'idea' || o.k === 'art'; }), rest = opts.filter(function (o) { return o.k !== 'idea' && o.k !== 'art'; }).sort(function (a, b) { return b.use - a.use; });
+    var four = must.concat(rest.slice(0, 2)).sort(function (a, b) { return b.use - a.use; });
+    var row = h('div', { class: 'hm-start' });
+    four.forEach(function (o) { row.appendChild(h('button', { type: 'button', class: 'hm-tile press soft', onclick: o.go, 'aria-label': 'New ' + o.t.toLowerCase() }, h('span', { class: 'hm-ic' }, icon(o.ic)), h('span', { text: o.t }))); });
+    return h('div', { class: 'hm-startwrap' }, h('div', { class: 'label-s', text: 'Start something' }), row);
+  }
+  function viewHomeArtistFull(main, hello) {
+    main.appendChild(h('button', { type: 'button', class: 'hm-link press', style: 'margin-bottom:8px', onclick: function () { S.homeFull = false; render(); } }, icon('arrow_back'), 'Back to the essentials'));
     var n = 1, rest = S.data.rest, needs = needsList();
     var day = Math.floor(Date.now() / 86400000);
     var news = rest ? [] : welcomeNews();
