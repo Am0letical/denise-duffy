@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0b1622">
 <title>Denise Duffy · Visual artist, Port Stephens</title>
-<meta name="description" content="Mixed-media art by Medowie artist Denise Duffy: Mind Garden, Pockets of Magic and the ocean. Prints, originals and gifts.">
+<meta name="description" content="Mixed-media art by Medowie artist Denise Duffy. Love, peace, joy, presence and wonder. Prints, originals and gifts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@300;400;500;700&display=swap">
@@ -1398,10 +1398,6 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
   <div class="top"><span class="lbl">Denise Duffy · Visual artist</span><button class="x" type="button" id="menuX" aria-label="Close menu">×</button></div>
   <nav>
     <a href="#/"><small>00</small><span>Home</span></a>
-    <a href="#/c/ocean"><small>01</small><span>Ocean</span></a>
-    <a href="#/c/forest"><small>02</small><span>Forest</span></a>
-    <a href="#/c/skies"><small>03</small><span>Skies &amp; Waters</span></a>
-    <a href="#/c/gratitude"><small>04</small><span>Living in Gratitude</span></a>
     <a href="#/gallery"><small>05</small><span>Living gallery</span></a>
     <a href="#/originals"><small>06</small><span>The originals</span></a>
     <a href="#/about"><small>07</small><span>About</span></a>
@@ -1413,8 +1409,8 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
 <div class="sticky" id="sticky"><div class="t" id="stickyT"></div><button class="btn" type="button" data-act="add">Add to cart</button></div>
 <footer id="footer">
   <div class="cols">
-    <div><div class="lbl" style="opacity:.6;margin-bottom:12px">Stop. Pause. Look around.</div><div style="font:500 italic 24px/1.35 var(--display);max-width:380px">Art to help you find the pockets of magic.</div></div>
-    <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Shop</div><a href="#/c/ocean">Ocean</a><a href="#/c/forest">Forest</a><a href="#/c/skies">Skies &amp; Waters</a><a href="#/c/gratitude">Living in Gratitude</a><a href="#/c/wear">Wear &amp; home</a><a href="#/c/sets">Sets &amp; gifts</a><a href="#/c/digital">Downloads</a></div>
+    <div><div class="lbl" style="opacity:.6;margin-bottom:12px">Love · Peace · Joy · Presence · Wonder</div><div style="font:500 italic 24px/1.35 var(--display);max-width:380px">Art rooted in place, memory and presence.</div></div>
+    <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Shop</div><a href="#/gallery">All the art</a><a href="#/c/wear">Wear &amp; home</a><a href="#/c/sets">Sets &amp; gifts</a><a href="#/c/digital">Downloads</a></div>
     <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Studio</div><a href="#/gallery">Living gallery</a><a href="#/originals">The originals</a><a href="#/about">About</a><a href="#/centre">At Irukandji</a></div>
     <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Help</div><a href="#/about">Delivery</a><a href="#/about">Returns</a><a href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a></div>
   </div>
@@ -3406,13 +3402,13 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     home: function () {
       var name = 'Denise Duffy'.split(' ');
       var word = name.map(function (w, wi) { return '<span class="ln">' + w.split('').map(function (c, i) { return '<span class="ch" style="transition-delay:' + (0.25 + (wi * 6 + i) * 0.05) + 's">' + c + '</span>'; }).join('') + '</span>'; }).join('');
-      var titles = ['Wonder', 'Ocean', 'Joy', 'Forest', 'Hope', 'Moon water ink', 'Calm', 'Skies & Waters', 'Living in Gratitude'];
+      var titles = ['Love', 'Peace', 'Joy', 'Presence', 'Wonder'];
       return '<section class="hero"><div class="bg par" data-speed="0.18" style="background-image:url(' + IMG.flowersMacro + ')"></div>' +
-        '<div class="accent">pockets<br>of magic</div>' + tag('flowersMacro', null, null, 'hot-hero') +
-        '<div class="base"><div class="cta"><a class="chipbtn" href="#/c/ocean">Shop the art +</a></div><div class="rule lbl"><span>Ocean</span><span>Forest</span><span>Skies &amp; Waters</span><span>Living in Gratitude</span></div><div class="word">' + word + '</div></div></section>' +
+        tag('flowersMacro', null, null, 'hot-hero') +
+        '<div class="base"><div class="cta"><a class="chipbtn" href="#/gallery">Shop the art +</a></div><div class="rule lbl"><span>Love</span><span>Peace</span><span>Joy</span><span>Presence</span><span>Wonder</span></div><div class="word">' + word + '</div></div></section>' +
 
         '<section class="sec wrap"><div class="lbl reveal" style="color:var(--muted);margin-bottom:22px">✦ The studio</div>' +
-        '<h2 class="statement" id="stmt">' + words('Stop. Pause. Look around for the') + ' <span class="w it">pockets</span> ' + words('of') + ' <span class="w it pk">magic</span>' + '</h2>' +
+        '<h2 class="statement" id="stmt">' + words('Art rooted in place,') + ' <span class="w it">memory</span> ' + words('and') + ' <span class="w it pk">presence</span>' + '</h2>' +
         '<div class="stmt-side"><p class="senses reveal">Stillness. Movement. Pattern. Light. Shadow. Scent. Texture. Touch.</p>' +
         '<p class="reveal bio">🌿 Finding hope and magic in the soft moments | Living with cancer<br>🎨 Visual art inspired by the beauty &amp; wonder of nature</p></div></section>' +
 

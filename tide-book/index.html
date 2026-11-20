@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1827,6 +1827,9 @@ body.map-full { overflow: hidden; }
 .hm-add { display: flex; align-items: center; gap: 6px; margin-top: 4px; padding: 2px 2px 2px 8px; border-radius: 14px; background: var(--surface-low); }
 .hm-add > .ms { color: var(--on-surface-variant); font-size: 20px; }
 .hm-add-in { flex: 1; min-width: 0; padding: 10px 0; border: 0; background: transparent; font: 400 15px/20px var(--font); color: inherit; outline: none; }
+.ts-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 6px 6px 6px 14px; border-radius: 16px; background: var(--surface-low); }
+.ts-row .seg { width: 170px; }
+.hm-add .icon-btn.on { color: #B3261E; }
 </style>
 
   <script>
@@ -1957,7 +1960,7 @@ var TIDE_SETTING_DEFAULTS = {
   editionBufferDays: 30, editionSize: 50, quickEditionPct: 50,
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
   todoHiddenArtist: '', todoHiddenAdmin: '',   // to-dos each person cleared (key → its words then; new words bring it back)
-  menuOrderArtist: [], menuOrderAdmin: [], notesFolders: [],   // the notes' folders   // the menu, in each person's own order (empty: the usual order)
+  menuOrderArtist: [], menuOrderAdmin: [], notesFolders: [], adminLinks: '',   // links she kept for the admin to fetch   // the notes' folders   // the menu, in each person's own order (empty: the usual order)
   // how she likes to work (the business setup): fed into every plan, question round and draft
   workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
   electricityKwhAud: 0.35,   // what the PC's electricity costs, per kWh (a typical NSW rate: change it to the rate on the power bill)
@@ -3646,7 +3649,7 @@ if (env.workDone) env.workDone('publish');
       role: role, brand: env.brand, today: today,
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
-      posting: publishData.posting, todo: todoShown(publishData.todo, role), todoCleared: todoClearedCount(publishData.todo, role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
+      posting: publishData.posting, todo: todoShown(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), todoCleared: todoClearedCount(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
       notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
@@ -3749,6 +3752,56 @@ if (env.workDone) env.workDone('publish');
         status: 'Suggested', artistDecision: '', adminDecision: '', rejectedBy: '', rejectReason: '', source: text(p.source, 20) || 'Note', updated: now });
       return id;
     });
+  }
+  /** "Use on my website": an idea's wording goes onto her website's draft, each part on the page it's written for
+   *  (headings that say Home, About or the footer line), and any values it names into Our direction. She looks before publishing. */
+  /** A link Tide Book couldn't read (a Dropbox Transfer, a Drive folder): kept on the admin's to-do list. */
+  function keepLinkForAdmin(url, note) {
+    need(['admin', 'artist']);
+    url = text(url, 2000); if (!/^https?:\/\//.test(url)) fail('That doesn’t look like a link.');
+    var L0 = []; try { L0 = JSON.parse(env.settings.get().adminLinks || '[]'); } catch (e) { L0 = []; }
+    L0.push({ url: url, note: text(note, 300), at: nowIso() });
+    env.settings.set({ adminLinks: JSON.stringify(L0.slice(-30)) });
+    try { publish.push('admin', 'A link to fetch', url.slice(0, 120)); } catch (e) {}
+    return { ok: true };
+  }
+  function adminLinkTodos() {
+    var L0 = []; try { L0 = JSON.parse(env.settings.get().adminLinks || '[]'); } catch (e) { L0 = []; }
+    return L0.map(function (l) { var host = (/https?:\/\/([^/]+)/.exec(l.url) || [])[1] || 'a link'; return { key: 'lk-' + l.at, text: 'Fetch from ' + host, why: (l.note ? l.note + ' · ' : '') + l.url, where: 'Admin' }; });
+  }
+  function ideaToWebsite(id) {
+    need(['admin', 'artist']);
+    var x = find('ideas', id), note = String(x.note || '');
+    if (!note.trim()) fail('This idea has no words to use yet.');
+    function plainMd(s) { return String(s || '').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/`([^`]+)`/g, '$1').replace(/^[-*]\s+/gm, '').replace(/^---+$/gm, '').replace(/\n{3,}/g, '\n\n').trim(); }
+    var parts = [], cur = null;
+    note.split('\n').forEach(function (line) {
+      var m = /^#{2,4}\s+(.+)$/.exec(line);
+      if (m) { cur = { head: m[1].trim(), body: [] }; parts.push(cur); return; }
+      if (/^#\s+/.test(line)) return;
+      if (cur) cur.body.push(line);
+    });
+    var placed = [], values = '';
+    function pageFor(head) { return /^\s*(home|shop|footer|website)|mission|tagline/i.test(head) && !/^\s*about/i.test(head) ? '#/' : /about|statement|story/i.test(head) ? '#/about' : ''; }
+    parts.forEach(function (p) {
+      var body = p.body.join('\n'), vm = /Five Core Values:\*?\*?\s*([^\n(]+)/i.exec(body) || /Core Values:\*?\*?\s*([^\n(]+)/i.exec(body);
+      if (vm && !values) values = plainMd(vm[1]).replace(/\s*•\s*/g, ' • ').trim();
+      var route = pageFor(p.head);
+      if (!route || /instagram/i.test(p.head)) return;
+      var txt = plainMd(body); if (!txt) return;
+      var first = /^\*\*([^*]{3,90})\*\*\s*$/m.exec(body), heading = first ? first[1].trim() : p.head.replace(/^(Home|About Page|About)\s*[/–-]\s*/i, '').trim();
+      if (first) txt = plainMd(body.replace(first[0], ''));
+      if (/footer|tagline/i.test(p.head)) heading = '';
+      siteEditor.addContent(route, 'text', { h: heading, p: txt.slice(0, 4000) }, {});
+      placed.push({ page: route === '#/about' ? 'About' : 'Home', heading: heading || p.head });
+    });
+    if (!parts.length) { siteEditor.addContent('#/', 'text', { h: text(x.title, 120), p: plainMd(note).slice(0, 4000) }, {}); placed.push({ page: 'Home', heading: x.title }); }
+    if (values) {
+      var have = rows('direction').filter(function (d) { return !d.deleted && /values/i.test(d.title || ''); })[0];
+      if (have) direction.api.updateDirection(have.id, { title: have.title, body: values }); else direction.api.addDirection({ title: 'Our values', body: values });
+    }
+    env.lock(function () { env.table('ideas').update(id, { linkedTo: joinLink(x.linkedTo, 'Website draft'), updated: nowIso() }); });
+    return { placed: placed, values: values };
   }
   // ---------- "Turn into…" for a note (LogicNoteTurn.gs)
   var noteTurn = tideNoteTurn(env, { fail: fail, need: need, text: text, list: list, notebook: function () { return notebook; },
@@ -4668,7 +4721,7 @@ if (env.workDone) env.workDone('publish');
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveMenuOrder: saveMenuOrder, clearTodo: clearTodo, unclearTodo: unclearTodo, publishWebsite: publishWebsite, chatResult: chatResult,
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveMenuOrder: saveMenuOrder, clearTodo: clearTodo, unclearTodo: unclearTodo, ideaToWebsite: ideaToWebsite, keepLinkForAdmin: keepLinkForAdmin, publishWebsite: publishWebsite, chatResult: chatResult,
       websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
     },
     research: research,
@@ -8128,8 +8181,8 @@ var TIDE_GUIDE = [
     say: 'The round button, bottom left, says where you are. Tap it for every part of Tide Book.',
     steps: ['Tap the button in the bottom-left corner.', 'Tap where you want to go.', 'A red number means something is waiting there.'], go: { view: 'home', find: '#menu-bubble', tip: 'Your menu.' } },
   { id: 'g-home', area: 'Getting around', to: 'all', icon: 'home', title: 'Home',
-    say: 'What needs you today, your plan’s next step, and shortcuts to the things you do most.',
-    steps: ['Open Home from the menu.', 'The cards at the top are what’s waiting for you.', 'Under your plan, “This week” opens your calendar.', 'To change the order of Home, use “Arrange your home page” at the bottom.'], go: { view: 'home', tip: 'Home: what needs you today.' } },
+    say: 'Your milestone’s next step, your list for today, what’s waiting, and Start something.',
+    steps: ['Open Home from the menu.', 'Do it or Done for the next step.', 'Add to today, and tick things off.', 'Tap a Waiting count to open it.', 'Start something: the four big symbols.'], go: { view: 'home', tip: 'Home: the essentials.' } },
   { id: 'g-report', area: 'Getting around', to: 'all', icon: 'feedback', title: 'Tell Jye something isn’t right',
     say: 'The small speech button at the top right of every page sends a note (and a screenshot) straight to Jye.',
     steps: ['Tap the speech button at the top right.', 'Say what happened or what you’d like.', 'Tap Send. Tide Book may ask a quick question so it’s done the way you mean.'], go: { view: 'home', find: '.fb-bubble', tip: 'Tell Jye here.' } },
@@ -8138,14 +8191,14 @@ var TIDE_GUIDE = [
     steps: ['Open the thing.', 'Tap Park for now and pick a day, or Remove.', 'Parked things come back by themselves on their day, with a reminder the day before.', 'Everything has an Undo.'] },
   { id: 'g-goals', area: 'Goals and your plan', to: 'all', icon: 'wb_sunny', title: 'Your goals, as a night sky',
     say: 'Milestones (big aims) are suns, your goals are the planets around them, and each goal’s steps are its moons.',
-    steps: ['Open Ideas › Goals.', 'Tap “Add a milestone” at the top, name it, and tick its goals (Tide Book ticks the ones that fit).', 'Tap “Add a goal” on the map. Tide Book picks the milestone it fits.', 'Tap a planet to choose it: drag it, or use Open, Shrink or Bin.', 'Drag a sun anywhere: its planets follow when you let go.', 'Full screen is at the top right.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Add a goal here.' } },
+    steps: ['Open Goals.', 'Tap “Add a milestone” at the top, name it, and tick its goals (Tide Book ticks the ones that fit).', 'Tap “Add a goal” on the map. Tide Book picks the milestone it fits.', 'Tap a planet to choose it: drag it, or use Open, Shrink or Bin.', 'Drag a sun anywhere: its planets follow when you let go.', 'Full screen is at the top right.'],
+    go: { view: 'goals', state: { goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Add a goal here.' } },
   { id: 'g-steps', area: 'Goals and your plan', to: 'all', icon: 'checklist', title: 'Steps, like a reminders list',
     say: 'Under the sky, each goal’s steps: tick them off, add one in a line, and tap Tide Book’s suggestions.',
-    steps: ['Scroll below the sky in Ideas › Goals.', 'Tap a circle to tick a step off.', 'Type in “Add a step” and press Enter.', 'Tap a step for its tools, or ⋮ for more.'], go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gsteps', tip: 'Your steps.' } },
+    steps: ['Scroll below the sky in Goals.', 'Tap a circle to tick a step off.', 'Type in “Add a step” and press Enter.', 'Tap a step for its tools, or ⋮ for more.'], go: { view: 'goals', state: { goalMode: 'map' }, find: '.gsteps', tip: 'Your steps.' } },
   { id: 'g-order', area: 'Goals and your plan', to: 'all', icon: 'format_list_numbered', title: 'Goals in order of importance',
     say: '“In order” lines your goals up from the sun, most important nearest. The first one sets the order of everything else.',
-    steps: ['In Ideas › Goals, tap In order.', 'Tap a planet, then drag it left or right.', 'The nearest one is your “Now” goal.'], go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'order' }, tip: 'Most important nearest the sun.' } },
+    steps: ['In Goals, tap In order.', 'Tap a planet, then drag it left or right.', 'The nearest one is your “Now” goal.'], go: { view: 'goals', state: { goalMode: 'order' }, tip: 'Most important nearest the sun.' } },
   { id: 'g-plan', area: 'Goals and your plan', to: 'all', icon: 'flag', title: 'Plan a goal, a step at a time',
     say: 'Open a goal for its steps. Tide Book can plan them with you, and each step comes with the tools to do it.',
     steps: ['Tap a goal, then Open.', 'Tap “Plan it with me” for a few questions, or add steps yourself.', 'Tap a step for its tools, and tick it when it’s done.', 'Give a step a day, and it shows on your calendar.'] },
@@ -8164,6 +8217,11 @@ var TIDE_GUIDE = [
   { id: 'g-menu-order', area: 'Getting around', to: 'all', icon: 'swap_vert', title: 'Put the menu in your order',
     say: 'The menu (the round button at the bottom) can be in whatever order suits you.',
     steps: ['Tap the menu button, then Arrange at the bottom.', 'Hold the dotted handle and drag each one up or down.', 'Tap Save this order.'], go: { view: 'home', tip: 'The menu button is bottom left.' } },
+  { id: 'g-text-size', area: 'Getting around', to: 'all', icon: 'format_size', title: 'Bigger text', say: 'Make everything bigger on this phone.', steps: ['Open Settings.', 'Text size: A, A+ or A++.'], go: { view: 'settings', tip: 'At the top.' } },
+  { id: 'g-shortcuts', area: 'Getting around', to: 'artist', icon: 'touch_app', title: 'Shortcuts on the icon', say: 'Long-press the Tide Book icon on your phone: Today, Calendar, Inspo, New note.', steps: ['Long-press the Tide Book icon.', 'Tap where you want to go.'], go: { view: 'home', tip: 'From your phone’s home screen.' } },
+  { id: 'g-share', area: 'Getting around', to: 'artist', icon: 'send', title: 'Share to Tide Book', say: 'From Photos, Dropbox or Instagram: Share › Tide Book, then pick Inspo, Photos for posts or a Note.', steps: ['In another app, tap Share.', 'Pick Tide Book.', 'Choose where it goes.'], go: { view: 'home', tip: 'From another app.' } },
+  { id: 'g-link-photos', area: 'Posts', to: 'artist', icon: 'link', title: 'Photos from a Dropbox link', say: 'Paste a Dropbox or Google Drive link in Add photos, and its photos and videos come in.', steps: ['Start something › Photos (or Posts › Add).', 'Tap From a link and paste.', 'Tap Upload.'], go: { view: 'content', tip: 'Add photos.' } },
+  { id: 'g-use-website', area: 'Your website', to: 'artist', icon: 'language', title: 'Use an idea’s words on your website', say: '“Use on my website” on an idea puts its wording on your website’s draft.', steps: ['Open the idea.', 'Tap Use on my website.', 'Check the draft, then Publish.'], go: { view: 'ideas', tip: 'Open an idea.' } },
   { id: 'g-mentor-chat', area: 'Mentors', to: 'artist', icon: 'forum', title: 'Just chat',
     say: 'A conversation about anything: ask a question, think out loud, talk something through. It’s yours alone.',
     steps: ['Open the menu and tap Mentors.', 'Tap Just chat.', 'Write, or tap one of the replies it offers. Your own words always work.'], go: { view: 'mentors', find: '.mn-chat', tip: 'Just chat.' } },
@@ -8193,7 +8251,7 @@ var TIDE_GUIDE = [
     steps: ['Open Ideas › Ideas.', 'Tap New idea and say it in a few words.', 'Tide Book looks into it and gives it a score.', 'Open it to take it further: a product, an artwork, or part of your plan.'], go: { view: 'ideas', state: { ideasTab: 'ideas' }, find: '.fab', tip: 'New idea.' } },
   { id: 'g-talk', area: 'Ideas', to: 'all', icon: 'forum', title: 'Talk it through',
     say: 'A gentle back and forth to work something out. What you say is yours: only the write-up you choose reaches Jye.',
-    steps: ['Open Ideas › Talk.', 'Start a conversation about anything.', 'Answer the questions with a tap, or in your own words.', 'Check the write-up before anything is shared.'], go: { view: 'ideas', state: { ideasTab: 'talk' }, tip: 'Talk it through here.' } },
+    steps: ['Open Mentors › Talk it through.', 'Start a conversation about anything.', 'Answer the questions with a tap, or in your own words.', 'Check the write-up before anything is shared.'], go: { view: 'mentors', tip: 'Talk it through here.' } },
   { id: 'g-products', area: 'Ideas', to: 'all', icon: 'inventory_2', title: 'From a product idea to on sale',
     say: 'A product goes from idea to on sale one step at a time. Tide Book does what it can; you say go.',
     steps: ['On an idea, tap “Make it a product”.', 'In Ideas › Products, tap the step at the top each time.', 'When it’s on sale, its shop page is made for you: add a photo, then publish.'], go: { view: 'ideas', state: { ideasTab: 'products' }, tip: 'Each product shows its next step.' } },
@@ -8258,6 +8316,18 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-tidy-places', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Goals and talks have their own places',
+    say: 'Goals are in the menu now (next to Calendar). Talk it through is with your Mentors, so talking things over is in one place. Home is just the essentials.',
+    steps: ['Open the menu: Goals has its own place.', 'Mentors › Talk it through for your talks.'], go: { view: 'goals', tip: 'Your goals.' } },
+  { id: '2026-11-20-website-words', on: '2026-11-20', to: 'artist', icon: 'language', title: 'Your wording on your website',
+    say: 'An idea with website wording (like your brand foundation) has “Use on my website”: it puts the words on your website’s draft, each on its page, and your values into Our direction. Your website’s front now uses your values, not the series names.',
+    steps: ['Open the idea in Ideas.', 'Tap “Use on my website”.', 'Look at your website’s draft, then Publish.'], go: { view: 'ideas', tip: 'Open an idea.' } },
+  { id: '2026-11-20-links-share', on: '2026-11-20', to: 'artist', icon: 'link', title: 'Photos from a link, and the Share menu',
+    say: 'Add photos has “From a link”: paste a Dropbox or Google Drive link and the photos come in. From any app, Share › Tide Book saves to Inspo, Photos for posts or a Note. Long-press the Tide Book icon for Today, Calendar, Inspo and New note.',
+    steps: ['Add photos › From a link, then paste.', 'In Dropbox, Photos or Instagram: Share › Tide Book.', 'Long-press the Tide Book icon on your phone.'], go: { view: 'home', tip: 'Start something.' } },
+  { id: '2026-11-20-easier', on: '2026-11-20', to: 'artist', icon: 'format_size', title: 'Bigger text, and say it',
+    say: 'Settings has Text size (A, A+, A++). On Home, the microphone by “Add to today” lets you say it instead of typing.',
+    steps: ['Settings › Text size.', 'Home › the microphone, then speak.'], go: { view: 'settings', tip: 'Text size is at the top.' } },
   { id: '2026-11-20-today-list', on: '2026-11-20', to: 'artist', icon: 'today', title: 'Your own list for today',
     say: 'Home has a Today list: your own things for the day, to tick off, and a line to add one. In Calendar, the big Add button adds your own things to any day (one per line makes a list), with a note if you like.',
     steps: ['On Home, type in “Add to today…” and press Enter.', 'Tap a circle to tick one off.', 'In Calendar, tap Add for another day, or a list.'], go: { view: 'home', find: '.hm-today', tip: 'Your list for today.' } },
@@ -8298,8 +8368,8 @@ var TIDE_CHANGES = [
     go: { view: 'calendar', find: '.cal-tools', tip: 'Plan, check in, and the sliders.' } },
   { id: '2026-11-19-goal-steps', on: '2026-11-19', to: 'all', icon: 'checklist', title: 'Your steps, like a reminders list',
     say: 'Under your goals sky, every goal’s steps are listed: tick them off, add one in a line, and tap Tide Book’s suggestions to add them.',
-    steps: ['Open Ideas › Goals and scroll below the sky.', 'Tap a circle to tick a step off (there’s an Undo).', 'Type in “Add a step” and press Enter.', 'Tap a suggestion to add it, or “Plan it with me” for a goal with none.', 'Tap a step for its tools, or ⋮ to change it, give it a day, move it or remove it.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gsteps', tip: 'Your steps.' } },
+    steps: ['Open Goals and scroll below the sky.', 'Tap a circle to tick a step off (there’s an Undo).', 'Type in “Add a step” and press Enter.', 'Tap a suggestion to add it, or “Plan it with me” for a goal with none.', 'Tap a step for its tools, or ⋮ to change it, give it a day, move it or remove it.'],
+    go: { view: 'goals', state: { goalMode: 'map' }, find: '.gsteps', tip: 'Your steps.' } },
   { id: '2026-11-19-how-to', on: '2026-11-19', to: 'all', icon: 'menu_book', title: 'How to: every part of Tide Book',
     say: 'Settings has a How to page now: every way to use Tide Book, a step at a time, with Show me.',
     steps: ['Open the menu and tap Settings.', 'Tap “How to” at the top.', 'Tap anything for its steps, then Show me. Or search for a word.'],
@@ -8310,12 +8380,12 @@ var TIDE_CHANGES = [
     go: { view: 'money', find: '.exp-ideas', tip: 'Suggested expenses.' } },
   { id: '2026-11-19-sky-order', on: '2026-11-19', to: 'all', icon: 'wb_sunny', title: 'Your goals sky: in order, and suns you can move',
     say: 'Tap “In order” and the same planets glide into a line from the sun, most important nearest. Drag a sun anywhere: when you let go, its planets make their way over.',
-    steps: ['In Ideas › Goals, switch between Map and In order and watch them move.', 'In order, tap a planet, then drag it left or right to change its place.', 'On the map, drag a sun anywhere. Its planets follow once you let go.', 'Tap “Full screen” at the top right for the whole screen.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'order' }, find: '.sky-full', tip: 'Full screen is here.' } },
+    steps: ['In Goals, switch between Map and In order and watch them move.', 'In order, tap a planet, then drag it left or right to change its place.', 'On the map, drag a sun anywhere. Its planets follow once you let go.', 'Tap “Full screen” at the top right for the whole screen.'],
+    go: { view: 'goals', state: { goalMode: 'order' }, find: '.sky-full', tip: 'Full screen is here.' } },
   { id: '2026-11-19-goal-sky', on: '2026-11-19', to: 'all', icon: 'wb_sunny', title: 'Your goals, as a night sky',
     say: 'The goals map is a little solar system now. A milestone (a big aim) is a sun; the goals that lead to it orbit it like planets; each goal’s steps are its moons.',
-    steps: ['In Ideas › Goals, tap “Add a milestone” at the top left, name it, and tick the goals that belong to it.', 'Tap a planet to choose it. Then drag it into a sun’s orbit: it glides into place beside the others.', 'Drop a planet on another to work on them together.', 'Chosen planets have Open, Shrink and Bin, kept apart so you never bin one by mistake. Bin has an Undo.', 'Tap a moon to see that step and tick it off.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Start with a milestone.' } },
+    steps: ['In Goals, tap “Add a milestone” at the top left, name it, and tick the goals that belong to it.', 'Tap a planet to choose it. Then drag it into a sun’s orbit: it glides into place beside the others.', 'Drop a planet on another to work on them together.', 'Chosen planets have Open, Shrink and Bin, kept apart so you never bin one by mistake. Bin has an Undo.', 'Tap a moon to see that step and tick it off.'],
+    go: { view: 'goals', state: { goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Start with a milestone.' } },
   { id: '2026-11-19-tax-guide', on: '2026-11-19', to: 'all', icon: 'receipt_long', title: 'Expenses, filed for tax time',
     say: 'When you record an expense, Tide Book says whether it’s likely claimable, and files it that way for your accountant.',
     steps: ['On Money, tap “Record an expense”.', 'Choose what it was for and who was paid. The note underneath says if it’s likely claimable, and why.', 'If only part was for the business (like the phone), tap how much.', 'Money › For tax time shows the year’s claimable total and any receipts still missing.'],
@@ -8355,8 +8425,8 @@ var TIDE_CHANGES = [
     go: { view: 'ideas', state: { ideasTab: 'products' }, find: '.next-line, .list-item, .card', tip: 'Each product shows its next step here.' } },
   { id: '2026-11-18-goal-map-full', on: '2026-11-18', to: 'artist', icon: 'open_in_full', title: 'Your goals map: full screen, and dots',
     say: 'Open the goals map to the whole screen, and shrink any goal down to a dot to make room.',
-    steps: ['In Ideas › Goals, tap the corner button with two arrows to go full screen.', 'To move a goal, hold the dotted handle on its right and drag. Anywhere else, your finger scrolls.', 'Tap “–” on a goal to shrink it to a dot. Tap the dot to open it again.', 'The button with two arrows pointing in shrinks every goal but the ones you’re on now.', 'Tap Done to come back.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gz', tip: 'Full screen and dots are here.' } },
+    steps: ['In Goals, tap the corner button with two arrows to go full screen.', 'To move a goal, hold the dotted handle on its right and drag. Anywhere else, your finger scrolls.', 'Tap “–” on a goal to shrink it to a dot. Tap the dot to open it again.', 'The button with two arrows pointing in shrinks every goal but the ones you’re on now.', 'Tap Done to come back.'],
+    go: { view: 'goals', state: { goalMode: 'map' }, find: '.gz', tip: 'Full screen and dots are here.' } },
   { id: '2026-11-18-menu-bubble', on: '2026-11-18', to: 'all', icon: 'apps', title: 'The menu is a bubble now',
     say: 'The bar along the bottom is now one round button, bottom left. It says where you are; tap it for every part of Tide Book.',
     steps: ['Tap the button in the bottom-left corner.', 'Tap where you want to go: Home, Posts, Artworks, Ideas, Calendar, Website, Money or Settings.', 'A red number means something is waiting there.', 'More of each page fits on your screen now.'],
@@ -8392,11 +8462,11 @@ var TIDE_CHANGES = [
   { id: '2026-11-18-goals-together', on: '2026-11-18', to: 'artist', icon: 'link', title: 'Work on two or more goals together',
     say: 'Group goals and they all move forward at once, each with its own steps, instead of waiting for each other.',
     steps: ['Go to Ideas, then Goals.', 'Drag one goal and drop it on another, then tap “Work on them together”.', 'Drop a third on either of them to add it to the group.', 'Every goal in the group shows its next step on Home. To take one out, drop it on the group again.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.goal-map', tip: 'Drag one goal onto another to link them.' } },
+    go: { view: 'goals', state: { goalMode: 'map' }, find: '.goal-map', tip: 'Drag one goal onto another to link them.' } },
   { id: '2026-11-18-map-zoom', on: '2026-11-18', to: 'artist', icon: 'zoom_in', title: 'Zoom in and out on your goals map',
     say: 'Pinch the map with two fingers to zoom, or use the buttons in its corner.',
     steps: ['Go to Ideas, then Goals.', 'Pinch with two fingers to zoom in or out.', 'Drag an empty spot to move around.', 'Tap the square button in the corner to see the whole map again.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.gz', tip: 'Zoom here, or pinch the map.' } },
+    go: { view: 'goals', state: { goalMode: 'map' }, find: '.gz', tip: 'Zoom here, or pinch the map.' } },
   { id: '2026-11-18-plan-buttons', on: '2026-11-18', to: 'artist', icon: 'flag', title: 'Your plan has its buttons on Home',
     say: 'The step you’re on now shows the buttons you need, right on the plan card.',
     steps: ['On Home, find your plan card near the top.', 'Tap a button under the step, like “Upload and post”.', 'When the step is finished, tap “This step is done”.'],
@@ -8412,7 +8482,7 @@ var TIDE_CHANGES = [
   { id: '2026-11-18-goals', on: '2026-11-18', to: 'artist', icon: 'flag', title: 'Your launch plan is now under Goals',
     say: 'Ideas has a Goals tab. The goal at the top decides what comes next, and anything for a later step waits its turn.',
     steps: ['Go to Ideas, then Goals.', 'Tap a goal to see its steps and tick them off.', 'Tap an empty spot on the map to add a goal there.', 'Under “In order”, drag the most important goal to the top.'],
-    go: { view: 'ideas', state: { ideasTab: 'goals', goalMode: 'map' }, find: '.goal-map', tip: 'Tap a goal to open it, or an empty spot to add one.' } },
+    go: { view: 'goals', state: { goalMode: 'map' }, find: '.goal-map', tip: 'Tap a goal to open it, or an empty spot to add one.' } },
   { id: '2026-11-18-pause', on: '2026-11-18', to: 'artist', icon: 'calendar_month', title: 'Pause something until a day you choose',
     say: 'Pause a product or idea until a date. You get a reminder the day before, and it comes back by itself.',
     steps: ['Open a product or an idea.', 'Tap “Pause it” near the bottom.', 'Pick a day, like “In a month”. Changed your mind? Tap Undo.'],
@@ -12698,9 +12768,9 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ navigation
   var NAV_ALL = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
+    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['goals', 'Goals', 'flag'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['goals', 'Goals', 'flag'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
   var NAV = NAV_ALL.slice();
   /** The menu in this person's order (anything new goes where it sits by default). */
   function navOrder() {
@@ -13578,7 +13648,7 @@ var Kit = (function () {
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, notes: viewNotes, mentors: viewMentors, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, notes: viewNotes, mentors: viewMentors, goals: viewGoalsPage, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
     if ((S.view === 'home' || !S.view) && !main.querySelector('.hm-foot')) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -13890,7 +13960,6 @@ var Kit = (function () {
   }
   /** Her home: only what starts something new and finishes the milestone she's on. Everything else is one tap away. */
   function viewHomeArtist(main, hello) {
-    if (S.homeFull) return viewHomeArtistFull(main, hello);
     var rest = S.data.rest, n = 1;
     pageTitle(main, hello + ', ' + artist());
     if (rest) main.appendChild(rise(h('div', { class: 'hm-rest' }, icon('spa'), h('span', { class: 'grow', text: 'Taking it easy' + (rest.until ? ' · ' + restDay(rest.until) : '') }), btn('tonal', 'I’m back', { sm: true, icon: 'wb_sunny', onclick: function (e) { setRest(e.currentTarget, 0); } })), n++));
@@ -13900,7 +13969,6 @@ var Kit = (function () {
     main.appendChild(rise(startTiles(), n++));
     var unseen = newsList(false).length;
     main.appendChild(rise(h('div', { class: 'hm-foot' },
-      h('button', { type: 'button', class: 'hm-link press', onclick: function () { S.homeFull = true; render(); } }, icon('apps'), 'Everything'),
       unseen ? h('button', { type: 'button', class: 'hm-link press', onclick: function () { whatsNew(false); } }, icon('campaign'), 'New · ' + unseen) : null,
       rest ? null : h('button', { type: 'button', class: 'hm-link press', 'aria-label': 'Taking it easy?', onclick: openRest }, icon('spa'), 'Rest'),
       h('button', { type: 'button', class: 'hm-link press', onclick: function () { K.haptic(); go('settings'); } }, icon('settings'), 'Settings')), n++));
@@ -13922,9 +13990,9 @@ var Kit = (function () {
     var mOpen = ms.filter(function (mm) { return goals.some(function (g) { return g.milestoneId === mm.id; }); })[0];
     if (!pick && mOpen) {
       var gm = goals.filter(function (g) { return g.milestoneId === mOpen.id; }).sort(function (a, b) { return (Number(a.rank) || 99) - (Number(b.rank) || 99); })[0];
-      card.append(h('button', { type: 'button', class: 'hm-k press', onclick: function () { S.ideasTab = 'goals'; go('ideas'); } }, icon('wb_sunny'), h('span', { text: mOpen.title }), icon('chevron_right')),
+      card.append(h('button', { type: 'button', class: 'hm-k press', onclick: function () { go('goals'); } }, icon('wb_sunny'), h('span', { text: mOpen.title }), icon('chevron_right')),
         h('div', { class: 'hm-row' }, svgRing(0, 22, 2 * Math.PI * 22), h('div', { class: 'grow' }, h('div', { class: 'hm-step', text: gm.title }), h('div', { class: 'hm-sub', text: 'No steps yet' }))),
-        h('div', { class: 'hm-acts' }, btn('filled', 'Plan it', { icon: 'forum', onclick: function () { openGoal(gm.id); } }), btn('tonal', 'Steps', { icon: 'checklist', onclick: function () { S.ideasTab = 'goals'; go('ideas'); setTimeout(function () { var e = document.querySelector('.gsteps'); if (e) e.scrollIntoView({ block: 'start' }); }, 500); } })));
+        h('div', { class: 'hm-acts' }, btn('filled', 'Plan it', { icon: 'forum', onclick: function () { openGoal(gm.id); } }), btn('tonal', 'Steps', { icon: 'checklist', onclick: function () { go('goals'); setTimeout(function () { var e = document.querySelector('.gsteps'); if (e) e.scrollIntoView({ block: 'start' }); }, 500); } })));
       return card;
     }
     if (!pick) pick = nextOf(goals.filter(function (g) { return !g.parentId; }));
@@ -13932,7 +14000,7 @@ var Kit = (function () {
       var g0 = goals[0];
       card.append(h('div', { class: 'hm-k' }, icon('flag'), h('span', { text: g0 ? g0.title : 'Your next goal' })),
         h('div', { class: 'hm-step', text: g0 ? 'Plan the next step' : 'What do you want to get to?' }),
-        h('div', { class: 'hm-acts' }, btn('filled', g0 ? 'Plan it' : 'Add a goal', { icon: g0 ? 'forum' : 'add', onclick: function () { if (g0) openGoal(g0.id); else { S.ideasTab = 'goals'; go('ideas'); } } })));
+        h('div', { class: 'hm-acts' }, btn('filled', g0 ? 'Plan it' : 'Add a goal', { icon: g0 ? 'forum' : 'add', onclick: function () { if (g0) openGoal(g0.id); else { go('goals'); } } })));
       return card;
     }
     var all = m ? goals.filter(function (g) { return g.milestoneId === m.id; }).concat((S.data.goals || []).filter(function (g) { return g.status === 'Done' && g.milestoneId === m.id; })) : [pick.g];
@@ -13941,7 +14009,7 @@ var Kit = (function () {
     var ring = svgRing(pct, R, C);
     var g = pick.g, s = pick.s;
     card.append(
-      h('button', { type: 'button', class: 'hm-k press', onclick: function () { S.ideasTab = 'goals'; go('ideas'); } }, icon(m ? 'wb_sunny' : 'flag'), h('span', { text: m ? m.title : g.title }), icon('chevron_right')),
+      h('button', { type: 'button', class: 'hm-k press', onclick: function () { go('goals'); } }, icon(m ? 'wb_sunny' : 'flag'), h('span', { text: m ? m.title : g.title }), icon('chevron_right')),
       h('div', { class: 'hm-row' }, ring, h('div', { class: 'grow' },
         h('div', { class: 'hm-step', text: s.text }),
         h('div', { class: 'hm-sub', text: (m ? g.title + ' · ' : '') + (s.due ? calWhen(s) : 'Next') }))),
@@ -13971,7 +14039,7 @@ var Kit = (function () {
     var todo = (S.data.todo || []).length;
     if (posts) chips.push(['perm_media', 'Posts', posts, function () { S.contentTab = 'review'; go('content'); }]);
     if (qs) chips.push(['help', 'Questions', qs, function () { listSheet('Questions', function (b) { needsList().forEach(function (e) { b.appendChild(needsCard(e, function () { refresh().then(render); })); }); (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }).forEach(function (r) { b.appendChild(btn('tonal', 'About your suggestion', { icon: 'help', onclick: function () { openReportQuestions(r); } })); }); }); }]);
-    if (talks) chips.push(['forum', 'Talks', talks, function () { S.ideasTab = 'talk'; go('ideas'); }]);
+    if (talks) chips.push(['forum', 'Talks', talks, function () { go('mentors'); }]);
     if (todo) chips.push(['checklist', 'To do', todo, function () { listSheet('To do', function (b) { var td = todoCard(); if (td) { var tt = td.querySelector('.section-title'); if (tt) tt.textContent = ''; b.appendChild(td); } }); }]);
     if (!chips.length) return null;
     var row = h('div', { class: 'hm-needs' }, h('span', { class: 'label-s', text: 'Waiting' }));
@@ -13995,167 +14063,6 @@ var Kit = (function () {
     var row = h('div', { class: 'hm-start' });
     four.forEach(function (o) { row.appendChild(h('button', { type: 'button', class: 'hm-tile press soft', onclick: o.go, 'aria-label': 'New ' + o.t.toLowerCase() }, h('span', { class: 'hm-ic' }, icon(o.ic)), h('span', { text: o.t }))); });
     return h('div', { class: 'hm-startwrap' }, h('div', { class: 'label-s', text: 'Start something' }), row);
-  }
-  function viewHomeArtistFull(main, hello) {
-    main.appendChild(h('button', { type: 'button', class: 'hm-link press', style: 'margin-bottom:8px', onclick: function () { S.homeFull = false; render(); } }, icon('arrow_back'), 'Back to the essentials'));
-    var n = 1, rest = S.data.rest, needs = needsList();
-    var day = Math.floor(Date.now() / 86400000);
-    var news = rest ? [] : welcomeNews();
-    pageTitle(main, hello + ', ' + artist(), rest ? 'Taking it easy. Nothing here needs you.' : homeLine(needs, day, news));
-    // every section is named as it's added, then laid out in her order
-    var markedTo = main.children.length;
-    function mark(key) { for (var i = markedTo; i < main.children.length; i++) main.children[i].dataset.hs = key; markedTo = main.children.length; }
-
-    if (!S.data.settings.bizSetupDone && !rest) main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openBizGuide(); } },
-      h('span', { class: 'ic' }, icon('tune')), h('span', { class: 'grow' }, h('b', { text: 'Set up your business' }),
-        h('span', { class: 'body-m', text: 'A few taps: who makes your things, your prices and how you like to work. Tide Book uses it everywhere.' })), icon('chevron_right')), n++));
-    mark('setup');
-    var cover = coverPrint();
-    if (cover) {
-      main.appendChild(rise(h('button', { class: 'cover press soft', type: 'button', 'aria-label': 'Open ' + cover.title, onclick: function () { openPrint(cover.id); } },
-        thumbImg(cover.thumbIds[0], 'cover-img'),
-        h('span', { class: 'cover-cap' }, h('b', { text: cover.title }), h('span', { text: cover.status === 'Live' ? 'Your artwork, on sale now' : 'Your artwork' }))), n++));
-    }
-
-    mark('cover');
-    var plc = rest ? null : planCard();
-    if (plc) main.appendChild(rise(plc, n++));
-    mark('plan');
-    // inspiration, right on the home page: save it, and see the last few
-    var ins = (S.data.inspiration || []).slice(0, 3);
-    var insCard = h('div', { class: 'card pad', style: 'margin-bottom:14px' },
-      h('div', { class: 'row', style: 'gap:12px;align-items:center' }, h('span', { class: 'ic' }, icon('favorite')),
-        h('div', { class: 'grow' }, h('div', { class: 'title-m', text: 'Saw something that inspired you?' }),
-          h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'A screenshot, a link, or a word.' }))),
-      h('div', { class: 'btn-row', style: 'margin-top:12px;flex-wrap:wrap' },
-        btn('filled', 'Save inspiration', { icon: 'add', onclick: function () { openInspo(null); } }),
-        ins.length ? btn('text', 'See your inspo', { onclick: function () { S.ideasTab = 'inspo'; go('ideas'); } }) : null));
-    if (ins.length) {
-      var strip = h('div', { class: 'inspo-grid', style: 'grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px' });
-      ins.forEach(function (i) {
-        strip.appendChild(h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
-          inspoPreview(i, 'inspo-img')));
-      });
-      insCard.appendChild(strip);
-    }
-    main.appendChild(rise(insCard, n++));
-    mark('inspo');
-
-    if (rest) {
-      main.appendChild(rise(h('div', { class: 'card pad rest-card' },
-        h('div', { class: 'row', style: 'gap:12px;align-items:flex-start' }, h('span', { class: 'ic' }, icon('spa')),
-          h('div', { class: 'grow' }, h('div', { class: 'title-m', text: 'Taking it easy' + (rest.until ? ' until ' + restDay(rest.until) : '') }),
-            h('p', { class: 'body-m', style: 'margin-top:4px', text: 'No buzzes and no questions about footage: ' + adminName() + ' looks after those. Posts wait until you’re ready.' }))),
-        h('div', { style: 'margin-top:12px' }, btn('tonal', 'I’m back', { icon: 'wb_sunny', onclick: function (e) { setRest(e.currentTarget, 0); } }))), n++));
-    }
-
-    mark('rest');
-    // a quick question about something she suggested, only when it wasn't clear
-    (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }).slice(0, 1).forEach(function (r) {
-      main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openReportQuestions(r); } },
-        h('span', { class: 'ic' }, icon('help')), h('span', { class: 'grow' }, h('b', { text: 'A quick question about your suggestion' }),
-          h('span', { class: 'body-m', text: '“' + String(r.text || '').slice(0, 70) + (String(r.text || '').length > 70 ? '…' : '') + '”. A tap or two, so it’s done the way you mean.' })), icon('chevron_right')), n++));
-    });
-    if (needs.length) {
-      var sec = section(needs.length === 1 ? 'A question from ' + adminName() : needs.length + ' questions from ' + adminName());
-      needs.forEach(function (e) { sec.appendChild(needsCard(e)); });
-      main.appendChild(rise(sec, n++));
-    }
-    mark('needs');
-    n = talkCards(main, n);
-    mark('waiting');
-    var tdA = rest ? null : todoCard();
-    if (tdA) main.appendChild(rise(tdA, n++));
-    var fcA = rest ? null : finishCard();
-    if (fcA) main.appendChild(rise(fcA, n++));
-    mark('todo');
-    if (S.data.website && S.data.website.live) {
-      // her website: go and see it as visitors do, or change it
-      main.appendChild(rise(h('div', { class: 'card pad drafts site-card' },
-        h('span', { class: 'ic' }, icon('language')),
-        h('span', { class: 'grow' }, h('b', { text: 'Your website' }), h('span', { class: 'body-m', text: S.data.website.pending ? 'Your shop has changes that aren’t on your website yet. Publish to show them.' : 'See it as visitors do, or tap anything on it to change it.' }),
-          h('span', { class: 'btn-row', style: 'margin-top:10px;flex-wrap:wrap' },
-            h('a', { class: 'btn tonal sm press', href: S.data.website.live, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Visit it' })),
-            S.data.website.pending ? btn('filled', 'Publish', { sm: true, icon: 'rocket_launch', onclick: publishSite }) : null,
-      btn(S.data.website.pending ? 'tonal' : 'filled', 'Change it', { sm: true, icon: 'edit', onclick: function () { go('site'); } })))), n++));
-    }
-
-    mark('website');
-    var nPosts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length, nQs = rest ? 0 : S.data.questions.length;
-    if (nPosts || nQs) {
-      var what = [];
-      if (nQs) what.push(nQs === 1 ? '1 quick question' : nQs + ' quick questions');
-      if (nPosts) what.push(nPosts === 1 ? '1 post to look at' : nPosts + ' posts to look at');
-      main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { S.contentTab = 'review'; go('content'); } },
-        h('span', { class: 'ic' }, icon(nQs ? 'help' : 'auto_awesome')),
-        h('span', { class: 'grow' }, h('b', { text: cap(what.join(' and ')) }),
-          h('span', { class: 'body-m', text: nQs ? 'A tap each, then posts get made' : 'Made from your footage' })), icon('chevron_right')), n++));
-    }
-    mark('review');
-
-    var actions = h('div', { class: 'tiles four' });
-    actions.appendChild(h('button', { class: 'action wide press', type: 'button', onclick: function () { openAddFootage(); } },
-      h('span', { class: 'ic' }, icon('perm_media')), h('span', {}, h('b', { text: 'Add photos or video' }), h('span', { class: 'body-m', style: 'display:block', text: 'Straight from your phone. No titles needed.' }))));
-    [['Add an artwork', 'brush', 't', function () { openPrint(null); }],
-      ['New idea', 'lightbulb', '', function () { openIdeaForm(); }],
-      ['Record a sale', 'point_of_sale', 'g', function () { openTxn('Sale'); }],
-      ['Record an expense', 'receipt_long', 'w', function () { openTxn('Expense'); }]
-    ].forEach(function (a) {
-      actions.appendChild(h('button', { class: 'action press ' + a[2], type: 'button', onclick: a[3] }, h('span', { class: 'ic' }, icon(a[1])), h('b', { text: a[0] })));
-    });
-    var quick = section('What would you like to do?');
-    quick.appendChild(actions);
-    main.appendChild(rise(quick, n++));
-    mark('actions');
-
-    // good news only: what her work has been doing (the books stay on the admin side)
-    var m = S.data.money, live = S.data.prints.filter(function (p) { return p.status === 'Live'; }).length;
-    var monthAgo = Date.now() - 30 * 86400000;
-    var out = S.data.content.filter(function (c) { return c.type === 'Post' && c.status === 'Posted' && Date.parse(c.postedAt || c.updated) > monthAgo; }).length;
-    var glance = section('Your work lately');
-    var stats = h('div', { class: 'stats' });
-    function stat(label, value, target, tab) {
-      stats.appendChild(h('button', { class: 'stat press soft', type: 'button', onclick: function () { if (tab) S.contentTab = tab; go(target); } },
-        h('div', { class: 'label-s', text: label }), h('div', { class: 'v', text: value })));
-    }
-    stat('Sales this week', money(m.weekSales), 'prints');
-    stat('Artworks on sale', String(live), 'prints');
-    stat('Posts out this month', String(out), 'content', 'ready');
-    stat('Ideas on the go', String(S.data.ideas.filter(function (x) { return x.stage !== 'Live' && x.stage !== 'Parked' && x.stage !== 'Retired'; }).length), 'ideas');
-    glance.appendChild(stats);
-    main.appendChild(rise(glance, n++));
-    mark('glance');
-
-    // her order: the rest card stays on top, the sections follow in the order she chose
-    homeOrder().forEach(function (k) { [].slice.call(main.querySelectorAll(':scope > [data-hs="' + k + '"]')).forEach(function (el) { main.appendChild(el); }); });
-
-    main.appendChild(rise(h('div', { style: 'margin-top:20px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center' },
-      btn('text', 'Arrange your home page', { icon: 'swap_vert', onclick: openHomeOrder }),
-      btn('text', 'What’s new' + (newsList(false).length ? ' (' + newsList(false).length + ')' : ''), { icon: 'campaign', onclick: function () { whatsNew(!newsList(false).length); } }),
-      rest ? null : btn('text', 'Taking it easy?', { icon: 'spa', onclick: openRest })), n++));
-  }
-  var HOME_SECTIONS = { cover: 'Your artwork, up top', plan: 'Your plan', inspo: 'Inspiration', needs: 'Questions for you', waiting: 'Waiting for you', todo: 'Your to do list',
-    website: 'Your website', review: 'Posts to look at', actions: 'What would you like to do?', glance: 'Your work lately' };
-  var HOME_DEFAULT = ['cover', 'plan', 'inspo', 'needs', 'waiting', 'todo', 'website', 'review', 'actions', 'glance'];
-  function homeOrder() {
-    var o = (S.data.homeOrder || []).filter(function (k) { return HOME_DEFAULT.indexOf(k) >= 0; });
-    // a section she hasn't placed yet goes where it sits by default, after the one before it
-    HOME_DEFAULT.forEach(function (k, i) { if (o.indexOf(k) >= 0) return; var before = i > 0 ? o.indexOf(HOME_DEFAULT[i - 1]) : -1; o.splice(before + 1, 0, k); });
-    return o;
-  }
-  /** Her home page, in her order: move any section up or down. */
-  function openHomeOrder() {
-    var HO_ICON = { plan: 'flag', cover: 'palette', inspo: 'favorite', needs: 'help', waiting: 'hourglass_top', todo: 'fact_check', website: 'language', review: 'perm_media', actions: 'add', glance: 'insights' };
-    arrangeSheet({ title: 'Arrange your home page', intro: 'Hold the dotted handle on the right of a card and drag it to where you want it. Sections with nothing in them stay hidden.',
-      order: homeOrder(), defaults: HOME_DEFAULT, label: function (k) { return k === 'needs' ? 'Questions from ' + adminName() : HOME_SECTIONS[k]; }, icon: function (k) { return HO_ICON[k] || 'home'; },
-      save: function (order) { return api('saveHomeOrder', order); }, done: 'Your home page is in your order.' });
-  }
-  /** The menu, in her own order (each person has their own). */
-  function openMenuOrder() {
-    var all = NAV_ALL.slice(), byK = {}; all.forEach(function (n) { byK[n[0]] = n; });
-    arrangeSheet({ title: 'Arrange the menu', intro: 'Hold the dotted handle on the right and drag each one to where you want it. The first ones are nearest to hand.',
-      order: NAV.map(function (n) { return n[0]; }), defaults: all.map(function (n) { return n[0]; }), label: function (k) { return byK[k][1]; }, icon: function (k) { return byK[k][2]; },
-      save: function (order) { return api('saveMenuOrder', order); }, done: 'The menu is in your order.' });
   }
   /** A list to put in her own order: hold the handle, drag, Save. o: title, intro, order, defaults, label(k), icon(k), save(order) → promise, done (toast). */
   function arrangeSheet(o) {
@@ -14312,19 +14219,17 @@ var Kit = (function () {
   }
 
   function viewIdeas(main) {
-    if (S.ideasTab === 'notebook') { S.ideasTab = 'ideas'; S.view = 'notes'; render(); return; }
-    var tab = ['goals', 'talk', 'products', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = false, T = talkData();
+    var moved = { notebook: 'notes', goals: 'goals', talk: 'mentors' }[S.ideasTab];
+    if (moved) { S.ideasTab = 'ideas'; S.view = moved; render(); return; }
+    var tab = ['products', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = false, T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
     pageTitle(main, 'Ideas', tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : 'Ranked by ' + (ADMIN ? artist() + '’s' : 'your') + ' priority, then by viability.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: tab, fit: true, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
-      options: [{ value: 'goals', label: 'Goals' }, { value: 'ideas', label: 'Ideas' }, { value: 'talk', label: 'Talk', count: yourTurn || undefined },
-        { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }]
+      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }]
     })), 1));
-    if (tab === 'goals') return viewGoals(main);
-    if (tab === 'talk') return viewTalk(main);
     if (tab === 'products') return viewProducts(main);
     if (tab === 'inspo') return viewInspo(main);
     main.appendChild(rise(directionCard(), 1));
@@ -14845,7 +14750,7 @@ var Kit = (function () {
             btn('tonal', it.topicId ? 'Open the talk about it' : 'Talk it through', { icon: 'forum', block: true, onclick: function (e) {
               K.setBusy(e.currentTarget, true);
               api('talkAboutInspiration', it.id).then(function (r) { return refresh().then(function () { return r; }); })
-                .then(function (r) { dirty = false; ctl.close(); S.ideasTab = 'talk'; setTimeout(function () { go('ideas'); openTopic(r.topicId); }, 280); }).catch(fail);
+                .then(function (r) { dirty = false; ctl.close(); setTimeout(function () { go('mentors'); openTopic(r.topicId); }, 280); }).catch(fail);
             } }),
             btn('text', 'Remove', { icon: 'delete', danger: true, onclick: function () {
               Promise.resolve(true).then(function (yes) {
@@ -15027,8 +14932,13 @@ var Kit = (function () {
     return sec;
   }
 
-  function viewTalk(main) {
-    var T = talkData(), pb = privacyBar();
+  /** Goals: their own page (the map and every goal's steps). */
+  function viewGoalsPage(main) {
+    pageTitle(main, 'Goals', 'Where you want to get to: milestones, the goals around them, and each goal’s steps.');
+    viewGoals(main);
+  }
+  function viewTalk(main, noBar) {
+    var T = talkData(), pb = noBar ? null : privacyBar();
     if (pb) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pb), 1));
     if (isLocked()) return;
     main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:16px' },
@@ -16341,7 +16251,7 @@ var Kit = (function () {
   var TURN_NEED = { goal: ['title'], steps: ['goalId', 'steps'], milestone: ['title'], idea: ['title'], post: ['caption'], event: ['text', 'day'], expense: ['description', 'amount', 'date'], artwork: ['title'], website: ['page', 'words'] };
   function openMade(m) {
     if (m.kind === 'goal') openGoal(m.id);
-    else if (m.kind === 'milestone') { S.ideasTab = 'goals'; go('ideas'); }
+    else if (m.kind === 'milestone') { go('goals'); }
     else if (m.kind === 'idea') openIdea(m.id);
     else if (m.kind === 'post') { S.contentTab = 'review'; go('content'); }
     else if (m.kind === 'event') { S.calMode = 'day'; S.calAt = m.day || ymd(new Date()); S.calSel = S.calAt; go('calendar'); }
@@ -16809,6 +16719,19 @@ var Kit = (function () {
               .catch(function (e) { K.setBusy(mp, false); fail(e); });
           });
           row.appendChild(mp);
+        }
+        // its wording, straight onto the website's draft (she looks before publishing)
+        if (x.kind === 'Content' || /website|bio|about|brand/i.test(x.title + ' ' + (x.note || '').slice(0, 400))) {
+          var uw = btn('filled', 'Use on my website', { icon: 'language' });
+          uw.addEventListener('click', function () {
+            K.setBusy(uw, true);
+            api('ideaToWebsite', x.id).then(function (res) { return refresh().then(function () { return res; }); }).then(function (res) {
+              dirty = false; ctl.close(); render();
+              K.confirm({ title: 'On your website’s draft', text: res.placed.map(function (p) { return p.page + ': ' + p.heading; }).join(' · ') + (res.values ? ' · Our direction: ' + res.values : '') + '. Have a look, then Publish when you’re happy.', confirmLabel: 'Look now', cancelLabel: 'Later' })
+                .then(function (ok) { if (ok) go('site'); });
+            }).catch(function (e) { K.setBusy(uw, false); fail(e); });
+          });
+          row.appendChild(uw);
         }
         var mk = btn('outlined', 'Make it an artwork', { icon: 'brush' });
         mk.addEventListener('click', function () {
@@ -18162,6 +18085,7 @@ var Kit = (function () {
           h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'You never see the conversations (they’re sealed with her passphrase). You see what they make: goals, drafted posts and ideas, in their usual places.' }))),
         h('div', { class: 'mn-stats' }, h('div', {}, h('b', { text: String(M.count) }), h('span', { text: M.count === 1 ? 'mentor' : 'mentors' })), h('div', {}, h('b', { text: audFromUsd(M.spentUsd || 0, true) }), h('span', { text: 'this month' }))),
         M.on ? null : note('Mentors are off: they need the Claude API key (Settings › AI), or the PC’s own model running. Quick replies run on Haiku, “Deep thinking” on Opus; past the weekly limit they carry on in a lighter mode on the PC’s model until Monday.', 'warning', 'warn')), n++));
+      talkHere(main, n);
       return;
     }
     var pb = privacyBar(); if (pb) main.appendChild(rise(pb, n++));
@@ -18187,6 +18111,12 @@ var Kit = (function () {
         icon('chevron_right')));
     });
     main.appendChild(rise(sec, n++));
+    talkHere(main, n);
+  }
+  /** Talk it through (a few questions at a time, then a write-up) lives with the mentors. */
+  function talkHere(main, n) {
+    main.appendChild(rise(h('div', { class: 'label-l', style: 'margin:22px 4px 8px', text: 'Talk it through' }), n));
+    viewTalk(main, true);
   }
   function lightNote(M) { return 'This week’s full help is used up, so your mentors are in a lighter mode until ' + (M.resets ? new Date(M.resets + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'short' }) : 'Monday') + ': they can talk things through, but can’t make goals or drafts, look at your records, or look things up.'; }
   function newMentorSheet(start) {
@@ -18546,7 +18476,15 @@ var Kit = (function () {
       api('saveOwnDay', null, { text: v, day: today }).then(refresh).then(function () { K.haptic('success'); render(); setTimeout(function () { var x = document.querySelector('.hm-add-in'); if (x) x.focus(); }, 50); }).catch(function (e) { inp.disabled = false; fail(e); });
     }
     inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); add(); } });
-    card.appendChild(h('div', { class: 'hm-add' }, icon('add'), inp, K.iconBtn('arrow_upward', 'Add', add)));
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = null;
+    if (SR) mic = K.iconBtn('mic', 'Say it', function () {
+      var r = new SR(); r.lang = 'en-AU'; r.interimResults = true; mic.classList.add('on');
+      r.onresult = function (ev) { var s = ''; for (var i = 0; i < ev.results.length; i++) s += ev.results[i][0].transcript; inp.value = s; };
+      r.onend = function () { mic.classList.remove('on'); if (inp.value.trim()) add(); };
+      r.onerror = function () { mic.classList.remove('on'); };
+      try { r.start(); } catch (e) { mic.classList.remove('on'); }
+    });
+    card.appendChild(h('div', { class: 'hm-add' }, icon('add'), inp, mic, K.iconBtn('arrow_upward', 'Add', add)));
     return card;
   }
   /** Give a goal step a day (and a time, when she tapped one): her goals' steps still to do, the most important goal first. */
@@ -21054,7 +20992,7 @@ var Kit = (function () {
 
   function openAddFootage(preset) {
     preset = preset || {};
-    var files = [], context = preset.context || '', quick = !!preset.quick, campaignId = '', dirty = false;
+    var files = (preset.files || []).map(function (file) { var video = /^video\//.test(file.type); return { file: file, video: video, url: video ? '' : URL.createObjectURL(file) }; }), context = preset.context || '', quick = !!preset.quick, campaignId = '', dirty = !!files.length;
     K.sheet({
       title: 'Add content', tall: true, guard: function () { return dirty; },
       build: function (ctl) {
@@ -21082,7 +21020,20 @@ var Kit = (function () {
         ctl.body.appendChild(h('button', { class: 'drop press soft', type: 'button', onclick: function () { input.click(); } },
           h('span', { class: 'ic' }, icon('perm_media')), h('b', { text: 'Choose photos and videos' }),
           h('span', { class: 'body-m', text: 'As many as you like. No titles needed.' })));
+        ctl.body.append(h('div', { class: 'btn-row', style: 'margin-top:8px;justify-content:center' }, btn('text', 'From a link', { sm: true, icon: 'link', onclick: function () {
+          K.ask({ title: 'Photos from a link', label: 'Paste a Dropbox or Google Drive link', maxlength: 2000, confirmLabel: 'Bring them in' }).then(function (u) {
+            if (!u) return;
+            status.textContent = 'Bringing them in…';
+            linkImport(u).then(function (got) {
+              status.textContent = '';
+              if (!got) return;
+              got.forEach(function (file) { if (files.length < 30) { var video = /^video\//.test(file.type); files.push({ file: file, video: video, url: video ? '' : URL.createObjectURL(file) }); } });
+              dirty = true; draw(); toast(got.length + ' brought in. Tap Upload when you’re ready.');
+            }).catch(function (e) { status.textContent = ''; fail(e); });
+          });
+        } })));
         ctl.body.append(input, grid);
+        if (files.length) setTimeout(draw, 0);
         var s = sheetSection('Anything to say about these?');
         s.appendChild(K.textField({ suggest: S.data.contextIdeas || [], label: 'Context (optional)', multiline: true, maxlength: 2000, value: context, onInput: function (v) { context = v; dirty = true; },
           help: 'Where it was, which piece it is, what was happening. Or leave it blank: you may get a quick question instead.' }));
@@ -21707,10 +21658,18 @@ var Kit = (function () {
     return S.data.hub.contacts.filter(function (c) { return c.email && !c.unsubscribed && c.lists.indexOf(name) >= 0; });
   }
 
+  /** Bigger text, kept on this phone. */
+  function textSize(v) {
+    try { if (v != null) localStorage.setItem('tbText', v); v = localStorage.getItem('tbText') || '1'; } catch (e) { v = v || '1'; }
+    document.documentElement.style.setProperty('--ts', v); document.body.style.zoom = v === '1' ? '' : v;
+    return v;
+  }
   function viewAdmin(main) {
     pageTitle(main, ADMIN ? 'Admin' : 'Settings', ADMIN ? 'Contacts, email lists, accounts and settings.' : 'Your contacts, lists, accounts and business settings.');
     var swap = viewSwapSection();
     if (swap) main.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:16px' }, swap));
+    main.appendChild(h('div', { class: 'ts-row' }, icon('format_size'), h('span', { class: 'grow', text: 'Text size' }),
+      K.segmented({ label: 'Text size', value: textSize(), options: [{ value: '1', label: 'A' }, { value: '1.12', label: 'A+' }, { value: '1.25', label: 'A++' }], onChange: function (v) { textSize(v); } })));
     if (!ADMIN && S.adminTab === 'reports') S.adminTab = 'settings';
     var tabs = [{ value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'consent', label: 'Consent' }, { value: 'settings', label: 'Settings' }];
     if (ADMIN) tabs.unshift({ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined });
@@ -22195,6 +22154,43 @@ var Kit = (function () {
   setInterval(quietRefresh, 120000);
   window.TideBook = { refresh: quietRefresh };
 
+  /** A link's photos and videos, fetched by the PC and handed back as files; a link it can't read can be kept for Jye. */
+  function linkImport(u) {
+    return fetch('link-import', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: u }) }).then(function (r) { return r.json(); }).then(function (r) {
+      if (r.error) throw new Error(r.error);
+      if (r.keep) {
+        return K.confirm({ title: 'This one needs ' + adminName(), text: 'It’s ' + r.why + '. Keep it for ' + adminName() + ' to fetch?', confirmLabel: 'Keep it for ' + adminName() }).then(function (ok) {
+          if (ok) return api('keepLinkForAdmin', u, '').then(function () { toast('✓ Kept for ' + adminName()); return null; });
+          return null;
+        });
+      }
+      return Promise.all(r.files.map(function (f, i) { return fetch('shared/' + r.id + '/' + i).then(function (x) { return x.blob(); }).then(function (b) { return new File([b], f.name, { type: f.type }); }); }));
+    });
+  }
+  /** Shared from another app: save it as inspiration, photos for posts, or a note (a Dropbox or Drive link can bring its files in). */
+  function shareChoice(text, link, files) {
+    var media = files.length, isDrop = /dropbox\.com|drive\.google\.com/i.test(link);
+    K.sheet({ title: 'Save this as…', build: function (ctl) {
+      var acts = h('div', { class: 'next-opts' });
+      function a(ic, label, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label })))); }
+      if (isDrop && !media) a('cloud_download', 'Bring in the photos from the link', function () { linkImport(link).then(function (got) { if (got && got.length) openAddFootage({ files: got }); }).catch(fail); });
+      a('favorite', 'Inspiration', function () { S.ideasTab = 'inspo'; go('ideas'); openInspo(null, { url: link, note: link ? '' : text, files: files.filter(function (f) { return /^image\//.test(f.type); }) }); });
+      if (media) a('perm_media', 'Photos for posts', function () { openAddFootage({ files: files }); });
+      a('sticky_note_2', 'A note', function () { openNote(null, { body: [text].filter(Boolean).join('\n') }); });
+      ctl.body.appendChild(acts);
+    } });
+  }
+  /** Shortcuts on the app's icon (long-press it on the phone): Today, Calendar, Inspo, New note. */
+  function takeShortcut() {
+    var m = /[?&]go=(today|calendar|inspo|note)\b/.exec(location.search);
+    if (!m) return false;
+    history.replaceState(null, '', location.pathname);
+    if (m[1] === 'today') { go('home'); setTimeout(function () { var x = document.querySelector('.hm-add-in'); if (x) x.focus(); }, 300); }
+    else if (m[1] === 'calendar') go('calendar');
+    else if (m[1] === 'inspo') { S.ideasTab = 'inspo'; go('ideas'); openInspo(null); }
+    else openNote(null);
+    return true;
+  }
   /** Android's Share menu (Tide Book on the PC): the shared post arrives here, ready to save as inspiration. */
   function takeShare() {
     var m = /[?&]share=([a-z0-9]+)/i.exec(location.search);
@@ -22207,14 +22203,14 @@ var Kit = (function () {
       })).then(function (files) {
         var text = [sh.title, sh.text, sh.url].filter(Boolean).join(' ');
         var link = (/(https?:\/\/[^\s<>"]+)/i.exec(text) || [])[1] || '';
-        S.ideasTab = 'inspo'; go('ideas');
-        openInspo(null, { url: link, note: link ? '' : text, files: files });
+        shareChoice(text, link, files);
       });
     }).catch(function () { toast('Couldn’t pick up the share. Try again in a moment.'); });
     return true;
   }
 
-  refresh().then(render).then(function () { if (!takeShare() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); setTimeout(whatsNewSoon, 900); }, 600); }).catch(function (e) {
+  textSize(null);
+  refresh().then(render).then(function () { if (!takeShare() && !takeShortcut() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); setTimeout(whatsNewSoon, 900); }, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
