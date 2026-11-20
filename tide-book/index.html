@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500,60&family=Figtree:wght@400;500;700&family=Lora:ital,wght@0,500;1,500&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mark_email_unread,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,reply,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,upload_file,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -1907,6 +1907,28 @@ body.map-full { overflow: hidden; }
 .hm-week { padding: 14px 16px; margin-bottom: 14px; border-radius: 22px; background: linear-gradient(150deg, var(--tertiary-container), #F3EEDC); color: var(--on-tertiary-container); }
 .hm-week-h { display: flex; align-items: center; gap: 8px; font: 500 18px/24px var(--display); }
 .hm-week ul { margin: 8px 0 0; padding-left: 20px; font: 400 14px/21px var(--font); } .hm-week .more { opacity: .75; }
+/* ---- Linked services: email (read only) and the bank's lines ---- */
+.lk-n { flex: none; min-width: 24px; padding: 1px 7px; border-radius: 12px; background: var(--primary); color: var(--on-primary); font: 600 12px/20px var(--font); text-align: center; }
+.lk-state { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-radius: 16px; background: var(--surface-container); margin-bottom: 10px; }
+.lk-state .ms { color: var(--on-surface-variant); } .lk-state.on .ms { color: var(--tertiary, #4F6E4E); }
+.lk-state b { font: 500 15px/20px var(--font); overflow-wrap: anywhere; }
+.lk-sw { display: flex; align-items: center; gap: 12px; min-width: 0; } .lk-sw .ms { color: var(--on-surface-variant); }
+.mail-card, .bk-card, .bk-pre { margin-bottom: 10px; }
+.mail-h, .bk-h { display: flex; align-items: flex-start; gap: 12px; }
+.mail-h b, .bk-h b { font: 500 15px/20px var(--font); overflow-wrap: anywhere; }
+.mail-ic, .bk-ic { flex: none; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--secondary-container); color: var(--on-secondary-container); }
+.mail-ic.receipt { background: #F3E3D6; color: #8A3F1E; } .mail-ic.date { background: #DCE8EE; color: #23465A; } .mail-ic.enquiry { background: #DEE9DD; color: #3D5A3C; }
+.bk-ic.out { background: #F3E3D6; color: #8A3F1E; } .bk-ic.in { background: #DEE9DD; color: #3D5A3C; }
+.mail-from { font: 400 12px/16px var(--font); color: var(--on-surface-variant); margin-top: 2px; overflow-wrap: anywhere; }
+.mail-reply { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--surface-container); font: 400 14px/20px var(--font); white-space: pre-wrap; overflow-wrap: anywhere; }
+.mail-acts { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.mail-edit { margin-top: 12px; box-shadow: none; background: var(--surface-container-low, var(--surface-container)); --sheet-bg: var(--surface-container-low, var(--surface-container)); }
+.bk-amt { flex: none; font: 600 15px/20px var(--font); white-space: nowrap; } .bk-amt.out, .bk-line b.out { color: #8A3F1E; } .bk-amt.in, .bk-line b.in { color: #3D5A3C; }
+.bk-card.sure { box-shadow: var(--shadow-1), inset 3px 0 0 var(--tertiary, #4F6E4E); }
+.bk-opts { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--outline-variant); }
+.bk-line { display: flex; align-items: baseline; gap: 8px; padding: 4px 0; font: 400 13px/18px var(--font); color: var(--on-surface-variant); min-width: 0; }
+.bk-line .grow { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .bk-line b { flex: none; font-weight: 500; color: var(--on-surface); } .bk-day { flex: none; width: 52px; }
+.bk-select { width: 100%; margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--outline); background: transparent; color: var(--on-surface); font: 400 15px/20px var(--font); }
 </style>
 
   <script>
@@ -2071,6 +2093,9 @@ var TIDE_SETTING_DEFAULTS = {
   expenseIdeasHidden: [],   // suggested expenses she said aren't hers (Money)
   shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false, shopFromPostcode: '2318', shopFromPlace: 'Medowie, NSW',  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
   calPlanMode: 'plan', calHours: '', calDayMax: 180, calTokens: '', calMoved: '', calNudged: '',  // the calendar (LogicCal.gs): plan her days or let her set them, her working hours, the most in a day, her phone links, what last moved
+  // her email, linked read-only (LogicLink.gs): which things to pick out, where the last look got to, senders she's muted (scrambled)
+  mailOn: '', mailLast: '', mailChecked: '', mailSeen: '[]', mailMore: false, mailMute: [], mailLoginState: '',
+  bankRules: '{}',          // the bank's lines (LogicBank.gs): where each payee went last time
   seriesExtra: ''           // series she added herself, each with a line about it (JSON): each becomes a page on her website
 };
 
@@ -2177,6 +2202,23 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['mentorId', 'Mentor', 'text'], ['by', 'Who', 'text'], ['text', 'Said', 'text'], ['status', 'Status', 'text'],
       ['actions', 'Did', 'json'], ['replies', 'Replies offered', 'json'], ['usd', 'Cost (US$)', 'number'], ['error', 'Problem', 'text'], ['kickoff', 'First hello', 'bool'], ['sentAt', 'Sent', 'date'],
       ['private', 'Private', 'bool'], ['deleted', 'Removed', 'bool']
+    ]
+  },
+  // what Tide Book picked out of her email (LogicLink.gs): hers alone, sealed with her private-writing passphrase on the PC
+  mail: {
+    sheet: 'From Email',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['gid', 'Email', 'text'], ['thread', 'Thread', 'text'], ['at', 'Sent', 'date'], ['kind', 'Kind', 'text'], ['status', 'Status', 'text'],
+      ['from', 'From', 'text'], ['addr', 'Address', 'text'], ['subject', 'Subject', 'text'], ['snippet', 'Starts', 'text'], ['fields', 'Details', 'json'], ['reply', 'Reply drafted', 'text'],
+      ['made', 'Became', 'json'], ['by', 'Read by', 'text'], ['private', 'Private', 'bool'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
+  // the bank's own lines, to sort into Money (LogicBank.gs)
+  bank: {
+    sheet: 'Bank Lines',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['date', 'Day', 'day'], ['amount', 'Amount', 'number'], ['description', 'Line', 'text'], ['account', 'From', 'text'], ['key', 'Key', 'text'],
+      ['status', 'Status', 'text'], ['why', 'Sorted as', 'text'], ['ledgerId', 'Money record', 'text'], ['guess', 'Suggested', 'json'], ['asked', 'PC asked', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
   // her other calendars, read by their iCal links (LogicCal.gs). Each is the person's own who added it; the link is never shown again.
@@ -3719,6 +3761,7 @@ if (env.workDone) env.workDone('publish');
     var sw = siteWishes.snapshot(role);
     sw.wishes.forEach(function (w) { publishData.todo.push({ key: 'site-' + w.key, site: w.key, kind: w.kind, text: w.text, why: w.why, where: 'For your website' }); });
     sw.sent.forEach(function (r) { publishData.todo.unshift({ key: 'sitein-' + r.id, sitein: r, text: 'For the website: ' + r.title, why: r.text ? r.text.slice(0, 140) : r.photos.length + ' photo' + (r.photos.length === 1 ? '' : 's') + ' from ' + env.brand.artistName, where: 'Website' }); });
+    link.todo(role).concat(bank.todo(role)).forEach(function (x) { publishData.todo.unshift(x); });
     if (role === 'admin') ads.waiting().forEach(function (a) {
       publishData.todo.unshift({ key: 'ad-' + a.id, text: 'OK the spend on “' + a.title + '” ($' + a.total + ')', why: 'It’s over your ad limit, so it waits for you before it can start.', where: 'Content › the post' });
     });
@@ -3728,7 +3771,7 @@ if (env.workDone) env.workDone('publish');
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: todoShown(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), todoCleared: todoClearedCount(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
       notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
-      hub: hub.snapshot(),
+      hub: hub.snapshot(), links: { mail: link.snapshot(role), bank: bank.snapshot(role) },
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
       fx: env.setup && env.setup.fx ? env.setup.fx() : { rate: 1.55, estimate: true },
@@ -3818,6 +3861,7 @@ if (env.workDone) env.workDone('publish');
   // ---------- Mentors (LogicMentor.gs; Mentor.gs does the talking)
   var mentors = tideMentors(env, { fail: fail, text: text, list: list, rows: rows, nowIso: nowIso,
     goalList: function () { return goalList(); }, addGoal: function (p) { return addGoal(p); }, updateGoal: function (id, ch) { return updateGoal(id, ch); }, makeIdea: function (p) { return makeIdea(p); },
+    mailLinked: function () { return link.linked(); }, mailSearch: function (q) { return link.search(q); },
     draftPost: function (p) { return draftPostCore(Object.assign({ purpose: 'Drafted with your coach (' + text(p.from, 60) + '). Add a photo when you approve it.', source: 'Mentor' }, p)); } });
   /** A post drafted for her to approve in Posts (from a mentor or a note): no photo yet, nothing goes out by itself. */
   function draftPostCore(p) {
@@ -3890,6 +3934,13 @@ if (env.workDone) env.workDone('publish');
   // ---------- the calendar: planning her days, her other calendars, and Tide Book in her phone's calendar (LogicCal.gs)
   var cal = tideCal(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: function (who, a, b) { return publish.push(who, a, b); },
     goalList: function () { return goalList(); }, goalRow: function (id) { return goalRow(id); } });
+  // ---------- linked services: her email, read only (LogicLink.gs), and the bank's lines (LogicBank.gs)
+  function tagTransaction(id, source, ref) { env.lock(function () { env.table('ledger').update(id, { source: source, externalRef: ref }); }); }
+  var link = tideLink(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: function (who, a, b) { return publish.push(who, a, b); },
+    addTransaction: function (p) { return addTransaction(p); }, saveOwnDay: function (id, p) { return saveOwnDay(id, p); }, expenseCategories: function () { return T.EXPENSE_CATEGORIES.slice(); } });
+  var bank = tideBank(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, parseCsv: parseCsv, pickColumn: pickColumn,
+    addTransaction: function (p) { return addTransaction(p); }, voidTransaction: function (id, why) { return voidTransaction(id, why); }, tagTransaction: tagTransaction,
+    expenseCategories: function () { return T.EXPENSE_CATEGORIES.slice(); }, incomeCategories: function () { return T.INCOME_CATEGORIES.slice(); }, saleChannels: function () { return T.SALE_CHANNELS.slice(); } });
   var shop = tideShop(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push,
     siteData: function (w) { return siteData(w); }, shopPending: function () { return shopPending(); }, recordSales: function (s) { var r = recordOnlineSales(s, 'website'); publishFeed(); return r; }, recordExpense: recordShopExpense });
   var siteEditor = tideSiteEditor(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push, publishWebsite: function () { return publishWebsite(); }, shopPending: function () { return shopPending(); }, markPublished: function () { env.settings.set({ sitePublishedSig: shopSig() }); },
@@ -4834,6 +4885,9 @@ if (env.workDone) env.workDone('publish');
   Object.keys(cal.api).forEach(function (k) { out.api[k] = cal.api[k]; });
   Object.keys(mentors.api).forEach(function (k) { out.api[k] = mentors.api[k]; });
   Object.keys(noteTurn.api).forEach(function (k) { out.api[k] = noteTurn.api[k]; });
+  Object.keys(link.api).forEach(function (k) { out.api[k] = link.api[k]; });
+  Object.keys(bank.api).forEach(function (k) { out.api[k] = bank.api[k]; });
+  out.link = link; out.bank = bank;
   out.mentors = mentors;
   out.cal = cal;
   return out;
@@ -8288,6 +8342,9 @@ var TIDE_GUIDE = [
   { id: 'g-menu-order', area: 'Getting around', to: 'all', icon: 'swap_vert', title: 'Put the menu in your order',
     say: 'The menu (the round button at the bottom) can be in whatever order suits you.',
     steps: ['Tap the menu button, then Arrange at the bottom.', 'Hold the dotted handle and drag each one up or down.', 'Tap Save this order.'], go: { view: 'home', tip: 'The menu button is bottom left.' } },
+  { id: 'g-email-link', area: 'Email and bank', to: 'artist', icon: 'mail', title: 'Link your email', say: 'Reading only. Tide Book picks out receipts, dates and people asking; only you see them.', steps: ['Settings › Email and bank › Email.', 'Link my email, then sign in with Google.', 'On Google’s page: Advanced › Go to Tide Book › Allow.'], go: { view: 'settings', tip: 'Email and bank.' } },
+  { id: 'g-email-list', area: 'Email and bank', to: 'artist', icon: 'mark_email_unread', title: 'From your email', say: 'Keep each one (it goes to Money, your calendar or today’s list) or wave it away.', steps: ['Home › Waiting › From your email.', 'Tap the tick to keep it, or × to wave it away.', 'The sliders change it first; “Never from them” stops that sender.'], go: { view: 'home', tip: 'Waiting.' } },
+  { id: 'g-bank', area: 'Email and bank', to: 'all', icon: 'account_balance', title: 'Sort a bank statement', say: 'Add a statement and tap where each line goes.', steps: ['Download a statement from the bank as CSV.', 'Money › Bank statement › Add a statement › Bring in.', 'Tap the suggestion, or “Something else”.', '“Not business” keeps it out, and is remembered.'], go: { view: 'money', tip: 'Bank statement.' } },
   { id: 'g-text-size', area: 'Getting around', to: 'all', icon: 'format_size', title: 'Bigger text', say: 'Make everything bigger on this phone.', steps: ['Open Settings.', 'Text size: A, A+ or A++.'], go: { view: 'settings', tip: 'At the top.' } },
   { id: 'g-shortcuts', area: 'Getting around', to: 'artist', icon: 'touch_app', title: 'Shortcuts on the icon', say: 'Long-press the Tide Book icon on your phone: Today, Calendar, Inspo, New note.', steps: ['Long-press the Tide Book icon.', 'Tap where you want to go.'], go: { view: 'home', tip: 'From your phone’s home screen.' } },
   { id: 'g-share', area: 'Getting around', to: 'artist', icon: 'send', title: 'Share to Tide Book', say: 'From Photos, Dropbox or Instagram: Share › Tide Book, then pick Inspo, Photos for posts or a Note.', steps: ['In another app, tap Share.', 'Pick Tide Book.', 'Choose where it goes.'], go: { view: 'home', tip: 'From another app.' } },
@@ -8387,6 +8444,18 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-email', on: '2026-11-20', to: 'artist', icon: 'mail', title: 'Your email, linked',
+    say: 'Link your email (reading only) and Tide Book picks out receipts, dates and people asking about your art. Each waits for your tap: a receipt goes to Money, a date to your calendar, an enquiry to today’s list with a reply to copy. Only you see them.',
+    steps: ['Settings › Email and bank › Email.', 'Tap Link my email and sign in with Google.', 'Look in Waiting on Home: “From your email”.'], go: { view: 'settings', tip: 'Email and bank.' } },
+  { id: '2026-11-20-email-admin', on: '2026-11-20', to: 'admin', icon: 'mail', title: 'Email linking: one setup step',
+    say: 'Denise can link her Gmail, read only. It needs a Google sign-in set up once (about 10 minutes). You only ever see how many are waiting, never what they are.',
+    steps: ['Settings › Email and bank › Email.', 'Follow the seven steps and paste the Client ID and secret.', 'Then Denise links it from her phone.'], go: { view: 'settings', tip: 'Email and bank.' } },
+  { id: '2026-11-20-bank', on: '2026-11-20', to: 'all', icon: 'account_balance', title: 'Bank statements, sorted',
+    say: 'Add a statement from the bank and Tide Book suggests where each line goes: an expense, a sale, already in Money, or not business. A tap each; nothing is recorded until you tap, and “Not business” is remembered.',
+    steps: ['Download a statement from the bank (CSV).', 'Money › Bank statement › Add a statement.', 'Tap the suggestion, or choose something else.'], go: { view: 'money', tip: 'Bank statement.' } },
+  { id: '2026-11-20-finished', on: '2026-11-20', to: 'artist', icon: 'check_circle', title: 'Finished, on every idea',
+    say: 'Every idea now has a Finished button, so it’s one tap to close it.',
+    steps: ['Open an idea.', 'Tap Finished.'], go: { view: 'ideas', tip: 'Open an idea.' } },
   { id: '2026-11-20-fresh', on: '2026-11-20', to: 'all', icon: 'palette', title: 'A fresh look, and clearer names',
     say: 'Tide Book has new colours and lettering, drawn from your own work: sea, clay, sage and paper. Some names are plainer: Chat (your coaches are inside), Art, To do and Social. Finishing something gets a little tick. On Mondays, Home shows what you finished last week.',
     steps: ['Open the menu to see the new names.', 'Chat opens straight into your chat. The coach symbol at the top is for one thing you want to learn or finish.', 'Tick something off and watch.'], go: { view: 'home', tip: 'A fresh look.' } },
@@ -10762,7 +10831,7 @@ function tideMentors(env, t) {
     if (msgs[msgs.length - 1].role !== 'user') msgs.push({ role: 'user', content: '(Carry on.)' });
     var c = course(m);
     return { id: msgId, mentorId: m.id, kind: m.kind, model: M.MODELS[m.model === 'deep' ? 'deep' : 'quick'], deep: m.model === 'deep', goal: m.goal || '', title: m.title,
-      course: list(c.lessons), notes: String(m.notes || ''), messages: msgs, artist: env.brand.artistName, today: env.today(), rounds: M.TOOL_ROUNDS };
+      course: list(c.lessons), notes: String(m.notes || ''), messages: msgs, artist: env.brand.artistName, today: env.today(), rounds: M.TOOL_ROUNDS, mail: !!(t.mailLinked && t.mailLinked()) };
   }
   function sent(msgId) { env.table('mentormsgs').update(msgId, { sentAt: nowIso() }); }
   function save(msgId, out) {
@@ -10797,6 +10866,10 @@ function tideMentors(env, t) {
     { name: 'remember', description: 'Keep a short note for next time: what she knows, prefers, has tried, or how it went. Replaces your notes, so include what still matters.',
       input_schema: { type: 'object', properties: { notes: { type: 'string' } }, required: ['notes'] } }
   ];
+  /** Only while her email is linked, and only for when she asks about something in it. */
+  var MAIL_TOOL = { name: 'search_email', description: 'Look in her own email (read only) when she asks about something that would be in it: a quote, an order, what someone said, when something is. Use Gmail search words (for example: from:framer quote, subject:invoice newer_than:30d). Returns up to 5 emails. Never use it unless she asked.',
+    input_schema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } };
+  function toolsNow() { return t.mailLinked && t.mailLinked() ? TOOLS.concat([MAIL_TOOL]) : TOOLS; }
   function business(area) {
     var today = env.today(), since = env.dayOffset ? env.dayOffset(-90) : '';
     if (area === 'artworks') return rows('prints').filter(function (p) { return !p.deleted; }).slice(-40).map(function (p) { return '- ' + p.title + (p.series ? ' (' + p.series + ')' : '') + ' · ' + (p.status || '') + (p.originalPrice ? ' · original $' + p.originalPrice : ''); }).join('\n') || 'No artworks yet.';
@@ -10819,6 +10892,7 @@ function tideMentors(env, t) {
     var m = rows('mentors').filter(function (r) { return r.id === x.mentorId; })[0]; input = input || {};
     try {
       if (name === 'look_at_business') return [business(String(input.area || 'overview')), null];
+      if (name === 'search_email') return [t.mailSearch ? t.mailSearch(String(input.query || '')) : 'Her email isn’t linked.', null];
       if (name === 'make_goal') {
         var r = t.addGoal({ title: input.title, why: input.why || ('With your coach: ' + m.title), steps: list(input.steps).map(function (s) { return { text: s }; }) });
         if (input.aim_by && /^\d{4}-\d{2}-\d{2}$/.test(input.aim_by)) try { t.updateGoal(r.id, { targetOn: input.aim_by }); } catch (e) {}
@@ -10862,7 +10936,7 @@ function tideMentors(env, t) {
 
   return {
     api: { newMentor: newMentor, sendMentor: sendMentor, retryMentor: retryMentor, mentorChat: mentorChat, updateMentor: updateMentor, deleteMentor: deleteMentor },
-    snapshot: snapshot, context: context, sent: sent, save: save, failed: failed, tool: tool, tools: TOOLS
+    snapshot: snapshot, context: context, sent: sent, save: save, failed: failed, tool: tool, tools: TOOLS, toolsNow: toolsNow
   };
 }
 
@@ -16824,7 +16898,15 @@ var Kit = (function () {
         var dc = ideaDayCard(x, ctl); if (dc) ctl.body.appendChild(dc);
         if (x.notInterested) ctl.body.appendChild(decidedNote('idea', x, 'not', { ctl: ctl }));
         else if (x.stage === 'Parked') ctl.body.appendChild(decidedNote('idea', x, 'park', { ctl: ctl }));
-        else ctl.body.appendChild(h('div', { style: 'margin:4px 0 12px' }, decideRow('idea', x, { ctl: ctl })));
+        else {
+          // closing the loop is always one tap away: finished, parked or removed
+          if (OPEN_STAGES.indexOf(x.stage) >= 0) ctl.body.appendChild(h('div', { style: 'margin:4px 0 8px' }, btn('filled', 'Finished', { icon: 'check_circle', lg: true, block: true, onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            api('updateIdea', x.id, { stage: 'Live' }).then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); cheer();
+              undoCard('✓ Finished: ' + x.title, function () { return api('updateIdea', x.id, { stage: x.stage }); }, 'Back on the go.'); }).catch(fail);
+          } })));
+          ctl.body.appendChild(h('div', { style: 'margin:4px 0 12px' }, decideRow('idea', x, { ctl: ctl })));
+        }
         ctl.body.appendChild(h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' },
           chip(stageLabel(x.stage), K.slug(x.stage)),
           chip(x.kind, 'outline', KIND_ICON[x.kind]),
@@ -17491,6 +17573,10 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { class: 'tiles', style: 'margin-top:12px' },
       h('button', { class: 'action press g', type: 'button', onclick: function () { openTxn('Sale'); } }, h('span', { class: 'ic' }, icon('point_of_sale')), h('b', { text: 'Record a sale' })),
       h('button', { class: 'action press w', type: 'button', onclick: function () { openTxn('Expense'); } }, h('span', { class: 'ic' }, icon('receipt_long')), h('b', { text: 'Record an expense' }))), n++));
+
+    var bankN = ((S.data.links || {}).bank || {}).n || 0;
+    main.appendChild(rise(bankN ? h('button', { type: 'button', class: 'hm-wait press soft', style: 'margin-top:12px', onclick: openBank }, h('b', { text: String(bankN) }), h('span', { class: 'grow', text: 'From your bank' }), icon('account_balance'), icon('chevron_right'))
+      : h('div', { style: 'margin-top:8px;text-align:center' }, h('button', { type: 'button', class: 'hm-link press', onclick: openBank }, icon('account_balance'), 'Bank statement')), n++));
 
     // AI costs (admin): what Tide Book spent, beside the same work done entirely with Claude Opus 5.5 through the API
     var sv = ADMIN && S.data.aiSavings;
@@ -20903,6 +20989,8 @@ var Kit = (function () {
       }
       clear.addEventListener('click', doClear); clear.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') doClear(e); });
       list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () {
+        if (t.mail) { openMail(); return; }
+        if (t.bank) { openBank(); return; }
         if (t.link) { openLinkAccounts(); return; }
         if (t.site) { openSiteWish(t); return; }
         if (t.sitein) { openSiteIn(t.sitein); return; }
@@ -20910,7 +20998,7 @@ var Kit = (function () {
         if (/^Content/.test(t.where)) { S.contentTab = /Ready/.test(t.where) ? 'ready' : 'review'; go('content'); }
         else if (/Admin/.test(t.where)) { S.adminTab = 'settings'; go('settings'); }
         else K.confirm({ title: t.text, text: t.why + ' Where: ' + t.where + '.', single: true, confirmLabel: 'OK' });
-      } }, h('div', { class: 'th-blank todo-ic' }, icon(t.site ? (t.kind === 'photo' ? 'photo_camera' : 'edit_note') : t.sitein ? 'language' : t.productId ? 'front_hand' : 'radio_button_unchecked')),
+      } }, h('div', { class: 'th-blank todo-ic' }, icon(t.mail ? 'mail' : t.bank ? 'account_balance' : t.site ? (t.kind === 'photo' ? 'photo_camera' : 'edit_note') : t.sitein ? 'language' : t.productId ? 'front_hand' : 'radio_button_unchecked')),
         h('div', { class: 'grow' }, h('div', { class: 'li-head', text: t.text }), h('div', { class: 'li-sup', style: 'white-space:normal', text: t.why })), t.key ? clear : null, icon('chevron_right')));
     });
     var sec = section('To do', cleared ? h('button', { type: 'button', class: 'todo-show press', onclick: function () { api('unclearTodo', '').then(refresh).then(function () { render(); toast('✓ All back'); }).catch(fail); } }, icon('visibility'), 'Show cleared (' + cleared + ')') : null);
@@ -21164,10 +21252,240 @@ var Kit = (function () {
   /** Facebook sends her back with ?link=meta: open the guide on the result. */
   function takeLinkReturn() {
     var q = new URLSearchParams(location.search);
+    if (q.get('link') === 'mail') { history.replaceState(null, '', location.pathname); openMailLink({ ok: q.get('ok') === '1', err: q.get('err') || '' }); return true; }
     if (q.get('link') !== 'meta') return false;
     history.replaceState(null, '', location.pathname);
     openLinkAccounts({ ok: q.get('ok') === '1', err: q.get('err') || '' });
     return true;
+  }
+
+  // ------------------------------------------------------------------ linked services: her email (read only) and the bank's lines
+  function links() { return S.data.links || { mail: { available: false }, bank: { n: 0 } }; }
+  function put(el) { for (var i = 1; i < arguments.length; i++) if (arguments[i] != null) el.appendChild(arguments[i]); return el; }
+  function copyText(t, said) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { K.haptic(); toast(said || '✓ Copied'); }).catch(function () { toast('Couldn’t copy. Press and hold it instead.'); }); }
+  /** Settings: the two links, a row each. */
+  function linksSection() {
+    var L = links(), M = L.mail || {}, B = L.bank || {}, sec = section('Email and bank'), list = h('div', { class: 'list' });
+    function row(ic, label, sub, n, fn) {
+      list.appendChild(h('button', { type: 'button', class: 'li press', onclick: fn }, h('div', { class: 'th-blank todo-ic' }, icon(ic)),
+        h('div', { class: 'grow' }, h('div', { class: 'li-head', text: label }), h('div', { class: 'li-sup', text: sub })), n ? h('b', { class: 'lk-n', text: String(n) }) : null, icon('chevron_right')));
+    }
+    if (M.available) row('mail', 'Email', M.linked ? (M.email || 'Linked') : M.broken ? 'Link it again' : 'Not linked', M.linked && !ADMIN ? M.n : 0, function () { openMailLink(); });
+    row('account_balance', 'Bank', B.n ? B.n + ' to sort' : B.upTo ? 'Up to ' + K.dayLabel(B.upTo, true) : 'Add a statement', B.n, openBank);
+    sec.appendChild(list);
+    return sec;
+  }
+  var MAIL_SETUP = ['Go to console.cloud.google.com, signed in as you, and make a project (any name).',
+    'APIs & Services › Library: find “Gmail API” and switch it on.',
+    'Google Auth Platform: choose External, call the app Tide Book, and give your own email for both contacts.',
+    'Audience: tap “Publish app” (In production). Left in Testing, the sign-in runs out every 7 days.',
+    'Data access › Add scopes: tick “…/auth/gmail.readonly” (read only) and save.',
+    'Clients › Create client › Web application. Under “Authorised redirect URIs” paste the address below.',
+    'Copy its Client ID and Client secret into the boxes here.'];
+  /** The email link: the admin sets the Google sign-in up once; she signs in herself and can unlink any time. */
+  function openMailLink(back) {
+    K.sheet({ title: 'Email', tall: true, build: function (ctl) {
+      var b = ctl.body;
+      function unlink() {
+        K.confirm({ title: 'Unlink the email?', text: 'Tide Book stops reading it, and what’s waiting from it is cleared. What’s already been kept stays.', confirmLabel: 'Unlink' }).then(function (yes) {
+          if (!yes) return;
+          api('unlinkMail').then(refresh).then(function () { ctl.close(); render(); toast('✓ Unlinked'); }).catch(fail);
+        });
+      }
+      function paint() {
+        var M = links().mail || {};
+        b.textContent = ''; ctl.foot.textContent = '';
+        if (back && back.err) b.appendChild(note(back.err, 'error', 'warn'));
+        if (ADMIN) {
+          b.appendChild(h('div', { class: 'lk-state' + (M.linked ? ' on' : '') }, icon(M.linked ? 'check_circle' : 'radio_button_unchecked'),
+            h('b', { text: M.linked ? 'Linked: ' + (M.email || 'her email') : M.app ? 'Ready for ' + cap(artist()) + ' to link' : 'Not set up yet' })));
+          b.appendChild(note(cap(artist()) + ' signs in to Google herself, on her own phone, and allows reading only. What Tide Book picks out is hers alone: you see how many are waiting' + (M.linked ? ' (' + M.n + ')' : '') + ', never what they are.', 'lock'));
+          var f = { id: '', secret: '' }, ol = h('ol', { class: 'cal-howto' });
+          MAIL_SETUP.forEach(function (s) { ol.appendChild(h('li', { text: s })); });
+          put(b, h('div', { class: 'label-m', style: 'margin:16px 2px 6px', text: M.app ? 'The one-time setup (done)' : 'One-time setup, about 10 minutes' }), ol,
+            h('div', { class: 'cal-link' }, h('code', { text: M.redirect || 'Open Tide Book by its https address to see this.' })),
+            M.redirect ? btn('text', 'Copy the address', { sm: true, icon: 'content_copy', onclick: function () { copyText(M.redirect); } }) : null,
+            h('div', { style: 'height:10px' }),
+            K.textField({ label: 'Client ID', placeholder: '….apps.googleusercontent.com', onInput: function (v) { f.id = v; } }), h('div', { style: 'height:12px' }),
+            K.textField({ label: 'Client secret', type: 'password', onInput: function (v) { f.secret = v; } }),
+            note('When she links it, Google shows “Google hasn’t verified this app”. That’s expected for an app made for one person: Advanced › Go to Tide Book.', 'info'));
+          var save = btn('filled', M.app ? 'Replace the setup' : 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
+            K.setBusy(save, true);
+            api('saveGoogleApp', f.id, f.secret).then(refresh).then(function () { K.haptic('success'); toast('✓ Saved. ' + cap(artist()) + ' can link her email now.'); paint(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+          } });
+          ctl.foot.appendChild(save);
+          if (M.linked) b.appendChild(h('div', { style: 'margin-top:14px' }, btn('text', 'Unlink her email', { icon: 'link_off', onclick: unlink })));
+          return;
+        }
+        if (!M.linked) {
+          put(b, h('p', { class: 'otg-lead', text: 'Receipts, dates and people asking, picked out for you.' }),
+            note('Reading only: it can’t send, change or delete anything. Only you see what it finds, and you can unlink any time.', 'lock'));
+          if (!M.app) { b.appendChild(note(cap(adminName()) + ' needs to do one setup step first.', 'hourglass_top')); return; }
+          var go = btn('filled', M.broken ? 'Link it again' : 'Link my email', { icon: 'link', lg: true, block: true, onclick: function () {
+            K.setBusy(go, true);
+            api('startMailLogin').then(function (r) { location.href = r.url; }).catch(function (e) { K.setBusy(go, false); fail(e); });
+          } });
+          b.appendChild(note('Google will say it hasn’t verified this app. That’s fine, it’s yours: tap Advanced, then “Go to Tide Book”, then Allow.', 'info'));
+          ctl.foot.appendChild(go);
+          return;
+        }
+        b.appendChild(h('div', { class: 'lk-state on' }, icon('check_circle'), h('b', { text: M.email || 'Linked' })));
+        if (M.n) b.appendChild(h('button', { type: 'button', class: 'hm-wait press soft', style: 'margin-top:10px', onclick: function () { ctl.close(); setTimeout(openMail, 280); } }, h('b', { text: String(M.n) }), h('span', { class: 'grow', text: 'Waiting' }), icon('chevron_right')));
+        var on = Object.assign({}, M.on);
+        function sw(key, ic, label, sub) {
+          return h('div', { class: 'switch-row' }, h('div', { class: 'lk-sw' }, icon(ic), h('div', {}, h('div', { class: 'title-m', text: label }), h('div', { class: 'body-m', text: sub }))),
+            K.switchBtn({ checked: on[key], label: label, onChange: function (v) { on[key] = v; api('saveMailOn', on).then(refresh).catch(fail); } }));
+        }
+        put(b, h('div', { class: 'label-m', style: 'margin:16px 2px 4px', text: 'Pick out' }),
+          sw('receipt', 'receipt_long', 'Receipts', 'Into Money'), sw('date', 'event', 'Dates', 'Onto your calendar'), sw('enquiry', 'mark_email_unread', 'People asking', 'Onto your list, with a reply'),
+          note('Nothing is added by itself: each one waits for your tap. It’s read at home, not sent away, and kept with your private writing.', 'lock'));
+        var chk = btn('tonal', 'Check now', { icon: 'refresh', block: true, onclick: function () {
+          K.setBusy(chk, true);
+          api('mailCheck').then(function (r) { return refresh().then(function () { render(); paint(); toast(r.found ? '✓ ' + r.found + ' found' : r.more ? 'Still reading. More soon.' : '✓ Nothing new'); }); }).catch(function (e) { K.setBusy(chk, false); fail(e); });
+        } });
+        put(b, h('div', { style: 'margin-top:12px' }, chk), h('div', { style: 'margin-top:8px' }, btn('text', 'Unlink', { icon: 'link_off', onclick: unlink })));
+      }
+      paint();
+      if (back && back.ok) setTimeout(function () { K.haptic('success'); toast('✓ Linked. Reading the last two weeks.'); api('mailCheck').then(refresh).then(function () { render(); paint(); }).catch(function () {}); }, 300);
+    } });
+  }
+  /** What Tide Book picked out of her email: keep each (it goes where it belongs) or wave it away. */
+  function openMail() {
+    K.sheet({ title: 'From your email', tall: true, build: function (ctl) {
+      var b = ctl.body;
+      function after(said) { return refresh().then(function () { render(); paint(); if (said) toast(said); }); }
+      function editSheet(x, R) {
+        var f = Object.assign({}, x.fields), box = h('div', { class: 'card pad field-gap mail-edit' });
+        put(box, K.textField({ label: 'What', value: f.what, maxlength: 200, onInput: function (v) { f.what = v; } }));
+        if (x.kind === 'receipt') put(box, K.textField({ label: 'Amount', prefix: '$', inputmode: 'decimal', value: f.amount, onInput: function (v) { f.amount = K.num(v); } }),
+          K.textField({ label: 'Paid on', type: 'date', value: f.date, onInput: function (v) { f.date = v; } }),
+          h('div', {}, h('div', { class: 'label-s', style: 'margin:0 4px 8px', text: 'What was it for?' }), K.choices({ label: 'What was it for?', value: f.category, options: R.categories.map(function (c) { return { value: c, label: c }; }), onChange: function (v) { f.category = v || ''; } })));
+        if (x.kind === 'date') put(box, K.textField({ label: 'Day', type: 'date', value: f.date, onInput: function (v) { f.date = v; } }), K.textField({ label: 'Time (if any)', type: 'time', value: f.time, onInput: function (v) { f.time = v; } }));
+        var go = btn('filled', 'Keep', { icon: 'check', onclick: function () { K.setBusy(go, true); api('mailKeep', x.id, f).then(function () { cheer(); return after(); }).catch(function (e) { K.setBusy(go, false); fail(e); }); } });
+        put(box, h('div', { class: 'mail-acts' }, go, btn('text', 'Never from them', { icon: 'block', onclick: function () { api('mailDismiss', x.id, true).then(function () { return after('✓ They won’t be suggested again'); }).catch(fail); } })));
+        return box;
+      }
+      function card(x, R) {
+        var f = x.fields || {}, ic = { receipt: 'receipt_long', date: 'event', enquiry: 'mark_email_unread' }[x.kind] || 'mail';
+        var sub = x.kind === 'receipt' ? money(f.amount) + (f.category ? ' · ' + f.category : '') : x.kind === 'date' ? K.dayLabel(f.date) + (f.time ? ' · ' + f.time : '') : 'Goes on today’s list';
+        var keepAs = { receipt: 'Expense', date: 'Calendar', enquiry: 'To do' }[x.kind], said = { receipt: '✓ In Money', date: '✓ On your calendar', enquiry: '✓ On today’s list' }[x.kind];
+        var c = h('div', { class: 'card pad mail-card' }), edit = null;
+        var keep = btn('filled', keepAs, { icon: 'check', onclick: function () { K.setBusy(keep, true); api('mailKeep', x.id, {}).then(function () { cheer(); return after(said); }).catch(function (e) { K.setBusy(keep, false); fail(e); }); } });
+        put(c, h('div', { class: 'mail-h' }, h('span', { class: 'mail-ic ' + x.kind }, icon(ic)),
+            h('div', { class: 'grow' }, h('b', { text: f.what || x.subject }), h('div', { class: 'li-sup', text: sub }), h('div', { class: 'mail-from', text: x.from + ' · ' + K.dayLabel(String(x.at).slice(0, 10), true) }))),
+          x.kind === 'enquiry' && x.reply ? h('div', { class: 'mail-reply', text: x.reply }) : null,
+          h('div', { class: 'mail-acts' }, keep,
+            x.kind === 'enquiry' && x.reply ? K.iconBtn('content_copy', 'Copy the reply', function () { copyText(x.reply, '✓ Reply copied'); }) : null,
+            K.iconBtn('tune', 'Change it first', function () { if (edit) { edit.remove(); edit = null; } else { edit = editSheet(x, R); c.appendChild(edit); } }),
+            K.iconBtn('open_in_new', 'Open the email', function () { window.open(x.link, '_blank', 'noopener'); }),
+            K.iconBtn('close', 'Not for me', function () {
+              api('mailDismiss', x.id, false).then(function () { return after(); }).then(function () { undoCard('Gone.', function () { return api('mailUndo', x.id).then(function () { return after(); }); }, 'Back.'); }).catch(fail);
+            })));
+        return c;
+      }
+      function paint() {
+        api('mailList').then(function (R) {
+          b.textContent = '';
+          if (R.locked) {
+            var pass = K.textField({ label: 'Your passphrase', type: 'password', compact: true, maxlength: 200 });
+            var go = btn('filled', 'Unlock', { icon: 'lock_open', onclick: function () { K.setBusy(go, true); api('vaultUnlock', pass.input.value).then(function () { return after(); }).catch(function (e) { K.setBusy(go, false); fail(e); }); } });
+            pass.input.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
+            b.appendChild(h('div', { class: 'priv-card' }, h('div', { class: 'priv-h' }, icon('lock'), h('b', { text: 'Kept with your private writing' })), h('p', { text: 'Unlock to see what’s waiting.' }), pass, go));
+            return;
+          }
+          if (!R.items.length) b.appendChild(h('p', { class: 'otg-lead', text: 'Nothing waiting. Tide Book looks every half hour.' }));
+          R.items.forEach(function (x) { b.appendChild(card(x, R)); });
+          if ((R.replies || []).length) {
+            b.appendChild(h('div', { class: 'label-m', style: 'margin:18px 2px 8px', text: 'Replies to send' }));
+            R.replies.forEach(function (x) {
+              b.appendChild(h('div', { class: 'card pad mail-card' }, h('div', { class: 'mail-h' }, h('span', { class: 'mail-ic enquiry' }, icon('reply')), h('div', { class: 'grow' }, h('b', { text: x.from }), h('div', { class: 'mail-from', text: x.subject }))),
+                h('div', { class: 'mail-reply', text: x.reply }),
+                h('div', { class: 'mail-acts' }, btn('tonal', 'Copy', { icon: 'content_copy', onclick: function () { copyText(x.reply, '✓ Reply copied'); } }), btn('text', 'Open the email', { icon: 'open_in_new', onclick: function () { window.open(x.link, '_blank', 'noopener'); } }))));
+            });
+          }
+        }).catch(function (e) { b.textContent = ''; b.appendChild(note(String(e && e.message || e), 'error', 'warn')); });
+      }
+      b.appendChild(h('p', { class: 'body-s', text: 'Looking…' }));
+      paint();
+    } });
+  }
+  /** The bank's lines: add a statement, then a tap sorts each payee. Nothing is recorded until it's tapped. */
+  function openBank() {
+    K.sheet({ title: 'Bank', tall: true, build: function (ctl) {
+      var b = ctl.body, top = h('div', {}), listEl = h('div', {});
+      put(b, top, listEl);
+      function after() { return refresh().then(function () { render(); paint(); }); }
+      var file = h('input', { type: 'file', accept: '.csv,.ofx,.qfx,.qif,.txt,text/csv,text/plain', style: 'display:none' });
+      file.addEventListener('change', function () {
+        var f = file.files[0]; if (!f) return;
+        var fr = new FileReader();
+        fr.onload = function () { var src = String(fr.result || ''); file.value = ''; preview(src, f.name, false); };
+        fr.onerror = function () { toast('That file couldn’t be read.'); };
+        fr.readAsText(f);
+      });
+      function start() {
+        top.textContent = '';
+        put(top, file, btn('tonal', 'Add a statement', { icon: 'upload_file', block: true, onclick: function () { file.click(); } }),
+          note('Download a statement from your bank’s website or app (CSV is best) and add it here. Tide Book suggests where each line goes. Nothing is recorded until you tap.', 'info'));
+      }
+      function preview(src, name, flip) {
+        api('bankImport', src, name, { dry: true, flip: flip }).then(function (r) {
+          top.textContent = '';
+          var box = h('div', { class: 'card pad bk-pre' }, h('b', { text: r.count + ' lines' }), h('div', { class: 'li-sup', text: K.dayLabel(r.from, true) + ' to ' + K.dayLabel(r.to, true) + ' · ' + r.moneyOut + ' out, ' + r.moneyIn + ' in' }));
+          r.sample.forEach(function (l) { box.appendChild(h('div', { class: 'bk-line' }, h('span', { class: 'grow', text: l.description }), h('b', { class: l.amount < 0 ? 'out' : 'in', text: (l.amount < 0 ? '−' : '+') + money(Math.abs(l.amount)) }))); });
+          var go = btn('filled', 'Bring in', { icon: 'check', onclick: function () {
+            K.setBusy(go, true);
+            api('bankImport', src, name, { flip: flip }).then(function (res) {
+              toast('✓ ' + res.added + ' new' + (res.dup ? ' · ' + res.dup + ' already here' : ''));
+              start();
+              return after().then(function () { api('bankSuggest').then(paint).catch(function () {}); });
+            }).catch(function (e) { K.setBusy(go, false); fail(e); });
+          } });
+          put(box, h('div', { class: 'mail-acts' }, go, btn('text', 'Swap in and out', { icon: 'swap_vert', onclick: function () { preview(src, name, !flip); } }), K.iconBtn('close', 'Cancel', start)));
+          put(top, file, box);
+        }).catch(function (e) { start(); fail(e); });
+      }
+      function group(G, R) {
+        var g = G.guess || {}, lab = { expense: g.category || '', sale: '', personal: 'Not business', recorded: 'Already in Money', payout: 'Website payout' }[g.do] || '';
+        var c = h('div', { class: 'card pad bk-card' + (g.sure ? ' sure' : '') }), opts = h('div', { class: 'bk-opts', hidden: true });
+        function done(p, said) {
+          api('bankFile', G.ids, p).then(function (r) {
+            return after().then(function () { undoCard(said, function () { return api('bankUndo', r.ids).then(after); }, 'Back on the list.'); });
+          }).catch(fail);
+        }
+        var one = G.ids.length === 1;
+        put(c, h('div', { class: 'bk-h' }, h('span', { class: 'bk-ic ' + (G.out ? 'out' : 'in') }, icon(G.out ? 'north_east' : 'south_west')),
+            h('div', { class: 'grow' }, h('b', { text: G.label }), h('div', { class: 'li-sup', text: (one ? K.dayLabel(G.lines[0].date, true) : G.ids.length + ' payments') + (g.why ? ' · ' + g.why : '') })),
+            h('b', { class: 'bk-amt ' + (G.out ? 'out' : 'in'), text: (G.out ? '−' : '+') + money(G.total) })),
+          h('div', { class: 'mail-acts' }, lab ? btn('filled', lab, { icon: 'check', onclick: function () { done({ do: g.do, category: g.category, channel: g.channel }, '✓ ' + lab); } }) : null,
+            btn(lab ? 'text' : 'tonal', lab ? 'Something else' : (G.out ? 'What was it for?' : 'What is it?'), { icon: 'tune', onclick: function () { opts.hidden = !opts.hidden; } })),
+          opts);
+        if (!one || G.lines[0].description !== G.label) G.lines.forEach(function (l) { opts.appendChild(h('div', { class: 'bk-line' }, h('span', { class: 'bk-day', text: K.dayLabel(l.date, true) }), h('span', { class: 'grow', text: l.description }), h('b', { text: money(Math.abs(l.amount)) }))); });
+        if (G.out) opts.appendChild(K.choices({ label: 'What was it for?', value: '', options: R.categories.map(function (x) { return { value: x, label: x }; }), onChange: function (v) { if (v) done({ do: 'expense', category: v }, '✓ ' + v); } }));
+        else {
+          var s = { category: 'Originals', channel: 'Other', printId: '' };
+          var art = h('select', { class: 'bk-select', 'aria-label': 'Which artwork' }, h('option', { value: '', text: 'Which artwork? (if one)' }), R.artworks.map(function (a) { return h('option', { value: a.id, text: a.title }); }));
+          art.addEventListener('change', function () { s.printId = art.value; });
+          put(opts, h('div', { class: 'label-s', style: 'margin:6px 4px', text: 'A sale of' }), K.choices({ label: 'A sale of', value: s.category, options: R.income.map(function (x) { return { value: x, label: x }; }), onChange: function (v) { s.category = v || 'Other income'; } }),
+            h('div', { class: 'label-s', style: 'margin:10px 4px 6px', text: 'Sold through' }), K.choices({ label: 'Sold through', value: s.channel, options: R.channels.map(function (x) { return { value: x, label: x }; }), onChange: function (v) { s.channel = v || 'Other'; } }),
+            one ? art : null, h('div', { style: 'margin-top:10px' }, btn('filled', 'Record the sale', { icon: 'point_of_sale', onclick: function () { done({ do: 'sale', category: s.category, channel: s.channel, printId: s.printId }, '✓ Sale recorded'); } })));
+        }
+        opts.appendChild(h('div', { class: 'mail-acts', style: 'margin-top:10px' },
+          g.do === 'personal' ? null : btn('text', 'Not business', { icon: 'home', onclick: function () { done({ do: 'personal' }, '✓ Left out'); } }),
+          g.do === 'recorded' ? null : btn('text', 'Already in Money', { icon: 'done_all', onclick: function () { done({ do: 'recorded', remember: false }, '✓ Matched'); } })));
+        return c;
+      }
+      function paint() {
+        api('bankList').then(function (R) {
+          listEl.textContent = '';
+          if (!R.count) { listEl.appendChild(h('p', { class: 'otg-lead', text: (links().bank || {}).lines ? 'All sorted.' : 'No statement yet.' })); return; }
+          listEl.appendChild(h('div', { class: 'label-m', style: 'margin:16px 2px 8px', text: R.count + ' to sort' }));
+          R.groups.forEach(function (G) { listEl.appendChild(group(G, R)); });
+          if (R.more) listEl.appendChild(h('p', { class: 'body-s', style: 'margin:8px 4px', text: R.more + ' more after these.' }));
+        }).catch(function (e) { listEl.textContent = ''; listEl.appendChild(note(String(e && e.message || e), 'error', 'warn')); });
+      }
+      start(); paint();
+    } });
   }
 
   function openConnect() {
@@ -21573,6 +21891,7 @@ var Kit = (function () {
     main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', style: 'margin:12px 0 16px', onclick: function () { openBusiness(); } },
       h('span', { class: 'ic' }, icon('tune')), h('span', { class: 'grow' }, h('b', { text: 'Business setup' }),
         h('span', { class: 'body-m', text: 'Suppliers, prices, how ' + (ADMIN ? cap(artist()) + ' likes' : 'you like') + ' to work, and the brand. Everything else starts from it.' })), icon('chevron_right')), 1));
+    main.appendChild(rise(linksSection(), 1));
     var p = section('Pricing');
     p.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
       K.textField({ label: 'Usual markup on cost', suffix: '%', inputmode: 'decimal', value: f.defaultMarkupPct, onInput: function (v) { f.defaultMarkupPct = K.num(v); },
