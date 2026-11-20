@@ -1862,6 +1862,22 @@ body.map-full { overflow: hidden; }
 .lib-h { margin: 18px 4px 8px; } .lib-h:first-of-type { margin-top: 0; }
 .lib-none { margin: 0 4px 6px; font: 400 13px/18px var(--font); color: var(--on-surface-variant); }
 .inspo-turn { right: auto !important; left: 6px; }
+/* ---- closing loops ---- */
+.hm-otg { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 18px; width: 100%; padding: 10px 12px 10px 16px; margin-bottom: 16px; border-radius: 18px; background: var(--surface-low); cursor: pointer; }
+.hm-otg-n { display: inline-flex; align-items: baseline; gap: 6px; font: 400 13px/18px var(--font); color: var(--on-surface-variant); }
+.hm-otg-n b { font: 500 22px/26px var(--display); color: var(--on-surface); }
+.hm-otg-n.many b { color: #B5651D; } .hm-otg-n.done b { color: var(--primary); }
+.hm-startwrap.quiet .hm-tile { padding: 8px 4px; box-shadow: none; background: transparent; font-size: 12px; }
+.hm-startwrap.quiet .hm-ic { width: 38px; height: 38px; border-radius: 12px; background: var(--surface-low); color: var(--on-surface-variant); } .hm-startwrap.quiet .hm-ic .ms { font-size: 20px; }
+.otg-lead { margin: 0 2px 12px; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
+.otg-row { display: flex; align-items: center; gap: 2px; margin-bottom: 6px; border-radius: 16px; background: var(--surface-low); }
+.otg-row.first { background: var(--secondary-container); }
+.otg-main { all: unset; box-sizing: border-box; flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 10px 4px 10px 12px; cursor: pointer; }
+.otg-main .grow { display: flex; flex-direction: column; min-width: 0; }
+.otg-main b { font: 500 14px/19px var(--font); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.otg-main em { font: 400 12px/16px var(--font); font-style: normal; color: var(--on-surface-variant); }
+.otg-ic { flex: none; color: var(--primary); } .otg-acts { flex: none; display: inline-flex; padding-right: 4px; }
+.gs-finish { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: color-mix(in srgb, var(--gc) 10%, var(--surface-lowest)); font: 500 14px/20px var(--font); }
 </style>
 
   <script>
@@ -3668,8 +3684,8 @@ if (env.workDone) env.workDone('publish');
       // one line per product, so the list stays short: the first job, and how many more
       var now = (p.hands || []).filter(function (x) { return x.state === 'now'; });
       if (p.planWaits || p.parked) return;   // waiting for a later step of her plan, or paused: not on her list yet
-      if (now.length) publishData.todo.push({ key: 'pp-' + p.id, productId: p.id, text: p.title + ' · ' + now.length,
-        why: 'First: ' + now[0].text, where: 'Products' });
+      if (now.length) publishData.todo.push({ key: 'pp-' + p.id, productId: p.id, text: p.title + ': ' + text(now[0].text, 70),
+        why: now.length > 1 ? 'Just this one for now. ' + (now.length - 1) + ' more come after, one at a time.' : 'The last thing for you on this.', where: 'Products' });
     });
     var sw = siteWishes.snapshot(role);
     sw.wishes.forEach(function (w) { publishData.todo.push({ key: 'site-' + w.key, site: w.key, kind: w.kind, text: w.text, why: w.why, where: 'For your website' }); });
@@ -6857,7 +6873,7 @@ function tideNotes(env, t) {
  */
 
 var TIDE_TALK = {
-  MIN_Q: 10, MAX_Q: 20, PER_ROUND: 5, MORE_Q: 10,
+  MIN_Q: 4, MAX_Q: 10, PER_ROUND: 4, MORE_Q: 5,   // a few questions, then it's written up (she can ask for more)
   KINDS: ['Product', 'Idea', 'Artwork', 'Story', 'App feature', 'Other'],
   STAGES: ['Idea', 'Questions', 'Decisions', 'Checks & costing', 'Sample', 'Listing & launch', 'Live'],
   // who signs off a stage before it can move on
@@ -7153,7 +7169,7 @@ function tideTalk(env, t) {
     var res = env.lock(function () {
       var id = env.nextId('TP', 4), now = t.nowIso();
       env.table('topics').append({ id: id, created: now, createdBy: role, private: role === 'artist' && !p.goalId, title: title, detail: t.text(p.detail, 2000), status: 'Thinking',
-        rounds: [], outcome: null, filed: null, maxQ: p.goalId ? 12 : K.MAX_Q, goalId: p.goalId ? String(p.goalId) : '', updated: now, aiJob: '', aiStatus: '' });
+        rounds: [], outcome: null, filed: null, maxQ: p.goalId ? 6 : K.MAX_Q, goalId: p.goalId ? String(p.goalId) : '', updated: now, aiJob: '', aiStatus: '' });
       queue(id, 'round');
       return { id: id };
     });
@@ -8341,6 +8357,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-finishing', on: '2026-11-20', to: 'all', icon: 'task_alt', title: 'Finishing first',
+    say: 'Tide Book now leans towards finishing. Home shows how much is on the go and how much is finished: tap it to finish, rest or let go of things. A new idea can be kept for later without starting it. A goal with every step ticked asks to be finished. Products show one thing at a time.',
+    steps: ['On Home, tap “on the go”.', 'Nearest to finished is first: open it, or tap ✓, the moon (rest) or × (let go).', 'New idea › “Keep for later” saves it without starting.'], go: { view: 'home', find: '.hm-otg', tip: 'On the go, and finished.' } },
   { id: '2026-11-20-condensed', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Fewer places, same things',
     say: 'Tide Book is simpler. Plan holds your goals, your own list and the calendar. Money holds your orders. Notes holds your inspo. Mentors is the one place to talk things over. Home has one Waiting list. Nothing was lost.',
     steps: ['Menu › Plan: List or Calendar.', 'Tap a step for everything about it.', 'Notes › Inspo for what you’ve saved.', 'Money › Orders when there’s something to post.', 'Settings › Help for How to and What’s new.'], go: { view: 'plan', tip: 'Your plan.' } },
@@ -10738,7 +10757,7 @@ function tideMentors(env, t) {
       input_schema: { type: 'object', properties: { title: { type: 'string' }, caption: { type: 'string' }, hashtags: { type: 'string' }, format: { type: 'string', enum: ['Photo post', 'Carousel', 'Reel', 'Story'] }, why: { type: 'string' } }, required: ['title', 'caption', 'format'] } },
     { name: 'save_idea', description: 'Save an idea to her Ideas list.',
       input_schema: { type: 'object', properties: { title: { type: 'string' }, note: { type: 'string' }, kind: { type: 'string', enum: ['Product', 'Content', 'Other'] } }, required: ['title'] } },
-    { name: 'set_course', description: 'Set (or reshape) her short course for this mentor: 3 to 8 lessons in order, each with a one-line summary and a small practice task she does in real life.',
+    { name: 'set_course', description: 'Set (or reshape) her short course for this mentor: 3 to 5 lessons in order, each with a one-line summary and a small practice task she does in real life.',
       input_schema: { type: 'object', properties: { lessons: { type: 'array', minItems: 1, maxItems: 8, items: { type: 'object', properties: { title: { type: 'string' }, summary: { type: 'string' }, practice: { type: 'string' } }, required: ['title', 'summary', 'practice'] } } }, required: ['lessons'] } },
     { name: 'mark_lesson', description: 'Mark a lesson (0-based index) as now (being worked on) or done, with a short note on how it went.',
       input_schema: { type: 'object', properties: { index: { type: 'integer' }, status: { type: 'string', enum: ['now', 'done'] }, note: { type: 'string' } }, required: ['index', 'status'] } },
@@ -14010,6 +14029,7 @@ var Kit = (function () {
     var f = rest ? null : focusCard(); if (f) main.appendChild(rise(f, n++));
     main.appendChild(rise(todayCard(), n++));
     var nw = needsStrip(); if (nw) main.appendChild(rise(nw, n++));
+    main.appendChild(rise(onTheGoBar(), n++));
     main.appendChild(rise(startTiles(), n++));
     var unseen = newsList(false).length;
     main.appendChild(rise(h('div', { class: 'hm-foot' },
@@ -14102,6 +14122,56 @@ var Kit = (function () {
       var td = todoCard(); if (td) { var tt = td.querySelector('.section-title'); if (tt) tt.textContent = ''; b.appendChild(td); }
     } });
   }
+  /** Everything she has open, and everything finished. Finishing, resting and letting go all close a loop. */
+  function onTheGo() {
+    var T = talkData(), out = [];
+    (S.data.goals || []).forEach(function (g) { if (g.parentId || g.status === 'Done') return; var left = g.steps.filter(function (x) { return !x.done; }).length;
+      out.push({ kind: 'goal', id: g.id, ic: 'flag', title: g.title, sub: g.steps.length ? (left ? left + ' left' : 'All steps done') : 'No steps yet', near: g.steps.length ? 1 - left / g.steps.length : 0, open: function () { S.stepsOpen = S.stepsOpen || {}; S.stepsOpen['g:' + g.id] = true; go('goals'); },
+        done: function () { return api('updateGoal', g.id, { status: 'Done' }); }, drop: function () { return api('deleteGoal', g.id); }, undrop: function () { return api('undoDelete', 'goal', g.id); } }); });
+    (T.pipeline || []).forEach(function (p) { if (p.parked || p.dropped || p.stage === 'Live') return; var st = ['Idea', 'Questions', 'Decisions', 'Checks & costing', 'Sample', 'Listing & launch', 'Live'].indexOf(p.stage);
+      out.push({ kind: 'product', id: p.id, ic: 'inventory_2', title: p.title, sub: p.stage, near: Math.max(0, st) / 6, open: function () { openItem(p.id); }, rest: true }); });
+    openIdeas().forEach(function (x) { if ((T.pipeline || []).some(function (p) { return p.ideaId === x.id; })) return;
+      out.push({ kind: 'idea', id: x.id, ic: 'lightbulb', title: x.title, sub: x.stage, near: { Ready: .9, 'In progress': .5 }[x.stage] || .1, open: function () { openIdea(x.id); }, rest: true }); });
+    (T.topics || []).forEach(function (tp) { if (tp.parked || tp.dropped || tp.status === 'Done' || !tp.mine) return;
+      out.push({ kind: 'topic', id: tp.id, ic: 'forum', title: tp.title, sub: 'A talk, part way', near: .3, open: function () { openTopic(tp.id); }, rest: true }); });
+    ((S.data.mentors || {}).list || []).forEach(function (m) { if (m.kind === 'chat' || m.locked || (m.total && m.done >= m.total)) return;
+      out.push({ kind: 'mentor', id: m.id, ic: 'school', title: m.title, sub: m.total ? m.done + ' of ' + m.total + ' lessons' : 'Just started', near: m.total ? m.done / m.total : 0, open: function () { S.mentorId = m.id; go('mentors'); },
+        drop: function () { return api('deleteMentor', m.id); }, undrop: function () { return api('undoDelete', 'mentor', m.id); } }); });
+    return out.sort(function (a, b) { return b.near - a.near; });
+  }
+  function finishedCount() {
+    var T = talkData();
+    return (S.data.goals || []).filter(function (g) { return g.status === 'Done'; }).length + (S.data.prints || []).filter(function (p) { return p.status === 'Live'; }).length +
+      (S.data.content || []).filter(function (c) { return c.type === 'Post' && c.status === 'Posted'; }).length + (T.pipeline || []).filter(function (p) { return p.stage === 'Live'; }).length;
+  }
+  function onTheGoBar() {
+    var n = onTheGo().length, f = finishedCount();
+    return h('button', { type: 'button', class: 'hm-otg press soft', onclick: openOnTheGo, 'aria-label': n + ' on the go, ' + f + ' finished' },
+      h('span', { class: 'hm-otg-n' + (n > 5 ? ' many' : '') }, h('b', { text: String(n) }), 'on the go'), h('span', { class: 'hm-otg-n done' }, h('b', { text: String(f) }), 'finished'), h('span', { class: 'grow' }), icon('chevron_right'));
+  }
+  /** The tidy-up: nearest to finished first. Each can be finished, rested (it comes back when she wants) or let go. */
+  function openOnTheGo() {
+    K.sheet({ title: 'On the go', tall: true, build: function (ctl) {
+      function paint() {
+        var list = onTheGo(), b = ctl.body; b.textContent = '';
+        b.appendChild(h('p', { class: 'otg-lead', text: list.length ? 'Nearest to finished first. Finish it, rest it, or let it go: all three clear your plate.' : 'Nothing open. A good moment to start something.' }));
+        list.forEach(function (it, i) {
+          function act(ic, label, fn, msg, undo) { return h('button', { type: 'button', class: 'icon-btn press', 'aria-label': label + ': ' + it.title, 'data-tip': label, onclick: function (e) {
+            e.currentTarget.disabled = true;
+            fn().then(refresh).then(function () { K.haptic('success'); paint(); render(); if (undo) undoCard(msg, undo, 'Back on.'); else toast(msg); }).catch(fail);
+          } }, icon(ic)); }
+          var acts = h('span', { class: 'otg-acts' });
+          if (it.done) acts.appendChild(act('task_alt', 'Finished', it.done, '✓ Finished: ' + it.title, function () { return api('updateGoal', it.id, { status: 'Open' }); }));
+          if (it.rest) acts.appendChild(act('bedtime', 'Rest it', function () { return api('decideItem', it.kind, it.id, 'park'); }, 'Resting: ' + it.title, function () { return api('undoDecision', it.kind, it.id, 'park'); }));
+          acts.appendChild(act('close', 'Let it go', it.drop || function () { return api('decideItem', it.kind, it.id, 'not'); }, 'Let go: ' + it.title, it.undrop || function () { return api('undoDecision', it.kind, it.id, 'not'); }));
+          b.appendChild(h('div', { class: 'otg-row' + (i === 0 ? ' first' : '') },
+            h('button', { type: 'button', class: 'otg-main press', onclick: function () { ctl.close(); setTimeout(it.open, 280); } }, h('span', { class: 'otg-ic' }, icon(it.ic)),
+              h('span', { class: 'grow' }, h('b', { text: it.title }), h('em', { text: (i === 0 ? 'Nearest · ' : '') + it.sub }))), acts));
+        });
+      }
+      paint();
+    } });
+  }
   function listSheet(title, fill) { K.sheet({ title: title, tall: true, build: function (ctl) { fill(ctl.body); } }); }
   /** Start something: the four things she starts most (an idea and an artwork always among them). */
   function startTiles() {
@@ -14118,7 +14188,8 @@ var Kit = (function () {
     var four = must.concat(rest.slice(0, 2)).sort(function (a, b) { return b.use - a.use; });
     var row = h('div', { class: 'hm-start' });
     four.forEach(function (o) { row.appendChild(h('button', { type: 'button', class: 'hm-tile press soft', onclick: o.go, 'aria-label': 'New ' + o.t.toLowerCase() }, h('span', { class: 'hm-ic' }, icon(o.ic)), h('span', { text: o.t }))); });
-    return h('div', { class: 'hm-startwrap' }, h('div', { class: 'label-s', text: 'Start something' }), row);
+    var busy = onTheGo().length;
+    return h('div', { class: 'hm-startwrap' + (busy > 5 ? ' quiet' : '') }, h('div', { class: 'label-s', text: busy > 5 ? 'Keep something for later' : 'Start something' }), row);
   }
   /** A list to put in her own order: hold the handle, drag, Save. o: title, intro, order, defaults, label(k), icon(k), save(order) → promise, done (toast). */
   function arrangeSheet(o) {
@@ -15659,7 +15730,7 @@ var Kit = (function () {
       p.stage + (p.parked ? ' · parked' : need.length ? ' · needs ' + need.map(function (r) { return r === 'artist' ? (ADMIN ? cap(artist()) + '’s' : 'your') : adminName() + '’s'; }).join(' and ') + ' OK' : ''),
       R ? R.verdict + ' ' + R.viability + '/100 · about ' + R.demand.low + (R.demand.high > R.demand.low ? '–' + R.demand.high : '') + ' sales a month' + (R.costing.price ? ' at ' + money(R.costing.price) : '')
         : p.researchStatus === 'Queued' || p.researchStatus === 'Researching' ? 'Market research is on its way' : '',
-      todo ? todo + ' check' + (todo === 1 ? '' : 's') + ' still to do' + (p.unitCost ? ' · costs ' + money(p.unitCost, { cents: true }) + ' to make' : '') : 'All checks done'
+      todo ? 'Rules to check: one job, done for you' + (p.unitCost ? ' · costs ' + money(p.unitCost, { cents: true }) + ' to make' : '') : 'All checks done'
     ]);
   }
 
@@ -16568,10 +16639,10 @@ var Kit = (function () {
     K.sheet({
       title: 'New idea', tall: true, guard: function () { return dirty; },
       build: function (ctl) {
-        var busy = openIdeas().length;
-        if (busy >= 5) {
+        var busy = onTheGo().length;
+        if (busy >= 3) {
           var top = closestToDone();
-          ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note(busy + ' ideas are on the go. Finishing one first gets your work out sooner.', 'flag')));
+          ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note(busy + ' things are on the go. “Keep for later” saves this one without starting it.', 'flag')));
           if (top) ctl.body.appendChild(h('div', { style: 'margin:-4px 0 14px' }, btn('tonal', 'Finish “' + top.x.title + '” instead', { icon: 'flag', sm: true, onclick: function () { dirty = false; K.swap(ctl, function () { openIdea(top.x.id); }); } })));
         }
         function touch() { dirty = true; }
@@ -16592,20 +16663,22 @@ var Kit = (function () {
         s5.appendChild(scopeEditor(f.scope, { ticks: false, onChange: touch }));
         ctl.body.append(s1, s2, s5, s3, s4);
 
-        var send = btn('filled', 'Send idea', { icon: 'send', lg: true, block: true });
+        var later = false;
+        var send = btn(busy >= 3 ? 'tonal' : 'filled', 'Start on it now', { icon: 'send', lg: true, block: true });
+        var keep = btn(busy >= 3 ? 'filled' : 'tonal', 'Keep for later', { icon: 'bedtime', lg: true, block: true, onclick: function () { later = true; send.click(); } });
         send.addEventListener('click', function () {
           if (!f.kind) { toast('First, choose what kind of idea it is.'); ctl.body.scrollTo({ top: 0, behavior: 'smooth' }); return; }
           if (!f.title.trim()) { toast('Give the idea a name.'); title.input.focus(); return; }
           K.setBusy(send, true);
           api('createIdea', { kind: f.kind, title: f.title, note: f.note, timeline: f.timeline, priority: f.priority, scope: f.scope })
-            .then(function (res) { return uploadAll('idea', res.id, f.files); })
+            .then(function (res) { return uploadAll('idea', res.id, f.files).then(function () { return later ? api('pauseIdea', res.id, '') : null; }); })
             .then(refresh)
             .then(function () {
               dirty = false; render();
-              ctl.celebrate('Idea sent', S.data.features.research ? 'It’s being looked into now.' : 'It’s in the Tide Book.');
-            }).catch(function (e) { K.setBusy(send, false); fail(e); });
+              ctl.celebrate(later ? 'Kept for later' : 'Idea started', later ? 'It’s resting in Ideas until you want it.' : S.data.features.research ? 'It’s being looked into now.' : 'It’s in the Tide Book.');
+            }).catch(function (e) { later = false; K.setBusy(send, false); fail(e); });
         });
-        ctl.foot.appendChild(send);
+        ctl.foot.appendChild(h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, busy >= 3 ? keep : send, busy >= 3 ? send : keep));
       }
     });
   }
@@ -17750,7 +17823,7 @@ var Kit = (function () {
       box.appendChild(h('div', { class: 'gs-headrow' },
         h('button', { type: 'button', class: 'gs-head', 'aria-expanded': String(isOpen), onclick: function () { open[ko] = !isOpen; K.haptic(); render(); } }, h('i', { class: 'gs-dot' }, g.status === 'Done' ? icon('check') : null),
           h('span', { class: 'grow' }, h('b', { text: g.title }), now && now.id === g.id ? h('em', { class: 'gs-now', text: 'Now' }) : null),
-          h('span', { class: 'gs-count', text: steps.length ? done.length + '/' + steps.length : '' }), icon(isOpen ? 'expand_less' : 'expand_more')),
+          h('span', { class: 'gs-count', text: steps.length ? (left.length ? left.length + ' left' : 'Done') : '' }), icon(isOpen ? 'expand_less' : 'expand_more')),
         K.iconBtn('more_vert', 'More for this goal', function () { openGoal(g.id); })));
       if (!isOpen) return box;
       // the shop goal carries what selling needs: each ticks itself when it's done
@@ -17775,9 +17848,12 @@ var Kit = (function () {
       inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addIt(inp.value); } });
       box.appendChild(h('div', { class: 'gs-row add' }, h('span', { class: 'gs-plus' }, icon('add')), inp, h('button', { type: 'button', class: 'gs-addbtn', onclick: function () { addIt(inp.value); } }, 'Add')));
       // Tide Book's suggestions, from what the goal is about
-      var ideas = stepIdeasFor(g).slice(0, steps.length ? 3 : 4);
+      var ideas = left.length ? [] : stepIdeasFor(g).slice(0, 2);
+      // every step ticked: finishing the goal comes before adding more to it
+      if (steps.length && !left.length && g.status !== 'Done') box.appendChild(h('div', { class: 'gs-finish' }, h('span', { class: 'grow', text: 'Every step is done.' }),
+        btn('filled', 'Finish this goal', { sm: true, icon: 'task_alt', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', g.id, { status: 'Done' }).then(refresh).then(function () { K.haptic('success'); render(); toast('✓ Goal finished'); }).catch(fail); } })));
       if (ideas.length || !steps.length) {
-        var sug = h('div', { class: 'gs-sug' }, h('span', { class: 'label-s', text: steps.length ? 'Next, maybe' : 'To start, maybe' }));
+        var sug = h('div', { class: 'gs-sug' }, h('span', { class: 'label-s', text: steps.length ? 'Or one more step' : 'First step' }));
         ideas.forEach(function (x) { sug.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { addIt(x); } }, icon('add'), x)); });
         if (!steps.length) sug.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { K.setBusy(e.currentTarget, true); api('planGoal', g.id).then(function (r) { return refresh().then(function () { openTopic(r.topicId); }); }).catch(fail); } }, icon('forum'), 'Plan it with me'));
         box.appendChild(sug);
