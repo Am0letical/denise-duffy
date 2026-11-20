@@ -1850,6 +1850,18 @@ body.map-full { overflow: hidden; }
 .gs-list.open .gs-head .grow b { -webkit-line-clamp: 6; }
 .gs-now { flex: none; margin-left: 0; width: auto; display: inline-block; }
 .gs-head .grow { flex-wrap: wrap; justify-content: flex-start; text-align: left; row-gap: 2px; } .gs-head .grow b { text-align: left; }
+/* ---- the condensing ---- */
+.hm-wait { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 12px 12px 14px; margin-bottom: 14px; border-radius: 18px; background: var(--secondary-container); color: var(--on-secondary-container); font: 500 15px/20px var(--font); cursor: pointer; }
+.hm-wait b { min-width: 26px; padding: 2px 8px; border-radius: 13px; background: var(--primary); color: var(--on-primary); font: 600 13px/20px var(--font); text-align: center; }
+.hm-wait .ms { font-size: 20px; opacity: .8; }
+.hm-today.own { margin-top: 14px; } .hm-today.own .hm-today-h > .ms { color: var(--on-surface-variant); }
+.hm-gdot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--gc); margin-right: 2px; }
+.gs-row.auto .gs-text { display: flex; flex-direction: column; align-items: flex-start; }
+.gs-row.auto .gs-tick { pointer-events: none; }
+.gs-row.auto.done .gs-text > span:first-child { text-decoration: line-through; color: var(--on-surface-variant); }
+.lib-h { margin: 18px 4px 8px; } .lib-h:first-of-type { margin-top: 0; }
+.lib-none { margin: 0 4px 6px; font: 400 13px/18px var(--font); color: var(--on-surface-variant); }
+.inspo-turn { right: auto !important; left: 6px; }
 </style>
 
   <script>
@@ -8249,16 +8261,16 @@ var TIDE_GUIDE = [
     steps: ['In Calendar, tap Day (or a day’s name in Week, or a day twice in Month).', 'Tap a free time to add something right there.', 'Hold a step or one of your own things, then drag it to another time.', 'Tap anything to open it.'], go: { view: 'calendar', state: { calMode: 'day' }, find: '.cal-hours', tip: 'Tap a time to add, hold to drag.' } },
   { id: 'g-cal-plan', area: 'Calendar', to: 'all', icon: 'auto_awesome', title: 'Let Tide Book plan your days',
     say: 'Tide Book fits your goals’ steps into the hours you like to work, around everything else on, no more than you want in a day. If a day goes by or something new comes up, it moves them and tells you, with Undo.',
-    steps: ['In Calendar, tap the sliders at the top right.', 'Choose “Plan my days for me”, the days and hours you like to work, and the most in a day.', 'Tap Save. Steps without a day are planned straight away.', 'To choose a time yourself, tap the calendar icon on a step: that time stays put.', 'Something moved? The card at the top says what, with Undo.'], go: { view: 'calendar', find: '.cal-tools', tip: 'Plan, or check in.' } },
+    steps: ['In Calendar, tap the sliders at the top right.', 'Choose “Plan my days for me”, the days and hours you like to work, and the most in a day.', 'Tap Save. Steps without a day are planned straight away.', 'To choose a time yourself, tap the calendar icon on a step: that time stays put.', 'Something moved? The card at the top says what, with Undo.'], go: { view: 'calendar', find: '.cal-head', tip: 'Plan, or check in.' } },
   { id: 'g-cal-days', area: 'Calendar', to: 'all', icon: 'checklist', title: 'Just set the days yourself',
     say: 'Rather not have a schedule? Choose “I’ll set the days myself”: a quick check-in gives your next steps days, and you’re reminded when nothing’s planned ahead.',
-    steps: ['In Calendar, tap the sliders, choose “I’ll set the days myself”, then Save.', 'Tap Check in: Today, Tomorrow or Another day for each next step.', 'Missed one? It moves to your next working day by itself.'], go: { view: 'calendar', find: '.cal-tools', tip: 'Check in here.' } },
+    steps: ['In Calendar, tap the sliders, choose “I’ll set the days myself”, then Save.', 'Tap Check in: Today, Tomorrow or Another day for each next step.', 'Missed one? It moves to your next working day by itself.'], go: { view: 'calendar', find: '.cal-head', tip: 'Check in here.' } },
   { id: 'g-cal-link', area: 'Calendar', to: 'all', icon: 'link', title: 'See your other calendars here',
     say: 'Link Google Calendar, your iPhone’s calendar, Outlook or any calendar link. Their events show beside yours, read every 15 minutes, and Tide Book plans around them. It never changes them.',
-    steps: ['In Calendar, tap the sliders, then “Link a calendar”.', 'Pick where it is (Google, iPhone, Outlook) and follow the steps to copy its link.', 'Paste the link and tap Link it.', 'Birthdays or school terms? Tap ⋮ › “Don’t plan around it”.'], go: { view: 'calendar', find: '.cal-tools', tip: 'The sliders, at the right.' } },
+    steps: ['In Calendar, tap the sliders, then “Link a calendar”.', 'Pick where it is (Google, iPhone, Outlook) and follow the steps to copy its link.', 'Paste the link and tap Link it.', 'Birthdays or school terms? Tap ⋮ › “Don’t plan around it”.'], go: { view: 'calendar', find: '.cal-head', tip: 'The sliders, at the right.' } },
   { id: 'g-cal-phone', area: 'Calendar', to: 'all', icon: 'phone_iphone', title: 'Tide Book in your phone’s calendar',
     say: 'Your steps, your own things and your posts can show in your phone’s calendar too, and keep up to date by themselves.',
-    steps: ['In Calendar, tap the sliders, then “Show Tide Book in your phone’s calendar”.', 'On an iPhone, tap “Add to my iPhone”, then Subscribe.', 'Keep the link to yourself. “Make a new link” stops the old one.'], go: { view: 'calendar', find: '.cal-tools', tip: 'The sliders, at the right.' } },
+    steps: ['In Calendar, tap the sliders, then “Show Tide Book in your phone’s calendar”.', 'On an iPhone, tap “Add to my iPhone”, then Subscribe.', 'Keep the link to yourself. “Make a new link” stops the old one.'], go: { view: 'calendar', find: '.cal-head', tip: 'The sliders, at the right.' } },
   { id: 'g-ideas', area: 'Ideas', to: 'all', icon: 'lightbulb', title: 'Save an idea',
     say: 'Anything you’d like to make or do. Tide Book researches it and tells you plainly if it’s worth it.',
     steps: ['Open Ideas › Ideas.', 'Tap New idea and say it in a few words.', 'Tide Book looks into it and gives it a score.', 'Open it to take it further: a product, an artwork, or part of your plan.'], go: { view: 'ideas', state: { ideasTab: 'ideas' }, find: '.fab', tip: 'New idea.' } },
@@ -8329,6 +8341,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-condensed', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Fewer places, same things',
+    say: 'Tide Book is simpler. Plan holds your goals, your own list and the calendar. Money holds your orders. Notes holds your inspo. Mentors is the one place to talk things over. Home has one Waiting list. Nothing was lost.',
+    steps: ['Menu › Plan: List or Calendar.', 'Tap a step for everything about it.', 'Notes › Inspo for what you’ve saved.', 'Money › Orders when there’s something to post.', 'Settings › Help for How to and What’s new.'], go: { view: 'plan', tip: 'Your plan.' } },
   { id: '2026-11-20-goals-list', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Goals, as a simple list',
     say: 'The star map is gone. Goals is one calm list: your milestone with how far along it is, your goals under it, and each goal opens to its steps.',
     steps: ['Open Goals.', 'Tap a goal to see its steps and tick them off.', '+ Goal adds one. “Order” puts the most important first.'], go: { view: 'goals', find: '.gsteps', tip: 'Your goals.' } },
@@ -8381,7 +8396,7 @@ var TIDE_CHANGES = [
   { id: '2026-11-19-calendar-plan', on: '2026-11-19', to: 'all', icon: 'auto_awesome', title: 'A calendar that plans with you',
     say: 'The calendar can plan your days now: it fits your goals’ steps into the hours you like to work, around everything else, and moves what slips (with Undo). It shows the day hour by hour, and your Google, iPhone or Outlook calendars beside your own things.',
     steps: ['Open Calendar and tap the sliders at the top right.', 'Choose “Plan my days for me” (or “I’ll set the days myself”), your working days and hours, then Save.', 'Tap Day to see it hour by hour: tap a time to add, hold to drag.', 'Tap “Link a calendar” to bring in Google Calendar, your iPhone’s or Outlook’s.', '“Show Tide Book in your phone’s calendar” puts your steps on your phone too.'],
-    go: { view: 'calendar', find: '.cal-tools', tip: 'Plan, check in, and the sliders.' } },
+    go: { view: 'calendar', find: '.cal-head', tip: 'Plan, check in, and the sliders.' } },
   { id: '2026-11-19-goal-steps', on: '2026-11-19', to: 'all', icon: 'checklist', title: 'Your steps, like a reminders list',
     say: 'Under your goals sky, every goal’s steps are listed: tick them off, add one in a line, and tap Tide Book’s suggestions to add them.',
     steps: ['Open Goals and scroll below the sky.', 'Tap a circle to tick a step off (there’s an Undo).', 'Type in “Add a step” and press Enter.', 'Tap a suggestion to add it, or “Plan it with me” for a goal with none.', 'Tap a step for its tools, or ⋮ to change it, give it a day, move it or remove it.'],
@@ -12598,7 +12613,7 @@ var Kit = (function () {
   'use strict';
   var K = Kit, h = K.h, icon = K.icon, btn = K.btn, toast = K.toast, money = K.money, chip = K.chip;
   var ROLE = document.body.dataset.role, ADMIN = ROLE === 'admin';
-  var S = { data: null, money: null, fy: null, thumbs: {}, view: 'home', animate: true, ideaFilter: 'all', printFilter: 'all', txnFilter: 'all', chartTable: false, contentTab: 'review', adminTab: 'contacts', contactQuery: '', contactKind: '' };
+  var S = { data: null, money: null, fy: null, thumbs: {}, view: 'home', animate: true, ideaFilter: 'all', printFilter: 'all', txnFilter: 'all', chartTable: false, contentTab: 'review', adminTab: 'settings', contactQuery: '', contactKind: '' };
   var KIND_ICON = { Product: 'sell', Content: 'movie', Wellness: 'spa', Other: 'category' };
   var PRIORITY_RANK = { High: 0, Medium: 1, Low: 2 };
 
@@ -12784,9 +12799,9 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ navigation
   var NAV_ALL = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['goals', 'Goals', 'flag'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']]
+    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['plan', 'Plan', 'flag'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['goals', 'Goals', 'flag'], ['calendar', 'Calendar', 'calendar_month'], ['site', 'Website', 'language'], ['orders', 'Orders', 'local_shipping'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['plan', 'Plan', 'flag'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
   var NAV = NAV_ALL.slice();
   /** The menu in this person's order (anything new goes where it sits by default). */
   function navOrder() {
@@ -12866,7 +12881,7 @@ var Kit = (function () {
   /** On a phone: one round button, bottom left, says where she is. Tap it for every section. */
   function navCount(k) {
     var waiting = needsList().length, toReview = S.data.ideas.filter(function (x) { return x.stage === 'New' && x.researchStatus !== 'Queued' && x.researchStatus !== 'Researching'; }).length;
-    return k === 'orders' ? ((S.data.shop || {}).todo || 0) : (!ADMIN && k === 'home') ? waiting : (ADMIN && k === 'ideas') ? toReview : k === 'content' ? studioCount() : 0;
+    return k === 'money' ? ((S.data.shop || {}).todo || 0) : (!ADMIN && k === 'home') ? waiting : (ADMIN && k === 'ideas') ? toReview : k === 'content' ? studioCount() : 0;
   }
   function menuBubble() {
     var b = document.getElementById('menu-bubble');
@@ -12903,7 +12918,15 @@ var Kit = (function () {
     document.addEventListener('keydown', esc);
     var first = pop.querySelector('.menu-item.here') || pop.querySelector('.menu-item'); if (first) first.focus({ preventScroll: true });
   }
+  /** Places that moved keep working: Goals and Calendar are Plan's two views, Orders is a tab of Money. */
+  function placeFor(view) {
+    if (view === 'goals') { S.planView = 'list'; return 'plan'; }
+    if (view === 'calendar') { S.planView = 'cal'; return 'plan'; }
+    if (view === 'orders') { S.moneyTab = 'orders'; return 'money'; }
+    return view;
+  }
   function go(view) {
+    view = placeFor(view);
     var from = NAV.map(function (n) { return n[0]; }).indexOf(S.view), to = NAV.map(function (n) { return n[0]; }).indexOf(view);
     S.view = view; S.animate = true;
     render();
@@ -13211,10 +13234,10 @@ var Kit = (function () {
   }
   function viewOrders(main) {
     var SH = shopData();
-    pageTitle(main, 'Orders', 'From your website to the buyer’s door: what to post, what Printful is making, and where each one is.');
     var RD = SH.ready || {};
     var readyAll = RD.stripe && RD.stripeLive && RD.printful && RD.rates && RD.published && RD.reach;
-    if (!readyAll) main.appendChild(rise(readyCard(RD), 1));
+    if (!readyAll && !shopGoal()) main.appendChild(rise(readyCard(RD), 1));
+    else if (!readyAll) main.appendChild(rise(h('button', { type: 'button', class: 'hm-link press', style: 'margin-bottom:10px', onclick: function () { S.stepsOpen = S.stepsOpen || {}; S.stepsOpen['g:' + shopGoal().id] = true; go('goals'); } }, icon('flag'), 'Getting ready to sell: in your shop goal'), 1));
     if (false) {
       var why = !SH.stripe || !SH.stripe.linked ? (ADMIN ? 'Link Stripe to open checkout: buyers pay on Stripe’s own page, and paid orders land here by themselves.' : adminName() + ' is setting up the payments. Until then your website’s Check out button says it opens soon.')
         : !SH.open ? SH.why : (ADMIN ? 'Checkout works from the preview. The published website needs its public address set (shopUrl in the PC’s config) to reach checkout.' : 'Checkout is nearly ready: ' + adminName() + ' has one last step to do.');
@@ -13238,7 +13261,7 @@ var Kit = (function () {
       btn('tonal', 'Change postage', { sm: true, icon: 'tune', onclick: openShopSettings })), 4));
   }
   /** Ready to sell: each step to the first sale, ticked when done, with its button right there. */
-  function readyCard(RD) {
+  function readySteps(RD) {
     var steps = [
       { done: RD.stripe && RD.stripeLive, part: RD.stripe && !RD.stripeLive, ic: 'credit_card', t: 'Payments, through Stripe',
         line: !RD.stripe ? 'Buyers pay on Stripe → money to your bank. Free to set up.' : 'Test mode: checkouts are pretend. Link the live key for real sales.',
@@ -13250,6 +13273,11 @@ var Kit = (function () {
         b: !RD.artworks ? 'Add an artwork' : 'Publish your website', go: !RD.artworks ? function () { go('prints'); setTimeout(function () { openPrint(null); }, 350); } : publishSite }
     ];
     if (ADMIN || !RD.reach) steps.push({ done: RD.reach, ic: 'public', t: 'Checkout reachable from the website', line: RD.reach ? 'Done.' : ADMIN ? 'The PC needs a public address for the shop (shopUrl in its config).' : adminName() + ' has this one.', b: '', go: null });
+    return steps;
+  }
+  function shopGoal() { return (S.data.goals || []).filter(function (g) { return !g.parentId && g.status !== 'Done' && /\b(shop|store)\b/i.test(g.title); })[0] || null; }
+  function readyCard(RD) {
+    var steps = readySteps(RD);
     var left = steps.filter(function (s) { return !s.done; }).length;
     var card = h('div', { class: 'card pad ready-card', style: 'margin-bottom:14px' }, h('div', { class: 'title-m', text: 'Ready to sell' }),
       h('p', { class: 'body-s', style: 'margin:2px 0 10px;color:var(--on-surface-variant)', text: left ? left + ' step' + (left === 1 ? '' : 's') + ' to your first sale.' : 'All done: your shop is open.' }));
@@ -13663,7 +13691,8 @@ var Kit = (function () {
     document.body.classList.toggle('wide', S.view === 'prints');
     var main = $('#main');
     main.textContent = '';
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, orders: viewOrders, notes: viewNotes, mentors: viewMentors, goals: viewGoalsPage, calendar: viewCalendar, settings: viewAdmin }[S.view] || viewHome)(main);
+    S.view = placeFor(S.view);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, notes: viewNotes, mentors: viewMentors, plan: viewPlan, settings: viewAdmin }[S.view] || viewHome)(main);
     if ((S.view === 'home' || !S.view) && !main.querySelector('.hm-foot')) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -14046,20 +14075,32 @@ var Kit = (function () {
     return sv;
   }
   /** What's waiting for her, as a few counts (nothing shows when nothing waits). */
+  /** What's waiting for her: one count on Home, one list behind it. */
+  function waitingParts() {
+    var T = talkData();
+    return { posts: draftsToReview().filter(function (c) { return c.type === 'Post'; }).length + (S.data.questions || []).length,
+      needs: needsList(), reports: (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }),
+      talks: T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }), oks: T.pipeline.filter(function (p) { return p.needsMe; }), todo: S.data.todo || [] };
+  }
   function needsStrip() {
-    var T = talkData(), chips = [];
-    var posts = draftsToReview().filter(function (c) { return c.type === 'Post'; }).length + (S.data.questions || []).length;
-    var qs = needsList().length + (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }).length;
-    var talks = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length;
-    var todo = (S.data.todo || []).length;
-    if (posts) chips.push(['perm_media', 'Posts', posts, function () { S.contentTab = 'review'; go('content'); }]);
-    if (qs) chips.push(['help', 'Questions', qs, function () { listSheet('Questions', function (b) { needsList().forEach(function (e) { b.appendChild(needsCard(e, function () { refresh().then(render); })); }); (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }).forEach(function (r) { b.appendChild(btn('tonal', 'About your suggestion', { icon: 'help', onclick: function () { openReportQuestions(r); } })); }); }); }]);
-    if (talks) chips.push(['forum', 'Talks', talks, function () { go('mentors'); }]);
-    if (todo) chips.push(['checklist', 'To do', todo, function () { listSheet('To do', function (b) { var td = todoCard(); if (td) { var tt = td.querySelector('.section-title'); if (tt) tt.textContent = ''; b.appendChild(td); } }); }]);
-    if (!chips.length) return null;
-    var row = h('div', { class: 'hm-needs' }, h('span', { class: 'label-s', text: 'Waiting' }));
-    chips.forEach(function (c) { row.appendChild(h('button', { type: 'button', class: 'hm-chip press soft', onclick: c[3], 'aria-label': c[2] + ' ' + c[1] }, icon(c[0]), h('span', { text: c[1] }), h('b', { text: String(c[2]) }))); });
-    return row;
+    var W = waitingParts(), n = W.posts + W.needs.length + W.reports.length + W.talks.length + W.oks.length + W.todo.length;
+    if (!n) return null;
+    var kinds = [[W.posts, 'perm_media'], [W.needs.length + W.reports.length, 'help'], [W.talks.length + W.oks.length, 'forum'], [W.todo.length, 'checklist']].filter(function (k) { return k[0]; });
+    return h('button', { type: 'button', class: 'hm-wait press soft', onclick: openWaiting, 'aria-label': n + ' waiting for you' }, h('b', { text: String(n) }), h('span', { class: 'grow', text: 'Waiting' }),
+      kinds.map(function (k) { return icon(k[1]); }), icon('chevron_right'));
+  }
+  function openWaiting() {
+    var W = waitingParts();
+    K.sheet({ title: 'Waiting', tall: true, build: function (ctl) {
+      var b = ctl.body;
+      function row(ic, label, fn) { b.appendChild(h('button', { type: 'button', class: 'li press', style: 'width:100%;margin-bottom:6px', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('div', { class: 'th-blank todo-ic' }, icon(ic)), h('div', { class: 'grow' }, h('div', { class: 'li-head', text: label })), icon('chevron_right'))); }
+      if (W.posts) row('perm_media', W.posts + (W.posts === 1 ? ' post to look at' : ' posts to look at'), function () { S.contentTab = 'review'; go('content'); });
+      W.needs.forEach(function (e) { b.appendChild(needsCard(e, function () { refresh().then(render); })); });
+      W.reports.forEach(function (r) { row('help', 'About your suggestion', function () { openReportQuestions(r); }); });
+      W.talks.forEach(function (tp) { row('forum', tp.title, function () { openTopic(tp.id); }); });
+      W.oks.forEach(function (p) { row('inventory_2', p.title, function () { openItem(p.id); }); });
+      var td = todoCard(); if (td) { var tt = td.querySelector('.section-title'); if (tt) tt.textContent = ''; b.appendChild(td); }
+    } });
   }
   function listSheet(title, fill) { K.sheet({ title: title, tall: true, build: function (ctl) { fill(ctl.body); } }); }
   /** Start something: the four things she starts most (an idea and an artwork always among them). */
@@ -14234,21 +14275,18 @@ var Kit = (function () {
   }
 
   function viewIdeas(main) {
-    var moved = { notebook: 'notes', goals: 'goals', talk: 'mentors' }[S.ideasTab];
-    if (moved) { S.ideasTab = 'ideas'; S.view = moved; render(); return; }
-    var tab = ['products', 'inspo'].indexOf(S.ideasTab) >= 0 ? S.ideasTab : 'ideas', nb = false, T = talkData();
+    var moved = { notebook: 'notes', goals: 'goals', talk: 'mentors', inspo: 'notes' }[S.ideasTab];
+    if (moved) { if (S.ideasTab === 'inspo') S.noteFolder = '__inspo'; S.ideasTab = 'ideas'; S.view = moved; render(); return; }
+    var tab = S.ideasTab === 'products' ? 'products' : 'ideas', nb = false, T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
     pageTitle(main, 'Ideas', tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : 'Ranked by ' + (ADMIN ? artist() + '’s' : 'your') + ' priority, then by viability.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: tab, fit: true, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
-      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'products', label: 'Products', count: oks || undefined }, { value: 'inspo', label: 'Inspo' }]
+      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'products', label: 'Products', count: oks || undefined }]
     })), 1));
     if (tab === 'products') return viewProducts(main);
-    if (tab === 'inspo') return viewInspo(main);
-    main.appendChild(rise(directionCard(), 1));
-    var fc = finishCard(); if (fc) main.appendChild(rise(fc, 1));
     var ideas = S.data.ideas;
     if (!ADMIN) needsList().filter(function (e) { return e.kind === 'idea'; }).forEach(function (e) { main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, needsCard(e)), 1)); });
     if (true) {   // both see the full list: her ideas, ranked, with their research
@@ -14705,10 +14743,10 @@ var Kit = (function () {
     if (i.private && (ADMIN || previewing())) return 'Her note on it is private';
     return 'Tap to add what caught your eye';
   }
-  function viewInspo(main) {
-    var all = inspoList(), tag = S.inspoTag || '', pbi = privacyBar();
+  function viewInspo(main, inNotes) {
+    var all = inspoList(), tag = S.inspoTag || '', pbi = inNotes ? null : privacyBar();
     if (pbi) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pbi), 1));
-    main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:14px' },
+    if (!inNotes) main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:14px' },
       h('div', { class: 'title-m', text: 'Saw something that inspired you?' }),
       h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Save a screenshot or paste the link to the post, and a word on what caught your eye.' }),
       btn('filled', 'Save inspiration', { icon: 'add', onclick: function () { openInspo(null); } })), 2));
@@ -14727,10 +14765,13 @@ var Kit = (function () {
         e.stopPropagation(); del.disabled = true;
         api('deleteInspiration', i.id).then(refresh).then(function () { render(); binUndo('Removed from your inspo.', 'inspiration', i.id); }).catch(function (er) { del.disabled = false; fail(er); });
       } }, icon('delete'));
-      grid.appendChild(rise(h('div', { class: 'inspo-wrap' }, card, del), 3 + Math.min(n, 8)));
+      var turn = h('button', { class: 'inspo-del inspo-turn press', type: 'button', 'aria-label': 'Turn into…', 'data-tip': 'Turn into…', onclick: function (e) {
+        e.stopPropagation(); turn.disabled = true;
+        api('saveNote', { title: '', body: [inspoTldr(i), i.note, i.url].filter(function (x, k, arr) { return x && arr.indexOf(x) === k; }).join('\n'), folder: 'From inspo', allowEmpty: true }).then(function (r) { return refresh().then(function () { turn.disabled = false; openTurnInto(r.id, function () {}); }); }).catch(function (er) { turn.disabled = false; fail(er); });
+      } }, icon('auto_awesome'));
+      grid.appendChild(rise(h('div', { class: 'inspo-wrap' }, card, del, turn), 3 + Math.min(n, 8)));
     });
     main.appendChild(grid);
-    if (shown.length > 4) fab(main, 'Save inspiration', 'add', function () { openInspo(null); });
   }
 
   function openInspo(id, preset) {
@@ -14948,21 +14989,59 @@ var Kit = (function () {
   }
 
   /** Goals: their own page (the map and every goal's steps). */
-  function viewGoalsPage(main) {
-    pageTitle(main, 'Goals', 'Where you want to get to: milestones, the goals around them, and each goal’s steps.');
+  function viewPlan(main) {
+    var v = S.planView === 'cal' ? 'cal' : 'list';
+    pageTitle(main, 'Plan', 'Your milestone, its goals and their steps, your own list, and all of it on the calendar.');
+    main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, K.segmented({ label: 'Show', value: v, options: [{ value: 'list', label: 'List' }, { value: 'cal', label: 'Calendar' }], onChange: function (x) { S.planView = x; S.animate = true; render(); } })), 1));
+    if (v === 'cal') return goalCalendar(main);
     viewGoals(main);
+  }
+  /** Her own things (not for any goal): a list to tick off, each on its day. */
+  function ownListCard() {
+    var today = ymd(new Date()), mine = (S.data.ownDays || []).filter(function (d) { return !d.done || d.day >= today; }).sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.day < b.day ? -1 : a.day > b.day ? 1 : 0); });
+    var card = h('div', { class: 'hm-today own' }, h('div', { class: 'hm-today-h' }, icon('event'), h('b', { text: 'My own' })));
+    mine.slice(0, 30).forEach(function (d) { card.appendChild(ownRow(d, today)); });
+    card.appendChild(ownAddLine(today, 'Add your own…'));
+    return card;
+  }
+  function ownRow(d, today) {
+    return h('div', { class: 'hm-td' + (d.done ? ' done' : '') },
+      h('button', { type: 'button', class: 'hm-tick press', role: 'checkbox', 'aria-checked': String(!!d.done), 'aria-label': (d.done ? 'Not done: ' : 'Done: ') + d.text, onclick: function (e) {
+        e.currentTarget.disabled = true;
+        api('saveOwnDay', d.id, { done: !d.done }).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
+      } }, icon(d.done ? 'check_circle' : 'radio_button_unchecked')),
+      h('button', { type: 'button', class: 'hm-td-t press', onclick: function () { openOwnDay(d); } },
+        h('span', { text: d.text }), d.day !== today ? h('em', { text: ' · ' + K.dayLabel(d.day) }) : d.at ? h('em', { text: ' · ' + fmtAt(d.at) }) : null, d.note ? icon('sticky_note_2') : null));
+  }
+  function ownAddLine(day, hint) {
+    var inp = h('input', { type: 'text', class: 'hm-add-in', placeholder: hint, maxlength: '200', 'aria-label': hint, enterkeyhint: 'done' });
+    function add() {
+      var v = inp.value.trim(); if (!v) { inp.focus(); return; }
+      inp.disabled = true;
+      api('saveOwnDay', null, { text: v, day: day }).then(refresh).then(function () { K.haptic('success'); render(); setTimeout(function () { var x = document.querySelector('.hm-add-in'); if (x) x.focus(); }, 50); }).catch(function (e) { inp.disabled = false; fail(e); });
+    }
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = null;
+    if (SR) mic = K.iconBtn('mic', 'Say it', function () {
+      var r = new SR(); r.lang = 'en-AU'; r.interimResults = true; mic.classList.add('on');
+      r.onresult = function (ev) { var t0 = ''; for (var i = 0; i < ev.results.length; i++) t0 += ev.results[i][0].transcript; inp.value = t0; };
+      r.onend = function () { mic.classList.remove('on'); if (inp.value.trim()) add(); };
+      r.onerror = function () { mic.classList.remove('on'); };
+      try { r.start(); } catch (e) { mic.classList.remove('on'); }
+    });
+    return h('div', { class: 'hm-add' }, icon('add'), inp, mic, K.iconBtn('arrow_upward', 'Add', add));
   }
   function viewTalk(main, noBar) {
     var T = talkData(), pb = noBar ? null : privacyBar();
     if (pb) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pb), 1));
     if (isLocked()) return;
-    main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:16px' },
+    if (!noBar) main.appendChild(rise(h('div', { class: 'card pad', style: 'margin-bottom:16px' },
       h('div', { class: 'title-m', text: 'Talk something through' }),
       h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Name anything: a product, a painting, a story, something about Tide Book. You’ll get a few questions at a time, 10 to 20 in all, then it’s written up and filed in the right place.' }),
       btn('filled', 'Start a topic', { icon: 'forum', onclick: openTopicStart })), 2));
     var away = T.topics.filter(function (tp) { return tp.parked || tp.dropped; }), here = T.topics.filter(function (tp) { return !tp.parked && !tp.dropped; });
     var going = here.filter(function (tp) { return tp.status !== 'Done'; }), done = here.filter(function (tp) { return tp.status === 'Done'; });
-    if (!T.topics.length) { main.appendChild(rise(emptyState('forum', 'Nothing yet', 'Start a topic whenever something’s on your mind.'), 3)); return; }
+    if (!T.topics.length) { if (!noBar) main.appendChild(rise(emptyState('forum', 'Nothing yet', 'Start a topic whenever something’s on your mind.'), 3)); return; }
     if (going.length) { var s1 = section('In progress'), l1 = h('div', { class: 'list' }); going.forEach(function (tp) { l1.appendChild(topicRow(tp)); }); s1.appendChild(l1); main.appendChild(rise(s1, 3)); }
     if (done.length) { var s2 = section('Written up'), l2 = h('div', { class: 'list' }); done.forEach(function (tp) { l2.appendChild(topicRow(tp)); }); s2.appendChild(l2); main.appendChild(rise(s2, 4)); }
     if (away.length) main.appendChild(rise(awayList('Parked', away.map(function (tp) { return { kind: 'topic', x: tp, how: tp.dropped ? 'not' : 'park' }; })), 5));
@@ -15823,20 +15902,21 @@ var Kit = (function () {
     var pb = privacyBar(); if (pb) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, pb), 1));
     var all = (S.data.notebook || []).filter(function (n) { return !n.locked; }), folders = (S.data.noteFolders || []).slice();
     all.forEach(function (n) { if (n.folder && folders.indexOf(n.folder) < 0) folders.push(n.folder); });
-    if (S.noteFolder && folders.indexOf(S.noteFolder) < 0) S.noteFolder = '';
+    if (S.noteFolder && S.noteFolder !== '__inspo' && folders.indexOf(S.noteFolder) < 0) S.noteFolder = '';
     var search = K.textField({ label: 'Search your notes', compact: true, value: S.noteQuery || '', onInput: function (v) { S.noteQuery = v; draw(); } });
     var tools = h('div', { class: 'nt-tools' }, h('div', { class: 'grow' }, search),
       K.iconBtn(S.noteGrid === false ? 'grid_view' : 'view_agenda', S.noteGrid === false ? 'Show as a grid' : 'Show as a list', function () { S.noteGrid = S.noteGrid === false; render(); }));
     var fr = h('div', { class: 'filter-row nt-folders' });
-    [['', 'All notes']].concat(folders.map(function (f) { return [f, f]; })).forEach(function (f) {
-      var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String((S.noteFolder || '') === f[0]) }, f[0] ? icon('folder_open') : null, f[1]);
-      b.addEventListener('click', function () { if ((S.noteFolder || '') === f[0] && f[0]) { folderMore(f[0]); return; } S.noteFolder = f[0]; render(); });
+    [['', 'All notes'], ['__inspo', 'Inspo']].concat(folders.map(function (f) { return [f, f]; })).forEach(function (f) {
+      var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String((S.noteFolder || '') === f[0]) }, f[0] ? icon(f[0] === '__inspo' ? 'favorite' : 'folder_open') : null, f[1]);
+      b.addEventListener('click', function () { if ((S.noteFolder || '') === f[0] && f[0] && f[0] !== '__inspo') { folderMore(f[0]); return; } S.noteFolder = f[0]; render(); });
       fr.appendChild(b);
     });
     fr.appendChild(h('button', { type: 'button', class: 'choice press soft', 'aria-label': 'New folder', onclick: function () {
       K.ask({ title: 'A new folder', label: 'Its name', maxlength: 40, confirmLabel: 'Make it' }).then(function (v) { if (v) api('saveNoteFolder', v).then(refresh).then(function () { S.noteFolder = v.trim(); render(); }).catch(fail); });
     } }, icon('create_new_folder'), 'Folder'));
-    main.appendChild(rise(h('div', { class: 'nt-top' }, tools, fr), 2));
+    main.appendChild(rise(h('div', { class: 'nt-top' }, S.noteFolder === '__inspo' ? null : tools, fr), 2));
+    if (S.noteFolder === '__inspo') { viewInspo(main, true); fab(main, 'Inspo', 'add', function () { openInspo(null); }); return; }
     var box = h('div');
     main.appendChild(rise(box, 3));
     function draw() {
@@ -17254,8 +17334,10 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ Money
   function viewMoney(main) {
-    var m = S.money, n = 1;
-    pageTitle(main, 'Money', 'Financial year ' + m.fyLabel + (m.isCurrent ? '' : ' (past year)'));
+    var m = S.money, n = 1, todoN = (S.data.shop || {}).todo || 0, mt = S.moneyTab === 'orders' ? 'orders' : 'money';
+    pageTitle(main, 'Money', mt === 'orders' ? 'From your website to the buyer’s door: what to post, what Printful is making, and where each one is.' : 'Financial year ' + m.fyLabel + (m.isCurrent ? '' : ' (past year)'));
+    main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, K.segmented({ label: 'Show', value: mt, options: [{ value: 'money', label: 'Money' }, { value: 'orders', label: 'Orders', count: todoN || undefined }], onChange: function (v) { S.moneyTab = v; S.animate = true; render(); } })), 1));
+    if (mt === 'orders') return viewOrders(main);
     if (m.years.length > 1) {
       main.appendChild(rise(K.choices({ row: true, label: 'Financial year', value: m.fy,
         options: m.years.map(function (y) { return { value: y.fy, label: 'FY ' + y.label }; }),
@@ -17624,9 +17706,11 @@ var Kit = (function () {
       chips.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { addGoalAsk(null); } }, icon('edit'), 'My own'));
       start.appendChild(chips);
       main.appendChild(rise(start, 2));
+      main.appendChild(rise(ownListCard(), 3));
       return;
     }
     goalSteps(main, goals);
+    main.appendChild(rise(ownListCard(), 4));
     main.appendChild(rise(h('div', { class: 'gl-foot' },
       h('button', { type: 'button', class: 'hm-link press', onclick: function () { openMilestone(null); } }, icon('wb_sunny'), 'Milestone'),
       goals.filter(function (g) { return !g.parentId && g.status !== 'Done'; }).length > 1 ? h('button', { type: 'button', class: 'hm-link press', onclick: goalOrderSheet }, icon('swap_vert'), 'Order') : null), 4));
@@ -17643,13 +17727,6 @@ var Kit = (function () {
   function stepIdeasFor(g) {
     var t = String(g.title || '').toLowerCase(), out = [], RD = ((S.data.shop || {}).ready) || {};
     function add(x) { if (out.indexOf(x) < 0) out.push(x); }
-    if (/\b(shop|store|sell online|online)\b/.test(t)) {
-      if (!RD.artworks) add('Add the first artwork with its sizes and prices');
-      if (!RD.stripe || !RD.stripeLive) add('Set up payments with Stripe');
-      if (!RD.rates) add('Set up postage with Australia Post');
-      if (!RD.printful) add('Link Printful for the big prints');
-      if (!RD.published) add('Publish the website');
-    }
     if (/\b(upload|images?|photos?|prints?|available)\b/.test(t)) { add('Photograph each print in daylight'); add('Add each print as an artwork'); add('Set the paper, sizes and prices'); }
     if (/\birukandji\b/.test(t)) add('Send the list to Irukandji');
     if (/\b(draw|drawing|paint|painting|sketch)\b/.test(t)) { add('Sketch it out'); add('Paint it'); add('Photograph or scan the finished piece'); add('Add it as an artwork'); }
@@ -17676,14 +17753,20 @@ var Kit = (function () {
           h('span', { class: 'gs-count', text: steps.length ? done.length + '/' + steps.length : '' }), icon(isOpen ? 'expand_less' : 'expand_more')),
         K.iconBtn('more_vert', 'More for this goal', function () { openGoal(g.id); })));
       if (!isOpen) return box;
+      // the shop goal carries what selling needs: each ticks itself when it's done
+      var sg = shopGoal();
+      if (sg && sg.id === g.id) readySteps((shopData().ready) || {}).forEach(function (r) {
+        box.appendChild(h('div', { class: 'gs-row auto' + (r.done ? ' done' : '') }, h('span', { class: 'gs-tick' + (r.done ? ' on' : ''), 'aria-hidden': 'true' }),
+          h('span', { class: 'gs-text' }, h('span', { text: r.t }), h('span', { class: 'gs-day auto', text: r.done ? 'Done' : r.line })),
+          !r.done && r.go ? btn('tonal', r.b || 'Set up', { sm: true, onclick: r.go }) : null));
+      });
       left.forEach(function (s) {
         var tool = STEP_TOOLS[toolsFor(s.text)[0]];
         var row = h('div', { class: 'gs-row' },
           h('button', { type: 'button', class: 'gs-tick', 'aria-label': 'Done: ' + s.text, onclick: function (e) { e.currentTarget.classList.add('on'); K.haptic('success'); api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); undoCard('Done: ' + s.text + '.', function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on the list.'); }).catch(fail); } }),
-          h('button', { type: 'button', class: 'gs-text', onclick: function () { openStepTools({ n: steps.indexOf(s) + 1, id: s.id, text: s.text, done: false }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); } },
+          h('button', { type: 'button', class: 'gs-text', onclick: function () { openStepTools({ n: steps.indexOf(s) + 1, id: s.id, text: s.text, done: false }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }, { g: g, s: s }); } },
             h('span', { text: s.text }), s.due ? h('span', { class: 'gs-day' + (s.auto ? ' auto' : ''), text: calWhen(s) }) : null),
-          tool && toolsFor(s.text)[0] !== 'talk' ? h('button', { type: 'button', class: 'gs-tool', 'aria-label': tool.label, title: tool.label, onclick: function () { tool.go(s); } }, icon(tool.ic)) : null,
-          h('button', { type: 'button', class: 'gs-more', 'aria-label': 'More for this step', onclick: function () { stepMore(g, s); } }, icon('more_vert')));
+          tool && toolsFor(s.text)[0] !== 'talk' ? h('button', { type: 'button', class: 'gs-tool', 'aria-label': tool.label, title: tool.label, onclick: function () { tool.go(s); } }, icon(tool.ic)) : null);
         box.appendChild(row);
       });
       // a new step, in a line
@@ -17707,19 +17790,6 @@ var Kit = (function () {
         });
       }
       return box;
-    }
-    function stepMore(g, s) {
-      K.sheet({ title: s.text.slice(0, 60), build: function (ctl) {
-        var acts = h('div', { class: 'next-opts' });
-        function a(ic, label, why, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null))); }
-        a('edit', 'Change the words', '', function () { K.ask({ title: 'The step', label: 'In a few words', value: s.text, maxlength: 300, confirmLabel: 'Save' }).then(function (v) { if (v) save(g, g.steps.map(function (x) { return x.id === s.id ? Object.assign({}, x, { text: v }) : x; }), 'Saved.'); }); });
-        a('event', s.due ? 'Change when (' + calWhen(s) + ')' : 'Give it a day', calData().mode === 'plan' ? 'A day, a time if you like, and how long it takes. Or leave it to Tide Book to fit in.' : 'It shows on your calendar, with a reminder the day before.', function () { openStepWhen(g, s); });
-        a('apps', 'Its tools', 'Everything for doing it, one tap each.', function () { openStepTools({ n: g.steps.indexOf(s) + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); });
-        var others = (S.data.goals || []).filter(function (o) { return o.id !== g.id && !o.parentId; });
-        if (others.length) a('move_down', 'Move it to another goal', '', function () { K.pickFromList({ title: 'Which goal?', options: others.map(function (o) { return o.title; }) }).then(function (pick) { var o = others.filter(function (x) { return x.title === pick; })[0]; if (!o) return; api('updateGoal', o.id, { steps: o.steps.concat([{ text: s.text, due: s.due }]) }).then(function () { return save(g, g.steps.filter(function (x) { return x.id !== s.id; }), 'Moved to “' + o.title + '”.'); }).catch(fail); }); });
-        a('delete', 'Remove it', '', function () { var before = g.steps.slice(); save(g, g.steps.filter(function (x) { return x.id !== s.id; }), '').then(function () { undoCard('Step removed.', function () { return api('updateGoal', g.id, { steps: before }); }, 'Put back.'); }); });
-        ctl.body.appendChild(acts);
-      } });
     }
     // milestones first (each with its goals), then the goals on their own
     ms.forEach(function (m) {
@@ -17847,7 +17917,8 @@ var Kit = (function () {
   }
   /** Talk it through (a few questions at a time, then a write-up) lives with the mentors. */
   function talkHere(main, n) {
-    main.appendChild(rise(h('div', { class: 'label-l', style: 'margin:22px 4px 8px', text: 'Talk it through' }), n));
+    if (!talkData().topics.length || isLocked()) return;
+    main.appendChild(rise(h('div', { class: 'label-l', style: 'margin:22px 4px 8px', text: 'Earlier talks' }), n));
     viewTalk(main, true);
   }
   function lightNote(M) { return 'This week’s full help is used up, so your mentors are in a lighter mode until ' + (M.resets ? new Date(M.resets + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'short' }) : 'Monday') + ': they can talk things through, but can’t make goals or drafts, look at your records, or look things up.'; }
@@ -18017,7 +18088,7 @@ var Kit = (function () {
         if (!s.due) return;
         out.push({ day: s.due, at: s.at || '', mins: s.len || 45, auto: !!s.auto, kind: 'step', goalId: g.id, done: s.done, icon: s.done ? 'check_circle' : 'flag', title: s.text,
           sub: (s.at ? fmtAt(s.at) + ' · ' + lenLabel(s.len) + ' · ' : '') + 'Step ' + (i + 1) + ' of “' + g.title + '”' + (s.auto ? ' · planned for you' : ''), goal: g, step: s,
-          open: function () { openStepTools({ n: i + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); } });
+          open: function () { openStepTools({ n: i + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }, { g: g, s: s }); } });
       });
     });
     function hmOf(iso) { var d = new Date(iso); return isNaN(d) ? '' : pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
@@ -18191,32 +18262,19 @@ var Kit = (function () {
       .sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.day < b.day ? -1 : a.day > b.day ? 1 : (a.at || '99') < (b.at || '99') ? -1 : 1); });
     var card = h('div', { class: 'hm-today' }, h('div', { class: 'hm-today-h' }, icon('today'), h('b', { text: 'Today' }), h('span', { class: 'grow' }),
       K.iconBtn('calendar_month', 'Your calendar', function () { S.calMode = 'day'; S.calAt = today; S.calSel = today; go('calendar'); })));
-    mine.forEach(function (d) {
-      var row = h('div', { class: 'hm-td' + (d.done ? ' done' : '') },
-        h('button', { type: 'button', class: 'hm-tick press', role: 'checkbox', 'aria-checked': String(!!d.done), 'aria-label': (d.done ? 'Not done: ' : 'Done: ') + d.text, onclick: function (e) {
-          e.currentTarget.disabled = true;
-          api('saveOwnDay', d.id, { done: !d.done }).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
-        } }, icon(d.done ? 'check_circle' : 'radio_button_unchecked')),
-        h('button', { type: 'button', class: 'hm-td-t press', onclick: function () { openOwnDay(d); } },
-          h('span', { text: d.text }), d.day < today ? h('em', { text: ' · ' + K.dayLabel(d.day) }) : d.at ? h('em', { text: ' · ' + fmtAt(d.at) }) : null, d.note ? icon('sticky_note_2') : null));
-      card.appendChild(row);
+    // the goal steps that are on today
+    (S.data.goals || []).forEach(function (g) {
+      if (g.status === 'Done') return;
+      g.steps.forEach(function (st, i) {
+        if (st.done || st.due !== today) return;
+        card.appendChild(h('div', { class: 'hm-td step', style: '--gc:' + goalColour(g.id) },
+          h('button', { type: 'button', class: 'hm-tick press', role: 'checkbox', 'aria-checked': 'false', 'aria-label': 'Done: ' + st.text, onclick: function (e) { e.currentTarget.disabled = true; api('tickGoalStep', g.id, st.id, true).then(refresh).then(function () { K.haptic('success'); render(); undoCard('✓ ' + st.text, function () { return api('tickGoalStep', g.id, st.id, false); }, 'Back on.'); }).catch(fail); } }, icon('radio_button_unchecked')),
+          h('button', { type: 'button', class: 'hm-td-t press', onclick: function () { openStepTools({ n: i + 1, id: st.id, text: st.text, done: false }, function () { return api('tickGoalStep', g.id, st.id, true).then(refresh).then(function () { render(); }); }, { g: g, s: st }); } },
+            h('i', { class: 'hm-gdot' }), h('span', { text: st.text }), st.at ? h('em', { text: ' · ' + fmtAt(st.at) }) : null)));
+      });
     });
-    var inp = h('input', { type: 'text', class: 'hm-add-in', placeholder: 'Add to today…', maxlength: '200', 'aria-label': 'Add something to today', enterkeyhint: 'done' });
-    function add() {
-      var v = inp.value.trim(); if (!v) { inp.focus(); return; }
-      inp.disabled = true;
-      api('saveOwnDay', null, { text: v, day: today }).then(refresh).then(function () { K.haptic('success'); render(); setTimeout(function () { var x = document.querySelector('.hm-add-in'); if (x) x.focus(); }, 50); }).catch(function (e) { inp.disabled = false; fail(e); });
-    }
-    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); add(); } });
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = null;
-    if (SR) mic = K.iconBtn('mic', 'Say it', function () {
-      var r = new SR(); r.lang = 'en-AU'; r.interimResults = true; mic.classList.add('on');
-      r.onresult = function (ev) { var s = ''; for (var i = 0; i < ev.results.length; i++) s += ev.results[i][0].transcript; inp.value = s; };
-      r.onend = function () { mic.classList.remove('on'); if (inp.value.trim()) add(); };
-      r.onerror = function () { mic.classList.remove('on'); };
-      try { r.start(); } catch (e) { mic.classList.remove('on'); }
-    });
-    card.appendChild(h('div', { class: 'hm-add' }, icon('add'), inp, mic, K.iconBtn('arrow_upward', 'Add', add)));
+    mine.forEach(function (d) { card.appendChild(ownRow(d, today)); });
+    card.appendChild(ownAddLine(today, 'Add to today…'));
     return card;
   }
   /** Give a goal step a day (and a time, when she tapped one): her goals' steps still to do, the most important goal first. */
@@ -18239,34 +18297,6 @@ var Kit = (function () {
         });
       }
     });
-  }
-  /** Check in: each goal's next few steps, with a day to tap. Nothing has to be planned far ahead. */
-  function calCheckIn() {
-    var plan = calData().mode === 'plan';
-    K.sheet({ title: 'Check in', tall: true, build: function (ctl) {
-      function paint() {
-        ctl.body.textContent = '';
-        var today = ymd(new Date());
-        ctl.body.appendChild(h('p', { class: 'body-s', style: 'margin:0 2px 10px;color:var(--on-surface-variant)', text: plan ? 'Your next steps and when they’re on. Tap a day to change one, or leave it to Tide Book.' : 'Pick a day for your next few steps. A few days ahead is plenty: you’ll be reminded when they run out.' }));
-        var goals = (S.data.goals || []).filter(function (g) { return g.status !== 'Done' && g.steps.some(function (s) { return !s.done; }); });
-        if (!goals.length) { ctl.body.appendChild(note('None of your goals has steps to do yet. Add some on the Goals page.', 'flag')); return; }
-        goals.forEach(function (g) {
-          var sec = h('div', { class: 'cal-plan-goal', style: '--gc:' + goalColour(g.id) }, h('div', { class: 'cal-plan-gt' }, h('i'), h('span', { text: g.title })));
-          g.steps.filter(function (s) { return !s.done; }).slice(0, 3).forEach(function (s) {
-            var row = h('div', { class: 'cal-ci' }, h('div', { class: 'cal-ci-t' }, h('span', { text: s.text }), h('span', { class: 'cal-ci-when' + (s.due && s.due < today ? ' late' : ''), text: s.due ? calWhen(s) : 'No day yet' })));
-            var acts = h('div', { class: 'cal-ci-acts' });
-            function set(day) { return function (e) { K.setBusy(e.currentTarget, true); api('setStepTime', g.id, s.id, { day: day }).then(refresh).then(function () { K.haptic(); paint(); render(); }).catch(fail); }; }
-            acts.append(btn('tonal', 'Today', { sm: true, onclick: set(today) }), btn('tonal', 'Tomorrow', { sm: true, onclick: set(addDays(today, 1)) }),
-              btn('text', 'Another day', { sm: true, onclick: function () { pickDay('When for “' + s.text.slice(0, 40) + '”?', s.due || '', function (d) { return api('setStepTime', g.id, s.id, { day: d }).then(refresh).then(function () { paint(); render(); }); }); } }));
-            if (plan && !s.auto) acts.appendChild(btn('text', 'Tide Book', { sm: true, icon: 'auto_awesome', onclick: function (e) { K.setBusy(e.currentTarget, true); api('freeStep', g.id, s.id).then(refresh).then(function () { paint(); render(); }).catch(fail); } }));
-            row.appendChild(acts); sec.appendChild(row);
-          });
-          ctl.body.appendChild(sec);
-        });
-      }
-      paint();
-      ctl.foot.appendChild(btn('filled', 'Done', { block: true, icon: 'check', onclick: function () { ctl.close(); } }));
-    } });
   }
   /** How the calendar plans: her working days and hours, how much in a day, her other calendars, and her phone. */
   function openCalSettings() {
@@ -18502,14 +18532,7 @@ var Kit = (function () {
       h('div', { class: 'cal-title', text: title }), K.iconBtn('chevron_right', 'Next ' + unit, function () { move(1); }),
       btn('text', 'Today', { sm: true, onclick: function () { S.calAt = today; S.calSel = today; render(); } }));
     var seg = K.segmented({ label: 'Show', value: mode, onChange: function (v) { S.calMode = v; S.calAt = sel; render(); }, options: [{ value: 'day', label: 'Day' }, { value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }] });
-    var tools = h('div', { class: 'cal-tools' },
-      btn('tonal', 'Check in', { sm: true, icon: 'checklist', onclick: function () { calCheckIn(); } }),
-      C.mode === 'plan' ? btn('text', 'Plan my days', { sm: true, icon: 'auto_awesome', onclick: function (e) {
-        K.setBusy(e.currentTarget, true);
-        api('calPlanNow').then(function (r) { return refresh().then(function () { render(); var n2 = (r.placed || 0) + (r.moved || []).length; toast(n2 ? 'Planned: ' + n2 + ' step' + (n2 === 1 ? '' : 's') + ' placed or moved.' : r.unfit ? 'No free time left in the next six weeks for ' + r.unfit + ' step' + (r.unfit === 1 ? '' : 's') + '. Add some working hours.' : 'Everything already fits.'); }); }).catch(fail);
-      } }) : null,
-      h('span', { class: 'grow' }),
-      K.iconBtn('tune', 'Your calendar: planning, other calendars, your phone', function () { openCalSettings(); }));
+    head.appendChild(K.iconBtn('tune', 'Your calendar: planning, other calendars, your phone', function () { openCalSettings(); }));
     // her goals, each in its colour: tap one to see only it
     var tops = (S.data.goals || []).filter(function (g) { return !g.parentId && g.status !== 'Done'; });
     var chips = h('div', { class: 'cal-goals' }, h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(!S.calGoal), onclick: function () { S.calGoal = ''; render(); } }, 'Everything'));
@@ -18517,11 +18540,11 @@ var Kit = (function () {
       chips.appendChild(h('button', { type: 'button', class: 'choice press soft cal-goal', 'aria-pressed': String(S.calGoal === g.id), onclick: function () { S.calGoal = S.calGoal === g.id ? '' : g.id; render(); } },
         h('i', { style: 'background:' + goalColour(g.id) }), g.title));
     });
-    main.appendChild(rise(h('div', { class: 'cal-top' }, head, seg, tools, chips), 2));
+    main.appendChild(rise(h('div', { class: 'cal-top' }, head, seg, chips), 2));
     var mc = calMovedCard(); if (mc) main.appendChild(rise(mc, 3));
     if (C.mode === 'days' && C.nothingAhead) main.appendChild(rise(h('div', { class: 'card pad cal-moved' }, h('div', { class: 'row', style: 'gap:10px;align-items:center' }, h('span', { class: 'ic' }, icon('event')),
       h('div', { class: 'grow' }, h('b', { text: 'Nothing planned ahead' }), h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'None of your goals’ steps has a day yet. A quick check-in picks a few.' })),
-      btn('filled', 'Check in', { sm: true, onclick: function () { calCheckIn(); } }))), 3));
+      btn('filled', 'Give them days', { sm: true, onclick: function () { S.planView = 'list'; render(); } }))), 3));
     if (!(C.feeds || []).length && !S.calFeedTipDone) main.appendChild(rise(h('div', { class: 'cal-tip' }, icon('link'), h('span', { class: 'grow', text: 'Keep things in Google Calendar or on your iPhone? Link them, and Tide Book plans around them.' }),
       btn('text', 'Link one', { sm: true, onclick: function () { addCalFeedSheet(); } }), K.iconBtn('close', 'Not now', function () { S.calFeedTipDone = true; render(); })), 3));
     if (mode === 'month') {
@@ -18539,8 +18562,7 @@ var Kit = (function () {
       // the chosen day, in full
       var dl = byDay[sel] || [], panel = h('div', { class: 'cal-panel' },
         h('div', { class: 'cal-panel-h' }, h('b', { text: new Date(sel + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }) }),
-          btn('text', 'Hours', { sm: true, onclick: function () { S.calMode = 'day'; S.calAt = sel; render(); } }),
-          btn('filled', 'Add', { sm: true, icon: 'add', onclick: function () { addToDay(sel); } })));
+          btn('text', 'Hours', { sm: true, onclick: function () { S.calMode = 'day'; S.calAt = sel; render(); } })));
       if (!dl.length) panel.appendChild(h('p', { class: 'body-s', style: 'margin:4px 0 0;color:var(--on-surface-variant)', text: 'Nothing on this day.' }));
       dl.forEach(function (e) { panel.appendChild(calRow(e)); });
       main.appendChild(rise(panel, 4));
@@ -18553,7 +18575,7 @@ var Kit = (function () {
         var day = h('div', { class: 'cal-wday' + (d === today ? ' today' : '') },
           h('div', { class: 'cal-wday-h' }, h('button', { type: 'button', class: 'cal-wday-go', 'aria-label': 'Hour by hour on ' + K.dayLabel(d, true), onclick: function () { S.calMode = 'day'; S.calAt = d; S.calSel = d; render(); } },
             h('span', { class: 'cal-wday-d', text: new Date(d + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'short' }) }), h('span', { class: 'cal-wday-n', text: String(Number(d.slice(8))) })),
-            h('span', { class: 'grow' }), K.iconBtn('add', 'Add to ' + K.dayLabel(d, true), function () { addToDay(d); })));
+            h('span', { class: 'grow' })));
         if (!list.length) day.appendChild(h('p', { class: 'cal-empty', text: 'Free' }));
         list.forEach(function (e) { day.appendChild(calRow(e)); });
         wk.appendChild(day);
@@ -18562,7 +18584,7 @@ var Kit = (function () {
     }
     fab(main, 'Add', 'add', function () { openOwnDay(null, mode === 'day' ? at : sel); });
     var undated = (S.data.goals || []).reduce(function (n2, g) { return n2 + (g.status === 'Done' ? 0 : g.steps.filter(function (s) { return !s.done && !s.due; }).length); }, 0);
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:10px 4px', text: undated ? undated + ' goal ' + (undated === 1 ? 'step has' : 'steps have') + ' no day yet. ' + (C.mode === 'plan' ? 'Tide Book places them when there’s room in your working hours.' : 'A check-in gives them days.') : 'Every goal step has a day.' }));
+    main.appendChild(h('p', { class: 'tf-help', style: 'margin:10px 4px', text: undated ? undated + ' goal ' + (undated === 1 ? 'step has' : 'steps have') + ' no day yet. ' + (C.mode === 'plan' ? 'Tide Book places them when there’s room in your working hours.' : 'Tap a step in the List to give it a day.') : 'Every goal step has a day.' }));
   }
   /** A milestone: the big aim (its name) and the goals in its orbit. */
   function openMilestone(id, at) {
@@ -18760,12 +18782,11 @@ var Kit = (function () {
     return out;
   }
   /** One step, with everything needed to do it, one tap each. */
-  function openStepTools(st, onDone) {
+  function openStepTools(st, onDone, more) {
     K.sheet({
       title: 'Step ' + st.n, tall: true,
       build: function (ctl) {
-        ctl.body.appendChild(h('div', { class: 'title-m', text: st.text }));
-        ctl.body.appendChild(h('p', { class: 'body-s', style: 'margin:4px 0 12px;color:var(--on-surface-variant)', text: 'Everything for this step is here. Start with the first.' }));
+        ctl.body.appendChild(h('div', { class: 'title-m', style: 'margin-bottom:12px', text: st.text }));
         var list = h('div', { class: 'next-opts' });
         toolsFor(st.text).forEach(function (k, i) {
           var tl = STEP_TOOLS[k];
@@ -18773,6 +18794,17 @@ var Kit = (function () {
             h('span', { class: 'next-opt-ic' }, icon(tl.ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: tl.label }), tl.why ? h('span', { class: 'next-opt-why', text: tl.why }) : null)));
         });
         ctl.body.appendChild(list);
+        if (more && more.g && more.s) {
+          var g = more.g, sx = more.s, acts = h('div', { class: 'next-opts', style: 'margin-top:14px' });
+          var a = function (ic, label, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label })))); };
+          var put = function (steps, msg) { return api('updateGoal', g.id, { steps: steps }).then(refresh).then(function () { render(); if (msg) toast(msg); }).catch(fail); };
+          a('event', sx.due ? 'When · ' + calWhen(sx) : 'Give it a day', function () { openStepWhen(g, sx); });
+          a('edit', 'Change the words', function () { K.ask({ title: 'The step', label: 'In a few words', value: sx.text, maxlength: 300, confirmLabel: 'Save' }).then(function (v) { if (v) put(g.steps.map(function (x) { return x.id === sx.id ? Object.assign({}, x, { text: v }) : x; }), 'Saved.'); }); });
+          var others = (S.data.goals || []).filter(function (o) { return o.id !== g.id && !o.parentId; });
+          if (others.length) a('move_down', 'Move to another goal', function () { K.pickFromList({ title: 'Which goal?', options: others.map(function (o) { return o.title; }) }).then(function (pick) { var o = others.filter(function (x) { return x.title === pick; })[0]; if (!o) return; api('updateGoal', o.id, { steps: o.steps.concat([{ text: sx.text, due: sx.due }]) }).then(function () { return put(g.steps.filter(function (x) { return x.id !== sx.id; }), 'Moved.'); }).catch(fail); }); });
+          a('delete', 'Remove it', function () { var before = g.steps.slice(); put(g.steps.filter(function (x) { return x.id !== sx.id; }), '').then(function () { undoCard('Step removed.', function () { return api('updateGoal', g.id, { steps: before }); }, 'Put back.'); }); });
+          ctl.body.appendChild(acts);
+        }
         if (onDone && !st.done) ctl.foot.appendChild(btn('filled', 'Step done', { icon: 'check', lg: true, block: true, onclick: function (e) { K.setBusy(e.currentTarget, true); onDone().then(function () { ctl.close(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); }); } }));
       }
     });
@@ -19558,6 +19590,8 @@ var Kit = (function () {
   }
 
   function viewContent(main) {
+    if (['footage', 'plan', 'ready'].indexOf(S.contentTab) >= 0) { S.libPart = S.contentTab; S.contentTab = 'library'; }
+    if (S.contentTab !== 'library') S.contentTab = 'review';
     pageTitle(main, ADMIN ? 'Content' : 'Posts', ADMIN ? 'Drop in photos and video. Posts are drafted for ' + artist() + ' to approve; you’re only asked when one clashes with a rule.' : 'Drop in photos and video, no titles needed. Posts are made from them for you to approve.');
     var all = S.data.content, posts = all.filter(function (c) { return c.type === 'Post'; });
     var mine = draftsToReview().filter(function (c) { return c.type === 'Post'; });
@@ -19566,10 +19600,20 @@ var Kit = (function () {
     var shotsOpen = all.filter(function (c) { return c.type === 'Shot' && c.status === 'Suggested'; });
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.contentTab, onChange: function (v) { S.contentTab = v; S.animate = true; render(); },
-      options: [{ value: 'review', label: 'Review', count: (mine.length + S.data.questions.length) || undefined }, { value: 'footage', label: 'Content' },
-        { value: 'plan', label: 'Plan', count: shotsOpen.length || undefined }, { value: 'ready', label: 'Ready', count: outCount || undefined }]
+      options: [{ value: 'review', label: 'To review', count: (mine.length + S.data.questions.length) || undefined }, { value: 'library', label: 'Library', count: (outCount + shotsOpen.length) || undefined }]
     })), 1));
-    ({ review: tabReview, footage: tabFootage, plan: tabPlan, ready: tabReady }[S.contentTab] || tabReview)(main, { posts: posts, mine: mine, ready: ready, all: all, shotsOpen: shotsOpen });
+    var dd = { posts: posts, mine: mine, ready: ready, all: all, shotsOpen: shotsOpen };
+    if (S.contentTab === 'review') tabReview(main, dd);
+    else {
+      // everything she's added, what's planned from it, and what's approved or out: one page, three parts
+      [['Approved and out', tabReady, 'ready'], ['Planned', tabPlan, 'plan'], ['Your photos and video', tabFootage, 'footage']].forEach(function (p) {
+        var hd = h('div', { class: 'label-l lib-h', id: 'lib-' + p[2], text: p[0] }); main.appendChild(hd);
+        var before = main.children.length; p[1](main, dd);
+        [].slice.call(main.children, before).forEach(function (el) { if (el.classList.contains('empty')) { el.remove(); } });
+        if (main.children.length === before) main.appendChild(h('p', { class: 'lib-none', text: 'Nothing yet' }));
+      });
+      if (S.libPart) { var tgt = document.getElementById('lib-' + S.libPart); S.libPart = ''; if (tgt) setTimeout(function () { tgt.scrollIntoView({ block: 'start' }); window.scrollBy(0, -70); }, 60); }
+    }
     fab(main, 'Add content', 'add', function () { openAddFootage(); });
   }
 
@@ -21045,13 +21089,23 @@ var Kit = (function () {
     main.appendChild(h('div', { class: 'ts-row' }, icon('format_size'), h('span', { class: 'grow', text: 'Text size' }),
       K.segmented({ label: 'Text size', value: textSize(), options: [{ value: '1', label: 'A' }, { value: '1.12', label: 'A+' }, { value: '1.25', label: 'A++' }], onChange: function (v) { textSize(v); } })));
     if (!ADMIN && S.adminTab === 'reports') S.adminTab = 'settings';
-    var tabs = [{ value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }, { value: 'consent', label: 'Consent' }, { value: 'settings', label: 'Settings' }];
-    if (ADMIN) tabs.unshift({ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined });
-    tabs.unshift({ value: 'guide', label: 'How to' });
+    var MORE = ['contacts', 'lists', 'accounts', 'consent'];
+    if (MORE.indexOf(S.adminTab) >= 0) { S.adminMore = S.adminTab; S.adminTab = 'more'; }
+    if (['settings', 'guide', 'reports', 'more'].indexOf(S.adminTab) < 0) S.adminTab = 'settings';
+    var tabs = [{ value: 'settings', label: 'Settings' }, { value: 'guide', label: 'Help' }];
+    if (ADMIN) tabs.push({ value: 'reports', label: 'Reports', count: (S.data.reports || []).filter(function (r) { return r.open; }).length || undefined });
+    tabs.push({ value: 'more', label: 'More' });
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.adminTab, onChange: function (v) { S.adminTab = v; S.animate = true; render(); }, options: tabs
     })), 1));
-    ({ guide: tabGuide, reports: tabReports, contacts: tabContacts, lists: tabLists, accounts: tabAccounts, consent: tabConsent, settings: viewSettings }[S.adminTab] || tabContacts)(main);
+    if (S.adminTab === 'guide') main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, btn('tonal', 'What’s new', { sm: true, icon: 'campaign', onclick: function () { whatsNew(true); } })), 1));
+    if (S.adminTab === 'more') {
+      var mm = MORE.indexOf(S.adminMore) >= 0 ? S.adminMore : 'consent';
+      main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, K.choices({ row: true, label: 'Show', value: mm, options: [{ value: 'consent', label: 'Consent' }, { value: 'contacts', label: 'People' }, { value: 'lists', label: 'Lists' }, { value: 'accounts', label: 'Logins' }], onChange: function (v) { if (v) { S.adminMore = v; render(); } } })), 1));
+      ({ contacts: tabContacts, lists: tabLists, accounts: tabAccounts, consent: tabConsent }[mm])(main);
+      return;
+    }
+    ({ guide: tabGuide, reports: tabReports, settings: viewSettings }[S.adminTab] || viewSettings)(main);
   }
 
   /** Every way to use Tide Book, laid out like What's new: what it's for, the steps, and Show me. */
@@ -21378,7 +21432,9 @@ var Kit = (function () {
       taxSetAsidePct: s.taxSetAsidePct, gstOn: !!s.gstRegisteredFrom, gstRegisteredFrom: s.gstRegisteredFrom || S.data.today };
     if (S.data.setup && S.data.setup.steps) main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, btn(S.data.setup.done ? 'outlined' : 'filled', S.data.setup.done ? 'Setup and connections' : 'Finish getting set up', { icon: 'rocket_launch', block: true, onclick: openSetup })), 1));
 
-    main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', style: 'margin-bottom:16px', onclick: function () { openBusiness(); } },
+    main.appendChild(h('div', { class: 'label-l', style: 'margin:0 4px 8px', text: 'About my business' }));
+    main.appendChild(rise(directionCard(), 1));
+    main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', style: 'margin:12px 0 16px', onclick: function () { openBusiness(); } },
       h('span', { class: 'ic' }, icon('tune')), h('span', { class: 'grow' }, h('b', { text: 'Business setup' }),
         h('span', { class: 'body-m', text: 'Suppliers, prices, how ' + (ADMIN ? cap(artist()) + ' likes' : 'you like') + ' to work, and the brand. Everything else starts from it.' })), icon('chevron_right')), 1));
     var p = section('Pricing');
@@ -21548,7 +21604,7 @@ var Kit = (function () {
       var acts = h('div', { class: 'next-opts' });
       function a(ic, label, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label })))); }
       if (isDrop && !media) a('cloud_download', 'Bring in the photos from the link', function () { linkImport(link).then(function (got) { if (got && got.length) openAddFootage({ files: got }); }).catch(fail); });
-      a('favorite', 'Inspiration', function () { S.ideasTab = 'inspo'; go('ideas'); openInspo(null, { url: link, note: link ? '' : text, files: files.filter(function (f) { return /^image\//.test(f.type); }) }); });
+      a('favorite', 'Inspiration', function () { S.noteFolder = '__inspo'; go('notes'); openInspo(null, { url: link, note: link ? '' : text, files: files.filter(function (f) { return /^image\//.test(f.type); }) }); });
       if (media) a('perm_media', 'Photos for posts', function () { openAddFootage({ files: files }); });
       a('sticky_note_2', 'A note', function () { openNote(null, { body: [text].filter(Boolean).join('\n') }); });
       ctl.body.appendChild(acts);
@@ -21561,7 +21617,7 @@ var Kit = (function () {
     history.replaceState(null, '', location.pathname);
     if (m[1] === 'today') { go('home'); setTimeout(function () { var x = document.querySelector('.hm-add-in'); if (x) x.focus(); }, 300); }
     else if (m[1] === 'calendar') go('calendar');
-    else if (m[1] === 'inspo') { S.ideasTab = 'inspo'; go('ideas'); openInspo(null); }
+    else if (m[1] === 'inspo') { S.noteFolder = '__inspo'; go('notes'); openInspo(null); }
     else openNote(null);
     return true;
   }
