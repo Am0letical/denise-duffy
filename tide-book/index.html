@@ -1830,6 +1830,26 @@ body.map-full { overflow: hidden; }
 .ts-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 6px 6px 6px 14px; border-radius: 16px; background: var(--surface-low); }
 .ts-row .seg { width: 170px; }
 .hm-add .icon-btn.on { color: #B3261E; }
+/* ---- Goals: one calm list ---- */
+.gl-ms { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 10px 12px 14px; margin: 14px 0 8px; border-radius: 20px; background: var(--surface-lowest); box-shadow: var(--shadow-1); cursor: pointer; }
+.gl-ms:first-child { margin-top: 0; }
+.gl-ms > .grow { display: flex; flex-direction: column; min-width: 0; }
+.gl-ms b { font: 500 19px/24px var(--display); }
+.gl-ms-k { display: inline-flex; align-items: center; gap: 4px; font: 500 11px/16px var(--font); letter-spacing: .4px; text-transform: uppercase; color: var(--on-surface-variant); }
+.gl-ms-k .ms { font-size: 15px; color: #B5651D; }
+.gs-headrow { display: flex; align-items: center; gap: 2px; }
+.gs-headrow .gs-head { flex: 1; min-width: 0; }
+.gs-head .gs-dot { display: grid; place-items: center; color: #fff; } .gs-head .gs-dot .ms { font-size: 12px; }
+.gs-count { flex: none; font: 500 12px/16px var(--font); color: var(--on-surface-variant); }
+.gs-now { font: 600 10px/16px var(--font); font-style: normal; letter-spacing: .4px; text-transform: uppercase; margin-left: 8px; padding: 0 7px; border-radius: 8px; background: var(--gc); color: #fff; vertical-align: 2px; }
+.gs-list.alldone .gs-head b { text-decoration: line-through; color: var(--on-surface-variant); }
+.gs-list:not(.open) { padding-bottom: 0; }
+.gl-foot { display: flex; justify-content: center; gap: 6px; margin-top: 16px; }
+.gs-head .grow { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.gs-head .grow b { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.gs-list.open .gs-head .grow b { -webkit-line-clamp: 6; }
+.gs-now { flex: none; margin-left: 0; width: auto; display: inline-block; }
+.gs-head .grow { flex-wrap: wrap; justify-content: flex-start; text-align: left; row-gap: 2px; } .gs-head .grow b { text-align: left; }
 </style>
 
   <script>
@@ -8189,16 +8209,9 @@ var TIDE_GUIDE = [
   { id: 'g-park', area: 'Getting around', to: 'all', icon: 'calendar_month', title: 'Park for now, or Remove',
     say: 'Every idea, product, post and conversation has Park for now (back on a day you pick) and Remove (just this, or not interested ever).',
     steps: ['Open the thing.', 'Tap Park for now and pick a day, or Remove.', 'Parked things come back by themselves on their day, with a reminder the day before.', 'Everything has an Undo.'] },
-  { id: 'g-goals', area: 'Goals and your plan', to: 'all', icon: 'wb_sunny', title: 'Your goals, as a night sky',
-    say: 'Milestones (big aims) are suns, your goals are the planets around them, and each goal’s steps are its moons.',
-    steps: ['Open Goals.', 'Tap “Add a milestone” at the top, name it, and tick its goals (Tide Book ticks the ones that fit).', 'Tap “Add a goal” on the map. Tide Book picks the milestone it fits.', 'Tap a planet to choose it: drag it, or use Open, Shrink or Bin.', 'Drag a sun anywhere: its planets follow when you let go.', 'Full screen is at the top right.'],
-    go: { view: 'goals', state: { goalMode: 'map' }, find: '.sky-add:not(.sky-full)', tip: 'Add a goal here.' } },
-  { id: 'g-steps', area: 'Goals and your plan', to: 'all', icon: 'checklist', title: 'Steps, like a reminders list',
-    say: 'Under the sky, each goal’s steps: tick them off, add one in a line, and tap Tide Book’s suggestions.',
-    steps: ['Scroll below the sky in Goals.', 'Tap a circle to tick a step off.', 'Type in “Add a step” and press Enter.', 'Tap a step for its tools, or ⋮ for more.'], go: { view: 'goals', state: { goalMode: 'map' }, find: '.gsteps', tip: 'Your steps.' } },
-  { id: 'g-order', area: 'Goals and your plan', to: 'all', icon: 'format_list_numbered', title: 'Goals in order of importance',
-    say: '“In order” lines your goals up from the sun, most important nearest. The first one sets the order of everything else.',
-    steps: ['In Goals, tap In order.', 'Tap a planet, then drag it left or right.', 'The nearest one is your “Now” goal.'], go: { view: 'goals', state: { goalMode: 'order' }, tip: 'Most important nearest the sun.' } },
+  { id: 'g-goals', area: 'Goals and your plan', to: 'all', icon: 'flag', title: 'Your goals',
+    say: 'Goals is one list: each milestone with how far along it is, its goals under it, and each goal’s steps to tick off.',
+    steps: ['Open Goals from the menu.', 'Tap a goal to open its steps. Tick them off, or add one.', 'Tap + Goal to add one; “Milestone” adds a big aim.', '⋮ on a goal renames it, gives it a day to aim for, or removes it.', '“Order” puts the most important first: that’s the one you’re on.'], go: { view: 'goals', find: '.gsteps', tip: 'Your goals.' } },
   { id: 'g-plan', area: 'Goals and your plan', to: 'all', icon: 'flag', title: 'Plan a goal, a step at a time',
     say: 'Open a goal for its steps. Tide Book can plan them with you, and each step comes with the tools to do it.',
     steps: ['Tap a goal, then Open.', 'Tap “Plan it with me” for a few questions, or add steps yourself.', 'Tap a step for its tools, and tick it when it’s done.', 'Give a step a day, and it shows on your calendar.'] },
@@ -8316,6 +8329,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-goals-list', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Goals, as a simple list',
+    say: 'The star map is gone. Goals is one calm list: your milestone with how far along it is, your goals under it, and each goal opens to its steps.',
+    steps: ['Open Goals.', 'Tap a goal to see its steps and tick them off.', '+ Goal adds one. “Order” puts the most important first.'], go: { view: 'goals', find: '.gsteps', tip: 'Your goals.' } },
   { id: '2026-11-20-tidy-places', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Goals and talks have their own places',
     say: 'Goals are in the menu now (next to Calendar). Talk it through is with your Mentors, so talking things over is in one place. Home is just the essentials.',
     steps: ['Open the menu: Goals has its own place.', 'Mentors › Talk it through for your talks.'], go: { view: 'goals', tip: 'Your goals.' } },
@@ -12888,7 +12904,6 @@ var Kit = (function () {
     var first = pop.querySelector('.menu-item.here') || pop.querySelector('.menu-item'); if (first) first.focus({ preventScroll: true });
   }
   function go(view) {
-    if (S.mapFull) { S.mapFull = false; document.body.classList.remove('map-full'); try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {} }
     var from = NAV.map(function (n) { return n[0]; }).indexOf(S.view), to = NAV.map(function (n) { return n[0]; }).indexOf(view);
     S.view = view; S.animate = true;
     render();
@@ -17598,30 +17613,31 @@ var Kit = (function () {
   // ------------------------------------------------------------------ goals: a map, then an order
   var GOAL_STARTERS = ['Open my online shop', 'Sell at markets and events', 'Grow my Instagram', 'Release small batches of originals', 'Finish a new collection', 'Keep my energy steady'];
   function goalById(id) { return byId(S.data.goals || [], id); }
+  /** Goals, as she'd keep them herself: each milestone with how far along it is, its goals underneath, and each goal
+   *  opening to its steps to tick off. Nothing to drag or zoom. The first goal is the one she's on. */
   function viewGoals(main) {
-    var goals = S.data.goals || [], mode = S.goalMode === 'order' ? 'order' : 'map';
-    var active = goals.filter(function (g) { return g.active; })[0];
-    if (active) main.appendChild(rise(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openGoal(active.id); } },
-      h('span', { class: 'ic' }, icon('flag')), h('span', { class: 'grow' }, h('b', { text: 'Now: ' + active.title }),
-        h('span', { class: 'body-m', text: 'Next step: ' + (active.next || 'all done') + '. This goal sets the order of everything else.' + (function () {
-          var tog = goals.filter(function (g) { return g.alongside; }).map(function (g) { return '“' + g.title + '”'; });
-          return tog.length ? ' Worked on together with ' + tog.join(' and ') + '.' : '';
-        })() })), icon('chevron_right')), 1));
-    main.appendChild(rise(h('div', { class: 'row', style: 'gap:8px;align-items:center;margin:4px 0 12px;flex-wrap:wrap' },
-      h('div', { class: 'grow' }, K.segmented({ label: 'Show goals as', value: mode, onChange: function (v) { S.goalMode = v; if (SKY.morph && SKY.morph(v)) return; render(); }, options: [{ value: 'map', label: 'Map' }, { value: 'order', label: 'In order' }] })),
-      btn('filled', 'Add a milestone', { icon: 'wb_sunny', sm: true, onclick: function () { openMilestone(null); } })), 1));
-    if (!goals.length) {
-      var start = h('div', { class: 'card pad' }, h('div', { class: 'title-m', text: 'Where would you like to get to?' }),
-        h('p', { class: 'body-m', style: 'margin:4px 0 12px;color:var(--on-surface-variant)', text: 'Add anything, big or small. Then put them in order, and Tide Book helps you plan the steps for each one. Tap one to start, or add your own.' }));
-      var chips = h('div', { class: 'choices' });
-      GOAL_STARTERS.forEach(function (s) { chips.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { K.setBusy(e.currentTarget, true); api('addGoal', { title: s }).then(refresh).then(render).catch(fail); } }, s)); });
+    var goals = S.data.goals || [];
+    if (!goals.length && !(S.data.milestones || []).length) {
+      var start = h('div', { class: 'card pad' }, h('div', { class: 'title-m', text: 'Where would you like to get to?' }));
+      var chips = h('div', { class: 'choices', style: 'margin-top:10px' });
+      GOAL_STARTERS.forEach(function (st) { chips.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function (e) { K.setBusy(e.currentTarget, true); api('addGoal', { title: st }).then(refresh).then(render).catch(fail); } }, st)); });
       chips.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { addGoalAsk(null); } }, icon('edit'), 'My own'));
       start.appendChild(chips);
       main.appendChild(rise(start, 2));
       return;
     }
-    skyMap(main, goals);
     goalSteps(main, goals);
+    main.appendChild(rise(h('div', { class: 'gl-foot' },
+      h('button', { type: 'button', class: 'hm-link press', onclick: function () { openMilestone(null); } }, icon('wb_sunny'), 'Milestone'),
+      goals.filter(function (g) { return !g.parentId && g.status !== 'Done'; }).length > 1 ? h('button', { type: 'button', class: 'hm-link press', onclick: goalOrderSheet }, icon('swap_vert'), 'Order') : null), 4));
+    fab(main, 'Goal', 'add', function () { addGoalAsk(null); });
+  }
+  /** Her goals in order of importance (the first is the one she's on): hold and drag. */
+  function goalOrderSheet() {
+    var tops = (S.data.goals || []).filter(function (g) { return !g.parentId && g.status !== 'Done'; }).sort(function (x, y) { return (x.rank || 99) - (y.rank || 99); }), by = {};
+    tops.forEach(function (g) { by[g.id] = g; });
+    arrangeSheet({ title: 'Most important first', intro: 'Hold the dotted handle and drag. The top one is the goal you’re on.', order: tops.map(function (g) { return g.id; }), defaults: tops.map(function (g) { return g.id; }),
+      label: function (k) { return by[k].title; }, icon: function () { return 'flag'; }, save: function (order) { return api('orderGoals', order); }, done: 'In your order.' });
   }
   /** Steps Tide Book suggests for a goal, from what it's about (and, for the shop, what Ready to sell still needs). */
   function stepIdeasFor(g) {
@@ -17646,24 +17662,26 @@ var Kit = (function () {
   }
   /** Her goals' steps on the Goals page, like a reminders list: tick them off, add one in a line, each with its tool. */
   function goalSteps(main, goals) {
-    var tops = goals.filter(function (g) { return !g.parentId; }).slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
-    if (!tops.length) return;
+    var tops = goals.filter(function (g) { return !g.parentId; }).slice().sort(function (a, b) { return (a.status === 'Done' ? 1 : 0) - (b.status === 'Done' ? 1 : 0) || (a.rank || 99) - (b.rank || 99); });
     var ms = S.data.milestones || [], open = S.stepsOpen || (S.stepsOpen = {}), wrap = h('div', { class: 'gsteps' });
     var now = goals.filter(function (g) { return g.active; })[0];
-    wrap.appendChild(h('div', { class: 'gsteps-h' }, h('div', { class: 'title-l', text: 'Steps' }),
-      h('p', { class: 'body-m', style: 'margin:2px 0 0;color:var(--on-surface-variant)', text: now ? (now.next ? 'Next up: “' + now.next + '”, for “' + now.title + '”.' : 'Your “Now” goal has no steps left: add the next one, or tick the goal off.') : 'Tick steps off as you go, and add new ones in a line.' })));
     function save(g, steps, msg) { g.steps = steps; return api('updateGoal', g.id, { steps: steps }).then(refresh).then(function () { K.haptic('success'); render(); if (msg) toast(msg); }).catch(fail); }
     function list(g) {
       var gc = goalColour(g.id), steps = g.steps || [], left = steps.filter(function (s) { return !s.done; }), done = steps.filter(function (s) { return s.done; });
-      var box = h('div', { class: 'gs-list', style: '--gc:' + gc });
-      box.appendChild(h('button', { type: 'button', class: 'gs-head', onclick: function () { openGoal(g.id); } }, h('i', { class: 'gs-dot' }),
-        h('span', { class: 'grow' }, h('b', { text: g.title }), h('span', { class: 'body-s', text: steps.length ? done.length + ' of ' + steps.length + ' done' : 'No steps yet' })), icon('chevron_right')));
+      var ko = 'g:' + g.id, isOpen = ko in open ? open[ko] : !!(now ? now.id === g.id : tops[0] && tops[0].id === g.id);
+      var box = h('div', { class: 'gs-list' + (isOpen ? ' open' : '') + (g.status === 'Done' ? ' alldone' : ''), style: '--gc:' + gc });
+      box.appendChild(h('div', { class: 'gs-headrow' },
+        h('button', { type: 'button', class: 'gs-head', 'aria-expanded': String(isOpen), onclick: function () { open[ko] = !isOpen; K.haptic(); render(); } }, h('i', { class: 'gs-dot' }, g.status === 'Done' ? icon('check') : null),
+          h('span', { class: 'grow' }, h('b', { text: g.title }), now && now.id === g.id ? h('em', { class: 'gs-now', text: 'Now' }) : null),
+          h('span', { class: 'gs-count', text: steps.length ? done.length + '/' + steps.length : '' }), icon(isOpen ? 'expand_less' : 'expand_more')),
+        K.iconBtn('more_vert', 'More for this goal', function () { openGoal(g.id); })));
+      if (!isOpen) return box;
       left.forEach(function (s) {
         var tool = STEP_TOOLS[toolsFor(s.text)[0]];
         var row = h('div', { class: 'gs-row' },
           h('button', { type: 'button', class: 'gs-tick', 'aria-label': 'Done: ' + s.text, onclick: function (e) { e.currentTarget.classList.add('on'); K.haptic('success'); api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); undoCard('Done: ' + s.text + '.', function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on the list.'); }).catch(fail); } }),
           h('button', { type: 'button', class: 'gs-text', onclick: function () { openStepTools({ n: steps.indexOf(s) + 1, id: s.id, text: s.text, done: false }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); } },
-            h('span', { text: s.text }), s.due ? h('span', { class: 'gs-day' + (s.auto ? ' auto' : ''), text: K.dayLabel(s.due, true) + (s.at ? ' · ' + fmtAt(s.at) : '') }) : null),
+            h('span', { text: s.text }), s.due ? h('span', { class: 'gs-day' + (s.auto ? ' auto' : ''), text: calWhen(s) }) : null),
           tool && toolsFor(s.text)[0] !== 'talk' ? h('button', { type: 'button', class: 'gs-tool', 'aria-label': tool.label, title: tool.label, onclick: function () { tool.go(s); } }, icon(tool.ic)) : null,
           h('button', { type: 'button', class: 'gs-more', 'aria-label': 'More for this step', onclick: function () { stepMore(g, s); } }, icon('more_vert')));
         box.appendChild(row);
@@ -17706,8 +17724,9 @@ var Kit = (function () {
     // milestones first (each with its goals), then the goals on their own
     ms.forEach(function (m) {
       var mine = tops.filter(function (g) { return g.milestoneId === m.id; });
-      if (!mine.length) return;
-      wrap.appendChild(h('div', { class: 'gs-ms' }, icon('wb_sunny'), h('span', { text: m.title })));
+      var tot = 0, dn = 0; mine.forEach(function (g) { tot += (g.steps || []).length; dn += (g.steps || []).filter(function (x) { return x.done; }).length; });
+      wrap.appendChild(h('button', { type: 'button', class: 'gl-ms press soft', onclick: function () { openMilestone(m.id); } }, svgRing(tot ? dn / tot : 0, 22, 2 * Math.PI * 22),
+        h('span', { class: 'grow' }, h('span', { class: 'gl-ms-k' }, icon('wb_sunny'), 'Milestone'), h('b', { text: m.title })), icon('more_vert')));
       mine.forEach(function (g) { wrap.appendChild(list(g)); });
     });
     var free = tops.filter(function (g) { return !g.milestoneId || !ms.some(function (m) { return m.id === g.milestoneId; }); });
@@ -17755,293 +17774,6 @@ var Kit = (function () {
       setTimeout(function () { t1.input.focus(); }, 350);
     } });
   }
-  /** The map: goals as bubbles she drags about. Pinch (or the buttons) to zoom; drag an empty spot to move around.
-   *  Drop one goal on another to work on them together, or to make it part of it. Lines show what goes with what. */
-  var GZ = { s: 1, x: 0, y: 0 };
-  function goalMapFull(on) {
-    S.mapFull = !!on; GZ = null;
-    var de = document.documentElement;
-    try {
-      if (on && de.requestFullscreen && !document.fullscreenElement) de.requestFullscreen().catch(function () {});
-      if (!on && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
-    } catch (e) { /* the phone keeps its bar: the map still fills the page */ }
-    render();
-    if (on) window.scrollTo(0, 0);
-  }
-  // leaving the phone's full screen (back gesture, Escape) brings the map back to its place too
-  document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && S.mapFull) { S.mapFull = false; render(); } });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.mapFull && !K.openSheets()) goalMapFull(false); });
-  window.addEventListener('resize', function () { if (S.mapFull && S.view === 'ideas') render(); });
-  function goalMap(main, goals) {
-    // full screen: the whole phone for the map (and the browser's bar hidden too, where the phone allows it)
-    var full = !!S.mapFull;
-    var H = full ? window.innerHeight : Math.max(400, Math.min(560, window.innerHeight - 440));
-    // the goals sit on a canvas at least this tall; when the box is shorter, it starts zoomed out so every goal shows
-    var HW = Math.max(H, 60 + goals.length * 72, 520);
-    var board = h('div', { class: 'goal-map' + (full ? ' full' : ''), style: 'height:' + H + 'px' });
-    document.body.classList.toggle('map-full', full);
-    var world = h('div', { class: 'goal-world', style: 'height:' + HW + 'px;bottom:auto' });
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); world.appendChild(svg);
-    board.appendChild(world);
-    var els = {}, ghost = null, pinching = false;
-    function W() { return board.clientWidth; }
-    function paintZoom() {
-      var w = W(), lo = Math.min(0, w - w * GZ.s), hi = Math.max(0, w - w * GZ.s), lo2 = Math.min(0, H - HW * GZ.s), hi2 = Math.max(0, H - HW * GZ.s);
-      GZ.x = Math.max(lo - 40, Math.min(hi + 40, GZ.x)); GZ.y = Math.max(lo2 - 40, Math.min(hi2 + 40, GZ.y));
-      world.style.transform = 'translate(' + GZ.x + 'px,' + GZ.y + 'px) scale(' + GZ.s + ')';
-      zl.textContent = Math.round(GZ.s * 100) + '%';
-    }
-    function zoomAt(s, cx, cy) {         // cx, cy: a point on the board that stays still
-      s = Math.max(0.3, Math.min(2.5, s));
-      var wx = (cx - GZ.x) / GZ.s, wy = (cy - GZ.y) / GZ.s;
-      GZ = { s: s, x: cx - wx * s, y: cy - wy * s }; paintZoom();
-    }
-    function lines() {
-      svg.textContent = '';
-      var done = {};
-      goals.forEach(function (g) {
-        [].concat(g.parentId ? [[g.parentId, 'part']] : [], g.links.map(function (l) { return [l, 'link']; })).forEach(function (pair) {
-          var key = [g.id, pair[0]].sort().join() + pair[1];
-          if (done[key]) return; done[key] = 1;
-          var o = goalById(pair[0]), a = els[g.id], b = o && els[o.id];
-          if (!a || !b) return;
-          var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          ln.setAttribute('x1', a.offsetLeft + a.offsetWidth / 2); ln.setAttribute('y1', a.offsetTop + a.offsetHeight / 2);
-          ln.setAttribute('x2', b.offsetLeft + b.offsetWidth / 2); ln.setAttribute('y2', b.offsetTop + b.offsetHeight / 2);
-          ln.setAttribute('class', pair[1]); svg.appendChild(ln);
-        });
-      });
-    }
-    /** Every bubble inside the map and clear of the others. keep = the one she just put down stays where it is. */
-    function makeRoom(keep) {
-      var w = W(), PAD = 8;
-      if (!w) return;
-      var R = goals.map(function (g) { var el = els[g.id]; return { g: g, el: el, w: el.offsetWidth, h: el.offsetHeight, x: el.offsetLeft, y: el.offsetTop, fixed: g.id === keep }; });
-      // clear of the bar along the top (full screen) and the zoom buttons along the bottom
-      var TOP = full ? 72 : PAD, BOTTOM = 62;
-      function inside(r) { r.x = Math.max(PAD, Math.min(w - r.w - PAD, r.x)); r.y = Math.max(TOP, Math.min(HW - r.h - BOTTOM, r.y)); }
-      R.forEach(inside);
-      for (var it = 0; it < 200; it++) {
-        var moved = false;
-        for (var i = 0; i < R.length; i++) for (var j = i + 1; j < R.length; j++) {
-          var a = R[i], b = R[j];
-          var ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) + PAD, oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) + PAD;
-          if (ox <= 0 || oy <= 0) continue;
-          moved = true;
-          var sa = a.fixed ? 0 : b.fixed ? 1 : 0.5, sb = 1 - sa;
-          if (oy <= ox) { var dy = (a.y + a.h / 2 <= b.y + b.h / 2 ? -1 : 1) * oy; a.y += dy * sa; b.y -= dy * sb; }
-          else { var dx = (a.x + a.w / 2 <= b.x + b.w / 2 ? -1 : 1) * ox; a.x += dx * sa; b.x -= dx * sb; }
-        }
-        R.forEach(inside);
-        if (!moved) break;
-      }
-      // still crowded (a narrow phone, many goals): anything still overlapping moves to the nearest free spot
-      function hits(a, list) { return list.some(function (b) { return b !== a && a.x < b.x + b.w + PAD && b.x < a.x + a.w + PAD && a.y < b.y + b.h + PAD && b.y < a.y + a.h + PAD; }); }
-      var placed = [];
-      R.slice().sort(function (a, b) { return (b.fixed - a.fixed) || (a.y - b.y); }).forEach(function (r) {
-        if (hits(r, placed)) {
-          var best = null, bd = Infinity;
-          for (var yy = TOP; yy <= HW - r.h - BOTTOM; yy += 10) for (var xx = PAD; xx <= w - r.w - PAD; xx += 14) {
-            var c = { x: xx, y: yy, w: r.w, h: r.h };
-            if (hits(c, placed)) continue;
-            var dd = Math.abs(xx - r.x) + Math.abs(yy - r.y);
-            if (dd < bd) { bd = dd; best = c; }
-          }
-          if (best) { r.x = best.x; r.y = best.y; }
-        }
-        placed.push(r);
-      });
-      R.forEach(function (r) {
-        r.el.style.left = r.x + 'px'; r.el.style.top = r.y + 'px';
-        var nx = r.x / w, ny = r.y / HW;
-        if (Math.abs(nx - r.g.x) > 0.015 || Math.abs(ny - r.g.y) > 0.015) { r.g.x = nx; r.g.y = ny; api('updateGoal', r.g.id, { x: nx, y: ny }).catch(function () {}); }
-      });
-      lines();
-    }
-    /** Dropped one goal on another: work on them together, make it part of it, or just put it down. */
-    function dropped(g, o) {
-      var linked = g.links.indexOf(o.id) >= 0, inGroup = (g.group || []).indexOf(o.id) >= 0, others = (o.group || []).filter(function (x) { return x !== g.id; });
-      K.sheet({
-        title: '“' + g.title + '” and “' + o.title + '”',
-        build: function (ctl) {
-          var list = h('div', { class: 'next-opts' });
-          function opt(ic, label, why, main, fn) {
-            list.appendChild(h('button', { class: 'next-opt' + (main ? ' main' : ''), type: 'button', onclick: function (e) {
-              var b = e.currentTarget; K.setBusy(b, true);
-              fn().then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); }).catch(function (er) { K.setBusy(b, false); fail(er); });
-            } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), h('span', { class: 'next-opt-why', text: why }))));
-          }
-          if (linked || inGroup) {
-            opt('link_off', 'Take “' + g.title + '” out of the group', 'It goes back to waiting its own turn. The others stay together.', true, function () { return api('leaveGroup', g.id); });
-          } else opt('link', others.length ? 'Add it to this group' : 'Work on them together',
-            (others.length ? 'It joins “' + o.title + '” and ' + others.length + ' more. ' : '') + 'Each keeps its own steps. All show what’s next on Home, and none waits for another.', true,
-            function () { return api('linkGoals', g.id, o.id, true); });
-          if (!o.parentId && g.parentId !== o.id) opt('subdirectory_arrow_right', 'Make it part of “' + o.title + '”', 'A smaller goal inside the bigger one.', false, function () { return api('updateGoal', g.id, { parentId: o.id }); });
-          opt('open_with', 'Just put it here', 'Nothing changes but where it sits.', false, function () { return Promise.resolve(); });
-          ctl.body.appendChild(list);
-        },
-        onClose: function () { makeRoom(g.id); }
-      });
-    }
-    goals.forEach(function (g) {
-      var nd = g.steps.filter(function (s) { return s.done; }).length, isDone = g.status === 'Done';
-      // shrunk to a dot: just its number, in its colour; a tap opens it up again
-      var el = g.mini
-        ? h('div', { class: 'goal-bubble dot' + (g.active ? ' active' : '') + (g.alongside ? ' alongside' : '') + (isDone ? ' done' : ''), role: 'button', tabindex: '0', 'aria-label': g.title + '. Shrunk to a dot: tap to open it up', title: g.title, style: '--gc:' + goalColour(g.id) },
-            isDone ? icon('check') : h('span', { text: g.parentId ? '•' : String(g.rank) }))
-        : h('div', { class: 'goal-bubble' + (g.active ? ' active' : '') + (g.alongside ? ' alongside' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', 'aria-label': g.title },
-        g.parentId ? null : isDone ? h('span', { class: 'gb-rank' }, icon('check')) : h('span', { class: 'gb-rank', text: String(g.rank) }),
-        h('span', { class: 'gb-main' }, g.active || g.alongside ? h('span', { class: 'gb-now' }, g.alongside ? icon('link') : null, g.alongside ? 'Now, together' : 'Now') : null, h('span', { class: 'gb-t', text: g.title }),
-          h('span', { class: 'gb-s', text: isDone ? 'Reached' : g.steps.length ? nd + ' of ' + g.steps.length + ' steps' : 'No plan yet' })),
-        h('span', { class: 'gb-grip', title: 'Drag to move', 'aria-hidden': 'true' }, icon('drag_indicator')),
-        h('button', { type: 'button', class: 'gb-min', 'aria-label': 'Shrink to a dot', title: 'Shrink to a dot' }, icon('remove')));
-      el.dataset.gid = g.id;
-      var minB = el.querySelector('.gb-min');
-      if (minB) {
-        minB.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-        minB.addEventListener('click', function (e) { e.stopPropagation(); K.haptic(); g.mini = true; api('updateGoal', g.id, { mini: true }).then(refresh).then(function () { render(); }).catch(fail); });
-      }
-      el.style.left = (g.x * 100) + '%'; el.style.top = (g.y * 100) + '%';
-      els[g.id] = el; world.appendChild(el);
-      var sx = 0, sy = 0, ox = 0, oy = 0, moved = false, down = false;
-      el.addEventListener('pointerdown', function (e) {
-        if (pinching) return;
-        // only the dotted handle moves a goal (a dot moves whole); anywhere else, the finger scrolls or moves the map
-        if (!g.mini && !e.target.closest('.gb-grip')) return;
-        down = true; moved = false; sx = e.clientX; sy = e.clientY; ox = el.offsetLeft; oy = el.offsetTop; el.setPointerCapture(e.pointerId); e.stopPropagation(); track(e); });
-      el.addEventListener('pointermove', function (e) {
-        if (!down || pinching) return;
-        var dx = (e.clientX - sx) / GZ.s, dy = (e.clientY - sy) / GZ.s;
-        if (!moved && Math.abs(dx) + Math.abs(dy) < 8) return;
-        if (!moved) { moved = true; el.classList.add('lifted'); K.haptic(); }
-        var x = Math.max(0, Math.min(W() - el.offsetWidth, ox + dx)), y = Math.max(0, Math.min(HW - el.offsetHeight, oy + dy));
-        el.style.left = x + 'px'; el.style.top = y + 'px'; lines();
-        // over another goal: it lights up, ready to be dropped on
-        var over = overOf(g, x + el.offsetWidth / 2, y + el.offsetHeight / 2);
-        goals.forEach(function (o) { els[o.id].classList.toggle('target', !!over && o.id === over.id); });
-      });
-      function up(e) {
-        untrack(e);
-        if (!down) return; down = false;
-        if (pinching) { el.style.left = ox + 'px'; el.style.top = oy + 'px'; el.classList.remove('lifted'); lines(); return; }
-        if (!moved) {
-          if (g.mini) { K.haptic(); api('updateGoal', g.id, { mini: false }).then(refresh).then(function () { render(); }).catch(fail); return; }
-          openGoal(g.id); return;
-        }
-        el.classList.remove('lifted');
-        var over = overOf(g, el.offsetLeft + el.offsetWidth / 2, el.offsetTop + el.offsetHeight / 2);
-        goals.forEach(function (o) { els[o.id].classList.remove('target'); });
-        if (over) { dropped(g, over); return; }
-        makeRoom(g.id);
-      }
-      el.addEventListener('pointerup', up);
-      el.addEventListener('pointercancel', function (e) { untrack(e); down = false; el.classList.remove('lifted'); el.style.left = ox + 'px'; el.style.top = oy + 'px'; lines(); });
-      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') openGoal(g.id); });
-    });
-    function overOf(g, cx, cy) {
-      return goals.filter(function (o) {
-        if (o.id === g.id) return false;
-        var b = els[o.id];
-        return cx > b.offsetLeft && cx < b.offsetLeft + b.offsetWidth && cy > b.offsetTop && cy < b.offsetTop + b.offsetHeight;
-      })[0] || null;
-    }
-    // two fingers anywhere: pinch to zoom. One finger on an empty spot: move the map about (or the page, at 100%).
-    var ptrs = {}, pin = null, pan = null;
-    function track(e) { ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; startPinch(); }
-    function untrack(e) { delete ptrs[e.pointerId]; if (Object.keys(ptrs).length < 2 && pin) { pin = null; setTimeout(function () { pinching = false; }, 0); } }
-    function startPinch() {
-      var k = Object.keys(ptrs);
-      if (k.length !== 2) return;
-      var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect();
-      pinching = true; pan = null;
-      pin = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: GZ.s, mx: (a.x + b.x) / 2 - r.left, my: (a.y + b.y) / 2 - r.top, gx: GZ.x, gy: GZ.y };
-    }
-    board.addEventListener('pointerdown', function (e) {
-      track(e);
-      if (pinching) return;
-      var bub = e.target.closest('.goal-bubble');
-      if (bub && (bub.classList.contains('dot') || e.target.closest('.gb-grip, .gb-min'))) return;
-      if (bub || e.target === board || e.target === world || e.target === svg) { pan = { x: e.clientX, y: e.clientY, gx: GZ.x, gy: GZ.y, sy: window.scrollY, moved: false, goal: bub ? bub.dataset.gid : '' }; board.setPointerCapture(e.pointerId); }
-    });
-    board.addEventListener('pointermove', function (e) {
-      if (ptrs[e.pointerId]) ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
-      if (pin) {
-        var k = Object.keys(ptrs); if (k.length < 2) return;
-        var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect();
-        var s = Math.max(0.3, Math.min(2.5, pin.s * Math.hypot(a.x - b.x, a.y - b.y) / pin.d));
-        var mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
-        var wx = (pin.mx - pin.gx) / pin.s, wy = (pin.my - pin.gy) / pin.s;
-        GZ = { s: s, x: mx - wx * s, y: my - wy * s }; paintZoom();
-        return;
-      }
-      if (!pan) return;
-      var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
-      if (!pan.moved && Math.abs(dx) + Math.abs(dy) < 6) return;
-      pan.moved = true;
-      if ((GZ.s === 1 || GZ.fit) && Math.abs(dy) > Math.abs(dx)) window.scrollTo(0, pan.sy - dy);   // until she zooms, up and down scroll the page
-      else { GZ = { s: GZ.s, x: pan.gx + dx, y: pan.gy + dy }; paintZoom(); }
-    });
-    function endPan(e) {
-      untrack(e);
-      if (pan && pan.moved) board.dataset.panned = '1';
-      else if (pan && pan.goal) {       // a tap on a goal opens it, once the tap's own click has passed (or it would land on the new sheet)
-        var gid = pan.goal; board.dataset.panned = '1'; board.dataset.openGoal = gid;
-        setTimeout(function () { if (board.dataset.openGoal === gid) { delete board.dataset.openGoal; delete board.dataset.panned; openGoal(gid); } }, 450);
-      }
-      pan = null;
-    }
-    board.addEventListener('pointerup', endPan); board.addEventListener('pointercancel', endPan);
-    board.addEventListener('wheel', function (e) {
-      if (!e.ctrlKey && !e.metaKey) return;
-      e.preventDefault(); var r = board.getBoundingClientRect();
-      zoomAt(GZ.s * (e.deltaY < 0 ? 1.1 : 0.9), e.clientX - r.left, e.clientY - r.top);
-    }, { passive: false });
-    // tap an empty spot: an offer to add a goal right there
-    board.addEventListener('click', function (e) {
-      if (board.dataset.panned) { delete board.dataset.panned; if (board.dataset.openGoal) { var og = board.dataset.openGoal; delete board.dataset.openGoal; openGoal(og); } return; }
-      if (e.target !== board && e.target !== world && e.target !== svg) return;
-      var r = board.getBoundingClientRect();
-      var wx = (e.clientX - r.left - GZ.x) / GZ.s, wy = (e.clientY - r.top - GZ.y) / GZ.s;
-      if (wx < 0 || wy < 0 || wx > W() || wy > HW) return;
-      if (ghost) ghost.remove();
-      var mine = ghost = h('button', { type: 'button', class: 'goal-ghost' }, icon('add'), 'Add a goal here');
-      world.appendChild(mine);
-      var gx = Math.max(8, Math.min(W() - mine.offsetWidth - 8, wx - mine.offsetWidth / 2)), gy = Math.max(8, Math.min(HW - mine.offsetHeight - 8, wy - mine.offsetHeight / 2));
-      mine.style.left = gx + 'px'; mine.style.top = gy + 'px';
-      mine.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });
-      mine.addEventListener('click', function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: gx / W(), y: gy / HW }); });
-      setTimeout(function () { if (ghost === mine) { mine.remove(); ghost = null; } }, 5000);
-    });
-    // zoom buttons, for one hand or a mouse
-    var zl = h('span', { class: 'gz-level', 'aria-live': 'polite' });
-    function zb(ic, label, fn) { var b = h('button', { type: 'button', class: 'gz-btn', 'aria-label': label }, icon(ic)); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); b.addEventListener('click', function (e) { e.stopPropagation(); fn(); K.haptic(); }); return b; }
-    board.appendChild(h('div', { class: 'gz' },
-      zb('zoom_out', 'Zoom out', function () { zoomAt(GZ.s / 1.25, W() / 2, H / 2); }), zl,
-      zb('zoom_in', 'Zoom in', function () { zoomAt(GZ.s * 1.25, W() / 2, H / 2); }),
-      zb('fit_screen', 'Show the whole map', function () { GZ = fitZoom(); paintZoom(); }),
-      (function () {
-        // everything but the goals being worked on now: down to dots, or all open again
-        var rest = goals.filter(function (g) { return !g.active && !g.alongside; }), anyOpen = rest.some(function (g) { return !g.mini; });
-        if (!rest.length) return null;
-        return zb(anyOpen ? 'unfold_less' : 'unfold_more', anyOpen ? 'Shrink the others to dots' : 'Open every goal up', function () {
-          api('miniGoals', anyOpen ? rest.map(function (g) { return g.id; }) : goals.map(function (g) { return g.id; }), anyOpen).then(refresh).then(function () { render(); toast(anyOpen ? 'The others are dots now. Tap one to open it.' : 'Every goal is open again.'); }).catch(fail);
-        });
-      })(),
-      full ? null : zb('open_in_full', 'Full screen', function () { goalMapFull(true); })));
-    if (full) {
-      board.appendChild(h('div', { class: 'gm-full-bar' },
-        h('span', { class: 'gm-full-t', text: 'Your goals' }),
-        btn('tonal', 'Add a goal', { sm: true, icon: 'add', onclick: function () { addGoalAsk(null); } }),
-        btn('filled', 'Done', { sm: true, icon: 'close_fullscreen', onclick: function () { goalMapFull(false); } })));
-    }
-    main.appendChild(rise(board, 2));
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Hold a goal’s dotted handle to drag it anywhere; drop it on another to work on them together. “–” shrinks a goal to a dot. Pinch to zoom.' }));
-    function fitZoom() { var f = Math.min(1, (H - 8) / HW); return { s: f, x: (W() - W() * f) / 2, y: 0, fit: true }; }
-    if (!GZ || GZ.fit || (GZ.s === 1 && !GZ.x && !GZ.y)) GZ = fitZoom();
-    paintZoom();
-    setTimeout(function () { if (GZ.fit) GZ = fitZoom(); makeRoom(); paintZoom(); }, 0); setTimeout(function () { makeRoom(); }, 450);
-  }
-
   // ------------------------------------------------------------------ Mentors: just chat, or a mentor to learn something with
   // Hers alone (sealed with her passphrase); the admin sees only that they exist and what they cost.
   function mentorsData() { return S.data.mentors || { private: true, count: 0, list: [], starters: [] }; }
@@ -18831,364 +18563,6 @@ var Kit = (function () {
     fab(main, 'Add', 'add', function () { openOwnDay(null, mode === 'day' ? at : sel); });
     var undated = (S.data.goals || []).reduce(function (n2, g) { return n2 + (g.status === 'Done' ? 0 : g.steps.filter(function (s) { return !s.done && !s.due; }).length); }, 0);
     main.appendChild(h('p', { class: 'tf-help', style: 'margin:10px 4px', text: undated ? undated + ' goal ' + (undated === 1 ? 'step has' : 'steps have') + ' no day yet. ' + (C.mode === 'plan' ? 'Tide Book places them when there’s room in your working hours.' : 'A check-in gives them days.') : 'Every goal step has a day.' }));
-  }
-  /** The goals map as a night sky: her milestones are suns, her goals planets in their orbits, and each goal's steps
-   *  its moons. Tap a planet or sun to choose it (then drag it, open it, shrink it or put it in the bin); drop a planet
-   *  into a sun's orbit and it glides into place beside the others, evenly spaced. Pinch or the buttons to zoom. */
-  var SKY = { sel: null };
-  var SKY_SIZE = { sun: 34, planet: 20, mini: 9, moonRing: 30, moon: 5, foot: 52, ref: 900 };
-  function skyMap(main, goals) {
-    var full = !!S.mapFull, Z = SKY_SIZE, REF = Z.ref, mode = S.goalMode === 'order' ? 'order' : 'map';
-    var H = full ? window.innerHeight : Math.max(440, Math.min(620, window.innerHeight - 380));
-    var suns = (S.data.milestones || []).slice();
-    var sunIds = suns.map(function (m) { return m.id; });
-    var board = h('div', { class: 'goal-map sky' + (full ? ' full' : '') + (mode === 'order' ? ' order' : ''), style: 'height:' + H + 'px' });
-    document.body.classList.toggle('map-full', full);
-    var world = h('div', { class: 'goal-world sky-world' });
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'goal-lines'); world.appendChild(svg);
-    board.appendChild(world);
-    var WW = 0, HW = 0, pos = {}, els = {}, pinching = false, ghost = null, bar = null;
-    function W() { return board.clientWidth || 360; }
-    // ---------- where everything goes: suns where she put them, their planets evenly round them, free planets where she put them
-    function inOrbit(g) { return !g.parentId && g.milestoneId && sunIds.indexOf(g.milestoneId) >= 0; }
-    function radiusOf(g) { return g.mini && mode !== 'order' ? Z.mini : Z.planet; }
-    function orbitR(n) { return Math.max(Z.sun + 74, n * (2 * Z.foot) / (2 * Math.PI)); }
-    var ORDER_SUN = { x: -70, r: 150 };
-    function layoutOrder() {
-      var tops = goals.filter(function (g) { return !g.parentId; }).slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
-      var gap = 96, first = ORDER_SUN.x + ORDER_SUN.r + 70;
-      WW = Math.max(W(), first + tops.length * gap + 40); HW = H;
-      world.style.width = WW + 'px'; world.style.height = HW + 'px';
-      var mid = Math.round(H * 0.46);
-      pos = { sun: { x: ORDER_SUN.x, y: mid } };
-      tops.forEach(function (g, i) { pos['g:' + g.id] = { x: first + i * gap, y: mid, i: i, up: i % 2 === 1 }; });
-      // a smaller goal sits just above its bigger one
-      goals.filter(function (g) { return g.parentId; }).forEach(function (g, i) { var p = pos['g:' + g.parentId]; if (p) pos['g:' + g.id] = { x: p.x + 22, y: p.y - 58 - (i % 2) * 18 }; });
-      suns.forEach(function (m) { var p = pos.sun; pos['s:' + m.id] = { x: p.x, y: p.y, gone: true }; });
-      return [];
-    }
-    function layout() {
-      if (mode === 'order') return layoutOrder();
-      WW = Math.max(W(), 360);
-      var bodies = [];
-      suns.forEach(function (m) {
-        var members = goals.filter(function (g) { return inOrbit(g) && g.milestoneId === m.id; });
-        bodies.push({ kind: 'sun', id: m.id, x: m.x * WW, y: m.y * REF, r: (members.length ? orbitR(members.length) : Z.sun) + Z.foot, members: members });
-      });
-      goals.forEach(function (g) { if (!inOrbit(g)) bodies.push({ kind: 'goal', id: g.id, x: g.x * WW, y: g.y * REF, r: Z.foot }); });
-      // gravity, gently: anything overlapping is pushed apart until each has its own space
-      for (var it = 0; it < 160; it++) {
-        var moved = false;
-        for (var i = 0; i < bodies.length; i++) for (var j = i + 1; j < bodies.length; j++) {
-          var a = bodies[i], b = bodies[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 0.01, need = a.r + b.r - d;
-          if (need <= 0) continue;
-          moved = true;
-          var ux = dx / d, uy = dy / d, wa = a.kind === 'sun' && b.kind !== 'sun' ? 0.2 : b.kind === 'sun' && a.kind !== 'sun' ? 0.8 : 0.5;
-          if (SKY.fixed && a.id === SKY.fixed) wa = 0; else if (SKY.fixed && b.id === SKY.fixed) wa = 1;
-          a.x -= ux * need * wa; a.y -= uy * need * wa; b.x += ux * need * (1 - wa); b.y += uy * need * (1 - wa);
-        }
-        bodies.forEach(function (o) { o.x = Math.max(o.r * 0.6, Math.min(WW - o.r * 0.6, o.x)); o.y = Math.max(o.r * 0.6 + (full ? 60 : 8), o.y); });
-        if (!moved) break;
-      }
-      pos = {};
-      var bottom = 0;
-      bodies.forEach(function (o) {
-        if (o.kind === 'sun') {
-          pos['s:' + o.id] = { x: o.x, y: o.y };
-          var n = o.members.length, R = orbitR(n), step = 2 * Math.PI / Math.max(1, n);
-          // each planet keeps its place in the order she gave it (the angle she dropped it at), evenly spaced
-          var withA = o.members.map(function (g) { return { g: g, a: Math.atan2(g.y * REF - o.y, g.x * WW - o.x) }; }).sort(function (p, q) { return p.a - q.a; });
-          var sx = 0, sy = 0; withA.forEach(function (p, k) { sx += Math.cos(p.a - k * step); sy += Math.sin(p.a - k * step); });
-          var base = n ? Math.atan2(sy, sx) : 0;
-          withA.forEach(function (p, k) { var a = base + k * step; pos['g:' + p.g.id] = { x: o.x + R * Math.cos(a), y: o.y + R * Math.sin(a), sun: o.id, R: R }; });
-          o.R = R;
-        } else pos['g:' + o.id] = { x: o.x, y: o.y };
-        bottom = Math.max(bottom, o.y + o.r);
-      });
-      HW = Math.max(H, bottom + 70);
-      world.style.width = WW + 'px'; world.style.height = HW + 'px';
-      // where it settled becomes where it is (so it opens the same way next time)
-      bodies.forEach(function (o) {
-        var nx = o.x / WW, ny = o.y / REF;
-        if (o.kind === 'sun') { var m = suns.filter(function (s) { return s.id === o.id; })[0]; if (Math.abs(nx - m.x) > 0.01 || Math.abs(ny - m.y) > 0.01) { m.x = nx; m.y = ny; api('updateMilestone', m.id, { x: Math.max(0, Math.min(1, nx)), y: Math.max(0, Math.min(1, ny)) }).catch(function () {}); } }
-        else { var g = goalById(o.id); if (g && (Math.abs(nx - g.x) > 0.01 || Math.abs(ny - g.y) > 0.01)) { g.x = nx; g.y = ny; api('updateGoal', g.id, { x: Math.max(0, Math.min(1, nx)), y: Math.max(0, Math.min(1, ny)) }).catch(function () {}); } }
-      });
-      return bodies;
-    }
-    function place(el, p, size) { el.style.left = (p.x - size) + 'px'; el.style.top = (p.y - size) + 'px'; }
-    function draw() {
-      var bodies = layout();
-      board.classList.toggle('order', mode === 'order');
-      if (orderSun) { if (mode === 'order') { orderSun.style.left = (pos.sun.x - ORDER_SUN.r) + 'px'; orderSun.style.top = (pos.sun.y - ORDER_SUN.r) + 'px'; } else { var s0 = suns[0] && pos['s:' + suns[0].id]; orderSun.style.left = ((s0 ? s0.x : WW / 2) - ORDER_SUN.r) + 'px'; orderSun.style.top = ((s0 ? s0.y : 120) - ORDER_SUN.r) + 'px'; } }
-      svg.setAttribute('width', WW); svg.setAttribute('height', HW); svg.textContent = '';
-      function line(x1, y1, x2, y2, cls) { var l = document.createElementNS('http://www.w3.org/2000/svg', 'line'); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); l.setAttribute('class', cls); svg.appendChild(l); }
-      function ring(x, y, r, cls) { var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', r); c.setAttribute('class', cls); svg.appendChild(c); }
-      bodies.forEach(function (o) { if (o.kind === 'sun' && o.members.length) ring(o.x, o.y, o.R, 'orbit'); });
-      if (mode === 'order') goals.forEach(function (g) { var p = pos['g:' + g.id]; if (p && !g.parentId) ring(pos.sun.x, pos.sun.y, p.x - pos.sun.x, 'orbit arc'); });
-      // goals worked on together, and smaller goals with their bigger one
-      var done = {};
-      goals.forEach(function (g) {
-        [].concat(g.parentId ? [[g.parentId, 'part']] : [], (g.links || []).map(function (l) { return [l, 'link']; })).forEach(function (pr) {
-          var k = [g.id, pr[0]].sort().join() + pr[1], a = pos['g:' + g.id], b = pos['g:' + pr[0]];
-          if (done[k] || !a || !b) return; done[k] = 1; line(a.x, a.y, b.x, b.y, pr[1]);
-        });
-      });
-      suns.forEach(function (m) { var p = pos['s:' + m.id], el = els['s:' + m.id]; if (el) { place(el, p, Z.sun); el.classList.toggle('gone', !!p.gone); } });
-      goals.forEach(function (g) {
-        var p = pos['g:' + g.id], el = els['g:' + g.id]; if (!p || !el) return;
-        place(el, p, radiusOf(g));
-        el.classList.toggle('up', mode === 'order' && !!p.up);
-        if (!g.mini && g.steps.length) ring(p.x, p.y, Z.moonRing, 'moonring');
-        (el._moons || []).forEach(function (mn, i) {
-          var a = -Math.PI / 2 + i * 2 * Math.PI / el._moons.length;
-          mn.style.left = (p.x + Z.moonRing * Math.cos(a) - Z.moon) + 'px'; mn.style.top = (p.y + Z.moonRing * Math.sin(a) - Z.moon) + 'px';
-        });
-      });
-      paintBar();
-    }
-    // ---------- the bodies
-    var orderSun = h('div', { class: 'sky-bigsun', 'aria-hidden': 'true' }, h('span', { class: 'sky-bigsun-core' }), h('span', { class: 'sky-label sun big', text: 'Most important nearest' }));
-    world.appendChild(orderSun);
-    suns.forEach(function (m) {
-      var members = goals.filter(function (g) { return inOrbit(g) && g.milestoneId === m.id; });
-      var el = h('div', { class: 'sky-sun', role: 'button', tabindex: '0', 'aria-label': 'Milestone: ' + m.title + '. ' + members.length + ' goal' + (members.length === 1 ? '' : 's') + ' in its orbit.' },
-        h('span', { class: 'sky-sun-core' }), h('span', { class: 'sky-label sun', text: m.title }));
-      el.dataset.k = 's:' + m.id;
-      els['s:' + m.id] = el; world.appendChild(el); body(el, { kind: 'sun', id: m.id });
-    });
-    goals.forEach(function (g) {
-      var isDone = g.status === 'Done', gc = goalColour(g.id);
-      var el = h('div', { class: 'sky-planet' + (g.mini ? ' mini' : '') + (g.active ? ' now' : '') + (g.alongside ? ' along' : '') + (isDone ? ' done' : '') + (g.parentId ? ' sub' : ''), role: 'button', tabindex: '0', style: '--gc:' + gc,
-          'aria-label': g.title + (g.active ? ', the goal you’re working on now' : '') + (g.steps.length ? ', ' + g.steps.filter(function (s) { return s.done; }).length + ' of ' + g.steps.length + ' steps done' : ', no plan yet') },
-        h('span', { class: 'sky-ball' }, isDone ? icon('check') : g.parentId ? null : h('span', { class: 'sky-rank', text: String(g.rank) })),
-        h('span', { class: 'sky-label' }, g.active || g.alongside ? h('b', { class: 'sky-now', text: g.alongside ? 'Now, together' : 'Now' }) : null, h('span', { class: 'sky-t', text: g.title })));
-      el.dataset.k = 'g:' + g.id;
-      els['g:' + g.id] = el; world.appendChild(el); body(el, { kind: 'goal', id: g.id });
-      // its steps: moons in a ring, filled in when done. Tap one for the step.
-      el._moons = [];
-      if (!g.mini) g.steps.forEach(function (st, i) {
-        var mn = h('button', { type: 'button', class: 'sky-moon' + (st.done ? ' done' : ''), style: '--gc:' + gc, 'aria-label': 'Step ' + (i + 1) + ': ' + st.text + (st.done ? ' (done)' : ''), title: st.text });
-        mn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-        mn.addEventListener('click', function (e) {
-          e.stopPropagation(); K.haptic();
-          openStepTools({ n: i + 1, id: st.id, text: st.text, done: st.done }, function () { return api('tickGoalStep', g.id, st.id, true).then(refresh).then(function () { render(); }); });
-        });
-        el._moons.push(mn); world.appendChild(mn);
-      });
-    });
-    // ---------- choosing, dragging, dropping
-    function selKey() { return SKY.sel ? (SKY.sel.kind === 'sun' ? 's:' : 'g:') + SKY.sel.id : ''; }
-    function choose(s) {
-      SKY.sel = s;
-      Object.keys(els).forEach(function (k) { els[k].classList.toggle('chosen', k === selKey()); });
-      paintBar();
-    }
-    function paintBar() {
-      if (bar) { bar.remove(); bar = null; }
-      var k = selKey(), el = els[k]; if (!el) return;
-      var p = pos[k], s = SKY.sel, g = s.kind === 'goal' ? goalById(s.id) : null, m = s.kind === 'sun' ? suns.filter(function (x) { return x.id === s.id; })[0] : null;
-      if (!p || (!g && !m)) return;
-      function b(ic, label, fn, cls) { var x = h('button', { type: 'button', class: 'sky-act' + (cls ? ' ' + cls : ''), 'aria-label': label, title: label }, icon(ic), h('span', { text: label })); x.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); x.addEventListener('click', function (e) { e.stopPropagation(); fn(); }); return x; }
-      bar = h('div', { class: 'sky-bar', role: 'toolbar', 'aria-label': 'For ' + (g ? g.title : m.title) },
-        b('open_in_new', 'Open', function () { if (g) openGoal(g.id); else openMilestone(m.id); }),
-        g ? b(g.mini ? 'open_in_full' : 'close_fullscreen', g.mini ? 'Full size' : 'Shrink', function () { api('updateGoal', g.id, { mini: !g.mini }).then(refresh).then(function () { render(); }).catch(fail); }) : null,
-        b('delete', 'Bin', function () {
-          SKY.sel = null;
-          if (g) api('deleteGoal', g.id).then(refresh).then(function () { render(); binUndo('Goal in the bin.', 'goal', g.id); }).catch(fail);
-          else api('deleteMilestone', m.id).then(refresh).then(function () { render(); binUndo('Milestone in the bin. Its goals float free.', 'milestone', m.id); }).catch(fail);
-        }, 'bin'));
-      var size = g ? radiusOf(g) : Z.sun;
-      bar.style.left = Math.max(6, Math.min(WW - 230, p.x - 115)) + 'px';
-      bar.style.top = (p.y + size + (g && !g.mini ? 46 : 26)) + 'px';
-      world.appendChild(bar);
-      board.querySelector('.sky-hint').textContent = 'Drag it anywhere' + (g ? ': into a milestone’s orbit, or onto another goal to work on them together.' : '. Its planets come with it.');
-    }
-    function targetAt(wx, wy, me) {
-      // a planet under the finger first, then a sun's system
-      var gl = goals.filter(function (o) { var p = pos['g:' + o.id]; return o.id !== me.id && p && Math.hypot(p.x - wx, p.y - wy) < radiusOf(o) + 14; })[0];
-      if (gl) return { kind: 'goal', g: gl };
-      var sn = suns.filter(function (m) { var p = pos['s:' + m.id], n = goals.filter(function (g) { return inOrbit(g) && g.milestoneId === m.id && g.id !== me.id; }).length; return p && Math.hypot(p.x - wx, p.y - wy) < (n ? orbitR(n) + 30 : Z.sun + 90); })[0];
-      return sn ? { kind: 'sun', m: sn } : null;
-    }
-    function body(el, who) {
-      var down = null;
-      el.addEventListener('click', function (e) {
-        if (board.dataset.dragged) { delete board.dataset.dragged; return; }
-        e.stopPropagation(); K.haptic();
-        var k = (who.kind === 'sun' ? 's:' : 'g:') + who.id;
-        if (selKey() === k) { if (who.kind === 'goal') { var g = goalById(who.id); if (g && g.mini) { api('updateGoal', g.id, { mini: false }).then(refresh).then(function () { render(); }).catch(fail); return; } openGoal(who.id); } else openMilestone(who.id); return; }
-        choose(who);
-      });
-      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') el.click(); });
-      // only a chosen one moves: anywhere else, a finger scrolls the page or moves the map
-      el.addEventListener('pointerdown', function (e) {
-        var k = (who.kind === 'sun' ? 's:' : 'g:') + who.id;
-        if (pinching || (selKey() !== k && who.kind !== 'sun' && !full)) return;
-        e.stopPropagation(); el.setPointerCapture(e.pointerId);
-        var p = pos[k];
-        down = { sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, moved: false };
-      });
-      el.addEventListener('pointermove', function (e) {
-        if (!down || pinching) return;
-        var dx = (e.clientX - down.sx) / GZ.s, dy = (e.clientY - down.sy) / GZ.s;
-        if (!down.moved && Math.abs(dx) + Math.abs(dy) < 8) return;
-        if (!down.moved) { down.moved = true; el.classList.add('lifted'); world.classList.add('dragging'); if (bar) bar.style.display = 'none'; }
-        var nx = down.x + dx, ny = down.y + dy, size = who.kind === 'sun' ? Z.sun : radiusOf(goalById(who.id) || {});
-        el.style.left = (nx - size) + 'px'; el.style.top = (ny - size) + 'px';
-        if (who.kind === 'goal' && mode !== 'order') {
-          (el._moons || []).forEach(function (mn) { mn.style.opacity = '0'; });
-          var tg = targetAt(nx, ny, { id: who.id });
-          Object.keys(els).forEach(function (kk) { els[kk].classList.toggle('target', !!tg && kk === (tg.kind === 'sun' ? 's:' + tg.m.id : 'g:' + tg.g.id)); });
-        }
-        down.nx = nx; down.ny = ny;
-      });
-      el.addEventListener('pointerup', function () {
-        if (!down) return;
-        var d = down; down = null; el.classList.remove('lifted'); world.classList.remove('dragging');
-        Object.keys(els).forEach(function (kk) { els[kk].classList.remove('target'); });
-        if (!d.moved) return;
-        board.dataset.dragged = '1'; setTimeout(function () { delete board.dataset.dragged; }, 400);
-        var x = Math.max(0, Math.min(1, d.nx / WW)), y = Math.max(0, Math.min(1, d.ny / REF));
-        if (who.kind === 'sun') {
-          var m = suns.filter(function (s) { return s.id === who.id; })[0]; m.x = x; m.y = y;
-          api('updateMilestone', m.id, { x: x, y: y }).catch(fail);
-          var mine = goals.filter(function (g2) { return inOrbit(g2) && g2.milestoneId === m.id; });
-          mine.forEach(function (g2, i) { var e2 = els['g:' + g2.id]; if (!e2) return; e2.style.transitionDelay = (i * 0.12) + 's'; (e2._moons || []).forEach(function (mn) { mn.style.transitionDelay = (i * 0.12 + 0.1) + 's'; }); });
-          world.classList.add('gravity'); SKY.fixed = m.id; draw(); SKY.fixed = null;
-          clearTimeout(SKY.gravT); SKY.gravT = setTimeout(function () { world.classList.remove('gravity'); mine.forEach(function (g2) { var e2 = els['g:' + g2.id]; if (e2) { e2.style.transitionDelay = ''; (e2._moons || []).forEach(function (mn) { mn.style.transitionDelay = ''; }); } }); }, 2600);
-          return;
-        }
-        if (mode === 'order') {
-          var tops = goals.filter(function (o) { return !o.parentId; }).slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
-          var ids = tops.map(function (o) { return o.id; }).filter(function (x) { return x !== who.id; });
-          var at = ids.filter(function (x) { return pos['g:' + x].x < d.nx; }).length;
-          ids.splice(at, 0, who.id);
-          ids.forEach(function (x, i) { var o = goalById(x); if (o) o.rank = i + 1; });
-          draw();
-          api('orderGoals', ids).then(refresh).then(function () { K.haptic('success'); toast(at === 0 ? 'Most important now: it sets the order of everything else.' : 'Moved to number ' + (at + 1) + '.'); }).catch(fail);
-          return;
-        }
-        var g = goalById(who.id), tg = targetAt(d.nx, d.ny, { id: who.id });
-        if (tg && tg.kind === 'goal') { draw(); skyDropped(g, tg.g); return; }
-        var ms = tg && tg.kind === 'sun' ? tg.m.id : '';
-        var was = g.milestoneId && sunIds.indexOf(g.milestoneId) >= 0 ? g.milestoneId : '';
-        g.x = x; g.y = y; g.milestoneId = ms;
-        api('updateGoal', g.id, { x: x, y: y, milestoneId: ms }).then(function () { if (ms && ms !== was) toast('In the orbit of “' + tg.m.title + '”.'); else if (!ms && was) toast('Out of its milestone’s orbit, on its own now.'); }).catch(fail);
-        draw();     // and gravity does the rest: it glides into place
-      });
-      el.addEventListener('pointercancel', function () { if (down) { down = null; el.classList.remove('lifted'); world.classList.remove('dragging'); draw(); } });
-    }
-    /** Dropped one goal on another: work on them together, or make it part of it. */
-    function skyDropped(g, o) {
-      K.sheet({ title: '“' + g.title + '” and “' + o.title + '”', build: function (ctl) {
-        var list = h('div', { class: 'next-opts' });
-        function opt(ic, label, why, main, fn) {
-          list.appendChild(h('button', { class: 'next-opt' + (main ? ' main' : ''), type: 'button', onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); fn().then(refresh).then(function () { K.haptic('success'); ctl.close(); render(); }).catch(function (er) { K.setBusy(b, false); fail(er); }); } },
-            h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), h('span', { class: 'next-opt-why', text: why }))));
-        }
-        var together = (g.links || []).indexOf(o.id) >= 0 || (g.group || []).indexOf(o.id) >= 0;
-        if (together) opt('link_off', 'Take “' + g.title + '” out of the group', 'It goes back to waiting its own turn.', true, function () { return api('leaveGroup', g.id); });
-        else opt('link', 'Work on them together', 'Each keeps its own steps. Both show what’s next on Home, and neither waits for the other.', true, function () { return api('linkGoals', g.id, o.id, true); });
-        if (!o.parentId && g.parentId !== o.id) opt('subdirectory_arrow_right', 'Make it part of “' + o.title + '”', 'A smaller goal inside the bigger one.', false, function () { return api('updateGoal', g.id, { parentId: o.id }); });
-        opt('open_with', 'Just leave it near', 'Nothing changes but where it sits.', false, function () { return Promise.resolve(); });
-        ctl.body.appendChild(list);
-      } });
-    }
-    // ---------- the board: pinch to zoom, drag an empty spot to move about, tap an empty spot to add something there
-    var ptrs = {}, pin = null, pan = null;
-    function paintZoom() {
-      var w = W(), lo = Math.min(0, w - WW * GZ.s), hi = Math.max(0, w - WW * GZ.s), lo2 = Math.min(0, H - HW * GZ.s), hi2 = Math.max(0, H - HW * GZ.s);
-      GZ.x = Math.max(lo - 40, Math.min(hi + 40, GZ.x)); GZ.y = Math.max(lo2 - 40, Math.min(hi2 + 40, GZ.y));
-      world.style.transform = 'translate(' + GZ.x + 'px,' + GZ.y + 'px) scale(' + GZ.s + ')';
-      zl.textContent = Math.round(GZ.s * 100) + '%';
-    }
-    function zoomAt(s, cx, cy) { s = Math.max(0.3, Math.min(2.5, s)); var wx = (cx - GZ.x) / GZ.s, wy = (cy - GZ.y) / GZ.s; GZ = { s: s, x: cx - wx * s, y: cy - wy * s }; paintZoom(); }
-    function track(e) { ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; var k = Object.keys(ptrs); if (k.length === 2) { var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect(); pinching = true; pan = null; pin = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: GZ.s, mx: (a.x + b.x) / 2 - r.left, my: (a.y + b.y) / 2 - r.top, gx: GZ.x, gy: GZ.y }; } }
-    function untrack(e) { delete ptrs[e.pointerId]; if (Object.keys(ptrs).length < 2 && pin) { pin = null; setTimeout(function () { pinching = false; }, 0); } }
-    board.addEventListener('pointerdown', function (e) {
-      track(e);
-      if (pinching || e.target.closest('.sky-bar, .gz, .gm-full-bar, .goal-ghost, .sky-add')) return;
-      var onBody = e.target.closest('.sky-planet, .sky-sun');
-      if (onBody && (onBody.dataset.k === selKey() || onBody.classList.contains('sky-sun') || full)) return;
-      pan = { x: e.clientX, y: e.clientY, gx: GZ.x, gy: GZ.y, sy: window.scrollY, moved: false };
-    });
-    board.addEventListener('pointermove', function (e) {
-      if (ptrs[e.pointerId]) ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
-      if (pin) {
-        var k = Object.keys(ptrs); if (k.length < 2) return;
-        var a = ptrs[k[0]], b = ptrs[k[1]], r = board.getBoundingClientRect();
-        var s = Math.max(0.3, Math.min(2.5, pin.s * Math.hypot(a.x - b.x, a.y - b.y) / pin.d)), mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
-        var wx = (pin.mx - pin.gx) / pin.s, wy = (pin.my - pin.gy) / pin.s; GZ = { s: s, x: mx - wx * s, y: my - wy * s }; paintZoom(); return;
-      }
-      if (!pan) return;
-      var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
-      if (!pan.moved && Math.abs(dx) + Math.abs(dy) < 6) return;
-      if (!pan.moved) { pan.moved = true; board.setPointerCapture(e.pointerId); }
-      if ((GZ.s === 1 || GZ.fit) && Math.abs(dy) > Math.abs(dx)) window.scrollTo(0, pan.sy - dy);
-      else { GZ = { s: GZ.s, x: pan.gx + dx, y: pan.gy + dy }; paintZoom(); }
-    });
-    function endPan(e) { untrack(e); if (pan && pan.moved) { board.dataset.dragged = '1'; setTimeout(function () { delete board.dataset.dragged; }, 300); } pan = null; }
-    board.addEventListener('pointerup', endPan); board.addEventListener('pointercancel', endPan);
-    board.addEventListener('wheel', function (e) { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); var r = board.getBoundingClientRect(); zoomAt(GZ.s * (e.deltaY < 0 ? 1.1 : 0.9), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
-    board.addEventListener('click', function (e) {
-      if (board.dataset.dragged) { delete board.dataset.dragged; return; }
-      if (e.target !== board && e.target !== world && e.target !== svg && !(e.target.closest && e.target.closest('svg'))) return;
-      if (SKY.sel) { choose(null); board.querySelector('.sky-hint').textContent = HINT; return; }
-      var r = board.getBoundingClientRect(), wx = (e.clientX - r.left - GZ.x) / GZ.s, wy = (e.clientY - r.top - GZ.y) / GZ.s;
-      if (ghost) ghost.remove();
-      var near = suns.filter(function (m) { var p = pos['s:' + m.id]; return p && Math.hypot(p.x - wx, p.y - wy) < 170; })[0];
-      var x = Math.max(0, Math.min(1, wx / WW)), y = Math.max(0, Math.min(1, wy / REF));
-      var mine = ghost = h('div', { class: 'goal-ghost sky-ghost' },
-        h('button', { type: 'button', onclick: function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; addGoalAsk(null, { x: x, y: y, milestoneId: near ? near.id : '' }); } }, icon('add'), near ? 'A goal for “' + near.title.slice(0, 24) + '”' : 'A goal here'),
-        near ? null : h('button', { type: 'button', onclick: function (ev) { ev.stopPropagation(); mine.remove(); ghost = null; openMilestone(null, { x: x, y: y }); } }, icon('wb_sunny'), 'A milestone here'));
-      mine.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });
-      world.appendChild(mine);
-      mine.style.left = Math.max(6, Math.min(WW - 230, wx - 100)) + 'px'; mine.style.top = Math.max(6, wy - 24) + 'px';
-      setTimeout(function () { if (ghost === mine) { mine.remove(); ghost = null; } }, 6000);
-    });
-    var zl = h('span', { class: 'gz-level', 'aria-live': 'polite' });
-    function zb(ic, label, fn) { var b = h('button', { type: 'button', class: 'gz-btn', 'aria-label': label, title: label }, icon(ic)); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); b.addEventListener('click', function (e) { e.stopPropagation(); fn(); }); return b; }
-    function fitZoom() { if (mode === 'order') return { s: 1, x: 0, y: 0, fit: true }; var f = Math.min(1, (H - 8) / HW, W() / WW); return { s: f, x: (W() - WW * f) / 2, y: 0, fit: true }; }
-    board.appendChild(h('div', { class: 'gz' },
-      zb('zoom_out', 'Zoom out', function () { zoomAt(GZ.s / 1.25, W() / 2, H / 2); }), zl,
-      zb('zoom_in', 'Zoom in', function () { zoomAt(GZ.s * 1.25, W() / 2, H / 2); }),
-      zb('fit_screen', 'Show the whole sky', function () { GZ = fitZoom(); paintZoom(); })));
-    if (!full) {
-      var fs = h('button', { type: 'button', class: 'sky-add sky-full' }, icon('open_in_full'), 'Full screen');
-      fs.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-      fs.addEventListener('click', function (e) { e.stopPropagation(); goalMapFull(true); });
-      board.appendChild(fs);
-    }
-    var add = h('button', { type: 'button', class: 'sky-add' }, icon('add'), 'Add a goal');
-    add.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-    add.addEventListener('click', function (e) { e.stopPropagation(); addGoalAsk(null); });
-    board.appendChild(add);
-    function hintFor() { return mode === 'order' ? 'Most important nearest the sun. Tap a planet, then drag it left or right to change its place.' : suns.length ? 'Tap a planet to choose it, then drag it. Moons are its steps.' : 'Add a milestone, a big aim, and drop your goals into its orbit.'; }
-    var HINT = hintFor();
-    board.appendChild(h('div', { class: 'sky-hint', 'aria-live': 'polite', text: HINT }));
-    if (full) board.appendChild(h('div', { class: 'gm-full-bar' }, h('span', { class: 'gm-full-t', text: 'Your goals' }),
-      btn('tonal', 'Add a milestone', { sm: true, icon: 'wb_sunny', onclick: function () { openMilestone(null); } }),
-      btn('filled', 'Done', { sm: true, icon: 'close_fullscreen', onclick: function () { goalMapFull(false); } })));
-    main.appendChild(rise(board, 2));
-    main.appendChild(h('p', { class: 'tf-help', style: 'margin:8px 4px', text: 'Milestones are the suns, goals the planets, and each goal’s steps its moons. Tap a planet to choose it: then drag it into a milestone’s orbit (it settles in beside the others), onto another goal to work on them together, or use Open, Shrink or Bin. Pinch to zoom.' }));
-    if (SKY.sel && !els[selKey()]) SKY.sel = null;
-    SKY.morph = function (to) {
-      if (!document.body.contains(board)) return false;
-      mode = to === 'order' ? 'order' : 'map';
-      choose(null);
-      world.classList.add('morph'); svg.style.opacity = '0';
-      draw(); GZ = fitZoom(); paintZoom();
-      board.querySelector('.sky-hint').textContent = HINT = hintFor();
-      clearTimeout(SKY.morphT); SKY.morphT = setTimeout(function () { world.classList.remove('morph'); svg.style.opacity = ''; }, 1700);
-      return true;
-    };
-    setTimeout(function () {
-      draw();
-      if (!GZ || GZ.fit || (GZ.s === 1 && !GZ.x && !GZ.y)) GZ = fitZoom();
-      paintZoom();
-      if (SKY.sel) choose(SKY.sel);
-      requestAnimationFrame(function () { world.classList.add('settle'); });   // from now on, moves glide
-    }, 0);
   }
   /** A milestone: the big aim (its name) and the goals in its orbit. */
   function openMilestone(id, at) {
