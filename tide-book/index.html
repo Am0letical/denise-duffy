@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Tide Book (demo)</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#FCF9F4">
+  <meta name="theme-color" content="#FBF6EE">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&family=Roboto:wght@400;500;700&family=Red+Hat+Text:wght@500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500,60&family=Figtree:wght@400;500;700&family=Lora:ital,wght@0,500;1,500&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
   <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
@@ -19,23 +19,23 @@
    Motion variables (--spring, --spring-soft) are computed in Kit.html from a real spring model. */
 :root {
   /* colour roles */
-  --primary: #1B4F86;            --on-primary: #FFFFFF;          /* ocean ultramarine */
-  --primary-container: #D5ECF6;  --on-primary-container: #06284A; /* aqua wash */
-  --secondary: #1D6F79;          --on-secondary: #FFFFFF;          /* teal */
-  --secondary-container: #CFEDEC; --on-secondary-container: #00302F; /* seafoam */
-  --tertiary: #A3426A;           --on-tertiary: #FFFFFF;          /* flannel-flower pink */
-  --tertiary-container: #FCDDE6; --on-tertiary-container: #3E0B22; /* blush */
+  --primary: #23465A;            --on-primary: #FFFFFF;          /* ocean ultramarine */
+  --primary-container: #DDE9EA;  --on-primary-container: #0F2B38; /* aqua wash */
+  --secondary: #A84E27;          --on-secondary: #FFFFFF;          /* teal */
+  --secondary-container: #F5E2D0; --on-secondary-container: #3A1B0B; /* seafoam */
+  --tertiary: #4F6E4E;           --on-tertiary: #FFFFFF;          /* flannel-flower pink */
+  --tertiary-container: #E0EBDB; --on-tertiary-container: #16301A; /* blush */
   --warn: #7D5700;               --warn-container: #FFE3A3; --on-warn-container: #271900; /* sunflower */
   --success: #2D6A47;            --success-container: #B2F1C4; --on-success-container: #00210F;
   --error: #BA1A1A;              --error-container: #FFDAD6; --on-error-container: #410002;
-  --surface: #FCF9F4;            --on-surface: #1A1C1E;          /* warm paper */
-  --on-surface-variant: #45474D;
-  --surface-lowest: #FFFFFF;
-  --surface-low: #F7F2EA;
-  --surface-mid: #F1ECE3;
-  --surface-high: #EAE5DC;
-  --surface-highest: #E3DED5;
-  --outline: #75777E;            --outline-variant: #CFC8BC;
+  --surface: #FBF6EE;            --on-surface: #211C16;          /* warm paper */
+  --on-surface-variant: #564E43;
+  --surface-lowest: #FFFDF9;
+  --surface-low: #F4ECDF;
+  --surface-mid: #EEE5D6;
+  --surface-high: #E7DDCC;
+  --surface-highest: #DFD4C1;
+  --outline: #75777E;            --outline-variant: #D8CCB8;
   --hairline: rgba(27, 28, 30, 0.08);
   --inverse-surface: #2F3033;    --inverse-on-surface: #F1F0F4;
   --scrim: rgba(10, 16, 24, 0.38);
@@ -55,9 +55,9 @@
   --r-xs: 4px; --r-s: 8px; --r-m: 12px; --r-l: 16px; --r-xl: 28px; --r-full: 999px;
 
   /* type */
-  --font: 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font: 'Figtree', 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
   --brand: 'Red Hat Text', 'Roboto', Arial, sans-serif;
-  --display: 'Lora', Georgia, 'Times New Roman', serif;   /* soft serif for headings, like her captions */
+  --display: 'Fraunces', 'Lora', Georgia, 'Times New Roman', serif;   /* soft serif for headings, like her captions */
 
   /* motion (overwritten at start-up with spring curves; these are the fallbacks) */
   --spring: cubic-bezier(0.3, 1.35, 0.5, 1);
@@ -77,9 +77,9 @@ body {
   margin: 0; color: var(--on-surface);
   /* watercolour washes, like the edges of her paintings: aqua top left, blush top right, ocean below */
   background:
-    radial-gradient(900px 520px at -10% -12%, rgba(63, 182, 200, 0.16), transparent 62%),
-    radial-gradient(760px 460px at 112% -6%, rgba(233, 138, 166, 0.14), transparent 60%),
-    radial-gradient(900px 620px at 50% 118%, rgba(42, 111, 176, 0.10), transparent 62%),
+    radial-gradient(900px 520px at -10% -12%, rgba(79, 142, 150, 0.16), transparent 62%),
+    radial-gradient(760px 460px at 112% -6%, rgba(206, 124, 78, 0.15), transparent 60%),
+    radial-gradient(900px 620px at 50% 118%, rgba(107, 142, 104, 0.12), transparent 62%),
     var(--surface);
   background-attachment: fixed;
   font: 400 16px/24px var(--font); letter-spacing: 0.2px; -webkit-font-smoothing: antialiased;
@@ -194,7 +194,7 @@ body.wide main { max-width: 1120px; }
   position: relative;
 }
 .btn .ms { font-size: 20px; margin-left: -6px; }
-.btn.filled { background: var(--primary); color: var(--on-primary); box-shadow: 0 1px 2px rgba(6, 52, 94, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12); }
+.btn.filled { background: var(--primary); color: var(--on-primary); box-shadow: 0 1px 2px rgba(20, 45, 58, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12); }
 .btn.tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
 .btn.outlined { background: transparent; color: var(--primary); box-shadow: inset 0 0 0 1px var(--outline-variant); }
 .btn.text { background: transparent; color: var(--primary); padding: 0 12px; }
@@ -221,7 +221,7 @@ body.wide main { max-width: 1120px; }
   position: fixed; right: 16px; bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom)); z-index: 25;
   display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 20px 0 16px; border: 0; border-radius: var(--r-l);
   background: var(--primary); color: var(--on-primary); font: 500 15px/20px var(--font); letter-spacing: 0.1px;
-  box-shadow: 0 2px 6px rgba(6, 52, 94, 0.3), 0 10px 24px rgba(6, 52, 94, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  box-shadow: 0 2px 6px rgba(6, 52, 94, 0.3), 0 10px 24px rgba(20, 45, 58, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.14);
   animation: pop var(--spring-d) var(--spring) 0.12s backwards;
 }
 @media (min-width: 840px) { .fab { bottom: 28px; right: 28px; } }
@@ -1620,7 +1620,7 @@ body.map-full { overflow: hidden; }
 .mn-empty { padding: 14px; border-radius: var(--r-l); background: var(--surface-low); }
 .mn-empty p { margin: 0 0 10px; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
 .mn-view { display: flex; flex-direction: column; gap: 10px; min-height: calc(100vh - 140px); }
-.mn-top { display: flex; align-items: center; gap: 6px; position: sticky; top: 0; z-index: 4; padding: 6px 0; background: var(--surface, #FDF8F3); }
+.mn-top { display: flex; align-items: center; gap: 6px; position: sticky; top: 0; z-index: 4; padding: 6px 0; background: var(--surface, #FBF6EE); }
 .mn-top .grow { min-width: 0; display: flex; flex-direction: column; }
 .mn-title { font: 500 18px/24px var(--display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mn-top .mn-sub { -webkit-line-clamp: 1; }
@@ -1655,7 +1655,7 @@ body.map-full { overflow: hidden; }
 .mn-act .ms { font-size: 18px; color: var(--primary); }
 .mn-quick { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 .mn-quick:empty { display: none; }
-.mn-compose { position: sticky; bottom: 84px; z-index: 4; display: flex; align-items: flex-end; gap: 8px; padding: 8px 0; background: var(--surface, #FDF8F3); }
+.mn-compose { position: sticky; bottom: 84px; z-index: 4; display: flex; align-items: flex-end; gap: 8px; padding: 8px 0; background: var(--surface, #FBF6EE); }
 .mn-compose > :first-child { flex: 1; min-width: 0; }
 .mn-compose textarea { max-height: 160px; }
 .mn-send { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 4px; border-radius: 50%; background: var(--primary); color: var(--on-primary); cursor: pointer; flex: none; }
@@ -1687,7 +1687,7 @@ body.map-full { overflow: hidden; }
 .nt-fold { padding: 0 6px; border-radius: 8px; background: rgba(0,0,0,.06); }
 .nt-made .ms { color: var(--primary); }
 .nt-page { display: flex; flex-direction: column; min-height: calc(100vh - 120px); }
-.nt-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 6px 0; background: var(--surface, #FDF8F3); }
+.nt-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 6px 0; background: var(--surface, #FBF6EE); }
 .nt-bar .on { color: #8A6D3B; background: rgba(138,109,59,.12); }
 .nt-saved { font: 400 12px/16px var(--font); color: var(--on-surface-variant); padding-left: 4px; }
 .nt-paper { flex: 1; border-radius: 20px; padding: 14px 16px 24px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); color: #1F1B16; transition: background .25s; }
@@ -1878,6 +1878,35 @@ body.map-full { overflow: hidden; }
 .otg-main em { font: 400 12px/16px var(--font); font-style: normal; color: var(--on-surface-variant); }
 .otg-ic { flex: none; color: var(--primary); } .otg-acts { flex: none; display: inline-flex; padding-right: 4px; }
 .gs-finish { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: color-mix(in srgb, var(--gc) 10%, var(--surface-lowest)); font: 500 14px/20px var(--font); }
+/* ---- the fresh look: finishing touches ---- */
+.page-title { font: 500 34px/40px var(--display); letter-spacing: -0.4px; font-variation-settings: 'opsz' 72, 'SOFT' 60; }
+.hm-step, .gl-ms b, .mn-title, .nt-title, .cal-title { font-variation-settings: 'opsz' 40, 'SOFT' 60; }
+.section-title, .title-m, .label-l { letter-spacing: 0; }
+.card, .hm-focus, .hm-today, .gl-ms, .gs-list, .mn-chat, .mn-card, .nt-card { border-radius: 22px; }
+.btn.filled, .fab, .menu-bubble { background: linear-gradient(180deg, #2B5266, var(--primary)); }
+.fab, .menu-bubble { box-shadow: 0 6px 18px rgba(20, 45, 58, .28); }
+.hm-focus { background: linear-gradient(160deg, var(--surface-lowest), #F8EFE2); }
+.hm-ring .fg { stroke: var(--secondary); } .hm-k .ms { color: var(--secondary); }
+.hm-ic { background: var(--secondary-container); color: var(--secondary); }
+.hm-wait { background: var(--primary-container); color: var(--on-primary-container); }
+.hm-otg-n.many b { color: var(--secondary); } .hm-otg-n.done b { color: var(--tertiary); }
+.gs-finish .btn.filled, .hm-acts .btn.tonal { background: var(--tertiary-container); color: var(--on-tertiary-container); }
+.gs-finish .btn.filled { background: var(--tertiary); color: #fff; }
+.choice[aria-pressed="true"] { background: var(--primary-container); color: var(--on-primary-container); border-color: transparent; }
+:focus-visible { outline-color: var(--secondary); }
+/* a small, warm moment when something's finished */
+.cheer { position: fixed; left: 50%; top: 38%; z-index: 10001; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; animation: cheerIn .5s var(--spring) both, cheerOut .4s ease 1.5s forwards; }
+.cheer svg { width: 92px; height: 92px; filter: drop-shadow(0 8px 20px rgba(20,45,58,.25)); }
+.cheer circle { fill: var(--tertiary); } .cheer path { fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 48; stroke-dashoffset: 48; animation: cheerTick .45s ease .2s forwards; }
+.cheer span { padding: 6px 14px; border-radius: 999px; background: var(--surface-lowest); box-shadow: var(--shadow-1); font: 500 15px/20px var(--font); color: var(--on-surface); }
+@keyframes cheerIn { from { opacity: 0; transform: translate(-50%, -50%) scale(.6); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes cheerOut { to { opacity: 0; transform: translate(-50%, -62%) scale(.96); } }
+@keyframes cheerTick { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .cheer { animation: cheerOut .3s ease 1.6s forwards; } .cheer path { animation: none; stroke-dashoffset: 0; } }
+/* Monday: what she finished last week */
+.hm-week { padding: 14px 16px; margin-bottom: 14px; border-radius: 22px; background: linear-gradient(150deg, var(--tertiary-container), #F3EEDC); color: var(--on-tertiary-container); }
+.hm-week-h { display: flex; align-items: center; gap: 8px; font: 500 18px/24px var(--display); }
+.hm-week ul { margin: 8px 0 0; padding-left: 20px; font: 400 14px/21px var(--font); } .hm-week .more { opacity: .75; }
 </style>
 
   <script>
@@ -3789,7 +3818,7 @@ if (env.workDone) env.workDone('publish');
   // ---------- Mentors (LogicMentor.gs; Mentor.gs does the talking)
   var mentors = tideMentors(env, { fail: fail, text: text, list: list, rows: rows, nowIso: nowIso,
     goalList: function () { return goalList(); }, addGoal: function (p) { return addGoal(p); }, updateGoal: function (id, ch) { return updateGoal(id, ch); }, makeIdea: function (p) { return makeIdea(p); },
-    draftPost: function (p) { return draftPostCore(Object.assign({ purpose: 'Drafted with your mentor (' + text(p.from, 60) + '). Add a photo when you approve it.', source: 'Mentor' }, p)); } });
+    draftPost: function (p) { return draftPostCore(Object.assign({ purpose: 'Drafted with your coach (' + text(p.from, 60) + '). Add a photo when you approve it.', source: 'Mentor' }, p)); } });
   /** A post drafted for her to approve in Posts (from a mentor or a note): no photo yet, nothing goes out by itself. */
   function draftPostCore(p) {
     return env.lock(function () {
@@ -3938,6 +3967,7 @@ if (env.workDone) env.workDone('publish');
       if (s && Number(s.mins) > 0) out.mins = Math.min(720, Math.round(Number(s.mins)));
       if (out.due && s && s.auto === true) out.auto = true;
       if (s && /^\d{4}-\d{2}-\d{2}$/.test(String(s.hold || ''))) out.hold = s.hold;
+      if (out.done && s && /^\d{4}-\d{2}-\d{2}T/.test(String(s.doneAt || ''))) out.doneAt = s.doneAt;
       return out;
     }).filter(Boolean);
   }
@@ -4255,7 +4285,7 @@ if (env.workDone) env.workDone('publish');
   function tickGoalStep(id, stepId, done) {
     need(['admin', 'artist']);
     return env.lock(function () {
-      var g = goalRow(id), steps = list(g.steps).map(function (s) { return s.id === stepId ? Object.assign({}, s, { done: done !== false }) : s; });
+      var g = goalRow(id), steps = list(g.steps).map(function (s) { if (s.id !== stepId) return s; var c = Object.assign({}, s, { done: done !== false }); if (c.done) c.doneAt = nowIso(); else delete c.doneAt; return c; });
       var all = steps.length && steps.every(function (s) { return s.done; });
       env.table('goals').update(id, { steps: steps, status: all ? 'Done' : 'Open', updated: nowIso() });
       return { ok: true, finished: all };
@@ -8239,7 +8269,7 @@ var TIDE_GUIDE = [
     steps: ['Open the thing.', 'Tap Park for now and pick a day, or Remove.', 'Parked things come back by themselves on their day, with a reminder the day before.', 'Everything has an Undo.'] },
   { id: 'g-goals', area: 'Goals and your plan', to: 'all', icon: 'flag', title: 'Your goals',
     say: 'Goals is one list: each milestone with how far along it is, its goals under it, and each goal’s steps to tick off.',
-    steps: ['Open Goals from the menu.', 'Tap a goal to open its steps. Tick them off, or add one.', 'Tap + Goal to add one; “Milestone” adds a big aim.', '⋮ on a goal renames it, gives it a day to aim for, or removes it.', '“Order” puts the most important first: that’s the one you’re on.'], go: { view: 'goals', find: '.gsteps', tip: 'Your goals.' } },
+    steps: ['Open To do from the menu.', 'Tap a goal to open its steps. Tick them off, or add one.', 'Tap + Goal to add one; “Milestone” adds a big aim.', '⋮ on a goal renames it, gives it a day to aim for, or removes it.', '“Order” puts the most important first: that’s the one you’re on.'], go: { view: 'goals', find: '.gsteps', tip: 'Your goals.' } },
   { id: 'g-plan', area: 'Goals and your plan', to: 'all', icon: 'flag', title: 'Plan a goal, a step at a time',
     say: 'Open a goal for its steps. Tide Book can plan them with you, and each step comes with the tools to do it.',
     steps: ['Tap a goal, then Open.', 'Tap “Plan it with me” for a few questions, or add steps yourself.', 'Tap a step for its tools, and tick it when it’s done.', 'Give a step a day, and it shows on your calendar.'] },
@@ -8261,15 +8291,15 @@ var TIDE_GUIDE = [
   { id: 'g-text-size', area: 'Getting around', to: 'all', icon: 'format_size', title: 'Bigger text', say: 'Make everything bigger on this phone.', steps: ['Open Settings.', 'Text size: A, A+ or A++.'], go: { view: 'settings', tip: 'At the top.' } },
   { id: 'g-shortcuts', area: 'Getting around', to: 'artist', icon: 'touch_app', title: 'Shortcuts on the icon', say: 'Long-press the Tide Book icon on your phone: Today, Calendar, Inspo, New note.', steps: ['Long-press the Tide Book icon.', 'Tap where you want to go.'], go: { view: 'home', tip: 'From your phone’s home screen.' } },
   { id: 'g-share', area: 'Getting around', to: 'artist', icon: 'send', title: 'Share to Tide Book', say: 'From Photos, Dropbox or Instagram: Share › Tide Book, then pick Inspo, Photos for posts or a Note.', steps: ['In another app, tap Share.', 'Pick Tide Book.', 'Choose where it goes.'], go: { view: 'home', tip: 'From another app.' } },
-  { id: 'g-link-photos', area: 'Posts', to: 'artist', icon: 'link', title: 'Photos from a Dropbox link', say: 'Paste a Dropbox or Google Drive link in Add photos, and its photos and videos come in.', steps: ['Start something › Photos (or Posts › Add).', 'Tap From a link and paste.', 'Tap Upload.'], go: { view: 'content', tip: 'Add photos.' } },
+  { id: 'g-link-photos', area: 'Social', to: 'artist', icon: 'link', title: 'Photos from a Dropbox link', say: 'Paste a Dropbox or Google Drive link in Add photos, and its photos and videos come in.', steps: ['Start something › Photos (or Posts › Add).', 'Tap From a link and paste.', 'Tap Upload.'], go: { view: 'content', tip: 'Add photos.' } },
   { id: 'g-use-website', area: 'Your website', to: 'artist', icon: 'language', title: 'Use an idea’s words on your website', say: '“Use on my website” on an idea puts its wording on your website’s draft.', steps: ['Open the idea.', 'Tap Use on my website.', 'Check the draft, then Publish.'], go: { view: 'ideas', tip: 'Open an idea.' } },
-  { id: 'g-mentor-chat', area: 'Mentors', to: 'artist', icon: 'forum', title: 'Just chat',
+  { id: 'g-mentor-chat', area: 'Chat', to: 'artist', icon: 'forum', title: 'Chat',
     say: 'A conversation about anything: ask a question, think out loud, talk something through. It’s yours alone.',
-    steps: ['Open the menu and tap Mentors.', 'Tap Just chat.', 'Write, or tap one of the replies it offers. Your own words always work.'], go: { view: 'mentors', find: '.mn-chat', tip: 'Just chat.' } },
-  { id: 'g-mentor', area: 'Mentors', to: 'artist', icon: 'school', title: 'A mentor to learn something with',
+    steps: ['Open the menu and tap Chat.', 'It opens on your chat.', 'Write, or tap one of the replies it offers. Your own words always work.'], go: { view: 'mentors', find: '.mn-chat', tip: 'Just chat.' } },
+  { id: 'g-mentor', area: 'Chat', to: 'artist', icon: 'school', title: 'A coach for one thing',
     say: 'Make a mentor for anything you want to learn or get done, like growing your audience. It teaches a little at a time, gives you something to try, checks in on how it went, and does the busywork: goals and steps on your calendar, posts and ideas drafted for you to approve.',
-    steps: ['In Mentors, tap New mentor.', 'Say what you’d like to learn or get done (or tap a suggestion), then Start.', 'Answer its first questions: it sets out your course along the top.', 'Tap a lesson to start it or go over it again.', 'Tap what it made (a goal, a drafted post) to open it.', '⋮ switches it to Deep thinking for big plans, renames it, or removes it.'], go: { view: 'mentors', find: '.mn-h', tip: 'New mentor is here.' } },
-  { id: 'g-mentor-admin', area: 'Mentors', to: 'admin', icon: 'lock', title: 'Mentors (private to her)',
+    steps: ['In Chat, tap the coach symbol, then Coach me.', 'Say what you’d like to learn or get done (or tap a suggestion), then Start.', 'Answer its first questions: it sets out your course along the top.', 'Tap a lesson to start it or go over it again.', 'Tap what it made (a goal, a drafted post) to open it.', '⋮ switches it to Deep thinking for big plans, renames it, or removes it.'], go: { view: 'mentors', find: '.mn-h', tip: 'New mentor is here.' } },
+  { id: 'g-mentor-admin', area: 'Chat', to: 'admin', icon: 'lock', title: 'Mentors (private to her)',
     say: 'Her mentor chats are sealed with her passphrase: you never see them. You see the count and the month’s cost, and what they make (goals, drafted posts, ideas) in their usual places. Quick replies run on Haiku, Deep thinking on Opus, within the weekly Claude limit; once it’s reached they carry on in a lighter mode on the PC’s own model (talk only) until Monday.',
     steps: ['Open Mentors to see the count and cost.', 'Mentors need the Claude API key and the month’s limit not reached (Settings › AI).'], go: { view: 'mentors', tip: 'Private to her.' } },
   { id: 'g-cal-day', area: 'Calendar', to: 'all', icon: 'schedule', title: 'Hour by hour',
@@ -8302,19 +8332,19 @@ var TIDE_GUIDE = [
   { id: 'g-notes', area: 'Ideas', to: 'all', icon: 'edit_note', title: 'Your notes',
     say: 'Private writing, just for you. Tide Book can help you expand a note when you ask.',
     steps: ['Open the menu and tap Notes.', 'Tap New note.'], go: { view: 'notes', tip: 'Your notes are private.' } },
-  { id: 'g-artwork', area: 'Artworks and your shop', to: 'all', icon: 'palette', title: 'Add an artwork',
+  { id: 'g-artwork', area: 'Art and your shop', to: 'all', icon: 'palette', title: 'Add an artwork',
     say: 'Photos, its story and its series, once. It goes on your website in its series, the shop and the living gallery.',
     steps: ['Open Artworks and tap Add an artwork.', 'Add photos, the title, the story, and where it sits (or “A new series…”).', 'Tap Launch, then publish your website.'], go: { view: 'prints', find: '.fab', tip: 'Add an artwork.' } },
-  { id: 'g-sizes', area: 'Artworks and your shop', to: 'all', icon: 'straighten', title: 'Print sizes, and who makes them',
+  { id: 'g-sizes', area: 'Art and your shop', to: 'all', icon: 'straighten', title: 'Print sizes, and who makes them',
     say: 'A4 and smaller you post yourself. A3 and up are printed and posted by Printful.',
     steps: ['On an artwork, tap Add a size and set the price.', 'For A3 and up, tap “Choose Printful’s paper”, match the sizes, then “Send the print file”.'] },
-  { id: 'g-original', area: 'Artworks and your shop', to: 'all', icon: 'workspace_premium', title: 'Selling an original',
+  { id: 'g-original', area: 'Art and your shop', to: 'all', icon: 'workspace_premium', title: 'Selling an original',
     say: 'Add “The original” with a price, and its size so its postage can be worked out. It’s posted insured.',
     steps: ['On an artwork, tap Make it into…, then The original.', 'Give it a price, and switch it on sale.', 'Fill in its size in cm (wide, high, deep).'] },
-  { id: 'g-orders', area: 'Artworks and your shop', to: 'all', icon: 'local_shipping', title: 'Orders: post them and tell the buyer',
+  { id: 'g-orders', area: 'Art and your shop', to: 'all', icon: 'local_shipping', title: 'Orders: post them and tell the buyer',
     say: 'Every website order lands in Orders: what to post, what Printful is making, and where each one is.',
     steps: ['Open the menu and tap Orders.', 'For yours: Packing slip, post it, then “It’s posted” with the tracking number.', 'Tap “Tell” to email the buyer their tracking.', 'Printful’s part is sent and followed for you.'], go: { view: 'orders', tip: 'Your orders.' } },
-  { id: 'g-ready', area: 'Artworks and your shop', to: 'all', icon: 'storefront', title: 'Ready to sell',
+  { id: 'g-ready', area: 'Art and your shop', to: 'all', icon: 'storefront', title: 'Ready to sell',
     say: 'Everything your shop needs before its first sale, with a button for each: payments, Printful, postage, your first artwork.',
     steps: ['Open Orders.', 'Work down Ready to sell.', 'For postage, link Australia Post and say where you post from: each buyer’s postage is worked out for them.'], go: { view: 'orders', find: '.ready-card', tip: 'Your steps to the first sale.' } },
   { id: 'g-website', area: 'Your website', to: 'all', icon: 'language', title: 'Change your website',
@@ -8326,7 +8356,7 @@ var TIDE_GUIDE = [
   { id: 'g-asks', area: 'Your website', to: 'artist', icon: 'add_a_photo', title: 'What your website still needs',
     say: 'Small asks on Home: a photo, a few words. What you send goes straight onto your website’s draft.',
     steps: ['Tap one of the website asks on Home.', 'Send the photo or your words. Not ready? “Remind me at the weekend”.', 'Then look in Website and Publish.'] },
-  { id: 'g-posts', area: 'Posts', to: 'all', icon: 'perm_media', title: 'Posts from your photos and clips',
+  { id: 'g-posts', area: 'Social', to: 'all', icon: 'perm_media', title: 'Posts from your photos and clips',
     say: 'Add photos or video and Tide Book drafts posts in your voice. Nothing goes out until you’ve approved it.',
     steps: ['Tap “Add photos or video” on Home.', 'Open Posts › Review to read the drafts.', 'Approve, ask for changes, or pick a time to post.'], go: { view: 'content', state: { contentTab: 'review' }, tip: 'Your drafts to review.' } },
   { id: 'g-sale', area: 'Money', to: 'all', icon: 'point_of_sale', title: 'Record a sale',
@@ -8357,15 +8387,18 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-20-fresh', on: '2026-11-20', to: 'all', icon: 'palette', title: 'A fresh look, and clearer names',
+    say: 'Tide Book has new colours and lettering, drawn from your own work: sea, clay, sage and paper. Some names are plainer: Chat (your coaches are inside), Art, To do and Social. Finishing something gets a little tick. On Mondays, Home shows what you finished last week.',
+    steps: ['Open the menu to see the new names.', 'Chat opens straight into your chat. The coach symbol at the top is for one thing you want to learn or finish.', 'Tick something off and watch.'], go: { view: 'home', tip: 'A fresh look.' } },
   { id: '2026-11-20-finishing', on: '2026-11-20', to: 'all', icon: 'task_alt', title: 'Finishing first',
     say: 'Tide Book now leans towards finishing. Home shows how much is on the go and how much is finished: tap it to finish, rest or let go of things. A new idea can be kept for later without starting it. A goal with every step ticked asks to be finished. Products show one thing at a time.',
     steps: ['On Home, tap “on the go”.', 'Nearest to finished is first: open it, or tap ✓, the moon (rest) or × (let go).', 'New idea › “Keep for later” saves it without starting.'], go: { view: 'home', find: '.hm-otg', tip: 'On the go, and finished.' } },
   { id: '2026-11-20-condensed', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Fewer places, same things',
     say: 'Tide Book is simpler. Plan holds your goals, your own list and the calendar. Money holds your orders. Notes holds your inspo. Mentors is the one place to talk things over. Home has one Waiting list. Nothing was lost.',
-    steps: ['Menu › Plan: List or Calendar.', 'Tap a step for everything about it.', 'Notes › Inspo for what you’ve saved.', 'Money › Orders when there’s something to post.', 'Settings › Help for How to and What’s new.'], go: { view: 'plan', tip: 'Your plan.' } },
+    steps: ['Menu › To do: List or Calendar.', 'Tap a step for everything about it.', 'Notes › Inspo for what you’ve saved.', 'Money › Orders when there’s something to post.', 'Settings › Help for How to and What’s new.'], go: { view: 'plan', tip: 'Your plan.' } },
   { id: '2026-11-20-goals-list', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Goals, as a simple list',
     say: 'The star map is gone. Goals is one calm list: your milestone with how far along it is, your goals under it, and each goal opens to its steps.',
-    steps: ['Open Goals.', 'Tap a goal to see its steps and tick them off.', '+ Goal adds one. “Order” puts the most important first.'], go: { view: 'goals', find: '.gsteps', tip: 'Your goals.' } },
+    steps: ['Open To do.', 'Tap a goal to see its steps and tick them off.', '+ Goal adds one. “Order” puts the most important first.'], go: { view: 'goals', find: '.gsteps', tip: 'Your goals.' } },
   { id: '2026-11-20-tidy-places', on: '2026-11-20', to: 'all', icon: 'flag', title: 'Goals and talks have their own places',
     say: 'Goals are in the menu now (next to Calendar). Talk it through is with your Mentors, so talking things over is in one place. Home is just the essentials.',
     steps: ['Open the menu: Goals has its own place.', 'Mentors › Talk it through for your talks.'], go: { view: 'goals', tip: 'Your goals.' } },
@@ -8407,7 +8440,7 @@ var TIDE_CHANGES = [
     steps: ['Tap the menu button (bottom left).', 'Tap Arrange.', 'Drag them into your order, then Save.'], go: { view: 'home', tip: 'Menu, then Arrange.' } },
   { id: '2026-11-19-mentors', on: '2026-11-19', to: 'artist', icon: 'school', title: 'Mentors: chat, or learn something properly',
     say: 'A new place in the menu. Just chat is for anything at all. A mentor is for something you want to learn or get done: it teaches you a little at a time, gives you something to try, and does the busywork for you. It’s all yours alone.',
-    steps: ['Open the menu and tap Mentors.', 'Tap Just chat to talk about anything.', 'Or tap New mentor, say what you’d like to learn (like “grow my audience”), and Start.', 'Your course shows along the top as it goes.'],
+    steps: ['Open the menu and tap Chat.', 'Tap Just chat to talk about anything.', 'Or tap New mentor, say what you’d like to learn (like “grow my audience”), and Start.', 'Your course shows along the top as it goes.'],
     go: { view: 'mentors', find: '.mn-chat', tip: 'Start here.' } },
   { id: '2026-11-19-mentors-admin', on: '2026-11-19', to: 'admin', icon: 'school', title: 'Mentors for Denise (private)',
     say: 'Her own chat and topic mentors, on Haiku (Opus when she picks Deep thinking), with tools: her records, web search, goals and steps, drafted posts and ideas. Chats are sealed with her passphrase; you see only the count and cost.',
@@ -10611,10 +10644,10 @@ function tideMentors(env, t) {
   /** Hers alone: only she, signed in as herself (the practice copy lets the admin try it on made-up data). */
   function mine() {
     var real = env.user.realRole || env.user.role;
-    if (!((real === 'artist' && env.user.role === 'artist') || (env.practice && env.user.role === 'artist'))) fail('Mentors are ' + env.brand.artistName + '’s own.');
+    if (!((real === 'artist' && env.user.role === 'artist') || (env.practice && env.user.role === 'artist'))) fail('Chats are ' + env.brand.artistName + '’s own.');
   }
   function mentorRows() { return rows('mentors').filter(function (m) { return !m.deleted; }); }
-  function mentorRow(id) { var m = mentorRows().filter(function (x) { return x.id === id; })[0]; if (!m) fail('That mentor has been removed.'); if (m.locked) fail('Your private writing is locked. Unlock it first.'); return m; }
+  function mentorRow(id) { var m = mentorRows().filter(function (x) { return x.id === id; })[0]; if (!m) fail('That chat has been removed.'); if (m.locked) fail('Your private writing is locked. Unlock it first.'); return m; }
   function msgsOf(id) { return rows('mentormsgs').filter(function (x) { return x.mentorId === id && !x.deleted; }).sort(function (a, b) { return a.created < b.created ? -1 : a.created > b.created ? 1 : a.id < b.id ? -1 : 1; }); }
   function course(m) { var c = m.course; if (typeof c === 'string') { try { c = JSON.parse(c); } catch (e) { c = null; } } return c && typeof c === 'object' ? c : { lessons: [] }; }
   function engineOn() { return !!(env.mentorReady && env.mentorReady()); }
@@ -10648,7 +10681,7 @@ function tideMentors(env, t) {
     if (!engineOn()) fail(env.mentorWhy());
     var id = env.lock(function () {
       if (kind === 'chat') { var have = mentorRows().filter(function (m) { return m.kind === 'chat'; })[0]; if (have) return have.id; }
-      if (mentorRows().length >= M.MAX_MENTORS) fail('That’s a lot of mentors. Remove one you’ve finished with first.');
+      if (mentorRows().length >= M.MAX_MENTORS) fail('That’s a lot of coaches. Remove one you’ve finished with first.');
       var nid = env.nextId('MN', 3), now = nowIso();
       env.table('mentors').append({ id: nid, created: now, kind: kind, title: kind === 'chat' ? 'Just chat' : text(p.title, 80) || goal.replace(/^(i want to|help me|how (do|can) i|teach me( how)? to|learn (how )?to)\s+/i, '').replace(/^./, function (c) { return c.toUpperCase(); }).slice(0, 80),
         goal: goal, model: p.deep === true ? 'deep' : 'quick', course: { lessons: [] }, notes: '', goalId: '', private: true, lastAt: now, deleted: false, updated: now });
@@ -10666,7 +10699,7 @@ function tideMentors(env, t) {
     if (!engineOn()) fail(env.mentorWhy());
     var mid = env.lock(function () {
       var m = mentorRow(id);
-      if (msgsOf(id).some(function (x) { return x.status === 'thinking'; })) fail('Your mentor is still answering. One moment.');
+      if (msgsOf(id).some(function (x) { return x.status === 'thinking'; })) fail('Still answering. One moment.');
       append({ mentorId: id, by: 'her', text: w });
       var nid = env.nextId('MM', 5);
       env.table('mentormsgs').append({ id: nid, created: nowIso(), mentorId: id, by: 'mentor', text: '', status: 'thinking', actions: [], replies: [], usd: 0, error: '', private: true, deleted: false });
@@ -10753,7 +10786,7 @@ function tideMentors(env, t) {
       input_schema: { type: 'object', properties: { title: { type: 'string' }, why: { type: 'string' }, steps: { type: 'array', items: { type: 'string' }, maxItems: 8 }, aim_by: { type: 'string', description: 'yyyy-mm-dd, optional' } }, required: ['title', 'steps'] } },
     { name: 'add_steps', description: 'Add steps to one of her existing goals (by its id from look_at_business goals, or the goal you made).',
       input_schema: { type: 'object', properties: { goal_id: { type: 'string' }, steps: { type: 'array', items: { type: 'string' }, maxItems: 8 } }, required: ['goal_id', 'steps'] } },
-    { name: 'draft_post', description: 'Draft an Instagram/Facebook post for her to approve in Posts. Never published without her. Nothing about her health or family.',
+    { name: 'draft_post', description: 'Draft an Instagram/Facebook post for her to approve in Social. Never published without her. Nothing about her health or family.',
       input_schema: { type: 'object', properties: { title: { type: 'string' }, caption: { type: 'string' }, hashtags: { type: 'string' }, format: { type: 'string', enum: ['Photo post', 'Carousel', 'Reel', 'Story'] }, why: { type: 'string' } }, required: ['title', 'caption', 'format'] } },
     { name: 'save_idea', description: 'Save an idea to her Ideas list.',
       input_schema: { type: 'object', properties: { title: { type: 'string' }, note: { type: 'string' }, kind: { type: 'string', enum: ['Product', 'Content', 'Other'] } }, required: ['title'] } },
@@ -10787,7 +10820,7 @@ function tideMentors(env, t) {
     try {
       if (name === 'look_at_business') return [business(String(input.area || 'overview')), null];
       if (name === 'make_goal') {
-        var r = t.addGoal({ title: input.title, why: input.why || ('With your mentor: ' + m.title), steps: list(input.steps).map(function (s) { return { text: s }; }) });
+        var r = t.addGoal({ title: input.title, why: input.why || ('With your coach: ' + m.title), steps: list(input.steps).map(function (s) { return { text: s }; }) });
         if (input.aim_by && /^\d{4}-\d{2}-\d{2}$/.test(input.aim_by)) try { t.updateGoal(r.id, { targetOn: input.aim_by }); } catch (e) {}
         if (!m.goalId) env.table('mentors').update(m.id, { goalId: r.id });
         return ['Made goal ' + r.id + '. Its steps are on her calendar.', { kind: 'goal', id: r.id, label: 'Made a goal: ' + text(input.title, 80) }];
@@ -10799,7 +10832,7 @@ function tideMentors(env, t) {
       }
       if (name === 'draft_post') {
         var cid = t.draftPost({ title: input.title, caption: input.caption, hashtags: input.hashtags, format: input.format, why: input.why, from: m.title });
-        return ['Drafted post ' + cid + ' for her to approve in Posts (she adds the photo).', { kind: 'post', id: cid, label: 'Drafted a post: ' + text(input.title, 80) }];
+        return ['Drafted post ' + cid + ' for her to approve in Social (she adds the photo).', { kind: 'post', id: cid, label: 'Drafted a post: ' + text(input.title, 80) }];
       }
       if (name === 'save_idea') {
         var ir = t.makeIdea({ title: input.title, note: input.note || '', kind: ['Product', 'Content', 'Other'].indexOf(input.kind) >= 0 ? input.kind : 'Other' });
@@ -10935,10 +10968,10 @@ function tideNoteTurn(env, t) {
       steps: g ? 'Steps added to your goal “' + g.title + '”, and onto your calendar.' : 'Steps added to one of your goals.',
       milestone: 'A milestone (a sun) on your Goals page' + (list(f.goalIds).length ? ', with ' + list(f.goalIds).length + ' goal' + (list(f.goalIds).length === 1 ? '' : 's') + ' around it' : '') + '.',
       idea: 'An idea in Ideas, looked into for you.',
-      post: 'A post drafted in Posts, for you to add a photo and approve. Nothing goes out by itself.',
+      post: 'A post drafted in Social, for you to add a photo and approve. Nothing goes out by itself.',
       event: 'On your calendar' + (f.day ? ', ' + f.day : '') + '.',
       expense: 'An expense in Money, with its tax guide.',
-      artwork: 'A new artwork in Artworks (a draft until you put it on sale).',
+      artwork: 'A new piece in Art (a draft until you put it on sale).',
       website: 'A new section on your website’s draft (' + ((X.PAGES.filter(function (p) { return p[0] === f.page; })[0] || X.PAGES[0])[1]) + '). You look before publishing.'
     }[kind];
   }
@@ -12818,9 +12851,9 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ navigation
   var NAV_ALL = ADMIN
-    ? [['home', 'Home', 'home'], ['content', 'Content', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['plan', 'Plan', 'flag'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']]
+    ? [['home', 'Home', 'home'], ['content', 'Social', 'perm_media'], ['prints', 'Art', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Chat', 'forum'], ['plan', 'To do', 'checklist'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']]
     // she runs the business, so she has the books too
-    : [['home', 'Home', 'home'], ['content', 'Posts', 'perm_media'], ['prints', 'Artworks', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Mentors', 'school'], ['plan', 'Plan', 'flag'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
+    : [['home', 'Home', 'home'], ['content', 'Social', 'perm_media'], ['prints', 'Art', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Chat', 'forum'], ['plan', 'To do', 'checklist'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
   var NAV = NAV_ALL.slice();
   /** The menu in this person's order (anything new goes where it sits by default). */
   function navOrder() {
@@ -14026,6 +14059,7 @@ var Kit = (function () {
     var rest = S.data.rest, n = 1;
     pageTitle(main, hello + ', ' + artist());
     if (rest) main.appendChild(rise(h('div', { class: 'hm-rest' }, icon('spa'), h('span', { class: 'grow', text: 'Taking it easy' + (rest.until ? ' · ' + restDay(rest.until) : '') }), btn('tonal', 'I’m back', { sm: true, icon: 'wb_sunny', onclick: function (e) { setRest(e.currentTarget, 0); } })), n++));
+    var wk = rest ? null : weekCard(); if (wk) main.appendChild(rise(wk, n++));
     var f = rest ? null : focusCard(); if (f) main.appendChild(rise(f, n++));
     main.appendChild(rise(todayCard(), n++));
     var nw = needsStrip(); if (nw) main.appendChild(rise(nw, n++));
@@ -14081,7 +14115,7 @@ var Kit = (function () {
         btn('filled', 'Do it', { icon: 'play_arrow', onclick: function () { openStepTools({ n: pick.i + 1, id: s.id, text: s.text, done: s.done }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }); } }),
         btn('tonal', 'Done', { icon: 'check', onclick: function (e) {
           K.setBusy(e.currentTarget, true);
-          api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { K.haptic('success'); render(); undoCard('✓ ' + s.text, function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on.'); }).catch(fail);
+          api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { cheer(); render(); undoCard('✓ ' + s.text, function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on.'); }).catch(fail);
         } }),
         K.iconBtn('calendar_month', 'When', function () { openStepWhen(g, s); })));
     return card;
@@ -14172,13 +14206,36 @@ var Kit = (function () {
       paint();
     } });
   }
+  /** A tick and a kind line, for a moment, when something's finished. */
+  var CHEERS = ['Done. Nice.', 'One less to carry.', 'That’s finished.', 'Well done.', 'Ticked off.'];
+  function cheer(line) {
+    var old = document.querySelector('.cheer'); if (old) old.remove();
+    var NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg'), c = document.createElementNS(NS, 'circle'), p = document.createElementNS(NS, 'path');
+    sv.setAttribute('viewBox', '0 0 92 92'); c.setAttribute('cx', 46); c.setAttribute('cy', 46); c.setAttribute('r', 42); p.setAttribute('d', 'M28 47 L41 60 L65 34'); sv.append(c, p);
+    var el = h('div', { class: 'cheer', role: 'status' }, sv, h('span', { text: line || CHEERS[Math.floor(Math.random() * CHEERS.length)] }));
+    document.body.appendChild(el); K.haptic('success'); setTimeout(function () { el.remove(); }, 2100);
+  }
+  /** Monday: what she finished last week (shown on Mondays until she closes it). */
+  function weekCard() {
+    var now = new Date(); if (now.getDay() !== 1) return null;
+    var today = ymd(now), key = 'tbWeek:' + today; try { if (localStorage.getItem(key)) return null; } catch (e) {}
+    var from = addDays(today, -7), items = [];
+    (S.data.goals || []).forEach(function (g) { g.steps.forEach(function (st) { if (st.done && st.doneAt && st.doneAt.slice(0, 10) >= from) items.push(st.text); }); if (g.status === 'Done' && String(g.updated || '').slice(0, 10) >= from) items.unshift('Finished: ' + g.title); });
+    (S.data.ownDays || []).forEach(function (d) { if (d.done && d.day >= from && d.day < today) items.push(d.text); });
+    (S.data.content || []).forEach(function (c2) { if (c2.type === 'Post' && c2.status === 'Posted' && String(c2.postedAt || '').slice(0, 10) >= from) items.push('Posted: ' + (c2.title || 'a post')); });
+    if (!items.length) return null;
+    var ul = h('ul'); items.slice(0, 5).forEach(function (x) { ul.appendChild(h('li', { text: x })); }); if (items.length > 5) ul.appendChild(h('li', { class: 'more', text: 'and ' + (items.length - 5) + ' more' }));
+    var card = h('div', { class: 'hm-week' }, h('div', { class: 'hm-week-h' }, icon('task_alt'), h('span', { class: 'grow', text: 'Last week you finished ' + items.length }),
+      K.iconBtn('close', 'Close', function () { try { localStorage.setItem(key, '1'); } catch (e) {} card.remove(); })), ul);
+    return card;
+  }
   function listSheet(title, fill) { K.sheet({ title: title, tall: true, build: function (ctl) { fill(ctl.body); } }); }
   /** Start something: the four things she starts most (an idea and an artwork always among them). */
   function startTiles() {
     var mine = function (arr) { return (arr || []).filter(function (x) { return Date.parse(x.created || x.updated || 0) > Date.now() - 45 * 86400000; }).length; };
     var opts = [
       { k: 'idea', ic: 'lightbulb', t: 'Idea', use: mine(S.data.ideas) + 0.5, go: function () { openIdeaForm(); } },
-      { k: 'art', ic: 'brush', t: 'Artwork', use: mine(S.data.prints) + 0.4, go: function () { openPrint(null); } },
+      { k: 'art', ic: 'brush', t: 'Art', use: mine(S.data.prints) + 0.4, go: function () { openPrint(null); } },
       { k: 'inspo', ic: 'favorite', t: 'Inspo', use: mine(S.data.inspiration), go: function () { openInspo(null); } },
       { k: 'note', ic: 'edit_note', t: 'Note', use: mine((S.data.notebook || []).filter(function (n) { return n.owner === 'artist'; })), go: function () { openNote(null); } },
       { k: 'photo', ic: 'add_a_photo', t: 'Photos', use: mine((S.data.content || []).filter(function (c) { return c.source === 'Picked'; })) + 0.1, go: function () { openAddFootage(); } },
@@ -14400,7 +14457,7 @@ var Kit = (function () {
         main.appendChild(rise(mine, 2));
       }
     }
-    fab(main, 'New idea', 'add', function () { openIdeaForm(); });
+    fab(main, 'Idea', 'add', function () { openIdeaForm(); });
   }
   // ------------------------------------------------------------------ getting set up (LogicSetup.gs)
   function setupCard(main, n) {
@@ -15062,7 +15119,7 @@ var Kit = (function () {
   /** Goals: their own page (the map and every goal's steps). */
   function viewPlan(main) {
     var v = S.planView === 'cal' ? 'cal' : 'list';
-    pageTitle(main, 'Plan', 'Your milestone, its goals and their steps, your own list, and all of it on the calendar.');
+    pageTitle(main, 'To do', 'Your milestone, its goals and their steps, your own list, and all of it on the calendar.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, K.segmented({ label: 'Show', value: v, options: [{ value: 'list', label: 'List' }, { value: 'cal', label: 'Calendar' }], onChange: function (x) { S.planView = x; S.animate = true; render(); } })), 1));
     if (v === 'cal') return goalCalendar(main);
     viewGoals(main);
@@ -15079,7 +15136,7 @@ var Kit = (function () {
     return h('div', { class: 'hm-td' + (d.done ? ' done' : '') },
       h('button', { type: 'button', class: 'hm-tick press', role: 'checkbox', 'aria-checked': String(!!d.done), 'aria-label': (d.done ? 'Not done: ' : 'Done: ') + d.text, onclick: function (e) {
         e.currentTarget.disabled = true;
-        api('saveOwnDay', d.id, { done: !d.done }).then(refresh).then(function () { K.haptic('success'); render(); }).catch(fail);
+        api('saveOwnDay', d.id, { done: !d.done }).then(refresh).then(function () { if (!d.done) cheer(); render(); }).catch(fail);
       } }, icon(d.done ? 'check_circle' : 'radio_button_unchecked')),
       h('button', { type: 'button', class: 'hm-td-t press', onclick: function () { openOwnDay(d); } },
         h('span', { text: d.text }), d.day !== today ? h('em', { text: ' · ' + K.dayLabel(d.day) }) : d.at ? h('em', { text: ' · ' + fmtAt(d.at) }) : null, d.note ? icon('sticky_note_2') : null));
@@ -16949,7 +17006,7 @@ var Kit = (function () {
 
   // ------------------------------------------------------------------ Prints
   function viewPrints(main) {
-    pageTitle(main, 'Artworks', 'Each piece, and everything it’s made into: prints, apparel, cards and more. Set it live or park it with its switch.');
+    pageTitle(main, 'Art', 'Each piece, and everything it’s made into: prints, apparel, cards and more. Set it live or park it with its switch.');
     var prints = S.data.prints, count = function (s) { return prints.filter(function (p) { return p.status === s; }).length; };
     main.appendChild(rise(h('div', { style: 'max-width:480px;margin-bottom:16px' }, K.segmented({
       label: 'Show', value: S.printFilter, onChange: function (v) { S.printFilter = v; S.animate = true; render(); },
@@ -16982,7 +17039,7 @@ var Kit = (function () {
             });
           } }))), 3));
     }
-    fab(main, 'Add an artwork', 'add', function () { openPrint(null); });
+    fab(main, 'Add art', 'add', function () { openPrint(null); });
   }
 
   function printCard(p) {
@@ -17836,7 +17893,7 @@ var Kit = (function () {
       left.forEach(function (s) {
         var tool = STEP_TOOLS[toolsFor(s.text)[0]];
         var row = h('div', { class: 'gs-row' },
-          h('button', { type: 'button', class: 'gs-tick', 'aria-label': 'Done: ' + s.text, onclick: function (e) { e.currentTarget.classList.add('on'); K.haptic('success'); api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); undoCard('Done: ' + s.text + '.', function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on the list.'); }).catch(fail); } }),
+          h('button', { type: 'button', class: 'gs-tick', 'aria-label': 'Done: ' + s.text, onclick: function (e) { e.currentTarget.classList.add('on'); cheer(); api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); undoCard('Done: ' + s.text + '.', function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on the list.'); }).catch(fail); } }),
           h('button', { type: 'button', class: 'gs-text', onclick: function () { openStepTools({ n: steps.indexOf(s) + 1, id: s.id, text: s.text, done: false }, function () { return api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { render(); }); }, { g: g, s: s }); } },
             h('span', { text: s.text }), s.due ? h('span', { class: 'gs-day' + (s.auto ? ' auto' : ''), text: calWhen(s) }) : null),
           tool && toolsFor(s.text)[0] !== 'talk' ? h('button', { type: 'button', class: 'gs-tool', 'aria-label': tool.label, title: tool.label, onclick: function () { tool.go(s); } }, icon(tool.ic)) : null);
@@ -17851,7 +17908,7 @@ var Kit = (function () {
       var ideas = left.length ? [] : stepIdeasFor(g).slice(0, 2);
       // every step ticked: finishing the goal comes before adding more to it
       if (steps.length && !left.length && g.status !== 'Done') box.appendChild(h('div', { class: 'gs-finish' }, h('span', { class: 'grow', text: 'Every step is done.' }),
-        btn('filled', 'Finish this goal', { sm: true, icon: 'task_alt', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', g.id, { status: 'Done' }).then(refresh).then(function () { K.haptic('success'); render(); toast('✓ Goal finished'); }).catch(fail); } })));
+        btn('filled', 'Finish this goal', { sm: true, icon: 'task_alt', onclick: function (e) { K.setBusy(e.currentTarget, true); api('updateGoal', g.id, { status: 'Done' }).then(refresh).then(function () { cheer('Goal finished. Lovely.'); render(); }).catch(fail); } })));
       if (ideas.length || !steps.length) {
         var sug = h('div', { class: 'gs-sug' }, h('span', { class: 'label-s', text: steps.length ? 'Or one more step' : 'First step' }));
         ideas.forEach(function (x) { sug.appendChild(h('button', { type: 'button', class: 'choice press soft', onclick: function () { addIt(x); } }, icon('add'), x)); });
@@ -17955,29 +18012,32 @@ var Kit = (function () {
   function viewMentors(main) {
     var M = mentorsData();
     if (S.mentorId && !M.private) { mentorChatView(main, S.mentorId); return; }
-    pageTitle(main, 'Mentors', M.private ? 'Private to ' + artist() + '.' : 'Talk anything through, or learn something properly with a mentor who helps you do it too.');
+    // Chat opens straight into the general chat (her coaches are one tap away)
+    var gen = !M.private && !S.chatList && M.on && !isLocked() ? (M.list || []).filter(function (m) { return m.kind === 'chat'; })[0] : null;
+    if (gen) { mentorChatView(main, gen.id, true); return; }
+    pageTitle(main, 'Chat', M.private ? 'Private to ' + artist() + '.' : 'Talk anything through, or get a coach for something you want to learn or finish.');
     var n = 2;
     if (M.private) {
       main.appendChild(rise(h('div', { class: 'card pad' }, h('div', { class: 'row', style: 'gap:10px;align-items:center' }, h('span', { class: 'mn-ic' }, icon('lock')),
-        h('div', { class: 'grow' }, h('b', { text: cap(artist()) + '’s mentors are hers alone' }),
+        h('div', { class: 'grow' }, h('b', { text: cap(artist()) + '’s chats are hers alone' }),
           h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'You never see the conversations (they’re sealed with her passphrase). You see what they make: goals, drafted posts and ideas, in their usual places.' }))),
-        h('div', { class: 'mn-stats' }, h('div', {}, h('b', { text: String(M.count) }), h('span', { text: M.count === 1 ? 'mentor' : 'mentors' })), h('div', {}, h('b', { text: audFromUsd(M.spentUsd || 0, true) }), h('span', { text: 'this month' }))),
-        M.on ? null : note('Mentors are off: they need the Claude API key (Settings › AI), or the PC’s own model running. Quick replies run on Haiku, “Deep thinking” on Opus; past the weekly limit they carry on in a lighter mode on the PC’s model until Monday.', 'warning', 'warn')), n++));
+        h('div', { class: 'mn-stats' }, h('div', {}, h('b', { text: String(M.count) }), h('span', { text: M.count === 1 ? 'chat' : 'chats' })), h('div', {}, h('b', { text: audFromUsd(M.spentUsd || 0, true) }), h('span', { text: 'this month' }))),
+        M.on ? null : note('Chat is off: it needs the Claude API key (Settings › AI), or the PC’s own model running. Quick replies run on Haiku, “Deep thinking” on Opus; past the weekly limit they carry on in a lighter mode on the PC’s model until Monday.', 'warning', 'warn')), n++));
       talkHere(main, n);
       return;
     }
     var pb = privacyBar(); if (pb) main.appendChild(rise(pb, n++));
-    if (!M.on) main.appendChild(rise(note(M.why || 'Your mentors aren’t switched on yet.', 'info'), n++));
+    if (!M.on) main.appendChild(rise(note(M.why || 'Chat isn’t switched on yet.', 'info'), n++));
     else if (M.mode === 'light') main.appendChild(rise(note(lightNote(M), 'spa'), n++));
     var list = M.list || [], chat = list.filter(function (m) { return m.kind === 'chat'; })[0], coaches = list.filter(function (m) { return m.kind !== 'chat'; });
     // just chat
     main.appendChild(rise(h('button', { type: 'button', class: 'mn-chat press soft', onclick: function (e) {
-      if (chat) { S.mentorId = chat.id; render(); return; }
+      if (chat) { S.chatList = false; S.mentorId = ''; render(); return; }
       K.setBusy(e.currentTarget, true);
-      api('newMentor', { kind: 'chat' }).then(function (r) { S.mentorId = r.id; return refresh(); }).then(render).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); });
-    } }, h('span', { class: 'mn-ic big' }, icon('forum')), h('span', { class: 'grow' }, h('b', { text: 'Just chat' }), h('span', { class: 'mn-sub', text: chat && chat.last ? (chat.last.by === 'her' ? 'You: ' : '') + chat.last.text : 'Anything at all: ask, think out loud, talk something through.' })), icon('chevron_right')), n++));
-    var sec = h('div', { class: 'mn-list' }, h('div', { class: 'mn-h' }, h('span', { class: 'label-l', text: 'Your mentors' }), h('span', { class: 'grow' }), btn('filled', 'New mentor', { sm: true, icon: 'add', onclick: newMentorSheet })));
-    if (!coaches.length) sec.appendChild(h('div', { class: 'mn-empty' }, h('p', { text: 'A mentor is for something you want to learn or get done, like growing your audience. It teaches you a little at a time, gives you something to try, checks in on how it went, and does the busywork for you: goals and steps on your calendar, posts drafted for you to approve.' }),
+      api('newMentor', { kind: 'chat' }).then(function (r) { S.chatList = false; return refresh(); }).then(render).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); });
+    } }, h('span', { class: 'mn-ic big' }, icon('forum')), h('span', { class: 'grow' }, h('b', { text: 'Chat' }), h('span', { class: 'mn-sub', text: chat && chat.last ? (chat.last.by === 'her' ? 'You: ' : '') + chat.last.text : 'Anything at all: ask, think out loud, talk something through.' })), icon('chevron_right')), n++));
+    var sec = h('div', { class: 'mn-list' }, h('div', { class: 'mn-h' }, h('span', { class: 'label-l', text: 'Your coaches' }), h('span', { class: 'grow' }), btn('filled', 'Coach me', { sm: true, icon: 'school', onclick: newMentorSheet })));
+    if (!coaches.length) sec.appendChild(h('div', { class: 'mn-empty' }, h('p', { text: 'A coach is for one thing you want to learn or finish. A little at a time: something to try, then how it went. It does the busywork too.' }),
       h('div', { class: 'filter-row' }, (M.starters || []).slice(0, 4).map(function (s) { return h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { newMentorSheet(s); } }); }))));
     coaches.forEach(function (m) {
       var pct = m.total ? Math.round(m.done / m.total * 100) : 0;
@@ -17997,16 +18057,16 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { class: 'label-l', style: 'margin:22px 4px 8px', text: 'Earlier talks' }), n));
     viewTalk(main, true);
   }
-  function lightNote(M) { return 'This week’s full help is used up, so your mentors are in a lighter mode until ' + (M.resets ? new Date(M.resets + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'short' }) : 'Monday') + ': they can talk things through, but can’t make goals or drafts, look at your records, or look things up.'; }
+  function lightNote(M) { return 'This week’s full help is used up, so chat is in a lighter mode until ' + (M.resets ? new Date(M.resets + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'short' }) : 'Monday') + ': it can talk things through, but can’t make goals or drafts or look things up.'; }
   function newMentorSheet(start) {
     var M = mentorsData(), f = { goal: typeof start === 'string' ? start : '', deep: false };
-    K.sheet({ title: 'A new mentor', build: function (ctl) {
+    K.sheet({ title: 'Coach me', build: function (ctl) {
       var goalF = K.textField({ label: 'What would you like to learn or get done?', value: f.goal, maxlength: 300, multiline: true, placeholder: 'For example: grow my audience on Instagram', onInput: function (v) { f.goal = v; } });
       ctl.body.append(goalF, h('div', { class: 'filter-row', style: 'margin-top:8px' }, (M.starters || []).map(function (s) { return h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { f.goal = s; goalF.input.value = s; } }); })),
         h('div', { class: 'label-m', style: 'margin:16px 2px 6px', text: 'How should it think?' }),
         K.choices({ label: 'How should it think?', value: 'quick', options: [{ value: 'quick', label: 'Everyday', icon: 'bolt' }, { value: 'deep', label: 'Deep thinking', icon: 'psychology' }], onChange: function (v) { f.deep = v === 'deep'; } }),
         h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: 'Everyday answers quickly and suits most things. Deep thinking is slower and costs more: for big plans. You can switch any time.' }),
-        note('Your mentors are yours alone. They can look at your artworks, sales, posts and goals (never your private notes), search the web, and make goals and drafts for you to approve.', 'lock'));
+        note('Yours alone. A coach can look at your art, sales, posts and goals (never your private notes), look things up, and make goals and drafts for you to approve.', 'lock'));
       var go = btn('filled', 'Start', { icon: 'school', lg: true, block: true, onclick: function () {
         if (!f.goal.trim()) { toast('Say what you’d like to learn or get done.'); goalF.input.focus(); return; }
         K.setBusy(go, true);
@@ -18017,9 +18077,9 @@ var Kit = (function () {
     } });
   }
   /** One conversation: her course along the top (for a mentor), the talk, replies to tap, and a box to write in. */
-  function mentorChatView(main, id) {
+  function mentorChatView(main, id, home) {
     var wrap = h('div', { class: 'mn-view' }), head = h('div', { class: 'mn-top' }), strip = h('div', { class: 'mn-course' }), feed = h('div', { class: 'mn-feed', 'aria-live': 'polite' }), quick = h('div', { class: 'mn-quick' });
-    var draft = K.textField({ label: 'Write to your mentor', value: S.mentorDraft || '', maxlength: 4000, multiline: true, onInput: function (v) { S.mentorDraft = v; } });
+    var draft = K.textField({ label: 'Say anything', value: S.mentorDraft || '', maxlength: 4000, multiline: true, onInput: function (v) { S.mentorDraft = v; } });
     var sendB = h('button', { type: 'button', class: 'mn-send press', 'aria-label': 'Send' }, icon('send'));
     var compose = h('div', { class: 'mn-compose' }, draft, sendB);
     var lightBar = mentorsData().mode === 'light' ? note(lightNote(mentorsData()), 'spa') : null;
@@ -18045,13 +18105,13 @@ var Kit = (function () {
       if (!data) { feed.textContent = ''; feed.appendChild(h('p', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: 'Opening…' })); return; }
       var m = data.mentor, msgs = data.messages, last = msgs[msgs.length - 1];
       head.textContent = '';
-      head.append(K.iconBtn('arrow_back', 'Back to your mentors', function () { S.mentorId = ''; S.mentorChat = null; render(); }),
-        h('div', { class: 'grow' }, h('b', { class: 'mn-title', text: m.title }), h('span', { class: 'mn-sub', text: m.kind === 'chat' ? 'Anything at all' + (m.deep ? ' · Deep thinking' : '') : (m.deep ? 'Deep thinking' : 'Everyday') + (m.goal && m.goal !== m.title ? ' · ' + m.goal : '') })),
+      head.append(home ? K.iconBtn('school', 'Your coaches', function () { S.chatList = true; render(); }) : K.iconBtn('arrow_back', 'Back', function () { S.mentorId = ''; S.mentorChat = null; S.chatList = m.kind !== 'chat'; render(); }),
+        h('div', { class: 'grow' }, h('b', { class: 'mn-title', text: m.kind === 'chat' ? 'Chat' : m.title }), h('span', { class: 'mn-sub', text: m.kind === 'chat' ? 'Anything at all' + (m.deep ? ' · Deep thinking' : '') : (m.deep ? 'Deep thinking' : 'Everyday') + (m.goal && m.goal !== m.title ? ' · ' + m.goal : '') })),
         K.iconBtn('more_vert', 'More', function () { mentorMore(m); }));
       // her course
       strip.textContent = '';
       if (m.kind !== 'chat') {
-        if (!m.lessons.length) strip.appendChild(h('span', { class: 'mn-course-none', text: 'Your course appears here once your mentor knows where you’re at.' }));
+        if (!m.lessons.length) strip.appendChild(h('span', { class: 'mn-course-none', text: 'Your lessons show here once your coach knows where you’re at.' }));
         m.lessons.forEach(function (l, i) {
           strip.appendChild(h('button', { type: 'button', class: 'mn-lesson ' + l.status, onclick: function () { lessonSheet(m, l, i); } },
             icon(l.status === 'done' ? 'check_circle' : l.status === 'now' ? 'play_circle' : 'radio_button_unchecked'), h('span', { text: (i + 1) + '. ' + l.title })));
@@ -18061,7 +18121,7 @@ var Kit = (function () {
       var atBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 80 || !feed.childNodes.length;
       feed.textContent = '';
       if (data.opening) feed.appendChild(h('p', { class: 'mn-hello', text: 'Opening…' }));
-      else if (!msgs.length) feed.appendChild(h('p', { class: 'mn-hello', text: m.kind === 'chat' ? 'Say anything. Ask a question, think out loud, or talk something through.' : 'Your mentor is getting ready…' }));
+      else if (!msgs.length) feed.appendChild(h('p', { class: 'mn-hello', text: m.kind === 'chat' ? 'Say anything. Ask, think out loud, or talk something through.' : 'Your coach is getting ready…' }));
       msgs.forEach(function (x) {
         if (x.by === 'her') { feed.appendChild(h('div', { class: 'mn-msg her' }, mdLite(x.text))); return; }
         if (x.status === 'thinking') { feed.appendChild(h('div', { class: 'mn-msg them thinking' }, h('span', { class: 'mn-dots' }, h('i'), h('i'), h('i')), h('span', { text: m.deep ? 'Thinking it through…' : 'Thinking…' }))); return; }
@@ -18126,7 +18186,7 @@ var Kit = (function () {
       });
       if (m.kind !== 'chat') a('edit', 'Rename it', '', function () { K.ask({ title: 'Its name', label: 'Name', value: m.title, maxlength: 80, confirmLabel: 'Save' }).then(function (v) { if (v) api('updateMentor', m.id, { title: v }).then(function () { S.mentorChat = null; return refresh(); }).then(render).catch(fail); }); });
       if (m.goalId) a('flag', 'Its goal', 'The goal it made with you, and its steps.', function () { openGoal(m.goalId); });
-      a('delete', m.kind === 'chat' ? 'Clear this chat' : 'Remove this mentor', 'It goes in the bin, so you can bring it back.', function () {
+      a('delete', m.kind === 'chat' ? 'Clear this chat' : 'Remove this coach', 'It goes in the bin, so you can bring it back.', function () {
         api('deleteMentor', m.id).then(function () { S.mentorId = ''; S.mentorChat = null; return refresh(); }).then(function () { render(); undoCard('Removed: ' + m.title + '.', function () { return api('undoDelete', 'mentor', m.id); }, 'Back again.'); }).catch(fail);
       });
       ctl.body.appendChild(acts);
@@ -18344,7 +18404,7 @@ var Kit = (function () {
       g.steps.forEach(function (st, i) {
         if (st.done || st.due !== today) return;
         card.appendChild(h('div', { class: 'hm-td step', style: '--gc:' + goalColour(g.id) },
-          h('button', { type: 'button', class: 'hm-tick press', role: 'checkbox', 'aria-checked': 'false', 'aria-label': 'Done: ' + st.text, onclick: function (e) { e.currentTarget.disabled = true; api('tickGoalStep', g.id, st.id, true).then(refresh).then(function () { K.haptic('success'); render(); undoCard('✓ ' + st.text, function () { return api('tickGoalStep', g.id, st.id, false); }, 'Back on.'); }).catch(fail); } }, icon('radio_button_unchecked')),
+          h('button', { type: 'button', class: 'hm-tick press', role: 'checkbox', 'aria-checked': 'false', 'aria-label': 'Done: ' + st.text, onclick: function (e) { e.currentTarget.disabled = true; api('tickGoalStep', g.id, st.id, true).then(refresh).then(function () { cheer(); render(); undoCard('✓ ' + st.text, function () { return api('tickGoalStep', g.id, st.id, false); }, 'Back on.'); }).catch(fail); } }, icon('radio_button_unchecked')),
           h('button', { type: 'button', class: 'hm-td-t press', onclick: function () { openStepTools({ n: i + 1, id: st.id, text: st.text, done: false }, function () { return api('tickGoalStep', g.id, st.id, true).then(refresh).then(function () { render(); }); }, { g: g, s: st }); } },
             h('i', { class: 'hm-gdot' }), h('span', { text: st.text }), st.at ? h('em', { text: ' · ' + fmtAt(st.at) }) : null)));
       });
@@ -19668,7 +19728,7 @@ var Kit = (function () {
   function viewContent(main) {
     if (['footage', 'plan', 'ready'].indexOf(S.contentTab) >= 0) { S.libPart = S.contentTab; S.contentTab = 'library'; }
     if (S.contentTab !== 'library') S.contentTab = 'review';
-    pageTitle(main, ADMIN ? 'Content' : 'Posts', ADMIN ? 'Drop in photos and video. Posts are drafted for ' + artist() + ' to approve; you’re only asked when one clashes with a rule.' : 'Drop in photos and video, no titles needed. Posts are made from them for you to approve.');
+    pageTitle(main, 'Social', ADMIN ? 'Drop in photos and video. Posts are drafted for ' + artist() + ' to approve; you’re only asked when one clashes with a rule.' : 'Drop in photos and video, no titles needed. Posts are made from them for you to approve.');
     var all = S.data.content, posts = all.filter(function (c) { return c.type === 'Post'; });
     var mine = draftsToReview().filter(function (c) { return c.type === 'Post'; });
     var ready = posts.filter(function (c) { return c.status === 'Approved'; });
@@ -19690,7 +19750,7 @@ var Kit = (function () {
       });
       if (S.libPart) { var tgt = document.getElementById('lib-' + S.libPart); S.libPart = ''; if (tgt) setTimeout(function () { tgt.scrollIntoView({ block: 'start' }); window.scrollBy(0, -70); }, 60); }
     }
-    fab(main, 'Add content', 'add', function () { openAddFootage(); });
+    fab(main, 'Add', 'add', function () { openAddFootage(); });
   }
 
   function studioStatus() {
@@ -20794,7 +20854,7 @@ var Kit = (function () {
       if (r.key === 'returns') act('edit_note', 'Write her returns promise from this', 'A few taps (damaged, change of mind, postage). Tide Book writes it, and it goes on her website’s draft.', true, function (b) { K.setBusy(b, false); ctl.close(); setTimeout(function () { openReturns(r.id, r.text); }, 300); });
       else if (later) act('event', 'Remind her on ' + K.dayLabel(nextSaturday(), true), 'It comes back on her list then, and this leaves yours.', true, function () { api('reopenSiteWish', r.id, nextSaturday()).then(function () { return done('She’ll be asked again on ' + K.dayLabel(nextSaturday(), true) + '.'); }).catch(fail); });
       else if (place && (r.photos.length || !photoWish)) act('rocket_launch', 'Put it on her website’s draft', 'A new section on ' + place + ', with her ' + (r.photos.length ? 'photo' : 'words') + '. She looks, then publishes.', true, function () { api('placeSiteContent', r.id).then(function () { return done('On her website’s draft, on ' + place + '.'); }).catch(fail); });
-      else if (/shark|pieces|names/.test(r.key)) act('palette', 'Open Artworks', 'Her pieces, their photos, names and prices live in Artworks, and from there on her website.', true, function (b) { K.setBusy(b, false); ctl.close(); setTimeout(function () { go('prints'); }, 300); });
+      else if (/shark|pieces|names/.test(r.key)) act('palette', 'Open Art', 'Her pieces, their photos, names and prices live in Art, and from there on her website.', true, function (b) { K.setBusy(b, false); ctl.close(); setTimeout(function () { go('prints'); }, 300); });
       act('reply', 'Send it back to her', 'It shows on her list again.', false, function () { api('reopenSiteWish', r.id).then(function () { return done('It’s back on her list.'); }).catch(fail); });
       ctl.body.appendChild(acts);
       if (r.photos.length) {
@@ -20912,7 +20972,7 @@ var Kit = (function () {
         h('div', { class: 'title-m', text: 'Claude this week: ' + usd(sp.usd) + (sp.budget > 0 ? ' of ' + usd(sp.budget) : '') }),
         h('div', { class: 'meter', style: 'height:6px;border-radius:3px;background:var(--surface-high);overflow:hidden' },
           h('div', { style: 'height:100%;width:' + pct + '%;background:' + (sp.paused ? 'var(--error)' : 'var(--primary)') })),
-        h('p', { class: 'body-m', text: sp.budget <= 0 ? 'Claude is off: only the PC’s free model is used.' : sp.paused ? 'The limit’s reached, so Claude has stopped until Monday. The PC’s free model carries on (her mentors too, in a lighter mode); idea research and post drafts wait.' :
+        h('p', { class: 'body-m', text: sp.budget <= 0 ? 'Claude is off: only the PC’s free model is used.' : sp.paused ? 'The limit’s reached, so Claude has stopped until Monday. The PC’s free model carries on (her chats too, in a lighter mode); idea research and post drafts wait.' :
           sp.calls + ' Claude answer' + (sp.calls === 1 ? '' : 's') + ' so far.' }),
         h('div', { class: 'switch-row', style: 'margin-top:6px' }, h('div', {}, h('div', { class: 'title-m', text: 'Do Claude jobs in Claude chat instead' }),
           h('div', { class: 'body-m', text: sp.via === 'chat' ? (sp.chatWaiting ? sp.chatWaiting + ' job' + (sp.chatWaiting === 1 ? '' : 's') + ' waiting. Tell Claude: “Do the Tide Book prompts”.' : 'On: no API cost. Nothing waiting right now.') : 'No API cost: jobs wait as prompts, and you ask Claude chat to do them.' })),
