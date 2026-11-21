@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500,60&family=Figtree:wght@400;500;700&family=Lora:ital,wght@0,500;1,500&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,add_task,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mark_email_unread,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,reply,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,upload_file,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,add_task,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,gesture,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mark_email_unread,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,replay,reply,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,upload_file,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -2013,6 +2013,25 @@ body.map-full { overflow: hidden; }
 .tldr-k { border-radius: 2px; }                                                        /* 14 − 12 */
 .gs-tick { border-color: color-mix(in oklch, var(--gc) 88%, transparent); }
 .stat .d { display: block; } .stat .d .ms { vertical-align: -4px; margin-right: 2px; }
+/* ---- Suggestions: circle it ---- */
+.cc-overlay { position: fixed; inset: 0; z-index: 80; touch-action: none; cursor: crosshair; background: oklch(20% 0.02 250 / 0.06); }
+.cc-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cc-line { fill: oklch(55% 0.13 42 / 0.08); stroke: oklch(55% 0.16 42); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.cc-old path { fill: oklch(55% 0.13 42 / 0.05); stroke: oklch(55% 0.16 42 / 0.55); stroke-width: 3; stroke-dasharray: 6 6; }
+.cc-tip { position: absolute; left: 12px; right: 12px; top: calc(env(safe-area-inset-top) + 10px); display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 16px; border-radius: 22px; background: var(--inverse-surface); color: var(--inverse-on-surface); box-shadow: var(--shadow-2); font: 500 16px/22px var(--font); cursor: default; }
+.cc-x { all: unset; box-sizing: border-box; min-height: 44px; min-width: 44px; padding: 0 16px; border-radius: 16px; background: oklch(100% 0 0 / 0.14); font: 600 15px/20px var(--font); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.cc-card { position: absolute; left: 10px; right: 10px; bottom: calc(env(safe-area-inset-bottom) + 10px); padding: 14px; border-radius: 24px; background: var(--surface-lowest); box-shadow: var(--shadow-3); cursor: default; --sheet-bg: var(--surface-lowest); max-width: 560px; margin: 0 auto; }
+.cc-what { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; font: 500 16px/22px var(--font); overflow-wrap: anywhere; } .cc-what .ms { color: oklch(55% 0.16 42); flex: none; }
+.cc-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+.cc-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.cc-mark { display: flex; gap: 12px; align-items: flex-start; padding: 10px; border-radius: 18px; background: var(--surface-lowest); box-shadow: var(--shadow-1); }
+.cc-sketch { flex: none; width: 92px; border-radius: 8px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.cc-mark-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cc-mark-t b { font: 500 16px/22px var(--font); overflow-wrap: anywhere; } .cc-mark-t span { font: 400 14px/20px var(--font); color: var(--on-surface-variant); overflow-wrap: anywhere; }
+.cc-box { fill: none; stroke: oklch(28% 0.03 70 / 0.18); stroke-width: 1.5; }
+.cc-word { fill: oklch(35% 0.02 76); font-family: var(--font); }
+.cc-sketch .cc-line { stroke-width: 6; }
+.cc-mark.big { flex-direction: column; } .cc-mark.big .cc-sketch { width: 100%; }
 </style>
 
   <script>
@@ -2552,7 +2571,7 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'From', 'text'], ['kind', 'Kind', 'text'], ['text', 'What they said', 'text'],
       ['screen', 'Screen', 'text'], ['device', 'Device', 'text'], ['clientLog', 'App log', 'json'], ['serverLog', 'Server log', 'text'],
       ['photoIds', 'Photo IDs', 'list'], ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['status', 'Status', 'text'],
-      ['triage', 'Triage', 'json'], ['reply', 'Reply', 'text'], ['adminNotes', 'Admin notes', 'text'], ['closed', 'Closed', 'date'], ['updated', 'Updated', 'date'], ['clarifyAnswers', 'Their answers', 'json'],
+      ['triage', 'Triage', 'json'], ['reply', 'Reply', 'text'], ['adminNotes', 'Admin notes', 'text'], ['closed', 'Closed', 'date'], ['updated', 'Updated', 'date'], ['clarifyAnswers', 'Their answers', 'json'], ['marks', 'Circled', 'json'],
       ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'], ['aiQueued', 'AI asked', 'date'],
       ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
     ]
@@ -7104,7 +7123,8 @@ function tideTalk(env, t) {
     var r = rowOf(id);
     if (!r) t.fail('Not found.');
     if (tableOf(id) === 'reports') {
-      return { kind: 'report', job: 'triage', answers: t.list(r.clarifyAnswers), type: r.kind || '', text: r.text || '', screen: r.screen || '', by: who(r.createdBy),
+      var circled = t.list(r.marks).map(function (m) { return '- ' + (m.private ? '(in their own private writing)' : '“' + (m.what || m.words || 'part of the screen') + '”') + (m.where ? ' in ' + m.where : '') + ': ' + (m.comment || '(no words)'); }).join('\n');
+      return { kind: 'report', job: 'triage', answers: t.list(r.clarifyAnswers), type: r.kind || '', text: (r.text || '') + (circled ? '\n\nThey circled on the screen:\n' + circled : ''), screen: r.screen || '', by: who(r.createdBy),
         clientLog: t.list(r.clientLog).slice(-25), serverLog: String(r.serverLog || '').slice(-3000), device: r.device || '', screenshots: t.list(r.photoIds).length };
     }
     if (tableOf(id) === 'topics') {
@@ -8432,6 +8452,7 @@ var TIDE_GUIDE = [
   { id: 'g-email-list', area: 'Email and bank', to: 'artist', icon: 'mark_email_unread', title: 'From your email', say: 'Keep each one (it goes to Money, your calendar or today’s list) or wave it away.', steps: ['Home › Waiting › From your email.', 'Tap the tick to keep it, or × to wave it away.', 'The sliders change it first; “Never from them” stops that sender.'], go: { view: 'home', tip: 'Waiting.' } },
   { id: 'g-bank', area: 'Email and bank', to: 'all', icon: 'account_balance', title: 'Sort a bank statement', say: 'Add a statement and tap where each line goes.', steps: ['Download a statement from the bank as CSV.', 'Money › Bank statement › Add a statement › Bring in.', 'Tap the suggestion, or “Something else”.', '“Not business” keeps it out, and is remembered.'], go: { view: 'money', tip: 'Bank statement.' } },
   { id: 'g-home-mode', area: 'Getting around', to: 'artist', icon: 'flag', title: 'Finish or Create', say: 'The switch at the top of Home sets it up for finishing what’s open, or for starting something.', steps: ['Open Home.', 'Tap Finish: your next step, today, and what’s closest to done.', 'Tap Create: Idea, Art, Note and a chat to talk it through.'], go: { view: 'home', tip: 'Finish or Create.' } },
+  { id: 'g-circle-it', area: 'Getting around', to: 'artist', icon: 'gesture', title: 'Circle what you mean', say: 'Show exactly which part of the screen a suggestion is about.', steps: ['Open the screen it’s about.', 'Tap the suggestions button (top right) › Circle something.', 'Draw round it, say what about it, Add it.', 'Send.'], go: { view: 'home', tip: 'Top right.' } },
   { id: 'g-text-size', area: 'Getting around', to: 'all', icon: 'format_size', title: 'Bigger text', say: 'Make everything bigger on this phone.', steps: ['Open Settings.', 'Text size: A, A+ or A++.'], go: { view: 'settings', tip: 'At the top.' } },
   { id: 'g-shortcuts', area: 'Getting around', to: 'artist', icon: 'touch_app', title: 'Shortcuts on the icon', say: 'Long-press the Tide Book icon on your phone: Today, Calendar, Inspo, New note.', steps: ['Long-press the Tide Book icon.', 'Tap where you want to go.'], go: { view: 'home', tip: 'From your phone’s home screen.' } },
   { id: 'g-share', area: 'Getting around', to: 'artist', icon: 'send', title: 'Share to Tide Book', say: 'From Photos, Dropbox or Instagram: Share › Tide Book, then pick Inspo, Photos for posts or a Note.', steps: ['In another app, tap Share.', 'Pick Tide Book.', 'Choose where it goes.'], go: { view: 'home', tip: 'From another app.' } },
@@ -8531,6 +8552,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-22-circle', on: '2026-11-22', to: 'artist', icon: 'gesture', title: 'Circle it',
+    say: 'In Suggestions and problems you can circle something on the screen and say what about it. Circle as many as you like.',
+    steps: ['Tap the suggestions button (top right).', 'Tap Circle something, then draw round it with your finger.', 'Say what about it, then Add it (or Circle another).', 'Tap Send.'], go: { view: 'home', tip: 'The button at the top right.' } },
   { id: '2026-11-22-readable', on: '2026-11-22', to: 'all', icon: 'visibility', title: 'Easier to read and tap',
     say: 'Descriptions and help are bigger (16 point), every button and tick is at least a fingertip wide, icons are a touch lighter than the words, and rows of choices fade at the edge when there are more to scroll to.',
     steps: ['Nothing to do: it’s everywhere.', 'Still too small? Settings › Text size.'], go: { view: 'settings', tip: 'Text size is at the top.' } },
@@ -8998,16 +9022,27 @@ function tideReports(env, t) {
   function get(id) { var x = t.rows('reports').filter(function (r) { return r.id === id; })[0]; if (!x) t.fail('That report has been removed.'); return x; }
   function who(role) { return role === 'artist' ? env.brand.artistName : (env.brand.adminName || 'admin'); }
 
+  /** Circles she drew on the screen: what was inside, where, her words, the loop and a sketch of the screen. */
+  function cleanMarks(v) {
+    function n(x) { x = Math.round(Number(x)); return isFinite(x) ? Math.max(-50, Math.min(5000, x)) : 0; }
+    return t.list(v).slice(0, 8).map(function (m) {
+      m = m || {}; var sk = m.sketch || {};
+      return { what: m.private ? '' : t.text(m.what, 200), where: t.text(m.where, 120), words: m.private ? '' : t.text(m.words, 500), private: m.private === true, comment: t.text(m.comment, 600),
+        path: t.list(m.path).slice(0, 90).map(function (q) { return [n(q && q[0]), n(q && q[1])]; }),
+        sketch: { vw: n(sk.vw) || 384, vh: n(sk.vh) || 749, items: t.list(sk.items).slice(0, 140).map(function (b) { b = b || {}; var o = { x: n(b.x), y: n(b.y), w: n(b.w), h: n(b.h) }; if (b.k) o.k = 1; else { o.t = t.text(b.t, 60); o.f = Math.max(8, Math.min(40, n(b.f) || 14)); } return o; }) } };
+    }).filter(function (m) { return m.path.length >= 3; });
+  }
   function sendReport(p) {
     var role = t.need(['admin', 'artist']);
     p = p || {};
     var text = t.text(p.text, 4000);
-    if (!text && !p.hasPhotos) t.fail('Say a little about what happened, or add a screenshot.');
+    var marks = cleanMarks(p.marks);
+    if (!text && !p.hasPhotos && !marks.length) t.fail('Say a little about what happened, or add a screenshot.');
     var id = env.lock(function () {
       var rid = env.nextId('RP', 4), now = t.nowIso();
       env.table('reports').append({
         id: rid, created: now, createdBy: role, kind: R.KINDS.indexOf(p.kind) >= 0 ? p.kind : R.KINDS[0], text: text,
-        screen: t.text(p.screen, 120), device: t.text(p.device, 300),
+        screen: t.text(p.screen, 120), device: t.text(p.device, 300), marks: marks,
         clientLog: t.list(p.clientLog).slice(-40).map(function (l) { return t.text(l, 400); }),
         serverLog: env.serverLog ? t.text(env.serverLog(), 6000) : '',
         photoIds: [], thumbIds: [], folderUrl: '', status: 'New', triage: null, reply: '', adminNotes: '', closed: '', updated: now, aiJob: '', aiStatus: ''
@@ -9067,7 +9102,7 @@ function tideReports(env, t) {
         thumbIds: t.list(r.thumbIds), photoUrls: t.list(r.photoIds).map(function (x) { return env.files.viewUrl(x); }),
         status: r.status, reply: r.reply || '', open: R.OPEN.indexOf(r.status) >= 0, updated: r.updated,
         severity: r.triage ? r.triage.severity : '', summary: r.triage ? r.triage.summary : '', aiStatus: r.aiStatus || '',
-        questions: r.createdBy === role ? t.list((r.triage || {}).clarify) : [], answers: t.list(r.clarifyAnswers) };
+        questions: r.createdBy === role ? t.list((r.triage || {}).clarify) : [], answers: t.list(r.clarifyAnswers), marks: t.list(r.marks) };
       if (role === 'admin') {
         out.triage = r.triage || null; out.adminNotes = r.adminNotes || ''; out.device = r.device || '';
         out.clientLog = t.list(r.clientLog); out.serverLog = r.serverLog || '';
@@ -14964,15 +14999,170 @@ var Kit = (function () {
     return ADMIN && r.severity ? chip(r.severity, SEV_CHIP[r.severity] || 'outline') : chip(r.status, 'outline');
   }
 
-  function openReport() {
-    var screen = screenName(), f = { kind: (S.data.reportKinds || [])[0], text: '', files: [] };
+  // ------------------------------------------------------------------ Suggestions: circle something on the screen
+  // She draws round the thing she means, says what about it, and it goes with her suggestion: the words inside the
+  // circle, where it was, and a sketch of the screen (boxes and words, not a photo) with her circle on it.
+  // Her private writing (notes, chats, talks, her email) is never copied: only that she circled something there.
+  var PRIVATE_AREA = '[class*="nt-"], .mn-msg, .mn-view, [class*="mail-"], [class*="talk-"], .insp-row, .priv-card, .tf, textarea, input';
+  function privateView() { return S.view === 'notes' || S.view === 'mentors'; }
+  function isPrivate(el) { return privateView() || !!(el && el.closest && el.closest(PRIVATE_AREA)); }
+  function ownText(el) { return [].filter.call(el.childNodes, function (n) { return n.nodeType === 3; }).map(function (n) { return n.textContent; }).join(' ').replace(/\s+/g, ' ').trim(); }
+  function screenSketch(skip) {
+    var out = [], vw = innerWidth, vh = innerHeight;
+    [].forEach.call(document.body.querySelectorAll('*'), function (el) {
+      if (skip && skip.contains(el)) return;
+      if (out.length >= 140) return;
+      var r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2 || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) return;
+      var cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) < 0.1) return;
+      var box = { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) };
+      if (el.classList.contains('ms')) return;
+      var t = ownText(el);
+      if (t) { box.t = isPrivate(el) ? '···' : t.slice(0, 60); box.f = Math.round(parseFloat(cs.fontSize)); out.push(box); }
+      else if (/\b(card|li|btn|sheet|choice|hm-[a-z]+|seg|tf|fold-head|fin-card|chip)\b/.test(typeof el.className === 'string' ? el.className : '') && r.width > 24 && r.height > 16) { box.k = 1; out.push(box); }
+    });
+    return { vw: vw, vh: vh, items: out };
+  }
+  function inLoop(pt, path) {
+    var c = false;
+    for (var i = 0, j = path.length - 1; i < path.length; j = i++) {
+      var xi = path[i][0], yi = path[i][1], xj = path[j][0], yj = path[j][1];
+      if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  }
+  /** What she most likely means: the thing under the middle of her circle that's about the circle's size. */
+  function circledThing(path, overlay) {
+    var xs = path.map(function (p) { return p[0]; }), ys = path.map(function (p) { return p[1]; });
+    var box = { l: Math.min.apply(null, xs), t: Math.min.apply(null, ys), r: Math.max.apply(null, xs), b: Math.max.apply(null, ys) }, area = Math.max(1, (box.r - box.l) * (box.b - box.t));
+    overlay.style.pointerEvents = 'none';
+    var hit = document.elementFromPoint((box.l + box.r) / 2, (box.t + box.b) / 2);
+    overlay.style.pointerEvents = '';
+    var el = hit, pick = hit;
+    while (el && el !== document.body) {
+      var r = el.getBoundingClientRect(), a = r.width * r.height;
+      if (a > area * 5) break;
+      pick = el;
+      if (a >= area * 0.4 || el.matches('button, a, .card, .li, .chip, .btn')) break;
+      el = el.parentElement;
+    }
+    // the words inside her circle (only words that aren't private)
+    var words = [], priv = false;
+    [].forEach.call(document.body.querySelectorAll('*'), function (e) {
+      if (overlay.contains(e) || e.classList.contains('ms')) return;
+      var t = ownText(e); if (!t) return;
+      var r = e.getBoundingClientRect(); if (!r.width) return;
+      if (!inLoop([r.left + r.width / 2, r.top + r.height / 2], path)) return;
+      if (isPrivate(e)) { priv = true; return; }
+      if (words.indexOf(t) < 0) words.push(t);
+    });
+    var label = pick ? (pick.getAttribute('aria-label') || '').trim() : '';
+    var what = isPrivate(pick) ? '' : (label || (pick ? pick.innerText || '' : '').replace(/\s+/g, ' ').trim()).slice(0, 160);
+    // where it is: the nearest heading above it (a goal's name, a card's title, the sheet's title)
+    var where = '', up = pick, HEADS = '.gs-head b, .gl-ms b, .section-title, .sheet-title, .sheet h2, .title-m, .hm-k span, .fold-head b, .li-head';
+    for (var lv = 0; up && up !== document.body && lv < 8 && !where; lv++, up = up.parentElement) {
+      var hd = [].filter.call(up.querySelectorAll(HEADS), function (x) { return !pick.contains(x) && x.offsetParent && !isPrivate(x); })[0];
+      if (hd) where = hd.textContent.replace(/\s+/g, ' ').trim().slice(0, 80);
+    }
+    return { what: what, where: where, words: words.join(' · ').slice(0, 500), private: priv || isPrivate(pick) };
+  }
+  /** Circle mode: draw round it, say what about it. done(marks) when she's finished (with the ones she added). */
+  function startCircle(state, done) {
+    var NS = 'http://www.w3.org/2000/svg', marks = [], path = [], drawing = false;
+    var svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'cc-svg');
+    var line = document.createElementNS(NS, 'path'); line.setAttribute('class', 'cc-line'); svg.appendChild(line);
+    var old = document.createElementNS(NS, 'g'); old.setAttribute('class', 'cc-old'); svg.insertBefore(old, line);
+    var tip = h('div', { class: 'cc-tip' }, icon('gesture'), h('span', { class: 'grow', text: 'Draw a circle round it' }),
+      h('button', { type: 'button', class: 'cc-x press', onclick: function () { finish(); } }, marks.length ? 'Done' : 'Back'));
+    var card = h('div', { class: 'cc-card', hidden: true });
+    var ov = h('div', { class: 'cc-overlay', role: 'application', 'aria-label': 'Draw a circle round the thing you mean' }, svg, tip, card);
+    document.body.appendChild(ov);
+    function d(p) { return p.length ? 'M' + p.map(function (q) { return q[0] + ' ' + q[1]; }).join(' L') + (p.length > 2 ? ' Z' : '') : ''; }
+    function tipBtn() { tip.lastChild.textContent = marks.length ? 'Done (' + marks.length + ')' : 'Back'; }
+    function finish() { ov.remove(); document.removeEventListener('keydown', esc); done(marks); }
+    function esc(e) { if (e.key === 'Escape') finish(); }
+    document.addEventListener('keydown', esc);
+    ov.addEventListener('pointerdown', function (e) {
+      if (!card.hidden || e.target.closest('.cc-tip, .cc-card')) return;
+      drawing = true; path = [[Math.round(e.clientX), Math.round(e.clientY)]]; line.setAttribute('d', d(path)); ov.setPointerCapture(e.pointerId); e.preventDefault();
+    });
+    ov.addEventListener('pointermove', function (e) {
+      if (!drawing) return;
+      var p = path[path.length - 1], x = Math.round(e.clientX), y = Math.round(e.clientY);
+      if (Math.abs(x - p[0]) + Math.abs(y - p[1]) < 5) return;
+      path.push([x, y]); line.setAttribute('d', d(path));
+    });
+    ov.addEventListener('pointerup', function () {
+      if (!drawing) return; drawing = false;
+      var xs = path.map(function (p) { return p[0]; }), ys = path.map(function (p) { return p[1]; });
+      if (path.length < 6 || Math.max.apply(null, xs) - Math.min.apply(null, xs) < 16 || Math.max.apply(null, ys) - Math.min.apply(null, ys) < 12) { path = []; line.setAttribute('d', ''); toast('Draw right round it.'); return; }
+      ask();
+    });
+    function ask() {
+      var got = circledThing(path, ov), say = { v: '' };
+      var fld = K.textField({ label: 'What about this?', multiline: true, maxlength: 600, suggest: ['This doesn’t work', 'I don’t understand this', 'This should be easier', 'Take this away'], onInput: function (v) { say.v = v; } });
+      card.textContent = ''; card.hidden = false;
+      card.append(h('div', { class: 'cc-what' }, icon('radio_button_unchecked'), h('span', { text: got.private ? 'Your own writing (its words stay private)' : got.what ? '“' + got.what.slice(0, 90) + (got.what.length > 90 ? '…' : '') + '”' : 'This part of the screen' })), fld,
+        h('div', { class: 'cc-acts' },
+          btn('filled', 'Add it', { icon: 'check', onclick: function () { keep(got, say.v); finish(); } }),
+          btn('tonal', 'Circle another', { icon: 'gesture', onclick: function () { keep(got, say.v); } }),
+          K.iconBtn('replay', 'Draw it again', function () { path = []; line.setAttribute('d', ''); card.hidden = true; })));
+      setTimeout(function () { var i = card.querySelector('textarea, input'); if (i) i.focus(); }, 60);
+    }
+    function keep(got, comment) {
+      var step = Math.max(1, Math.ceil(path.length / 80));
+      marks.push({ what: got.what, where: got.where, words: got.words, private: got.private, comment: String(comment || '').trim(), path: path.filter(function (p, i) { return i % step === 0; }), sketch: screenSketch(ov) });
+      var ghost = document.createElementNS(NS, 'path'); ghost.setAttribute('d', d(path)); old.appendChild(ghost);
+      path = []; line.setAttribute('d', ''); card.hidden = true; tipBtn(); K.haptic('success');
+    }
+  }
+  /** Her circle on a sketch of the screen: boxes, the words that were there, and the loop. */
+  function markSketch(m) {
+    var NS = 'http://www.w3.org/2000/svg', sk = m.sketch || { vw: 384, vh: 749, items: [] }, sv = document.createElementNS(NS, 'svg');
+    sv.setAttribute('viewBox', '0 0 ' + sk.vw + ' ' + sk.vh); sv.setAttribute('class', 'cc-sketch'); sv.setAttribute('role', 'img');
+    sv.setAttribute('aria-label', 'A sketch of the screen with the circled part' + (m.what ? ': ' + m.what : ''));
+    (sk.items || []).forEach(function (b) {
+      if (b.k) { var r = document.createElementNS(NS, 'rect'); r.setAttribute('x', b.x); r.setAttribute('y', b.y); r.setAttribute('width', b.w); r.setAttribute('height', b.h); r.setAttribute('rx', 8); r.setAttribute('class', 'cc-box'); sv.appendChild(r); return; }
+      var t = document.createElementNS(NS, 'text'); t.setAttribute('x', b.x); t.setAttribute('y', b.y + Math.min(b.h, (b.f || 14)) * 0.85); t.setAttribute('font-size', b.f || 14); t.setAttribute('class', 'cc-word'); t.textContent = b.t; sv.appendChild(t);
+    });
+    var p = document.createElementNS(NS, 'path'); p.setAttribute('d', 'M' + (m.path || []).map(function (q) { return q[0] + ' ' + q[1]; }).join(' L') + ' Z'); p.setAttribute('class', 'cc-line'); sv.appendChild(p);
+    return sv;
+  }
+  function markCard(m, i) {
+    var sk = markSketch(m), card;
+    sk.setAttribute('tabindex', '0'); sk.style.cursor = 'zoom-in';
+    function grow() { card.classList.toggle('big'); sk.style.cursor = card.classList.contains('big') ? 'zoom-out' : 'zoom-in'; }
+    sk.addEventListener('click', grow); sk.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); grow(); } });
+    return card = h('div', { class: 'cc-mark' }, sk,
+      h('div', { class: 'cc-mark-t' }, h('b', { text: (i != null ? (i + 1) + '. ' : '') + (m.comment || 'No words with this one') }),
+        h('span', { text: m.private ? 'Circled in her own writing (words kept private)' : 'Circled: ' + (m.what || m.words || 'part of the screen').slice(0, 140) + (m.where ? ' · in ' + m.where : '') })));
+  }
+
+  function openReport(state) {
+    state = state || { screen: screenName(), f: { kind: (S.data.reportKinds || [])[0], text: '', files: [], marks: [] } };
+    var screen = state.screen, f = state.f;
     var mine = (S.data.reports || []).filter(function (r) { return r.mine; }).slice(0, 5);
     K.sheet({
       title: 'Suggestions and problems', tall: true,
       build: function (ctl) {
         ctl.body.appendChild(K.choices({ label: 'What is it?', value: f.kind, options: S.data.reportKinds || [], onChange: function (v) { f.kind = v; } }));
-        var tf = K.textField({ suggest: ['It froze or wouldn’t load', 'A button didn’t do anything', 'I couldn’t find something', 'An idea to make it easier'], label: 'What happened, or what would help?', multiline: true, maxlength: 4000, onInput: function (v) { f.text = v; } });
+        var tf = K.textField({ suggest: ['It froze or wouldn’t load', 'A button didn’t do anything', 'I couldn’t find something', 'An idea to make it easier'], label: 'What happened, or what would help?', multiline: true, maxlength: 4000, value: f.text, onInput: function (v) { f.text = v; } });
         ctl.body.appendChild(h('div', { style: 'margin-top:14px' }, tf));
+        // circle something on the screen, and say what about it
+        var sc = sheetSection('Circle it'), list = h('div', { class: 'cc-list' });
+        function paintMarks() {
+          list.textContent = '';
+          f.marks.forEach(function (m, i) {
+            var c = markCard(m, i);
+            c.appendChild(K.iconBtn('close', 'Take this one off', function () { f.marks.splice(i, 1); paintMarks(); }));
+            list.appendChild(c);
+          });
+        }
+        paintMarks();
+        sc.append(list, btn(f.marks.length ? 'text' : 'tonal', f.marks.length ? 'Circle another' : 'Circle something', { icon: 'gesture', onclick: function () {
+          ctl.close();
+          setTimeout(function () { startCircle(state, function (marks) { f.marks = f.marks.concat(marks).slice(0, 8); setTimeout(function () { openReport(state); }, 120); }); }, 320);
+        } }));
+        ctl.body.appendChild(sc);
         var s = sheetSection('A screenshot (optional)');
         s.appendChild(K.photoStrip({ files: f.files, max: 2, onChange: function () {} }));
         ctl.body.appendChild(s);
@@ -14980,17 +15170,17 @@ var Kit = (function () {
         if (mine.length) {
           var past = sheetSection('What you’ve sent'), l = h('div', { class: 'list' });
           mine.forEach(function (r) {
-            l.appendChild(h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.text || r.kind }),
+            l.appendChild(h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.text || (r.marks && r.marks.length ? r.marks[0].comment || 'Circled on the screen' : r.kind) }),
               h('div', { class: 'li-sup', style: 'white-space:normal', text: r.reply ? adminName() + ': “' + r.reply + '”' : ago(r.created) })), h('div', { class: 'li-trail' }, reportChip(r))));
           });
           past.appendChild(l); ctl.body.appendChild(past);
         }
         var send = btn('filled', 'Send', { icon: 'send', lg: true, block: true });
         send.addEventListener('click', function () {
-          if (!f.text.trim() && !f.files.length) { tf.input.focus(); return; }
+          if (!f.text.trim() && !f.files.length && !f.marks.length) { tf.input.focus(); return; }
           K.setBusy(send, true);
           var dev = navigator.userAgent.replace(/\s*\(KHTML.*$/, '') + ' · ' + innerWidth + '×' + innerHeight;
-          api('sendReport', { kind: f.kind, text: f.text, screen: screen, device: dev, clientLog: APP_LOG.slice(), hasPhotos: f.files.length > 0 })
+          api('sendReport', { kind: f.kind, text: f.text, screen: screen, device: dev, clientLog: APP_LOG.slice(), hasPhotos: f.files.length > 0, marks: f.marks })
             .then(function (r) { return uploadAll('report', r.id, f.files); }).then(refresh)
             .then(function () { K.haptic('success'); render(); toast(ADMIN ? 'Saved to your action items.' : 'Sent to ' + adminName() + '. Thank you.'); ctl.close(); })
             .catch(function (e) { K.setBusy(send, false); fail(e); });
@@ -15014,7 +15204,7 @@ var Kit = (function () {
   function reportRow(r) {
     return h('button', { class: 'li press', type: 'button', onclick: function () { openReportAdmin(r.id); } },
       r.thumbIds.length ? thumbImg(r.thumbIds[0]) : h('div', { class: 'th-blank' }, icon(/idea/i.test(r.kind) ? 'lightbulb' : /question/i.test(r.kind) ? 'help' : 'feedback')),
-      h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.summary || r.text || r.kind }),
+      h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.summary || r.text || ((r.marks || [])[0] || {}).comment || r.kind }),
         h('div', { class: 'li-sup', text: [r.by, r.status, ago(r.created)].join(' · ') })),
       h('div', { class: 'li-trail' }, reportChip(r)));
   }
@@ -15037,9 +15227,10 @@ var Kit = (function () {
         ctlRef = ctl;
         ctl.body.appendChild(h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap;margin-bottom:12px' }, reportChip(r), tr.type ? chip(tr.type, 'outline') : null, tr.area ? chip(tr.area, 'outline') : null));
         var s1 = sheetSection('From ' + r.by + ' · ' + K.dateLabel(r.created));
-        s1.appendChild(h('p', { class: 'body-l', text: r.text ? '“' + r.text + '”' : '(no words, just a screenshot)' }));
+        s1.appendChild(h('p', { class: 'body-l', text: r.text ? '“' + r.text + '”' : (r.marks || []).length ? '(circled on the screen)' : '(no words, just a screenshot)' }));
         s1.appendChild(h('div', { class: 'body-s', style: 'margin-top:6px;color:var(--on-surface-variant)', text: 'On: ' + (r.screen || 'unknown') }));
         if (r.thumbIds.length) s1.appendChild(K.photoStrip({ thumbIds: r.thumbIds, photoUrls: r.photoUrls, files: [], max: r.thumbIds.length, onDraw: function () { setTimeout(loadThumbs, 0); } }));
+        (r.marks || []).forEach(function (m, i) { s1.appendChild(markCard(m, (r.marks.length > 1 ? i : null))); });
         ctl.body.appendChild(s1);
         if (r.aiStatus === 'Queued' || r.aiStatus === 'Working') ctl.body.appendChild(note('Being looked over…', 'hourglass_top'));
         if (r.triage) {
@@ -15047,7 +15238,7 @@ var Kit = (function () {
           if (tr.likelyCause) s2.appendChild(h('p', { class: 'body-m', text: tr.likelyCause }));
           if ((tr.steps || []).length) { var ul = h('ol', { class: 'talk-list', style: 'margin-top:10px' }); tr.steps.forEach(function (x) { ul.appendChild(h('li', { text: x })); }); s2.appendChild(ul); }
           if (tr.fixBrief) s2.appendChild(h('div', { style: 'margin-top:12px' }, btn('tonal', 'Copy the fix brief for Claude', { icon: 'content_copy', onclick: function () {
-            var text = tr.fixBrief + '\n\n---\nReport ' + r.id + ' from ' + r.by + ' on ' + r.screen + '\nDevice: ' + (r.device || '') + '\n\nApp log:\n' + (r.clientLog || []).join('\n') + '\n\nServer log:\n' + (r.serverLog || '');
+            var text = tr.fixBrief + '\n\n---\nReport ' + r.id + ' from ' + r.by + ' on ' + r.screen + ((r.marks || []).length ? '\n\nCircled on the screen:\n' + r.marks.map(function (m) { return '- ' + (m.private ? '(her own writing)' : '“' + (m.what || m.words) + '”') + (m.where ? ' in ' + m.where : '') + ': ' + (m.comment || '(no words)'); }).join('\n') : '') + '\nDevice: ' + (r.device || '') + '\n\nApp log:\n' + (r.clientLog || []).join('\n') + '\n\nServer log:\n' + (r.serverLog || '');
             (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { toast('Copied. Paste it into Claude Code.'); })
               .catch(function () { K.ask({ title: 'Copy this', label: 'Fix brief', value: text, maxlength: 20000 }); });
           } })));
