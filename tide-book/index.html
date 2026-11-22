@@ -12819,7 +12819,7 @@ var Kit = (function () {
         if (!drag) return;
         var s = drag.samples, a = s[0], b = s[s.length - 1];
         var velocity = b.t > a.t ? (b.y - a.y) / (b.t - a.t) * 1000 : 0;
-        var far = pos > travel() * 0.3;
+        var far = pos > Math.min(140, travel() * 0.3);      // the same as Peanuts Paws: far enough, or flicked
         drag = null;
         if (velocity > 800 || (far && velocity > -200)) { settle(Math.max(pos, 1), velocity); requestClose(); }
         else settle(0, velocity);
@@ -15490,8 +15490,13 @@ var Kit = (function () {
         h('span', { text: m.private ? 'Circled in her own writing (words kept private)' : 'Circled: ' + (m.what || m.words || 'part of the screen').slice(0, 140) + (m.where ? ' · in ' + m.where : '') })));
   }
 
+  // A half-written suggestion is kept for the screen it was started on: closing it (or swiping it down) keeps the words,
+  // the circles and the screenshot, and opening the bubble there again brings them back. Sending it, or "Clear", ends it.
+  var REPORT_DRAFTS = {};
+  function reportHasDraft(f) { return !!(f && (String(f.text || '').trim() || (f.files || []).length || (f.marks || []).length)); }
   function openReport(state) {
-    state = state || { screen: screenName(), f: { kind: (S.data.reportKinds || [])[0], text: '', files: [], marks: [] } };
+    if (!state) { var sn = screenName(); state = REPORT_DRAFTS[sn] || { screen: sn, f: { kind: (S.data.reportKinds || [])[0], text: '', files: [], marks: [] } }; }
+    REPORT_DRAFTS[state.screen] = state;
     var screen = state.screen, f = state.f;
     var mine = (S.data.reports || []).filter(function (r) { return r.mine; }).slice(0, 5);
     K.sheet({
@@ -15535,10 +15540,14 @@ var Kit = (function () {
           var dev = navigator.userAgent.replace(/\s*\(KHTML.*$/, '') + ' · ' + innerWidth + '×' + innerHeight;
           api('sendReport', { kind: f.kind, text: f.text, screen: screen, device: dev, clientLog: APP_LOG.slice(), hasPhotos: f.files.length > 0, marks: f.marks })
             .then(function (r) { return uploadAll('report', r.id, f.files); }).then(refresh)
-            .then(function () { K.haptic('success'); render(); toast(ADMIN ? 'Saved to your action items.' : 'Sent to ' + adminName() + '. Thank you.'); ctl.close(); })
+            .then(function () { delete REPORT_DRAFTS[screen]; K.haptic('success'); render(); toast(ADMIN ? 'Saved to your action items.' : 'Sent to ' + adminName() + '. Thank you.'); ctl.close(); })
             .catch(function (e) { K.setBusy(send, false); fail(e); });
         });
         ctl.foot.appendChild(send);
+        if (reportHasDraft(f)) ctl.foot.appendChild(h('div', { style: 'text-align:center;margin-top:6px' }, btn('text', 'Clear it and start again', { icon: 'delete_sweep', onclick: function () {
+          delete REPORT_DRAFTS[screen]; K.haptic();
+          K.swap(ctl, function () { openReport({ screen: screen, f: { kind: (S.data.reportKinds || [])[0], text: '', files: [], marks: [] } }); }, true); toast('Cleared.');
+        } })));
       }
     });
   }
