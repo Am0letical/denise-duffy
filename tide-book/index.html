@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500,60&family=Figtree:wght@400;500;700&family=Lora:ital,wght@0,500;1,500&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,add_task,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,date_range,delete,delete_sweep,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,gesture,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mark_email_unread,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,photo_library,picture_as_pdf,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,replay,reply,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,swipe_left,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,upload_file,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_comment,add_location_alt,add_task,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,date_range,delete,delete_sweep,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,gesture,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mark_email_unread,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,photo_library,picture_as_pdf,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,replay,reply,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,swipe_left,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,upload_file,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -2389,6 +2389,15 @@ var TIDE_SCHEMAS = {
       ['done', 'Done', 'bool'], ['reminded', 'Reminded for', 'text'], ['at', 'At', 'text'], ['mins', 'Minutes', 'number'], ['note', 'Note', 'text'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
+  // Ask (LogicAsk.gs): her research chats, hers alone, sealed with her private-writing passphrase on the PC
+  askchats: {
+    sheet: 'Ask',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Who', 'text'], ['owner', 'Whose', 'text'], ['private', 'Private', 'bool'], ['title', 'First question', 'text'],
+      ['messages', 'The chat', 'json'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'], ['aiQueued', 'AI queued', 'date'], ['aiClaimed', 'AI claimed', 'date'],
+      ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['via', 'Via', 'text'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
   // Mentors (LogicMentor.gs): hers alone, sealed with her private-writing passphrase on the PC
   mentors: {
     sheet: 'Mentors',
@@ -2631,7 +2640,7 @@ var TIDE_SCHEMAS = {
       ['expandStatus', 'Claude status', 'text'], ['expansion', 'Claude’s expansion', 'json'], ['expandTries', 'Claude tries', 'number'],
       ['expandNote', 'Claude note', 'text'], ['expandedAt', 'Expanded', 'date'],
       ['expandRoute', 'Expand with', 'text'], ['expandQueued', 'Expand asked', 'date'], ['expandClaimed', 'PC took it', 'date'],
-      ['expandWhy', 'Why Claude', 'text'], ['private', 'Private', 'bool'], ['owner', 'Whose', 'text'], ['folder', 'Folder', 'text'], ['colour', 'Colour', 'text'], ['pinned', 'Pinned', 'bool'], ['madeInto', 'Turned into', 'json']
+      ['expandWhy', 'Why Claude', 'text'], ['private', 'Private', 'bool'], ['owner', 'Whose', 'text'], ['folder', 'Folder', 'text'], ['colour', 'Colour', 'text'], ['pinned', 'Pinned', 'bool'], ['madeInto', 'Turned into', 'json'], ['askId', 'From Ask chat', 'text']
     ]
   },
   // Talk it through (LogicTalk.gs): topics the artist names and answers questions about
@@ -2670,7 +2679,7 @@ var TIDE_SCHEMAS = {
       ['aiWhy', 'Why Claude', 'text'], ['aiBy', 'Drafted by', 'text'], ['research', 'Market research', 'json'], ['researchStatus', 'Research status', 'text'],
       ['researchAt', 'Researched', 'date'], ['researchNote', 'Research note', 'text'], ['researchTries', 'Research tries', 'number'],
       ['deleted', 'Removed', 'bool'], ['handsLater', 'Put off for later', 'list'], ['printful', 'Printful', 'json'], ['resumeOn', 'Paused until', 'day'], ['remindedAt', 'Reminded', 'date'],
-      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text'], ['notInterested', 'Not interested', 'bool']
+      ['planStep', 'Plan step', 'number'], ['planPlacedBy', 'Placed by', 'text'], ['notInterested', 'Not interested', 'bool'], ['startResearch', 'From Ask', 'json']
     ]
   },
   // suggestions and problems, triaged into the admin's action items (LogicReports.gs)
@@ -16925,6 +16934,14 @@ var Kit = (function () {
           K.textField({ label: 'Summary', value: f.summary, multiline: true, maxlength: 2000, onInput: function (v) { f.summary = v; touch(); } })));
         ctl.body.appendChild(h('div', { class: 'fold-group', text: 'The details' }));
         ctl.body.appendChild(fold(s1, fk('what'), 'sell', f.summary || 'Its name and what it is', false));
+        // made from an answer in Ask: the answer it started from
+        if (p.startResearch && p.startResearch.text) {
+          var sR = sheetSection('Where it started'), sr = p.startResearch;
+          if (sr.question) sR.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 8px;font-weight:600', text: sr.question }));
+          sR.appendChild(mdLite(sr.text));
+          if ((sr.sources || []).length) { var sul = h('ul', { style: 'margin:8px 0 0;padding-left:20px' }); sr.sources.forEach(function (x) { sul.appendChild(h('li', {}, h('a', { href: x.url, target: '_blank', rel: 'noopener', text: x.title || x.url }))); }); sR.appendChild(sul); }
+          ctl.body.appendChild(fold(sR, fk('started'), 'travel_explore', 'From a question you asked', false));
+        }
 
         var s2 = sheetSection('Decided');
         s2.appendChild(K.textField({ label: 'One per line', value: f.decisions.join('\n'), multiline: true, maxlength: 6000, onInput: function (v) { f.decisions = v.split('\n').map(function (x) { return x.trim(); }).filter(String); touch(); } }));
