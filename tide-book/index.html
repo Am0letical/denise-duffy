@@ -911,6 +911,7 @@ img, video { max-width: 100%; }
 .ak-src ul { margin: 4px 0 0; padding-left: 20px; } .ak-src li { margin: 4px 0; }
 .ak-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .ak-start { white-space: pre-wrap; }
+.ak-sug { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; } .ak-sug:empty { display: none; } .ak-sug .choice { white-space: normal; text-align: left; }
 /* swipe left to delete (touch only): the row slides over a red bin; past halfway the bin grows to say it'll go */
 .sw-row { touch-action: pan-y pinch-zoom; }
 .sw-bg { position: absolute; z-index: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-end; padding-right: 22px;
@@ -15123,15 +15124,14 @@ var Kit = (function () {
       if (start && !ASK_DRAFT['']) ASK_DRAFT[''] = start;
       var field = K.textField({ label: 'Your question', multiline: true, maxlength: 2000, value: ASK_DRAFT[key()] || '', suggest: [], onInput: function (v) { ASK_DRAFT[key()] = v; } });
       var send = btn('filled', 'Ask', { icon: 'send', block: true, onclick: ask });
-      ctl.foot.append(field, h('div', { style: 'margin-top:8px' }, send));
+      var sugBox = h('div', { class: 'ak-sug' });
+      ctl.foot.append(sugBox, field, h('div', { style: 'margin-top:8px' }, send));
       function busy() { return !!(chat && chat.busy); }
       function suggestions() {
-        var box = field.querySelector('.tf-suggest') || null;
         var opts = !chat ? (askData().starters || []) : ['Tell me more about that', 'What would you do in my place?'];
-        if (box) box.remove();
-        var row = h('div', { class: 'filter-row tf-suggest', style: 'margin:0 0 8px' });
-        opts.slice(0, 2).forEach(function (s) { row.appendChild(h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { field.input.value = s; ASK_DRAFT[key()] = s; field.input.focus(); } })); });
-        field.insertBefore(row, field.firstChild);
+        sugBox.textContent = '';
+        if (busy()) return;
+        opts.slice(0, 2).forEach(function (s) { sugBox.appendChild(h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { field.input.value = s; ASK_DRAFT[key()] = s; field.input.focus(); } })); });
       }
       function paint() {
         ctl.setTitle(chat ? chat.title : 'New question');
