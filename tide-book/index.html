@@ -896,6 +896,21 @@ img, video { max-width: 100%; }
 .undo-card .undo-btn { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--r-full); padding: 10px 16px; min-height: 44px; min-width: 44px;
   background: transparent; color: var(--inverse-primary, oklch(82.9% 0.085 261.1)); font: 600 16px/22px var(--font); }
 @media (min-width: 840px) { .undo-card { left: auto; width: 420px; bottom: 28px; } }
+/* Ask: her research chats */
+.ak-thread { display: flex; flex-direction: column; gap: 10px; }
+.ak-msg { max-width: 92%; padding: 12px 14px; border-radius: 18px; font: 400 16px/24px var(--font); overflow-wrap: anywhere; }
+.ak-msg.her { align-self: flex-end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 6px; white-space: pre-wrap; }
+.ak-msg.ai { align-self: flex-start; background: var(--surface-container, oklch(95% 0.01 250)); color: var(--on-surface); border: 1px solid rgb(0 0 0 / 0.08); border-bottom-left-radius: 6px; }
+.ak-msg.ai .md p { margin: 0 0 8px; } .ak-msg.ai .md p:last-child { margin-bottom: 0; }
+.ak-msg.working { display: flex; align-items: center; gap: 10px; color: var(--on-surface-variant); }
+.ak-msg.failed { border-color: rgb(186 26 26 / 0.35); }
+.ak-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); animation: akpulse 1.2s ease-in-out infinite; flex: none; }
+@keyframes akpulse { 0%, 100% { opacity: .35; transform: scale(.85); } 50% { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .ak-dot { animation: none; } }
+.ak-src { margin-top: 8px; font-size: 16px; } .ak-src summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--on-surface-variant); }
+.ak-src ul { margin: 4px 0 0; padding-left: 20px; } .ak-src li { margin: 4px 0; }
+.ak-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.ak-start { white-space: pre-wrap; }
 /* swipe left to delete (touch only): the row slides over a red bin; past halfway the bin grows to say it'll go */
 .sw-row { touch-action: pan-y pinch-zoom; }
 .sw-bg { position: absolute; z-index: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-end; padding-right: 22px;
@@ -8540,7 +8555,7 @@ function tideTalk(env, t) {
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
         id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, by: r.createdBy || '', parked: r.parked === true, retired: r.retired === true, notInterested: r.notInterested === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
-        firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))), printful: r.printful || null,
+        firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))), printful: r.printful || null, startResearch: r.startResearch || null,
         day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, sizes: t.list((r.pricing || {}).sizes), venue: (r.pricing || {}).venue || null, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
@@ -15063,19 +15078,128 @@ var Kit = (function () {
     });
   }
 
+  // ------------------------------------------------------------------ Ask: her research chats (LogicAsk.gs, Ask.gs)
+  // She asks, Tide Book digs (Talk it through is the other way round). Each chat is one thread she can come back to.
+  // Every answer: Save as note, or Make it an idea. Hers alone, like her notes. Matched to Peanuts Paws' research helper.
+  var ASK_DRAFT = {};          // what she's typed, per chat ('' for a new one): never lost if something fails
+  function askData() { return S.data.ask || { chats: [], starters: [] }; }
+  function viewAsk(main) {
+    var A = askData();
+    main.appendChild(rise(h('div', { class: 'card pad ak-intro' },
+      h('p', { class: 'body-l', style: 'margin:0', text: 'Ask anything about your art business, and Tide Book looks into it: what sells, what people pay, where to sell.' }),
+      h('div', { style: 'margin-top:12px' }, btn('filled', 'New question', { icon: 'add_comment', onclick: function () { openAsk(null); } }))), 1));
+    if (!A.chats.length) { main.appendChild(rise(emptyState('travel_explore', 'No questions yet', 'Tap New question, or one of these to start.'), 2));
+      var row = h('div', { class: 'filter-row', style: 'justify-content:center' });
+      (A.starters || []).forEach(function (s) { row.appendChild(h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { openAsk(null, s); } })); });
+      main.appendChild(rise(row, 2)); return; }
+    var sec = section('Your questions'), l = h('div', { class: 'list' });
+    A.chats.forEach(function (c) {
+      var trail = c.locked ? chip('Private', 'outline', 'lock') : c.busy ? chip(c.waiting ? 'Waiting' : 'Looking into it', 'pending', 'hourglass_top') : c.failed ? chip('Didn’t come through', 'high', 'refresh') : null;
+      l.appendChild(swipeRow('ask', c.locked ? null : c, h('button', { class: 'li press', type: 'button', disabled: c.locked, onclick: function () { if (!c.locked) openAsk(c.id); } },
+        h('div', { class: 'th-blank' }, icon('travel_explore')),
+        h('div', { class: 'grow' }, h('div', { class: 'li-head', text: c.locked ? 'Locked with your private writing' : c.title }),
+          h('div', { class: 'li-sup', text: (c.count === 1 ? '1 question' : c.count + ' questions') + ' · ' + ago(c.updated) })),
+        h('div', { class: 'li-trail' }, trail)), { title: c.title, label: 'Chat removed.' }));
+    });
+    sec.appendChild(l); main.appendChild(rise(sec, 2));
+  }
+  /** One chat: the thread, and her next question at the bottom. id null: a new one (start: a question to begin with). */
+  function openAsk(id, start) {
+    var chat = null, pollT = null, ctlRef = null;
+    function key() { return chat ? chat.id : ''; }
+    K.sheet({ title: 'Ask', tall: true, onClose: function () { clearTimeout(pollT); render(); }, build: function (ctl) {
+      ctlRef = ctl;
+      var thread = h('div', { class: 'ak-thread', 'aria-live': 'polite' }), extra = h('div');
+      ctl.body.append(thread, extra);
+      if (start && !ASK_DRAFT['']) ASK_DRAFT[''] = start;
+      var field = K.textField({ label: 'Your question', multiline: true, maxlength: 2000, value: ASK_DRAFT[key()] || '', suggest: [], onInput: function (v) { ASK_DRAFT[key()] = v; } });
+      var send = btn('filled', 'Ask', { icon: 'send', block: true, onclick: ask });
+      ctl.foot.append(field, h('div', { style: 'margin-top:8px' }, send));
+      function busy() { return !!(chat && chat.busy); }
+      function suggestions() {
+        var box = field.querySelector('.tf-suggest') || null;
+        var opts = !chat ? (askData().starters || []) : ['Tell me more about that', 'What would you do in my place?'];
+        if (box) box.remove();
+        var row = h('div', { class: 'filter-row tf-suggest', style: 'margin:0 0 8px' });
+        opts.slice(0, 2).forEach(function (s) { row.appendChild(h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { field.input.value = s; ASK_DRAFT[key()] = s; field.input.focus(); } })); });
+        field.insertBefore(row, field.firstChild);
+      }
+      function paint() {
+        ctl.setTitle(chat ? chat.title : 'New question');
+        thread.textContent = ''; extra.textContent = '';
+        if (!chat) thread.appendChild(h('p', { class: 'otg-lead', text: 'Ask about prices, what sells, gifts, markets, shops or anything else for your art business. You can keep asking follow-ups.' }));
+        (chat ? chat.messages : []).forEach(function (m) {
+          if (m.role === 'user') { thread.appendChild(h('div', { class: 'ak-msg her', text: m.text })); return; }
+          if (m.status === 'thinking' || m.status === 'waiting') {
+            thread.appendChild(h('div', { class: 'ak-msg ai working', role: 'status' }, h('span', { class: 'ak-dot', 'aria-hidden': 'true' }), m.status === 'waiting' ? 'Looking into it… this one takes a little longer.' : 'Looking into it…')); return;
+          }
+          if (m.status === 'failed') {
+            thread.appendChild(h('div', { class: 'ak-msg ai failed', role: 'alert' }, h('p', { style: 'margin:0 0 8px', text: m.error || 'That didn’t come through.' }),
+              btn('tonal', 'Try again', { sm: true, icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('askRetry', chat.id).then(function (c) { chat = c; paint(); poll(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); }); } })));
+            return;
+          }
+          var bub = h('div', { class: 'ak-msg ai' }, mdLite(m.text));
+          if (m.sources && m.sources.length) {
+            var det = h('details', { class: 'ak-src' }, h('summary', { text: 'Where this came from (' + m.sources.length + ')' })), ul = h('ul');
+            m.sources.forEach(function (s) { ul.appendChild(h('li', {}, h('a', { href: s.url, target: '_blank', rel: 'noopener', text: s.title || s.url }))); });
+            det.appendChild(ul); bub.appendChild(det);
+          }
+          var acts = h('div', { class: 'ak-acts' });
+          acts.appendChild(m.saved.note ? chip('Saved as a note', 'approved', 'check') : btn('tonal', 'Save as note', { sm: true, icon: 'sticky_note_2', onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            api('askSaveNote', chat.id, m.id).then(function () { return refresh(); }).then(function () { return api('askOpen', chat.id); }).then(function (c) { chat = c; paint(); K.haptic('success'); toast('Saved to your notes.'); }).catch(fail);
+          } }));
+          acts.appendChild(m.saved.idea ? chip('Made into an idea', 'approved', 'check') : btn('tonal', 'Make it an idea', { sm: true, icon: 'lightbulb', onclick: function (e) {
+            K.setBusy(e.currentTarget, true);
+            api('askMakeIdea', chat.id, m.id).then(function () { return refresh(); }).then(function () { return api('askOpen', chat.id); }).then(function (c) { chat = c; paint(); K.haptic('success'); toast('Added to Products as an idea, with this answer.'); }).catch(fail);
+          } }));
+          bub.appendChild(acts);
+          thread.appendChild(bub);
+        });
+        field.input.disabled = busy(); send.disabled = busy();
+        suggestions();
+        if (chat) extra.appendChild(h('div', { style: 'margin-top:18px;text-align:center' }, btn('text', 'Remove this chat', { icon: 'delete', onclick: function () {
+          var id0 = chat.id;
+          api('deleteAsk', id0).then(refresh).then(function () { ctl.close(); render(); binUndo('Chat removed.', 'ask', id0); }).catch(fail);
+        } })));
+        setTimeout(function () { ctl.body.scrollTop = ctl.body.scrollHeight; }, 30);
+      }
+      function poll() {
+        clearTimeout(pollT);
+        if (!busy() || ctl.gone()) return;
+        pollT = setTimeout(function () {
+          if (ctl.gone()) return;
+          api('askOpen', chat.id).then(function (c) { var was = busy(); chat = c; if (was && !busy()) { refresh().then(function () { render(); }); } paint(); poll(); }).catch(function () { poll(); });
+        }, 2500);
+      }
+      function ask() {
+        var q = String(field.input.value || '').trim();
+        if (!q) { field.input.focus(); return; }
+        var k0 = key();
+        K.setBusy(send, true);
+        api('askQuestion', chat ? chat.id : '', q).then(function (c) {
+          delete ASK_DRAFT[k0]; chat = c; field.input.value = ''; K.setBusy(send, false); K.haptic();
+          paint(); poll(); refresh().then(function () { render(); });
+        }).catch(function (e) { K.setBusy(send, false); fail(e); });     // her words stay in the box
+      }
+      if (id) { thread.appendChild(note('Opening…', 'hourglass_top')); api('askOpen', id).then(function (c) { chat = c; field.input.value = ASK_DRAFT[key()] || ''; paint(); poll(); }).catch(function (e) { ctl.close(); fail(e); }); }
+      else paint();
+    } });
+  }
   function viewIdeas(main) {
     var moved = { notebook: 'notes', goals: 'goals', talk: 'mentors', inspo: 'notes' }[S.ideasTab];
     if (moved) { if (S.ideasTab === 'inspo') S.noteFolder = '__inspo'; S.ideasTab = 'ideas'; S.view = moved; render(); return; }
-    var tab = S.ideasTab === 'products' ? 'products' : 'ideas', nb = false, T = talkData();
+    var tab = S.ideasTab === 'products' ? 'products' : S.ideasTab === 'ask' ? 'ask' : 'ideas', nb = false, T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
-    pageTitle(main, 'Ideas', tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
+    pageTitle(main, 'Ideas', tab === 'ask' ? 'Ask a question and Tide Book looks into it. Your questions are yours alone.' : tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : 'Ranked by ' + (ADMIN ? artist() + '’s' : 'your') + ' priority, then by viability.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
       label: 'Show', value: tab, fit: true, onChange: function (v) { S.ideasTab = v; S.animate = true; render(); },
-      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'products', label: 'Products', count: oks || undefined }]
+      options: [{ value: 'ideas', label: 'Ideas' }, { value: 'products', label: 'Products', count: oks || undefined }, { value: 'ask', label: 'Ask' }]
     })), 1));
     if (tab === 'products') return viewProducts(main);
+    if (tab === 'ask') return viewAsk(main);
     var ideas = S.data.ideas;
     if (!ADMIN) needsList().filter(function (e) { return e.kind === 'idea'; }).forEach(function (e) { main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, needsCard(e)), 1)); });
     if (true) {   // both see the full list: her ideas, ranked, with their research
@@ -15404,8 +15528,8 @@ var Kit = (function () {
   // She draws round the thing she means, says what about it, and it goes with her suggestion: the words inside the
   // circle, where it was, and a sketch of the screen (boxes and words, not a photo) with her circle on it.
   // Her private writing (notes, chats, talks, her email) is never copied: only that she circled something there.
-  var PRIVATE_AREA = '[class*="nt-"], .mn-msg, .mn-view, [class*="mail-"], [class*="talk-"], .insp-row, .priv-card, .tf, textarea, input';
-  function privateView() { return S.view === 'notes' || S.view === 'mentors'; }
+  var PRIVATE_AREA = '[class*="nt-"], [class*="ak-"], .mn-msg, .mn-view, [class*="mail-"], [class*="talk-"], .insp-row, .priv-card, .tf, textarea, input';
+  function privateView() { return S.view === 'notes' || S.view === 'mentors' || (S.view === 'ideas' && S.ideasTab === 'ask'); }
   function isPrivate(el) { return privateView() || !!(el && el.closest && el.closest(PRIVATE_AREA)); }
   function ownText(el) { return [].filter.call(el.childNodes, function (n) { return n.nodeType === 3; }).map(function (n) { return n.textContent; }).join(' ').replace(/\s+/g, ' ').trim(); }
   function screenSketch(skip) {
