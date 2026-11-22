@@ -9362,6 +9362,9 @@ function tideReports(env, t) {
     var marks = cleanMarks(p.marks);
     if (!text && !p.hasPhotos && !marks.length) t.fail('Say a little about what happened, or add a screenshot.');
     var id = env.lock(function () {
+      // the same words from the same person within two minutes (a second tap, or Send again on a slow line): one report
+      var twin = text && !p.hasPhotos ? t.rows('reports').filter(function (r) { return r.createdBy === role && r.text === text && Date.now() - Date.parse(r.created) < 120000; })[0] : null;
+      if (twin) return twin.id;
       var rid = env.nextId('RP', 4), now = t.nowIso();
       env.table('reports').append({
         id: rid, created: now, createdBy: role, kind: R.KINDS.indexOf(p.kind) >= 0 ? p.kind : R.KINDS[0], text: text,
@@ -16150,8 +16153,8 @@ var Kit = (function () {
         if (past.length) {
           var det = h('details', { class: 'talk-past' }, h('summary', { text: 'The conversation so far (' + tp.answered + ' answers)' }));
           past.forEach(function (r) {
-            r.questions.forEach(function (q, i) {
-              det.appendChild(h('div', { class: 'talk-qa' }, h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: q.question }), h('div', { class: 'body-m', text: answerText(q, r.answers[i]) || '—' })));
+            (r.questions || []).forEach(function (q, i) {
+              det.appendChild(h('div', { class: 'talk-qa' }, h('div', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: q.question }), h('div', { class: 'body-m', text: answerText(q, (r.answers || [])[i]) || '—' })));
             });
           });
           ctl.body.appendChild(det);
@@ -16649,7 +16652,7 @@ var Kit = (function () {
   }
   /** A supplier's quote or a receipt (photo, screenshot or PDF), read on the PC into lines she can tick. */
   function pickReceiptFile(cb, opts) {
-    var input = h('input', { type: 'file', accept: opts && opts.camera ? 'image/*' : 'image/*,application/pdf', hidden: true });
+    var input = h('input', { type: 'file', accept: opts && opts.camera ? 'image/*' : opts && opts.gallery ? 'image/*' : 'application/pdf,image/*,.pdf', hidden: true });
     if (opts && opts.camera) input.setAttribute('capture', 'environment');
     input.addEventListener('change', function () { var file = input.files[0]; input.remove(); if (file) cb(file); });
     document.body.appendChild(input); input.click();
@@ -16673,7 +16676,7 @@ var Kit = (function () {
     K.sheet({ title: 'From a quote', build: function (ctl) {
       ctl.body.appendChild(h('p', { class: 'otg-lead', text: 'A photo, screenshot or PDF of the quote.' }));
       var row = h('div', { class: 'rc-pick' });
-      [['photo_camera', 'Camera', { camera: true }], ['photo_library', 'Gallery', {}], ['upload_file', 'File', {}]].forEach(function (o) {
+      [['photo_camera', 'Camera', { camera: true }], ['photo_library', 'Gallery', { gallery: true }], ['upload_file', 'File', {}]].forEach(function (o) {
         row.appendChild(h('button', { type: 'button', class: 'rc-src press', onclick: function () { pickReceiptFile(function (file) { go(file); }, o[2]); } }, icon(o[0]), h('span', { text: o[1] })));
       });
       ctl.body.appendChild(row);
@@ -18645,7 +18648,7 @@ var Kit = (function () {
         function paintPick() {
           rcBox.textContent = '';
           var row = h('div', { class: 'rc-pick' });
-          [['photo_camera', 'Camera', { camera: true }], ['photo_library', 'Gallery', {}], ['upload_file', 'File', {}]].forEach(function (o) {
+          [['photo_camera', 'Camera', { camera: true }], ['photo_library', 'Gallery', { gallery: true }], ['upload_file', 'File', {}]].forEach(function (o) {
             row.appendChild(h('button', { type: 'button', class: 'rc-src press', onclick: function () { pickReceiptFile(function (file) { fileToData(file).then(function (fd) { fd.file = file; setReceipt(fd); }).catch(fail); }, o[2]); } }, icon(o[0]), h('span', { text: o[1] })));
           });
           rcBox.append(h('div', { class: 'label-m', style: 'margin:0 2px 8px', text: 'The receipt' }), row);
@@ -20045,6 +20048,7 @@ var Kit = (function () {
   }
   /** Questions about her report: a tap each, her own words, or skip. All optional. */
   function openReportQuestions(r) {
+    if (!r || !(r.questions || []).length) return;
     var answers = r.questions.map(function () { return ''; });
     K.sheet({
       title: 'About your suggestion', tall: true,
@@ -22535,6 +22539,7 @@ var Kit = (function () {
       function paint() {
         var b = ctl.body; b.textContent = '';
         b.appendChild(h('p', { class: 'otg-lead', text: 'Count it and guess what each cost. Selling it then shows the real profit.' }));
+        b.appendChild(h('p', { class: 'tf-help', style: 'margin:0 4px 12px', text: 'For stock bought before your ABN, these costs are your best guess. Ask your accountant how to claim it.' }));
         var L = S.data.stock || [];
         if (L.length) {
           var l = h('div', { class: 'list' });
