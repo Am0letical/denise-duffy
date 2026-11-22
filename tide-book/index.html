@@ -7198,7 +7198,7 @@ function tideNotes(env, t) {
         created: n.created, updated: n.updated, by: who(n.updatedBy),
         expandStatus: n.expandStatus || '', expansion: n.expansion || null, expandNote: n.expandNote || '', expandedAt: n.expandedAt || '',
         expandRoute: n.expandRoute || '', expandWhy: n.expandWhy || '', private: n.private === true, locked: n.locked === true,
-        folder: n.folder || '', colour: n.colour || '', pinned: n.pinned === true, madeInto: n.locked ? [] : t.list(n.madeInto), owner: ownerOf(n)
+        folder: n.folder || '', colour: n.colour || '', pinned: n.pinned === true, madeInto: n.locked ? [] : t.list(n.madeInto), askId: n.askId || '', owner: ownerOf(n)
       };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
   }
@@ -8564,7 +8564,7 @@ function tideTalk(env, t) {
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
         id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, by: r.createdBy || '', parked: r.parked === true, retired: r.retired === true, notInterested: r.notInterested === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
-        firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))), printful: r.printful || null, startResearch: r.startResearch || null,
+        firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))), printful: r.printful || null, startResearch: r.startResearch ? { question: r.startResearch.question || '', text: r.startResearch.text || '', sources: t.list(r.startResearch.sources), at: r.startResearch.at || '', fromAsk: true } : null,
         day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
         price: price, sizes: t.list((r.pricing || {}).sizes), venue: (r.pricing || {}).venue || null, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
