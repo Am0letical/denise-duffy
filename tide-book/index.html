@@ -9364,7 +9364,7 @@ function tideReports(env, t) {
     var id = env.lock(function () {
       // the same words from the same person within two minutes (a second tap, or Send again on a slow line): one report
       var twin = text && !p.hasPhotos ? t.rows('reports').filter(function (r) { return r.createdBy === role && r.text === text && Date.now() - Date.parse(r.created) < 120000; })[0] : null;
-      if (twin) return twin.id;
+      if (twin) return '=' + twin.id;
       var rid = env.nextId('RP', 4), now = t.nowIso();
       env.table('reports').append({
         id: rid, created: now, createdBy: role, kind: R.KINDS.indexOf(p.kind) >= 0 ? p.kind : R.KINDS[0], text: text,
@@ -9375,6 +9375,7 @@ function tideReports(env, t) {
       });
       return rid;
     });
+    if (id.charAt(0) === '=') return { id: id.slice(1), same: true };     // already sent: nothing more to do
     var route = t.queueJob(id, 'triage');
     if (role === 'artist' && t.push) t.push('admin', 'New from ' + who(role) + ': ' + (text.slice(0, 60) || 'a screenshot'), route ? 'It’s being looked over now.' : 'Have a look when you can.');
     if (route && env.talkNow) env.talkNow(id);
