@@ -8853,6 +8853,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-22-links-receipts', on: '2026-11-22', to: 'artist', icon: 'link', title: 'Dropbox links and receipts',
+    say: 'Paste a Dropbox or Google Drive link in the suggestions box and it offers to bring the photos in for you. For a receipt, Gallery now opens your photos and screenshots, and File opens your PDFs.',
+    steps: ['Suggestions box: paste the link, then tap Bring them in.', 'Record an expense: Camera, Gallery or File.'], go: { view: 'money', tip: 'Record an expense.' } },
   { id: '2026-11-22-swipe', on: '2026-11-22', to: 'all', icon: 'swipe_left', title: 'Swipe left to remove',
     say: 'On your phone, slide a row to the left to remove it, like in email. Undo puts it back. And if you pull the suggestions box down by mistake, what you wrote, circled and added is still there next time.',
     steps: ['Slide a goal, idea, note or other row to the left.', 'Past halfway it goes; stop short and it slides back.', 'Tap Undo at the bottom to put it back.', 'Things that sell, are booked to post, or are in your money records ask first.'],
