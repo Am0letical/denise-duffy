@@ -8771,6 +8771,9 @@ var TIDE_GUIDE = [
   { id: 'g-report', area: 'Getting around', to: 'all', icon: 'feedback', title: 'Tell Jye something isn’t right',
     say: 'The small speech button at the top right of every page sends a note (and a screenshot) straight to Jye.',
     steps: ['Tap the speech button at the top right.', 'Say what happened or what you’d like.', 'Tap Send. Tide Book may ask a quick question so it’s done the way you mean.', 'Closed it or pulled it down before sending? What you wrote is kept for that page until you send it or tap Clear it and start again.'], go: { view: 'home', find: '.fb-bubble', tip: 'Tell Jye here.' } },
+  { id: 'g-ask', area: 'Ideas', to: 'all', icon: 'travel_explore', title: 'Ask a question',
+    say: 'Ask anything about your art business and Tide Book looks into it. It’s the other way round from Talk it through: you ask, it digs.',
+    steps: ['Open Ideas and tap Ask.', 'Tap New question, then a suggested question or your own words, and Ask.', 'While it looks into it, you can wait or come back later. Ask follow-ups in the same chat.', 'Save as note puts an answer in your notes. Make it an idea starts a product with it.', 'On your phone, slide an old question left to remove it (Undo puts it back).'], go: { view: 'ideas', tip: 'Tap Ask at the top.' } },
   { id: 'g-swipe', area: 'Getting around', to: 'all', icon: 'swipe_left', title: 'Swipe left to remove',
     say: 'On a phone, slide a row to the left to remove it, like in email. Every row that has Remove can be swiped, and Undo puts it back just as it was.',
     steps: ['Put your finger on a row (a goal, idea, note, contact…) and slide it left.', 'A red bin shows. Let go past halfway and it goes; stop short and it slides back.', 'Tap Undo at the bottom within 5 seconds. Remove a few in a row and each has its own Undo.', 'Things that sell, are booked to post, or are in your money records ask first. Sales and expenses can’t be swiped.'], go: { view: 'plan', tip: 'Slide a goal to the left.' } },
@@ -8908,6 +8911,10 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-23-ask', on: '2026-11-23', to: 'all', icon: 'travel_explore', title: 'Ask a question',
+    say: 'Ideas has a new Ask tab. Ask anything about your art business (what sells, what people pay, where to sell) and Tide Book looks into it. Keep asking follow-ups, and save any answer as a note or make it an idea.',
+    steps: ['Ideas › Ask › New question.', 'Tap a suggested question, or type your own, then Ask.', 'Under an answer: Save as note, or Make it an idea.', 'Your questions are yours alone, and stay in the list to come back to.'],
+    go: { view: 'ideas', tip: 'Tap Ask at the top.' } },
   { id: '2026-11-22-links-receipts', on: '2026-11-22', to: 'artist', icon: 'link', title: 'Dropbox links and receipts',
     say: 'Paste a Dropbox or Google Drive link in the suggestions box and it offers to bring the photos in for you. For a receipt, Gallery now opens your photos and screenshots, and File opens your PDFs.',
     steps: ['Suggestions box: paste the link, then tap Bring them in.', 'Record an expense: Camera, Gallery or File.'], go: { view: 'money', tip: 'Record an expense.' } },
