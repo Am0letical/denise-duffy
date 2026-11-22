@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500,60&family=Figtree:wght@400;500;700&family=Lora:ital,wght@0,500;1,500&family=Red+Hat+Text:wght@500&display=swap">
   <!-- Only the icons the app uses, to keep the download small. Names must stay in alphabetical order. -->
-  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,add_task,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,gesture,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mark_email_unread,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,replay,reply,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,upload_file,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
+  <link rel="stylesheet" id="icon-font" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0&icon_names=account_balance,account_balance_wallet,add,add_a_photo,add_location_alt,add_task,ads_click,alt_route,amp_stories,apparel,apps,arrow_back,arrow_downward,arrow_forward,arrow_upward,attach_file,auto_awesome,auto_awesome_motion,bar_chart,bedtime,block,bolt,brush,calculate,calendar_month,call,campaign,cancel,category,center_focus_strong,chair,chat,check,check_box,check_box_outline_blank,check_circle,checklist,chevron_left,chevron_right,close,close_fullscreen,cloud_download,cloud_off,colorize,computer,contacts,content_copy,content_cut,create_new_folder,credit_card,crop,dark_mode,date_range,delete,description,directions_walk,done_all,download,drag_indicator,draw,edit,edit_calendar,edit_note,edit_off,error,event,event_available,event_busy,expand_less,expand_more,explore,fact_check,favorite,feedback,fit_screen,flag,folder_open,format_bold,format_color_reset,format_ink_highlighter,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_size,forum,front_hand,gesture,grid_view,group,handyman,help,history,home,hourglass_top,image,info,ink_eraser,insights,inventory_2,key,language,light_mode,lightbulb,link,link_off,local_shipping,lock,lock_open,mail,mark_email_unread,menu_book,mic,more_vert,move_down,movie,north_east,notes,notifications,open_in_full,open_in_new,open_with,package_2,palette,pause_circle,payments,pending,perm_media,phone_iphone,photo_camera,photo_library,picture_as_pdf,pie_chart,place,play_arrow,play_circle,point_of_sale,print,psychology,public,push_pin,radio_button_unchecked,receipt_long,refresh,remove,replay,reply,restart_alt,restore,rocket_launch,route,savings,schedule,school,science,sell,send,settings,south_west,spa,sports_score,sticky_note_2,stop,storefront,straighten,subdirectory_arrow_right,swap_horiz,swap_vert,sync,table_rows,table_view,task_alt,text_fields,thumb_down,thumb_up,timeline,title,today,touch_app,travel_explore,trending_down,trending_flat,trending_up,tune,undo,unfold_less,unfold_more,upload,upload_file,verified,videocam,view_agenda,view_carousel,view_in_ar,visibility,visibility_off,wallpaper,warning,wb_sunny,wb_twilight,workspace_premium,zoom_in,zoom_out&display=block">
   <style>
 /* Tide Book styles.
    Look: Material Design 3, coloured from the artist's own work (her Instagram): ocean ultramarine and aqua
@@ -2032,6 +2032,79 @@ body.map-full { overflow: hidden; }
 .cc-word { fill: oklch(35% 0.02 76); font-family: var(--font); }
 .cc-sketch .cc-line { stroke-width: 6; }
 .cc-mark.big { flex-direction: column; } .cc-mark.big .cc-sketch { width: 100%; }
+/* ---- For you (was Waiting): one row each, the action in a word or two ---- */
+.wt-list { display: flex; flex-direction: column; }
+.wt-row { display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.wt-row:last-child { border-bottom: 0; }
+.wt-ic { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--secondary-container); color: var(--on-secondary-container); }
+.wt-t { flex: 1; min-width: 0; font: 500 16px/22px var(--font); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.wt-row .btn { flex: none; }
+/* ---- questions, one at a time ---- */
+.q1 { display: flex; flex-direction: column; gap: 12px; }
+.q1-top { display: flex; align-items: center; justify-content: space-between; font: 500 13px/18px var(--font); color: var(--on-surface-variant); }
+.q1-dots { display: flex; gap: 6px; } .q1-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-highest); } .q1-dots i.done { background: var(--tertiary); } .q1-dots i.now { background: var(--primary); width: 20px; border-radius: 4px; }
+.q1-card { padding: 18px 16px; border-radius: 24px; background: var(--surface-lowest); box-shadow: var(--shadow-1); --sheet-bg: var(--surface-lowest); }
+.q1-q { font: 500 22px/29px var(--display); overflow-wrap: anywhere; }
+.q1-opts { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.q1-opt { all: unset; box-sizing: border-box; min-height: 52px; padding: 12px 16px; border-radius: 16px; background: var(--surface-low); font: 500 17px/22px var(--font); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line); }
+.q1-opt.sug { box-shadow: inset 0 0 0 2px var(--primary); }
+.q1-opt.on { background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.q1-own { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.q1-more { display: flex; align-items: center; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
+.q1-link { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 22px; font: 500 15px/20px var(--font); color: var(--primary); cursor: pointer; }
+.q1-link:hover { background: var(--surface-low); }
+.q1-foot { display: flex; justify-content: space-between; align-items: center; }
+.hand-sec { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
+.hand-sec-h { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font: 600 14px/20px var(--font); color: var(--on-surface-variant); }
+.hand-sec.done .hand-row { opacity: .72; } .hand-sec.done .hand-text { text-decoration: line-through; text-decoration-color: var(--outline); }
+.hand-sec.done .hand-sec-h .ms { color: var(--tertiary); }
+.next-card .next-who { font-size: 13px; color: var(--secondary); } .next-card.hers { box-shadow: var(--shadow-1), inset 4px 0 0 var(--secondary); }
+/* ---- costing ---- */
+.cost-card { margin: 0 0 14px; padding: 14px; border-radius: 22px; background: var(--surface-lowest); box-shadow: var(--shadow-1); --sheet-bg: var(--surface-lowest); }
+.cost-h { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; } .cost-h b { font: 500 18px/24px var(--display); } .cost-h .ms { color: var(--secondary); }
+.cost-mkt { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; margin-bottom: 10px; border-radius: 8px; background: var(--primary-container); color: var(--on-primary-container); font: 400 15px/21px var(--font); } .cost-mkt .ms { font-size: 20px; flex: none; }
+.cost-size { padding: 10px 0 12px; border-top: 1px solid var(--line); }
+.cost-top { display: flex; align-items: center; gap: 8px; }
+.cost-name, .cost-what { flex: 1; min-width: 0; min-height: 44px; padding: 0 10px; border: 0; border-radius: 8px; background: var(--surface-low); font: 500 16px/22px var(--font); color: var(--on-surface); }
+.cost-what { font-weight: 400; }
+.cost-price, .cost-amt { display: flex; align-items: center; gap: 2px; flex: none; width: 96px; min-height: 44px; padding: 0 8px; border-radius: 8px; background: var(--surface-low); font: 500 16px/22px var(--font); }
+.cost-amt { width: 84px; } .cost-price input, .cost-amt input { width: 100%; min-width: 0; border: 0; background: transparent; font: inherit; color: inherit; outline: none; }
+.cost-lines { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 0 12px; }
+.cost-line { display: flex; align-items: center; gap: 6px; }
+.cost-acts { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 4px; }
+.cost-sum { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-top: 6px; font: 400 15px/21px var(--font); color: var(--on-surface-variant); }
+.cost-sum b { margin-left: auto; font: 600 16px/22px var(--font); color: var(--tertiary); } .cost-sum b.neg { color: var(--error); }
+.cost-venue { padding-top: 12px; border-top: 1px solid var(--line); }
+.rc-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.rc-src { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 84px; border-radius: 16px; background: var(--secondary-container); color: var(--on-secondary-container); font: 500 15px/20px var(--font); cursor: pointer; }
+.rc-list { display: flex; flex-direction: column; }
+.rc-row { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 4px 0; border-bottom: 1px solid var(--line); font: 400 16px/22px var(--font); cursor: pointer; }
+.rc-row b { font-weight: 600; } .rc-box { width: 22px; height: 22px; accent-color: var(--primary); flex: none; }
+.rc-row .rc-cat { font: 400 13px/18px var(--font); color: var(--on-surface-variant); }
+/* ---- an expense's receipt ---- */
+.rc-box-wrap { margin-bottom: 14px; }
+.rc-have { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 16px; background: var(--surface-low); }
+.rc-have img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex: none; } .rc-have .grow { font: 500 15px/20px var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-pdf { width: 56px; height: 56px; border-radius: 8px; display: grid; place-items: center; background: var(--error-container); color: var(--on-error-container); flex: none; }
+.rc-reading { margin-top: 10px; }
+.rc-items { margin-top: 12px; padding: 12px 14px; border-radius: 20px; background: var(--surface-lowest); box-shadow: var(--shadow-1); }
+.rc-items-h { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; } .rc-items-h b { font: 600 16px/22px var(--font); } .rc-items-h span { font: 400 15px/21px var(--font); color: var(--on-surface-variant); }
+.rc-items-acts { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+/* ---- an idea, or something to finish: two looks ---- */
+.idea.ik-new, .li.ik-new { background: linear-gradient(90deg in oklch, oklch(95.5% 0.03 55), var(--surface-lowest) 55%); }
+.idea.ik-doing, .li.ik-doing { background: linear-gradient(90deg in oklch, oklch(95% 0.03 140), var(--surface-lowest) 55%); }
+.ik-badge { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; margin-bottom: 4px; padding: 2px 10px 2px 6px; border-radius: 12px; font: 600 12px/20px var(--font); letter-spacing: .2px; }
+.ik-badge .ms { font-size: 16px; }
+.ik-badge.new { background: oklch(90% 0.06 55); color: oklch(33% 0.09 45); }
+.ik-badge.doing { background: oklch(90% 0.05 140); color: oklch(30% 0.06 145); }
+.ik-badge.done { background: var(--surface-high); color: var(--on-surface-variant); }
+.ik-next { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ik-ring { flex: none; width: 48px; height: 48px; } .ik-ring .hm-ring { width: 48px; height: 48px; }
+.li.ik-new .ik-th { background: oklch(90% 0.06 55); color: oklch(33% 0.09 45); }
+.li.ik-doing .ik-th { background: oklch(90% 0.05 140); color: oklch(30% 0.06 145); }
+.is-step { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.is-step:last-child { border-bottom: 0; } .is-step > .ms { color: var(--outline); margin-top: 1px; } .is-step.done > .ms { color: var(--tertiary); }
+.is-step .grow { display: flex; flex-direction: column; gap: 6px; } .is-step b { font: 500 16px/22px var(--font); }
 </style>
 
   <script>
@@ -2160,12 +2233,13 @@ var TIDE_SETTING_DEFAULTS = {
   defaultMarkupPct: 150,
   // originals first: prints wait while a new original has its head start, then sell as a limited run once it sells
   editionBufferDays: 30, editionSize: 50, quickEditionPct: 50,
-  homeMode: 'finish',   // her Home: set up for finishing what's open, or for making something new
+  homeMode: 'finish',
+  focusHide: '{}',     // goals she's put off on Home's top card: goal id → a day it comes back, or 'never'   // her Home: set up for finishing what's open, or for making something new
   homeOrder: [],   // her home page sections, in her order (empty: the usual order)
   todoHiddenArtist: '', todoHiddenAdmin: '',   // to-dos each person cleared (key → its words then; new words bring it back)
   menuOrderArtist: [], menuOrderAdmin: [], notesFolders: [], adminLinks: '',   // links she kept for the admin to fetch   // the notes' folders   // the menu, in each person's own order (empty: the usual order)
   // how she likes to work (the business setup): fed into every plan, question round and draft
-  workPace: '', perRound: 5, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
+  workPace: '', perRound: 3, quietDays: [], askFirst: [], workNotes: '', bizSetupDone: '',
   electricityKwhAud: 0.35,   // what the PC's electricity costs, per kWh (a typical NSW rate: change it to the rate on the power bill)
   sampleAddress: null,   // where samples are posted (her name and address), kept once she has entered it
   planIdeaId: '',  // her plan: the idea whose steps set the order of work (what happens now, what waits)
@@ -2199,7 +2273,8 @@ var TIDE_SETTING_DEFAULTS = {
   calPlanMode: 'plan', calHours: '', calDayMax: 180, calTokens: '', calMoved: '', calNudged: '',  // the calendar (LogicCal.gs): plan her days or let her set them, her working hours, the most in a day, her phone links, what last moved
   // her email, linked read-only (LogicLink.gs): which things to pick out, where the last look got to, senders she's muted (scrambled)
   mailOn: '', mailLast: '', mailChecked: '', mailSeen: '[]', mailMore: false, mailMute: [], mailLoginState: '',
-  bankRules: '{}',          // the bank's lines (LogicBank.gs): where each payee went last time
+  bankRules: '{}',
+  instaShop: '',           // her Instagram shop (LogicInsta.gs): the catalogue, what was sent, Meta's product ids          // the bank's lines (LogicBank.gs): where each payee went last time
   seriesExtra: ''           // series she added herself, each with a line about it (JSON): each becomes a page on her website
 };
 
@@ -2317,6 +2392,17 @@ var TIDE_SCHEMAS = {
       ['made', 'Became', 'json'], ['by', 'Read by', 'text'], ['private', 'Private', 'bool'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
+  // stock she already had (bought before her ABN, or made before Tide Book): counted, with an estimated cost each
+  stock: {
+    sheet: 'Opening Stock',
+    columns: [['id', 'ID', 'text'], ['created', 'Created', 'date'], ['what', 'What', 'text'], ['where', 'Where it is', 'text'], ['qty', 'Counted', 'number'], ['left', 'Left', 'number'],
+      ['costEach', 'Cost each (estimate)', 'number'], ['counted', 'Counted on', 'day'], ['note', 'Note', 'text'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']]
+  },
+  // receipts and quotes being read on the PC: kept a day, so the screen can ask how it went
+  scans: {
+    sheet: 'Scans',
+    columns: [['id', 'ID', 'text'], ['created', 'Created', 'date'], ['by', 'By', 'text'], ['status', 'Status', 'text'], ['result', 'Read', 'json'], ['error', 'Problem', 'text']]
+  },
   // the bank's own lines, to sort into Money (LogicBank.gs)
   bank: {
     sheet: 'Bank Lines',
@@ -2409,7 +2495,7 @@ var TIDE_SCHEMAS = {
       ['amount', 'Amount (incl GST)', 'number'], ['gst', 'GST included', 'number'], ['qty', 'Qty', 'number'],
       ['printId', 'Print ID', 'text'], ['receiptId', 'Receipt file', 'text'],
       ['receiptThumbId', 'Receipt thumb', 'text'], ['source', 'Source', 'text'],
-      ['externalRef', 'External ref', 'text'], ['status', 'Status', 'text'], ['voidReason', 'Void reason', 'text'],
+      ['externalRef', 'External ref', 'text'], ['status', 'Status', 'text'], ['voidReason', 'Void reason', 'text'], ['stockId', 'From stock', 'text'], ['stockQty', 'Stock used', 'number'], ['stockCost', 'Stock cost', 'number'],
       ['enteredBy', 'Entered by', 'text'], ['created', 'Created', 'date'], ['editedBy', 'Edited by', 'text'],
       ['edited', 'Edited', 'date'], ['notes', 'Notes', 'text'], ['taxClaim', 'Tax: likely claimable?', 'text'], ['taxShare', 'Tax: business share %', 'number']
     ]
@@ -2434,7 +2520,7 @@ var TIDE_SCHEMAS = {
       ['purpose', 'Purpose', 'text'], ['checks', 'Checks', 'json'], ['revisions', 'Redrafts', 'number'], ['feedback', 'Feedback', 'json'], ['nudges', 'Ideas to improve', 'json'],
       ['campaign', 'Campaign', 'text'], ['round', 'Round', 'text'], ['tries', 'Tries', 'number'],
       ['videoId', 'Edited video', 'text'], ['editStatus', 'Edit status', 'text'], ['editClaimed', 'Edit claimed', 'date'],
-      ['editNote', 'Edit note', 'text'], ['edits', 'Edit log', 'json'], ['reedit', 'Re-edit', 'bool'],
+      ['editNote', 'Edit note', 'text'], ['sellsPrintId', 'Sells', 'text'], ['edits', 'Edit log', 'json'], ['reedit', 'Re-edit', 'bool'],
       ['scheduledAt', 'Scheduled for', 'date'], ['preflight', 'Pre-flight', 'json'], ['targets', 'Posted to', 'json'],
       ['stats', 'Results', 'json'], ['postedAt', 'Posted', 'date'], ['postError', 'Posting problem', 'text'],
       ['artistDecision', 'Artist decision', 'text'], ['adminDecision', 'Admin decision', 'text'],
@@ -2542,7 +2628,7 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Started by', 'text'], ['title', 'Topic', 'text'],
       ['detail', 'To start with', 'text'], ['status', 'Status', 'text'], ['rounds', 'Questions and answers', 'json'],
       ['outcome', 'Written up', 'json'], ['filed', 'Filed as', 'json'], ['maxQ', 'Question limit', 'number'], ['deleted', 'Removed', 'bool'], ['goalId', 'For goal', 'text'],
-      ['parked', 'Parked', 'bool'], ['resumeOn', 'Parked until', 'day'], ['remindedAt', 'Reminded', 'date'], ['dropped', 'Not interested', 'bool'],
+      ['parked', 'Parked', 'bool'], ['resumeOn', 'Parked until', 'day'], ['remindedAt', 'Reminded', 'date'], ['dropped', 'Not interested', 'bool'], ['laterQs', 'Put off', 'json'],
       ['updated', 'Updated', 'date'], ['aiJob', 'AI job', 'text'], ['aiStatus', 'AI status', 'text'], ['aiRoute', 'AI route', 'text'],
       ['aiQueued', 'AI asked', 'date'], ['aiClaimed', 'AI took it', 'date'], ['aiTries', 'AI tries', 'number'], ['aiNote', 'AI note', 'text'], ['aiWhy', 'Why Claude', 'text']
     ]
@@ -3412,6 +3498,12 @@ if (env.workDone) env.workDone('publish');
     };
     if (out.printId && !rows('prints').some(function (r) { return r.id === out.printId; })) fail('That artwork couldn’t be found.');
     if (kind === 'Sale') {
+      if (p.stockId) {
+        var st = rows('stock').filter(function (x) { return x.id === p.stockId && !x.deleted; })[0];
+        if (!st) fail('That stock has gone.');
+        var sq = Math.max(1, Math.round(Number(p.stockQty) || 1));
+        out.stockId = st.id; out.stockQty = sq; out.stockCost = r2(sq * (Number(st.costEach) || 0));
+      }
       out.channel = oneOf(p.channel, T.SALE_CHANNELS, 'where it was sold');
       out.category = oneOf(p.category || 'Prints', T.INCOME_CATEGORIES, 'what was sold');
       out.gst = gstRegisteredOn(date, s) ? r2(amount / 11) : 0;
@@ -3445,6 +3537,7 @@ if (env.workDone) env.workDone('publish');
       row.source = 'App'; row.externalRef = ''; row.status = 'OK'; row.voidReason = '';
       row.receiptId = ''; row.receiptThumbId = '';
       row.enteredBy = env.user.email; row.created = nowIso();
+      if (row.stockId) { var st0 = rows('stock').filter(function (x) { return x.id === row.stockId; })[0]; if (st0) env.table('stock').update(st0.id, { left: Math.max(0, (Number(st0.left) || 0) - row.stockQty), updated: nowIso() }); }
       env.table('ledger').append(row);
       if (row.printId) publishFeed();
       return { id: row.id };
@@ -3473,6 +3566,7 @@ if (env.workDone) env.workDone('publish');
       var tx = find('ledger', id);
       if (tx.status === 'Void') fail('That record is already cancelled.');
       env.table('ledger').update(id, { status: 'Void', voidReason: why, editedBy: env.user.email, edited: nowIso() });
+      if (tx.stockId) { var sb = rows('stock').filter(function (x) { return x.id === tx.stockId; })[0]; if (sb) env.table('stock').update(sb.id, { left: (Number(sb.left) || 0) + (Number(tx.stockQty) || 0), updated: nowIso() }); }
       if (tx.printId) publishFeed();
       return { ok: true };
     });
@@ -3490,7 +3584,7 @@ if (env.workDone) env.workDone('publish');
       var mNum = (6 + i) % 12 + 1, yr = fy + (i >= 6 ? 1 : 0);
       months.push({ month: yr + '-' + ('0' + mNum).slice(-2), sales: 0, expenses: 0 });
     }
-    var byChannel = {}, byIncome = {}, byExpense = {}, expenseCount = 0, withReceipt = 0, taxT = {}, taxN = {}, taxNoReceipt = 0;
+    var byChannel = {}, byIncome = {}, byExpense = {}, expenseCount = 0, withReceipt = 0, taxT = {}, taxN = {}, taxNoReceipt = 0, stockSold = 0;
     inFy.forEach(function (t) {
       var q = quarters[quarterOf(t.date) - 1];
       var m = months.filter(function (x) { return x.month === t.date.slice(0, 7); })[0];
@@ -3501,6 +3595,7 @@ if (env.workDone) env.workDone('publish');
         if (m) m.sales += net;
         byChannel[t.channel] = (byChannel[t.channel] || 0) + net;
         byIncome[t.category] = (byIncome[t.category] || 0) + net;
+        stockSold += Number(t.stockCost) || 0;
       } else {
         var credit = gstRegisteredOn(t.date, s) ? (t.gst || 0) : 0;
         var netE = t.amount - credit;
@@ -3519,7 +3614,7 @@ if (env.workDone) env.workDone('publish');
       return Object.keys(map).map(function (k) { return { name: k, amount: r2(map[k]) }; })
         .sort(function (a, b) { return b.amount - a.amount; });
     }
-    var sales = tot.salesGross - tot.gstOnSales, expenses = tot.expensesGross - tot.gstCredits, profit = sales - expenses;
+    var sales = tot.salesGross - tot.gstOnSales, expenses = tot.expensesGross - tot.gstCredits, profit = sales - expenses - stockSold;
     var yearAgo = shiftDay(today, -365), weekAgo = shiftDay(today, -7), twoWeeksAgo = shiftDay(today, -14);
     var turnover = 0, week = 0, prevWeek = 0;
     live.forEach(function (t) {
@@ -3535,7 +3630,7 @@ if (env.workDone) env.workDone('publish');
     return {
       fy: fy, fyLabel: fyLabel(fy), isCurrent: fy === fyOf(today),
       years: Object.keys(years).map(Number).sort().reverse().map(function (y) { return { fy: y, label: fyLabel(y) }; }),
-      sales: r2(sales), expenses: r2(expenses), profit: r2(profit),
+      sales: r2(sales), expenses: r2(expenses), profit: r2(profit), stockSold: r2(stockSold),
       taxSetAside: r2(Math.max(0, profit) * s.taxSetAsidePct / 100), taxSetAsidePct: s.taxSetAsidePct,
       weekSales: r2(week), prevWeekSales: r2(prevWeek),
       gst: {
@@ -3735,6 +3830,17 @@ if (env.workDone) env.workDone('publish');
     env.settings.set({ homeOrder: clean });
     return { ok: true, order: clean };
   }
+  function saveFocusHide(goalId, until) {
+    need(['admin', 'artist']);
+    var o = {}; try { o = JSON.parse(env.settings.get().focusHide || '{}') || {}; } catch (e) { o = {}; }
+    goalId = text(goalId, 40); if (!goalId) fail('That goal has gone.');
+    if (until === '' || until == null) delete o[goalId];
+    else if (until === 'never' || isDay(String(until))) o[goalId] = String(until);
+    else fail('Pick when it comes back.');
+    var today = env.today(); Object.keys(o).forEach(function (k) { if (o[k] !== 'never' && o[k] <= today) delete o[k]; });
+    env.settings.set({ focusHide: JSON.stringify(o) });
+    return { ok: true };
+  }
   function saveHomeMode(mode) { need(['admin', 'artist']); env.settings.set({ homeMode: mode === 'create' ? 'create' : 'finish' }); return { ok: true }; }
   /** To-dos she (or the admin) cleared stay hidden until their words change ("2 posts to review" → "3 posts…"). */
   function todoKey(role) { return role === 'admin' ? 'todoHiddenAdmin' : 'todoHiddenArtist'; }
@@ -3859,7 +3965,8 @@ if (env.workDone) env.workDone('publish');
     if (role === 'artist') talkData.pipeline.forEach(function (p) {
       // one line per product, so the list stays short: the first job, and how many more
       var now = (p.hands || []).filter(function (x) { return x.state === 'now'; });
-      if (p.planWaits || p.parked) return;   // waiting for a later step of her plan, or paused: not on her list yet
+      if (p.planWaits || p.parked || p.retired || p.notInterested) return;   // waiting for a later step of her plan, or put away: not on her list
+      if (p.stage === 'Idea' && p.by !== 'artist') return;   // an idea Tide Book came up with isn't a job for her until she takes it on
       if (now.length) publishData.todo.push({ key: 'pp-' + p.id, productId: p.id, text: p.title + ': ' + text(now[0].text, 70),
         why: now.length > 1 ? 'Just this one for now. ' + (now.length - 1) + ' more come after, one at a time.' : 'The last thing for you on this.', where: 'Products' });
     });
@@ -3876,7 +3983,7 @@ if (env.workDone) env.workDone('publish');
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: todoShown(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), todoCleared: todoClearedCount(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
       notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
-      hub: hub.snapshot(), links: { mail: link.snapshot(role), bank: bank.snapshot(role) },
+      hub: hub.snapshot(), links: { mail: link.snapshot(role), bank: bank.snapshot(role), insta: insta.snapshot() },
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
       fx: env.setup && env.setup.fx ? env.setup.fx() : { rate: 1.55, estimate: true },
@@ -3893,8 +4000,8 @@ if (env.workDone) env.workDone('publish');
         costNote: x.costNote || '', leadTime: x.leadTime || '', notes: x.notes || '' }; }),
       bizLists: { kinds: T.SUPPLY_KINDS, paces: T.PACES, askFirst: T.ASK_FIRST, weekdays: T.WEEKDAYS },
       usage: role === 'admin' ? usageList() : [], expenseIdeas: expenseIdeas(),
-      plan: planState(), goals: goalSnapshot(), milestones: milestoneSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder), homeMode: env.settings.get().homeMode === 'create' ? 'create' : 'finish', menuOrder: list(env.settings.get()[env.user.role === 'admin' ? 'menuOrderAdmin' : 'menuOrderArtist']),
-      ideas: ideas, prints: prints, money: moneySummary(fyOf(today)),
+      plan: planState(), goals: goalSnapshot(), milestones: milestoneSnapshot(), ownDays: ownDays(env.user.role), printful: { linked: !!(env.printful && env.printful.linked()), store: env.printful && env.printful.linked() ? env.printful.store() : '' }, homeOrder: list(env.settings.get().homeOrder), homeMode: env.settings.get().homeMode === 'create' ? 'create' : 'finish', focusHide: (function () { try { return JSON.parse(env.settings.get().focusHide || '{}') || {}; } catch (e) { return {}; } })(), menuOrder: list(env.settings.get()[env.user.role === 'admin' ? 'menuOrderAdmin' : 'menuOrderArtist']),
+      ideas: ideas, prints: prints, money: moneySummary(fyOf(today)), stock: stockList(),
       sheetUrl: role === 'admin' ? env.sheetUrl() : ''
     };
   }
@@ -3951,7 +4058,7 @@ if (env.workDone) env.workDone('publish');
   };
 
   // ---------- making, scheduling and posting (LogicPublish.gs)
-  var publish = tidePublish(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso });
+  var publish = tidePublish(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, tagsFor: function (pid) { return insta ? insta.tagsFor(pid) : []; } });
 
   // ---------- content studio (LogicContent.gs)
   var content = tideContent(env, {
@@ -4040,12 +4147,93 @@ if (env.workDone) env.workDone('publish');
   var cal = tideCal(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: function (who, a, b) { return publish.push(who, a, b); },
     goalList: function () { return goalList(); }, goalRow: function (id) { return goalRow(id); } });
   // ---------- linked services: her email, read only (LogicLink.gs), and the bank's lines (LogicBank.gs)
+  // ---------- reading a receipt, invoice or quote (Receipt.gs reads it on the PC)
+  function readReceipt(p) {
+    var role = need(['admin', 'artist']); p = p || {};
+    var data = String(p.data || ''), m = /^data:([\w\/.+-]+);base64,(.+)$/.exec(data);
+    if (!m) fail('That file couldn’t be read.');
+    if (data.length * 0.75 > 25 * 1024 * 1024) fail('That file is too big to read. A photo or screenshot of it works.');
+    var isPdf = /pdf/.test(m[1]) || p.type === 'pdf', isImg = /^image\//.test(m[1]);
+    if (!isPdf && !isImg) fail('A photo, screenshot or PDF, please.');
+    if (!env.receiptReadLocal || !(env.mailLocalOk && env.mailLocalOk())) fail('Reading receipts needs the PC’s helper, and it isn’t running just now. Type it in instead.');
+    var id = env.lock(function () {
+      var sid = env.nextId('SC', 5), now = nowIso();
+      rows('scans').filter(function (x) { return Date.parse(x.created) < Date.now() - 86400000; }).forEach(function (x) { env.table('scans').update(x.id, { result: null, status: 'old' }); });
+      env.table('scans').append({ id: sid, created: now, by: role, status: 'reading', result: null, error: '' });
+      return sid;
+    });
+    var run = function () {
+      var ctx = { today: env.today() };
+      if (isPdf) { ctx.text = env.pdfText ? env.pdfText(m[2]) : ''; if (!String(ctx.text).replace(/\s/g, '').length) { env.table('scans').update(id, { status: 'failed', error: 'That PDF has no words in it to read (it may be a scan). A screenshot or photo of it works.' }); return; } }
+      else ctx.image = m[2];
+      if (env.receiptReadAsync) { env.receiptReadAsync(ctx, finish); return; }
+      var got0 = null; try { got0 = env.receiptReadLocal(ctx); } catch (e) { got0 = null; }
+      finish(got0);
+    };
+    var finish = function (got) {
+      if (!got) { env.table('scans').update(id, { status: 'failed', error: 'It couldn’t be read. Type it in instead.' }); return; }
+      var items = list(got.items).slice(0, 40).map(function (x) { x = x || {}; var a = Math.round(Number(x.amount) * 100) / 100; return { what: text(x.what, 80), amount: isFinite(a) ? a : 0, category: tideExpenseCategory(x.what || '') || (list(got.items).length === 1 ? tideExpenseCategory(got.supplier || '') : '') || '' }; }).filter(function (x) { return x.what && x.amount !== 0; });
+      var total = Math.round(Number(got.total) * 100) / 100;
+      env.table('scans').update(id, { status: 'done', result: { supplier: text(got.supplier, 80), date: isDay(String(got.date || '')) && got.date <= env.today() ? got.date : '', gstIncluded: got.gst_included !== false,
+        total: isFinite(total) && total > 0 ? total : Math.round(items.reduce(function (n, x) { return n + x.amount; }, 0) * 100) / 100, items: items } });
+    };
+    if (env.later) env.later(run); else run();
+    return { id: id };
+  }
+  function receiptResult(id) {
+    need(['admin', 'artist']);
+    var x = rows('scans').filter(function (r) { return r.id === id; })[0];
+    if (!x) fail('That reading has gone. Try again.');
+    return { status: x.status, result: x.result || null, error: x.error || '' };
+  }
+  /** One receipt kept for several expenses (each line of a receipt she added). */
+  function shareReceipt(fromId, toIds) {
+    need(['admin', 'artist']);
+    var tx = find('ledger', fromId);
+    if (!tx.receiptId) fail('That one has no receipt yet.');
+    env.lock(function () { list(toIds).forEach(function (id) { var o = rows('ledger').filter(function (r) { return r.id === id; })[0]; if (o && o.id !== fromId) env.table('ledger').update(id, { receiptId: tx.receiptId, receiptThumbId: tx.receiptThumbId || '' }); }); });
+    return { ok: true };
+  }
+  /** A receipt kept as a file (a PDF): no picture to show, just the file. */
+  function uploadReceiptFile(id, dataUrl) {
+    need(['admin', 'artist']);
+    var s0 = String(dataUrl || '');
+    if (!/^data:application\/pdf;base64,[A-Za-z0-9+/=]+$/.test(s0)) fail('A PDF, please.');
+    if (s0.length * 0.75 > 25 * 1024 * 1024) fail('That file is too big.');
+    return env.lock(function () {
+      var tx = find('ledger', id), folder = env.files.folder(['Receipts', 'FY' + fyLabel(fyOf(tx.date))]);
+      var rid = env.files.save(folder, id + ' receipt ' + tx.date, s0);
+      env.table('ledger').update(id, { receiptId: rid, receiptThumbId: '', editedBy: env.user.email, edited: nowIso() });
+      return { ok: true };
+    });
+  }
+  // ---------- opening stock
+  function stockList() {
+    return rows('stock').filter(function (x) { return !x.deleted; }).map(function (x) { return { id: x.id, what: x.what, where: x.where || '', qty: Number(x.qty) || 0, left: Number(x.left) || 0, costEach: Number(x.costEach) || 0, counted: x.counted || '', note: x.note || '' }; });
+  }
+  function saveStock(id, p) {
+    need(['admin', 'artist']); p = p || {};
+    var what = text(p.what, 120); if (!what) fail('Say what it is.');
+    var qty = Math.round(Number(p.qty)); if (!(qty >= 0)) fail('How many are there?');
+    var ce = Number(p.costEach); if (!isFinite(ce) || ce < 0) fail('The cost each needs to be a number (a guess is fine).');
+    return env.lock(function () {
+      var now = nowIso(), row = { what: what, where: text(p.where, 60), costEach: r2(ce), counted: isDay(String(p.counted || '')) ? p.counted : env.today(), note: text(p.note, 500), updated: now };
+      if (id) { var old = find('stock', id); var sold = (Number(old.qty) || 0) - (Number(old.left) || 0); row.qty = qty; row.left = Math.max(0, qty - sold); env.table('stock').update(id, row); return { id: id }; }
+      row.id = env.nextId('ST', 4); row.created = now; row.qty = qty; row.left = qty; row.deleted = false;
+      env.table('stock').append(row);
+      return { id: row.id };
+    });
+  }
+  function deleteStock(id) { need(['admin', 'artist']); env.lock(function () { find('stock', id); env.table('stock').update(id, { deleted: true, updated: nowIso() }); }); return { ok: true }; }
+  function undeleteStock(id) { need(['admin', 'artist']); env.lock(function () { find('stock', id); env.table('stock').update(id, { deleted: false, updated: nowIso() }); }); return { ok: true }; }
   function tagTransaction(id, source, ref) { env.lock(function () { env.table('ledger').update(id, { source: source, externalRef: ref }); }); }
   var link = tideLink(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, push: function (who, a, b) { return publish.push(who, a, b); },
     addTransaction: function (p) { return addTransaction(p); }, saveOwnDay: function (id, p) { return saveOwnDay(id, p); }, expenseCategories: function () { return T.EXPENSE_CATEGORIES.slice(); } });
   var bank = tideBank(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, parseCsv: parseCsv, pickColumn: pickColumn,
     addTransaction: function (p) { return addTransaction(p); }, voidTransaction: function (id, why) { return voidTransaction(id, why); }, tagTransaction: tagTransaction,
     expenseCategories: function () { return T.EXPENSE_CATEGORIES.slice(); }, incomeCategories: function () { return T.INCOME_CATEGORIES.slice(); }, saleChannels: function () { return T.SALE_CHANNELS.slice(); } });
+  // ---------- her Instagram shop (LogicInsta.gs; Insta.gs talks to Meta)
+  var insta = tideInsta(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, liveUrl: function () { try { return siteEditor.liveUrl(); } catch (e) { return ''; } } });
   var shop = tideShop(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push,
     siteData: function (w) { return siteData(w); }, shopPending: function () { return shopPending(); }, recordSales: function (s) { var r = recordOnlineSales(s, 'website'); publishFeed(); return r; }, recordExpense: recordShopExpense });
   var siteEditor = tideSiteEditor(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, push: publish.push, publishWebsite: function () { return publishWebsite(); }, shopPending: function () { return shopPending(); }, markPublished: function () { env.settings.set({ sitePublishedSig: shopSig() }); },
@@ -4062,6 +4250,7 @@ if (env.workDone) env.workDone('publish');
   function vaultUnlock(pass) { vaultRole(); return env.vault.unlock(String(pass || '')); }
   function vaultRecover(code, pass) { vaultRole(); return env.vault.recover(String(code || ''), String(pass || '')); }
   function vaultLock() { vaultRole(); return env.vault.lock(); }
+  function vaultOff(pass) { vaultRole(); if (!env.vault.off) fail('Not available here.'); return env.vault.off(String(pass || '')); }
   /** In Claude chat mode jobs are pasted into a chat by the admin, so her private ones go to the PC's own model instead. */
   function privateToLocal() {
     var n = 0;
@@ -4080,7 +4269,7 @@ if (env.workDone) env.workDone('publish');
   var notebook = tideNotes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, createIdea: createIdea });
 
   // ---------- talk it through and the product pipeline (LogicTalk.gs)
-  var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf,
+  var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf, addDays: function (d, n) { return shiftDay(d, n); },
     createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push, planState: planState, planStepOf: planStepOf, planWaits: planWaits, placeFor: placeFor, shop: shopLink });
 
   // ---------- suggestions and problems (LogicReports.gs)
@@ -4954,8 +5143,8 @@ if (env.workDone) env.workDone('publish');
       createPrintFromIdea: createPrintFromIdea, ideaToProduct: ideaToProduct, addSeries: addSeries, updateSeries: updateSeries, printfulForPrint: printfulForPrint, printfulPrintFile: printfulPrintFile, printfulFileUse: printfulFileUse, requeueResearch: requeueResearch,
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
-      addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveHomeMode: saveHomeMode, saveMenuOrder: saveMenuOrder, clearTodo: clearTodo, unclearTodo: unclearTodo, ideaToWebsite: ideaToWebsite, keepLinkForAdmin: keepLinkForAdmin, publishWebsite: publishWebsite, chatResult: chatResult,
+      addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction, readReceipt: readReceipt, receiptResult: receiptResult, saveStock: saveStock, deleteStock: deleteStock, undeleteStock: undeleteStock, shareReceipt: shareReceipt, uploadReceiptFile: uploadReceiptFile,
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveHomeMode: saveHomeMode, saveFocusHide: saveFocusHide, saveMenuOrder: saveMenuOrder, clearTodo: clearTodo, unclearTodo: unclearTodo, ideaToWebsite: ideaToWebsite, keepLinkForAdmin: keepLinkForAdmin, publishWebsite: publishWebsite, chatResult: chatResult,
       websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
     },
     research: research,
@@ -4982,7 +5171,7 @@ if (env.workDone) env.workDone('publish');
   Object.keys(direction.api).forEach(function (k) { out.api[k] = direction.api[k]; });
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
-  out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock;
+  out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock; out.api.vaultOff = vaultOff;
   Object.keys(siteWishes.api).forEach(function (k) { out.api[k] = siteWishes.api[k]; });
   Object.keys(siteEditor.api).forEach(function (k) { out.api[k] = siteEditor.api[k]; });
   Object.keys(shop.api).forEach(function (k) { out.api[k] = shop.api[k]; });
@@ -4991,6 +5180,8 @@ if (env.workDone) env.workDone('publish');
   Object.keys(mentors.api).forEach(function (k) { out.api[k] = mentors.api[k]; });
   Object.keys(noteTurn.api).forEach(function (k) { out.api[k] = noteTurn.api[k]; });
   Object.keys(link.api).forEach(function (k) { out.api[k] = link.api[k]; });
+  Object.keys(insta.api).forEach(function (k) { out.api[k] = insta.api[k]; });
+  out.insta = insta;
   Object.keys(bank.api).forEach(function (k) { out.api[k] = bank.api[k]; });
   out.link = link; out.bank = bank;
   out.mentors = mentors;
@@ -5454,7 +5645,7 @@ function tideContent(env, t) {
     }).reverse();
     var content = t.rows('content').filter(function (c) { return !c.deleted; }).map(function (c) {
       return {
-        id: c.id, created: c.created, type: c.type, platform: c.platform || '', format: c.format || '', pillar: c.pillar || '',
+        id: c.id, created: c.created, type: c.type, platform: c.platform || '', format: c.format || '', pillar: c.pillar || '', sellsPrintId: c.sellsPrintId || '',
         title: c.title || '', caption: c.caption || '', hashtags: c.hashtags || '', onScreen: c.onScreen || '',
         plan: t.list(c.plan), footageIds: t.list(c.footageIds), cta: c.cta || '', why: c.why || '', status: c.status,
         resumeOn: c.status === 'Parked' ? c.resumeOn || '' : '', notInterested: c.notInterested === true,
@@ -6255,7 +6446,7 @@ function tidePublish(env, t) {
         try {
           var res = dry ? { id: 'dry-run', link: '' } : env.publisher.post(n, {
             format: c.format, caption: (c.caption + (c.hashtags ? '\n\n' + c.hashtags : '')).trim(), title: c.title,
-            videoId: c.videoId, photoIds: t.list(c.footageIds).map(function (id) { var f = t.rows('footage').filter(function (x) { return x.id === id; })[0]; return f && f.kind === 'Photo' ? f.fileId : ''; }).filter(String)
+            productTags: t.tagsFor ? t.tagsFor(c.sellsPrintId) : [], videoId: c.videoId, photoIds: t.list(c.footageIds).map(function (id) { var f = t.rows('footage').filter(function (x) { return x.id === id; })[0]; return f && f.kind === 'Photo' ? f.fileId : ''; }).filter(String)
           });
           targets[n] = { status: dry ? 'dry-run' : 'ok', id: res.id, link: res.link || '', at: t.nowIso() };
           okAny = true;
@@ -7062,7 +7253,7 @@ function tideNotes(env, t) {
  */
 
 var TIDE_TALK = {
-  MIN_Q: 4, MAX_Q: 10, PER_ROUND: 4, MORE_Q: 5,   // a few questions, then it's written up (she can ask for more)
+  MIN_Q: 3, MAX_Q: 6, PER_ROUND: 3, MORE_Q: 3, LATER_DAYS: 7,   // a few questions, then it's written up (she can ask for more)
   KINDS: ['Product', 'Idea', 'Artwork', 'Story', 'App feature', 'Other'],
   STAGES: ['Idea', 'Questions', 'Decisions', 'Checks & costing', 'Sample', 'Listing & launch', 'Live'],
   // who signs off a stage before it can move on
@@ -7133,16 +7324,16 @@ function tideTalk(env, t) {
         rounds: t.list(r.rounds).map(function (rd) {
           return { questions: t.list(rd.questions).map(function (q, i) {
             var a = rd.answers ? t.list(rd.answers)[i] || {} : null;
-            return { question: q.question, options: t.list(q.options), answer: a ? (a.skip ? '(skipped)' : t.list(a.picked).map(function (p) { return q.options[p]; }).filter(Boolean).concat(a.text ? [a.text] : []).join('; ')) : null };
+            return { question: q.question, options: t.list(q.options), answer: a ? (a.later ? '(she\u2019ll think about it later: don\u2019t ask again)' : a.skip ? '(skipped)' : t.list(a.picked).map(function (p) { return q.options[p]; }).filter(Boolean).concat(a.text ? [a.text] : []).join('; ')) : null };
           }) };
         }),
-        answered: asked(r), min: K.MIN_Q, max: Number(r.maxQ) || K.MAX_Q, perRound: Number(env.settings.get().perRound) || K.PER_ROUND
+        answered: asked(r), min: K.MIN_Q, max: Math.min(Number(r.maxQ) || K.MAX_Q, K.MAX_Q + K.MORE_Q * 2), perRound: Math.min(K.PER_ROUND, Number(env.settings.get().perRound) || K.PER_ROUND)
       };
     }
     return {
       kind: 'product', job: r.aiJob, title: r.title, summary: r.summary || '', stage: r.stage, help: r.aiJob === 'help' ? helpCtx(r) : null,
       decisions: t.list(r.decisions), open: t.list(r.open), parts: t.list(r.parts), checks: t.list(r.checks),
-      sample: r.sample || {}, price: (r.pricing || {}).price || 0,
+      sample: r.sample || {}, price: (r.pricing || {}).price || 0, sizes: t.list((r.pricing || {}).sizes), venue: (r.pricing || {}).venue || null,
       toClear: t.list(r.checks).filter(function (c) { return c.status === 'To check' || (c.status === 'Problem' && !c.verdict); }).map(function (c) { return { id: c.id, item: c.item }; }),
       steer: tideSteer(tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()))
     };
@@ -7161,7 +7352,8 @@ function tideTalk(env, t) {
   function cleanOpen(list) {
     return t.list(list).slice(0, 20).map(function (o) {
       var opts = t.list(o && o.options).slice(0, 4).map(function (x) { return t.text(x, 120); }).filter(String), sg = Number(o && o.suggest);
-      return { q: t.text(o && o.q, 300), a: t.text(o && o.a, 1000), options: opts, suggest: isFinite(sg) && sg >= 0 && sg < opts.length ? Math.round(sg) : -1, suggestWhy: t.text(o && o.suggestWhy, 120) };
+      var lu = String(o && o.laterUntil || '');
+      return { q: t.text(o && o.q, 300), a: t.text(o && o.a, 1000), options: opts, suggest: isFinite(sg) && sg >= 0 && sg < opts.length ? Math.round(sg) : -1, suggestWhy: t.text(o && o.suggestWhy, 120), laterUntil: /^\d{4}-\d{2}-\d{2}$/.test(lu) ? lu : '' };
     }).filter(function (o) { return o.q; });
   }
   function cleanList(a, max, n) { return t.list(a).slice(0, max).map(function (x) { return t.text(x, n); }).filter(String); }
@@ -7463,9 +7655,13 @@ function tideTalk(env, t) {
         var a = t.list(answers)[i] || {};
         var picked = t.list(a.picked).map(Number).filter(function (n) { return n >= 0 && n < q.options.length; });
         if (!q.multi) picked = picked.slice(0, 1);
-        var text = t.text(a.text, 2000), skip = a.skip === true || (!picked.length && !text);
-        return { picked: skip ? [] : picked, text: skip ? '' : text, skip: skip };
+        var text = t.text(a.text, 2000), later = a.later === true, skip = later || a.skip === true || (!picked.length && !text);
+        return { picked: skip ? [] : picked, text: skip ? '' : text, skip: skip, later: later };
       });
+      // put off: each comes back by itself as a question of its own in a week
+      var until = t.addDays ? t.addDays(env.today(), K.LATER_DAYS) : env.today();
+      var laterQs = t.list(tp.laterQs).concat(round.questions.filter(function (q, i) { return clean[i].later; }).map(function (q) { return { question: q.question, options: t.list(q.options), multi: q.multi === true, until: until }; }));
+      if (laterQs.length !== t.list(tp.laterQs).length) env.table('topics').update(id, { laterQs: laterQs });
       var rounds = t.list(tp.rounds).slice();
       rounds[rounds.length - 1] = Object.assign({}, round, { answers: clean, answeredAt: t.nowIso(), answeredBy: env.user.role });
       env.table('topics').update(id, { rounds: rounds, updated: t.nowIso() });
@@ -7653,6 +7849,18 @@ function tideTalk(env, t) {
         what.push('parts and costs');
       }
       if ('price' in ch) { var pr = Number(ch.price); if (!isFinite(pr) || pr < 0) t.fail('The price needs to be a number.'); out.pricing = Object.assign({}, r.pricing, { price: Math.round(pr * 100) / 100 }); what.push('price'); }
+      if ('sizes' in ch || 'venue' in ch) {
+        var pc = Object.assign({}, out.pricing || r.pricing || {});
+        if ('sizes' in ch) pc.sizes = t.list(ch.sizes).slice(0, 12).map(function (z) {
+          z = z || {}; var p0 = Number(z.price);
+          return { name: t.text(z.name, 60), price: isFinite(p0) && p0 > 0 ? Math.round(p0 * 100) / 100 : 0,
+            lines: t.list(z.lines).slice(0, 20).map(function (l) { l = l || {}; var c = Number(l.cost); return { what: t.text(l.what, 80), cost: isFinite(c) && c > 0 ? Math.round(c * 100) / 100 : 0 }; }).filter(function (l) { return l.what || l.cost; }) };
+        }).filter(function (z) { return z.name || z.price || z.lines.length; });
+        if ('venue' in ch) { var v = ch.venue || {}, vv = Number(v.value); pc.venue = { name: t.text(v.name, 60), kind: v.kind === 'percent' || v.kind === 'wholesale' ? v.kind : 'none', value: isFinite(vv) && vv > 0 ? Math.round(vv * 100) / 100 : 0 }; }
+        // the first size's price is the product's price, so everything else (checks, the shop) keeps working
+        if (pc.sizes && pc.sizes.length && pc.sizes[0].price > 0 && !('price' in ch)) pc.price = pc.sizes[0].price;
+        out.pricing = pc; what.push('costing');
+      }
       if ('sample' in ch) { out.sample = { status: K.SAMPLE_STATUS.indexOf(ch.sample.status) >= 0 ? ch.sample.status : 'Not ordered', notes: t.text(ch.sample.notes, 2000) }; what.push('sample'); }
       if ('listing' in ch) { out.listing = Object.assign({}, r.listing, { copy: t.text(ch.listing.copy, 3000), posts: cleanList(ch.listing.posts, 5, 1200) }); what.push('listing'); }
       if ('artworkId' in ch) out.artworkId = t.text(ch.artworkId, 20);
@@ -7784,7 +7992,12 @@ function tideTalk(env, t) {
   var JOB_WAIT = { checks: 'Drafting the parts and checks…', clear: 'Checking the rules for selling it…', copy: 'Writing the listing and launch posts…' };
   function planOf(r) { return (r.research && r.research.plan) || null; }
   function money2(n) { n = Number(n) || 0; return '$' + (n % 1 ? n.toFixed(2) : String(n)); }
-  function unitCost(r) { return t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0); }
+  function unitCost(r) {
+    var parts = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
+    var z = t.list((r.pricing || {}).sizes)[0];
+    var sized = z ? t.list(z.lines).reduce(function (n, l) { return n + (Number(l.cost) || 0); }, 0) : 0;
+    return sized > 0 ? sized : parts;
+  }
   function nextOf(r, role) {
     if (r.parked) return null;
     var n = nextStep(r, role);
@@ -8004,6 +8217,16 @@ function tideTalk(env, t) {
   function wakePaused(today, tomorrow) {
     var out = [];
     env.lock(function () {
+      // questions she put off come back after a week, as a round of their own, once nothing else is waiting on the talk
+      t.rows('topics').forEach(function (r) {
+        if (r.deleted || r.parked === true || r.status === 'Your turn' || r.status === 'Thinking' || r.status === 'Wrapping') return;
+        var due = t.list(r.laterQs).filter(function (q) { return q.until && q.until <= today; });
+        if (!due.length) return;
+        var keep = t.list(r.laterQs).filter(function (q) { return !(q.until && q.until <= today); }), now = t.nowIso();
+        var rounds = t.list(r.rounds).concat([{ questions: due.map(function (q) { return { question: q.question, why: '', options: t.list(q.options), multi: q.multi === true, suggest: -1, suggestWhy: '' }; }), readyToWrap: true, by: 'Later', at: now }]);
+        env.table('topics').update(r.id, { rounds: rounds, laterQs: keep, status: 'Your turn', maxQ: asked(r) + due.length, updated: now });
+        out.push(['Back: ' + r.title, due.length === 1 ? 'A question you put off is back.' : due.length + ' questions you put off are back.']);
+      });
       t.rows('pipeline').forEach(function (r) {
         if (r.deleted || r.parked !== true || !r.resumeOn) return;
         if (r.resumeOn <= today) {
@@ -8213,15 +8436,15 @@ function tideTalk(env, t) {
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
     var planSt = t.planState ? t.planState() : null;
     var items = t.rows('pipeline').filter(function (r) { return !r.deleted; }).map(function (r) {
-      var unit = t.list(r.parts).reduce(function (n, p) { return n + (Number(p.cost) || 0) * (Number(p.qty) || 1); }, 0);
+      var unit = unitCost(r);
       var price = Number((r.pricing || {}).price) || 0;
       var keep = price > 0 ? TidePricing.keep(price, unit, fee, reg) : 0;
       return {
-        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, parked: r.parked === true, retired: r.retired === true, notInterested: r.notInterested === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
+        id: r.id, title: r.title, summary: r.summary || '', stage: r.stage, by: r.createdBy || '', parked: r.parked === true, retired: r.retired === true, notInterested: r.notInterested === true, resumeOn: r.parked === true ? r.resumeOn || '' : '',
         firstLook: !!(r.research && / · first look$/.test(String(r.research.by || ''))), printful: r.printful || null,
         day: tideDay({ product: true, stage: r.stage, parked: r.parked === true, retired: r.retired === true, since: r.parkedAt || r.updated }, env.now().getTime()), fromTopic: r.fromTopic || '', ideaId: r.ideaId || '', artworkId: r.artworkId || '',
         decisions: t.list(r.decisions), open: t.list(r.open), checks: t.list(r.checks), parts: t.list(r.parts), risks: t.list(r.risks),
-        price: price, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
+        price: price, sizes: t.list((r.pricing || {}).sizes), venue: (r.pricing || {}).venue || null, unitCost: Math.round(unit * 100) / 100, keep: Math.round(keep * 100) / 100, perWeek: keep > 0 ? Math.ceil(goal / keep) : 0, goal: goal,
         sample: r.sample || {}, listing: r.listing || {}, approvals: r.approvals || {}, gate: gateFor(r), clash: clashOf(r), blockers: blockers(r),
         needsMe: gateFor(r).indexOf(role) >= 0 && !(((r.approvals || {})[r.stage] || {})[role]) && !r.parked && !(t.planWaits && t.planWaits(r, planSt)),
         planStep: t.planStepOf ? t.planStepOf(r, planSt) : 0, planWaits: !!(t.planWaits && t.planWaits(r, planSt)),
@@ -8453,6 +8676,12 @@ var TIDE_GUIDE = [
   { id: 'g-bank', area: 'Email and bank', to: 'all', icon: 'account_balance', title: 'Sort a bank statement', say: 'Add a statement and tap where each line goes.', steps: ['Download a statement from the bank as CSV.', 'Money › Bank statement › Add a statement › Bring in.', 'Tap the suggestion, or “Something else”.', '“Not business” keeps it out, and is remembered.'], go: { view: 'money', tip: 'Bank statement.' } },
   { id: 'g-home-mode', area: 'Getting around', to: 'artist', icon: 'flag', title: 'Finish or Create', say: 'The switch at the top of Home sets it up for finishing what’s open, or for starting something.', steps: ['Open Home.', 'Tap Finish: your next step, today, and what’s closest to done.', 'Tap Create: Idea, Art, Note and a chat to talk it through.'], go: { view: 'home', tip: 'Finish or Create.' } },
   { id: 'g-circle-it', area: 'Getting around', to: 'artist', icon: 'gesture', title: 'Circle what you mean', say: 'Show exactly which part of the screen a suggestion is about.', steps: ['Open the screen it’s about.', 'Tap the suggestions button (top right) › Circle something.', 'Draw round it, say what about it, Add it.', 'Send.'], go: { view: 'home', tip: 'Top right.' } },
+  { id: 'g-for-you', area: 'Getting around', to: 'artist', icon: 'checklist', title: 'For you', say: 'Only the things that need you, each with one button.', steps: ['Home › For you.', 'Tap the button on a row to do it, or × for not now.'], go: { view: 'home', tip: 'For you.' } },
+  { id: 'g-later-q', area: 'Getting around', to: 'artist', icon: 'schedule', title: 'Think about it later', say: 'Every question has Later. It comes back by itself in a week.', steps: ['In a question, tap Later.'], go: { view: 'home', tip: 'For you.' } },
+  { id: 'g-costing', area: 'Products', to: 'all', icon: 'payments', title: 'Cost a product', say: 'A row per size: your costs, your price, a shop’s cut, what you keep.', steps: ['Open the product › Costing.', 'Type each cost, or From a quote.', 'Another size for each size you sell.'], go: { view: 'ideas', tip: 'Products.' } },
+  { id: 'g-receipt-list', area: 'Money', to: 'all', icon: 'receipt_long', title: 'A receipt with several things', say: 'Untick what isn’t for your art; the rest become expenses with the receipt kept.', steps: ['Record an expense › Camera, Gallery or File.', 'Wait for it to be read (up to a minute).', 'Untick, then Add.'], go: { view: 'money', tip: 'Record an expense.' } },
+  { id: 'g-stock', area: 'Money', to: 'all', icon: 'inventory_2', title: 'Opening stock', say: 'Stock from before your ABN, counted once.', steps: ['Money › Stock you already had › Add stock.', 'Selling some: Record a sale › From your opening stock.'], go: { view: 'money', tip: 'Stock you already had.' } },
+  { id: 'g-insta-shop', area: 'Posts', to: 'all', icon: 'storefront', title: 'Sell on Instagram', say: 'Your catalogue, kept in step by itself; tags on posts once Meta approves your shop.', steps: ['Settings › Link your accounts › Sell on Instagram.', 'Find my catalogue › Send now.', 'Commerce Manager › send the shop for review.', 'A post › Sells › the artwork.'], go: { view: 'settings', tip: 'Linked accounts.' } },
   { id: 'g-text-size', area: 'Getting around', to: 'all', icon: 'format_size', title: 'Bigger text', say: 'Make everything bigger on this phone.', steps: ['Open Settings.', 'Text size: A, A+ or A++.'], go: { view: 'settings', tip: 'At the top.' } },
   { id: 'g-shortcuts', area: 'Getting around', to: 'artist', icon: 'touch_app', title: 'Shortcuts on the icon', say: 'Long-press the Tide Book icon on your phone: Today, Calendar, Inspo, New note.', steps: ['Long-press the Tide Book icon.', 'Tap where you want to go.'], go: { view: 'home', tip: 'From your phone’s home screen.' } },
   { id: 'g-share', area: 'Getting around', to: 'artist', icon: 'send', title: 'Share to Tide Book', say: 'From Photos, Dropbox or Instagram: Share › Tide Book, then pick Inspo, Photos for posts or a Note.', steps: ['In another app, tap Share.', 'Pick Tide Book.', 'Choose where it goes.'], go: { view: 'home', tip: 'From another app.' } },
@@ -8552,6 +8781,24 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-22-simpler', on: '2026-11-22', to: 'artist', icon: 'auto_awesome', title: 'Simpler everywhere',
+    say: 'No more tapping ⓘ to read things: words are shorter and shown. Questions come one at a time with short answers, and every question has Later. Waiting is now “For you”: only what needs you, one button each. No more passphrase.',
+    steps: ['Home › For you.', 'In a question: tap an answer, My own, or Later (it comes back in a week).'], go: { view: 'home', tip: 'For you.' } },
+  { id: '2026-11-22-home-goal', on: '2026-11-22', to: 'artist', icon: 'schedule', title: 'Put the top goal off',
+    say: 'The clock on Home’s top card puts that goal off: until you next open Tide Book, tomorrow, next week, or never on Home.',
+    steps: ['Home › the clock on the top card.', 'Pick when it comes back.'], go: { view: 'home', tip: 'The top card.' } },
+  { id: '2026-11-22-costing', on: '2026-11-22', to: 'all', icon: 'payments', title: 'Costing, your way',
+    say: 'Each product has a Costing card: a row per size with your own costs, what others charge from the research, a shop’s cut (like Irukandji) and what you keep. “From a quote” reads a supplier’s quote for you.',
+    steps: ['Open a product.', 'Costing: add a size, its price and its costs.', 'Sold through a shop? Say what they take.'], go: { view: 'ideas', tip: 'Products.' } },
+  { id: '2026-11-22-receipts', on: '2026-11-22', to: 'all', icon: 'receipt_long', title: 'Receipts from anywhere',
+    say: 'Record an expense takes a photo, a picture from your gallery, or a file (like a PDF invoice). A receipt with several things on it becomes a list: untick what isn’t for your art, then Add.',
+    steps: ['Money › Record an expense.', 'Camera, Gallery or File.', 'Untick anything personal, then Add.'], go: { view: 'money', tip: 'Record an expense.' } },
+  { id: '2026-11-22-stock', on: '2026-11-22', to: 'all', icon: 'inventory_2', title: 'Stock you already had',
+    say: 'Count the stock you had before your ABN (at Irukandji, say) and guess what each cost. Selling from it then shows the real profit.',
+    steps: ['Money › Stock you already had.', 'Add what, where, how many and the cost each.', 'Record a sale › From your opening stock.'], go: { view: 'money', tip: 'Stock you already had.' } },
+  { id: '2026-11-22-insta-shop', on: '2026-11-22', to: 'all', icon: 'storefront', title: 'Sell on Instagram',
+    say: 'Your artworks can go into an Instagram shop and be tagged in posts; a tap opens their page to buy. Your website becomes a gallery first: the shop buttons and cart are gone from the front.',
+    steps: ['Settings › Link your accounts › Sell on Instagram.', 'Find or make your catalogue, then Send now.', 'In Commerce Manager, send your shop for review.', 'In a post: Sells › the artwork.'], go: { view: 'settings', tip: 'Linked accounts.' } },
   { id: '2026-11-22-circle', on: '2026-11-22', to: 'artist', icon: 'gesture', title: 'Circle it',
     say: 'In Suggestions and problems you can circle something on the screen and say what about it. Circle as many as you like.',
     steps: ['Tap the suggestions button (top right).', 'Tap Circle something, then draw round it with your finger.', 'Say what about it, then Add it (or Circle another).', 'Tap Send.'], go: { view: 'home', tip: 'The button at the top right.' } },
@@ -13957,50 +14204,35 @@ var Kit = (function () {
 
   /** A page's name, and (behind ⓘ) a line about what it's for. */
   function pageTitle(main, title, sub) {
-    var key = 'sub:' + title, open = !!(S.subOpen || {})[key];
-    var p = sub ? h('p', { class: 'page-sub', text: sub, hidden: !open }) : null;
-    var info = sub ? h('button', { type: 'button', class: 'info-btn press', 'aria-label': 'About this page', 'aria-expanded': String(open), title: 'About this page' }, icon('info')) : null;
-    if (info) info.addEventListener('click', function () { var o = p.hidden; p.hidden = !o; info.setAttribute('aria-expanded', String(o)); S.subOpen = S.subOpen || {}; S.subOpen[key] = o; K.haptic(); });
-    main.appendChild(rise(h('div', { class: 'page-head' }, h('h1', { class: 'page-title', text: title }), info), 0));
+    var line = sub ? briefOf(String(sub), false) : '';
+    var p = line ? h('p', { class: 'page-sub', text: line }) : null;
+    main.appendChild(rise(h('div', { class: 'page-head' }, h('h1', { class: 'page-title', text: title })), 0));
     if (p) main.appendChild(rise(p, 0));
   }
-  /** Help text that runs long shows its first words, with the rest behind ⓘ (one tap opens it). */
-  /** Quiet screens: explanations sit behind ⓘ. A row's line (the title already says what it is) becomes ⓘ alone;
-   *  help, notes and descriptions keep their first few words. Anything with a number or $ in it (prices, dates, counts)
-   *  stays as it is, and so does anything short. One tap on ⓘ shows it all. */
+  /** Less wordy, nothing hidden: long help and row lines show their first sentence (or first clause), with no ⓘ to
+   *  open. Anything with a figure in it (a price, a date, a count) stays whole, and so does anything short. */
   var ROW_SEL = '.li-sup, .next-opt-why, .nt-sug-why, .chk-why, .hand-why, .mn-sub, .cal-ev-s, .nt-sug-where span';
-  var TUCK_SEL = '.tf-help, .note, .body-s, .body-m, .empty .body-m, .sheet-body p, .priv-card p, .fc-next, .next-opt-why, ' + ROW_SEL;
-  var TUCK_SKIP = '.mn-msg, .nt-ed, .nt-paper, .md, .nt-card, .cal-blk, .toast, .tip-bubble, .tk-long, .price, .stat, .kpi, .money-big, figure, label, .tf, .ho-card, .nt-ver, .mn-feed';
+  var TUCK_SEL = '.tf-help, .note > span:not(.ms), .body-s, .body-m, .empty .body-m, .sheet-body p, .priv-card p, .fc-next, ' + ROW_SEL;
+  var TUCK_SKIP = '.mn-msg, .nt-ed, .nt-paper, .md, .nt-card, .cal-blk, .toast, .tip-bubble, .price, .stat, .kpi, .money-big, figure, label, .tf, .ho-card, .nt-ver, .mn-feed, .mail-reply, .cc-mark, .post-caption, .sum, [data-full]';
+  function briefOf(full, row) {
+    var max = row ? 64 : 110;
+    var t = full.replace(/^(First|Next|Note|Tip):\s*/i, '');
+    var m = /^(.+?[.!?])(\s|$)/.exec(t), one = m ? m[1] : t;
+    if (one.length <= max) return one.replace(/\.$/, row ? '' : '.');
+    var cut = one.slice(0, max), at = Math.max(cut.lastIndexOf(', '), cut.lastIndexOf(': '), cut.lastIndexOf(' – '), cut.lastIndexOf('; '));
+    if (at > max * 0.45) return cut.slice(0, at);
+    return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:–-]+$/, '');
+  }
   function tuck(el) {
-    if (!el || el.__tucking || !el.classList) return;
-    var target = el.classList.contains('note') ? el.querySelector(':scope > span:not(.ms)') : el;
-    if (!target) return;
-    var done = target.querySelector(':scope > .tk-more');
-    if (done && target.textContent.indexOf(target.__tuckedText || '\u0000') >= 0) return;
-    var full = done ? target.__full : target.textContent.trim();
-    var row = el.matches(ROW_SEL);
-    if (!full || full.length <= 26 || target.querySelector('a, button, input, select, textarea') || el.closest(TUCK_SKIP)) return;
-    if (!done && target.children.length && !el.classList.contains('note')) return;     // words with their own formatting stay
-    if (/[$€£]\s?\d|\d[\d.,]*\s?(%|cm|mm|kg|g\b|min|h\b|am|pm)|\b\d{1,2}:\d{2}\b|\b\d{4}\b/i.test(full) && full.length < 90) return;   // figures stay in sight
-    var words = full.replace(/^(First|Next|Note|Tip):\s*/i, '').split(/\s+/), keep = row ? 0 : Math.min(3, words.length);
-    var cut = keep ? words.slice(0, keep).join(' ').replace(/[,;:.–-]+$/, '') : '';
-    el.__tucking = true;
-    target.__full = full; target.__tuckedText = cut;
-    target.textContent = '';
-    var shortEl = cut ? h('span', { class: 'tk-short', text: cut + '…' }) : null, longEl = h('span', { class: 'tk-long', text: full, hidden: true });
-    var more = h('span', { class: 'tk-more press', role: 'button', tabindex: '0', 'aria-label': 'More: ' + full.slice(0, 80), 'aria-expanded': 'false' }, icon('info'));
-    function toggle(e) { e.stopPropagation(); e.preventDefault(); var o = longEl.hidden; longEl.hidden = !o; if (shortEl) shortEl.hidden = o; more.setAttribute('aria-expanded', String(o)); more.firstChild.replaceWith(icon(o ? 'expand_less' : 'info')); target.classList.toggle('tk-open', o); }
-    more.addEventListener('click', toggle);
-    more.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') toggle(e); });
-    if (shortEl) target.appendChild(shortEl);
-    target.appendChild(longEl);
-    // a row's ⓘ goes beside its title, and the line itself only shows once it's opened
-    var head = row && !shortEl ? el.previousElementSibling : null;
-    if (head && /li-head|next-opt-label|title|^b$/i.test(head.className || head.tagName) && !head.querySelector('.tk-more')) {
-      head.appendChild(more); el.classList.add('tk-folded');
-      more.addEventListener('click', function () { el.classList.toggle('tk-folded', longEl.hidden); });
-    } else target.appendChild(more);
-    target.classList.add('tk');
+    if (!el || el.__tucking || !el.classList || el.closest(TUCK_SKIP)) return;
+    var full = el.textContent.replace(/\s+/g, ' ').trim();
+    if (!full || full === el.__brief || full.length <= (el.matches(ROW_SEL) ? 70 : 110) || el.querySelector('a, button, input, select, textarea') || (el.children.length && !el.children[0].classList.contains('ms'))) return;
+    if (/[$€£]\s?\d|\d[\d.,]*\s?(%|cm|mm|kg|g\b|min|h\b|am|pm)|\b\d{1,2}:\d{2}\b|\b\d{4}\b/i.test(full) && full.length < 140) return;
+    var short = briefOf(full, el.matches(ROW_SEL));
+    if (short === full || short.length < 8) return;
+    el.__tucking = true; el.__brief = short;
+    var icn = el.querySelector(':scope > .ms');
+    el.textContent = ''; if (icn) el.appendChild(icn); el.appendChild(document.createTextNode(short));
     setTimeout(function () { el.__tucking = false; }, 0);
   }
   function tuckAll(root) { if (root && root.querySelectorAll) [].slice.call(root.querySelectorAll(TUCK_SEL)).forEach(tuck); }
@@ -14008,8 +14240,6 @@ var Kit = (function () {
     var mo = new MutationObserver(function (ms) {
       ms.forEach(function (m) {
         [].slice.call(m.addedNodes || []).forEach(function (nd) { if (nd.nodeType === 1) { if (nd.matches && nd.matches(TUCK_SEL)) tuck(nd); tuckAll(nd); } });
-        var t = m.target && m.target.nodeType === 1 ? m.target.closest && m.target.closest(TUCK_SEL) : null;
-        if (t && !t.__tucking && !(m.target.classList && (m.target.classList.contains('tk-long') || m.target.classList.contains('tk-short')))) { var tg = t.classList.contains('note') ? t.querySelector(':scope > span:not(.ms)') : t; if (tg && !tg.querySelector(':scope > .tk-more')) tuck(t); }
       });
     });
     mo.observe(document.body, { childList: true, subtree: true });
@@ -14335,8 +14565,26 @@ var Kit = (function () {
     return card;
   }
   /** The milestone she's on, and the one next step towards it: do it, or tick it off. */
+  /** Put the top goal off: until she next opens Tide Book, tomorrow, next week, or never (that goal only). */
+  function focusOff(g) {
+    var tmw = ymd(new Date(Date.now() + 864e5)), wk = ymd(new Date(Date.now() + 7 * 864e5));
+    K.sheet({ title: 'Not now', build: function (ctl) {
+      ctl.body.appendChild(h('p', { class: 'otg-lead', text: g.title }));
+      var l = h('div', { class: 'next-list' });
+      [['refresh', 'Next time I open it', 'open'], ['today', 'Tomorrow', tmw], ['date_range', 'Next week', wk], ['block', 'Never on Home', 'never']].forEach(function (o) {
+        l.appendChild(h('button', { type: 'button', class: 'next-opt press', onclick: function (e) {
+          K.setBusy(e.currentTarget, true);
+          var done = function () { ctl.close(); render(); undoCard(o[0] === 'block' ? 'It won’t show on Home.' : 'Put off.', function () { S.focusSkip = {}; return api('saveFocusHide', g.id, ''); }, 'Back.'); };
+          if (o[2] === 'open') { S.focusSkip = S.focusSkip || {}; S.focusSkip[g.id] = true; done(); return; }
+          api('saveFocusHide', g.id, o[2]).then(refresh).then(done).catch(fail);
+        } }, h('span', { class: 'next-opt-ic' }, icon(o[0])), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: o[1] }))));
+      });
+      ctl.body.appendChild(l);
+    } });
+  }
   function focusCard() {
-    var goals = (S.data.goals || []).filter(function (g) { return g.status !== 'Done'; }), ms = S.data.milestones || [], today = ymd(new Date());
+    var hide = S.data.focusHide || {}, skip = S.focusSkip || {}, today0 = ymd(new Date());
+    var goals = (S.data.goals || []).filter(function (g) { return g.status !== 'Done' && !skip[g.id] && !(hide[g.id] === 'never' || (hide[g.id] && hide[g.id] > today0)); }), ms = S.data.milestones || [], today = ymd(new Date());
     function nextOf(gs) {
       var best = null;
       gs.forEach(function (g) { var i = g.steps.findIndex ? g.steps.findIndex(function (s) { return !s.done; }) : -1; if (i < 0) return; var s = g.steps[i];
@@ -14380,7 +14628,7 @@ var Kit = (function () {
           K.setBusy(e.currentTarget, true);
           api('tickGoalStep', g.id, s.id, true).then(refresh).then(function () { cheer(); render(); undoCard('✓ ' + s.text, function () { return api('tickGoalStep', g.id, s.id, false); }, 'Back on.'); }).catch(fail);
         } }),
-        K.iconBtn('calendar_month', 'When', function () { openStepWhen(g, s); })));
+        K.iconBtn('schedule', 'Not now', function () { focusOff(g); })));
     return card;
   }
   function svgRing(pct, R, C) {
@@ -14391,32 +14639,50 @@ var Kit = (function () {
     var t = document.createElementNS(NS, 'text'); t.setAttribute('x', 28); t.setAttribute('y', 32); t.setAttribute('text-anchor', 'middle'); t.textContent = Math.round(pct * 100) + '%'; sv.appendChild(t);
     return sv;
   }
-  /** What's waiting for her, as a few counts (nothing shows when nothing waits). */
-  /** What's waiting for her: one count on Home, one list behind it. */
+  /** What's waiting for her: only things she has to do herself. Ideas Tide Book came up with, and anything parked, stay out. */
   function waitingParts() {
     var T = talkData();
+    function hers(p) { return !p.parked && !p.retired && !p.notInterested && !(p.stage === 'Idea' && p.by !== 'artist'); }
     return { posts: draftsToReview().filter(function (c) { return c.type === 'Post'; }).length + (S.data.questions || []).length,
       needs: needsList(), reports: (S.data.reports || []).filter(function (r) { return r.mine && (r.questions || []).length; }),
-      talks: T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }), oks: T.pipeline.filter(function (p) { return p.needsMe; }), todo: S.data.todo || [] };
+      talks: T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine && !tp.parked && !tp.dropped; }), oks: T.pipeline.filter(function (p) { return p.needsMe && hers(p); }), todo: S.data.todo || [] };
+  }
+  function waitingRows() {
+    var W = waitingParts(), out = [];
+    function add(ic, title, verb, go, clear) { out.push({ ic: ic, title: title, verb: verb, go: go, clear: clear }); }
+    if (W.posts) add('perm_media', W.posts === 1 ? 'A post' : W.posts + ' posts', 'Look', function () { S.contentTab = 'review'; go('content'); });
+    W.needs.forEach(function (e) { add('help', e.item.title, 'Answer', function () { K.sheet({ title: e.item.title, build: function (ctl) { ctl.body.appendChild(needsCard(e, function () { ctl.close(); })); } }); }); });
+    W.reports.forEach(function (r) { add('feedback', 'Your suggestion', 'Answer', function () { openReportQuestions(r); }); });
+    W.talks.forEach(function (tp) { add('forum', tp.title, 'Answer', function () { openTopic(tp.id); }); });
+    var okIds = {}; W.oks.forEach(function (p) { okIds[p.id] = true; add('inventory_2', p.title, 'OK it', function () { openItem(p.id); }); });
+    W.todo.forEach(function (t) {
+      if (t.productId && okIds[t.productId]) return;
+      var verb = t.mail ? 'Look' : t.bank ? 'Sort' : t.link ? 'Link' : t.site ? (t.kind === 'photo' ? 'Add photo' : 'Write it') : t.sitein ? 'Put it up' : t.productId ? 'Do it' : 'Do it';
+      var ic = t.mail ? 'mail' : t.bank ? 'account_balance' : t.link ? 'link' : t.site ? 'language' : t.sitein ? 'language' : t.productId ? 'front_hand' : 'radio_button_unchecked';
+      add(ic, t.text, verb, function () { todoGo(t); }, t.key ? function () { return api('clearTodo', t.key, t.text); } : null);
+    });
+    return out;
   }
   function needsStrip() {
-    var W = waitingParts(), n = W.posts + W.needs.length + W.reports.length + W.talks.length + W.oks.length + W.todo.length;
+    var n = waitingRows().length;
     if (!n) return null;
-    var kinds = [[W.posts, 'perm_media'], [W.needs.length + W.reports.length, 'help'], [W.talks.length + W.oks.length, 'forum'], [W.todo.length, 'checklist']].filter(function (k) { return k[0]; });
-    return h('button', { type: 'button', class: 'hm-wait press soft', onclick: openWaiting, 'aria-label': n + ' waiting for you' }, h('b', { text: String(n) }), h('span', { class: 'grow', text: 'Waiting' }),
-      kinds.map(function (k) { return icon(k[1]); }), icon('chevron_right'));
+    return h('button', { type: 'button', class: 'hm-wait press soft', onclick: openWaiting, 'aria-label': n + ' things for you' }, h('b', { text: String(n) }), h('span', { class: 'grow', text: n === 1 ? 'Thing for you' : 'Things for you' }), icon('chevron_right'));
   }
   function openWaiting() {
-    var W = waitingParts();
-    K.sheet({ title: 'Waiting', tall: true, build: function (ctl) {
-      var b = ctl.body;
-      function row(ic, label, fn) { b.appendChild(h('button', { type: 'button', class: 'li press', style: 'width:100%;margin-bottom:6px', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('div', { class: 'th-blank todo-ic' }, icon(ic)), h('div', { class: 'grow' }, h('div', { class: 'li-head', text: label })), icon('chevron_right'))); }
-      if (W.posts) row('perm_media', W.posts + (W.posts === 1 ? ' post to look at' : ' posts to look at'), function () { S.contentTab = 'review'; go('content'); });
-      W.needs.forEach(function (e) { b.appendChild(needsCard(e, function () { refresh().then(render); })); });
-      W.reports.forEach(function (r) { row('help', 'About your suggestion', function () { openReportQuestions(r); }); });
-      W.talks.forEach(function (tp) { row('forum', tp.title, function () { openTopic(tp.id); }); });
-      W.oks.forEach(function (p) { row('inventory_2', p.title, function () { openItem(p.id); }); });
-      var td = todoCard(); if (td) { var tt = td.querySelector('.section-title'); if (tt) tt.textContent = ''; b.appendChild(td); }
+    K.sheet({ title: 'For you', tall: true, build: function (ctl) {
+      function paint() {
+        var rows = waitingRows(), b = ctl.body; b.textContent = '';
+        if (!rows.length) { b.appendChild(h('p', { class: 'otg-lead', text: 'Nothing needs you. Enjoy it.' })); return; }
+        var l = h('div', { class: 'wt-list' });
+        rows.forEach(function (r) {
+          var row = h('div', { class: 'wt-row' }, h('span', { class: 'wt-ic' }, icon(r.ic)), h('span', { class: 'wt-t', text: r.title }),
+            btn('tonal', r.verb, { sm: true, onclick: function () { ctl.close(); setTimeout(r.go, 280); } }),
+            r.clear ? K.iconBtn('close', 'Not now', function () { r.clear().then(refresh).then(function () { render(); paint(); }).catch(fail); }) : null);
+          l.appendChild(row);
+        });
+        b.appendChild(l);
+      }
+      paint();
     } });
   }
   /** Everything she has open, and everything finished. Finishing, resting and letting go all close a loop. */
@@ -14599,12 +14865,27 @@ var Kit = (function () {
       return a.created < b.created ? 1 : -1;
     });
   }
+  /** Is it still just an idea, or is it something being made (to finish)? */
+  function ideaKind(x) {
+    var sc = x.scope || [], done = sc.filter(function (s) { return s.done; }).length;
+    if (x.stage === 'Live' || x.stage === 'Retired') return { k: 'done' };
+    if (x.stage === 'In progress' || x.stage === 'Ready' || x.stage === 'Awaiting artist' || done > 0) {
+      var next = sc.filter(function (s) { return !s.done; })[0];
+      return { k: 'doing', pct: sc.length ? done / sc.length : x.stage === 'Ready' ? 0.85 : 0.4, next: next ? next.text : x.stage === 'Ready' ? 'Finish it' : 'Next step' };
+    }
+    return { k: 'new' };
+  }
   function ideaRowAdmin(x, rank) {
-    return h('button', { class: 'idea press has-sky', type: 'button', onclick: function () { openIdea(x.id); } },
+    var ik = ideaKind(x);
+    var badge = ik.k === 'new' ? h('div', { class: 'ik-badge new' }, icon('lightbulb'), h('span', { text: 'New idea · grow it' }))
+      : ik.k === 'doing' ? h('div', { class: 'ik-badge doing' }, icon('flag'), h('span', { class: 'ik-next', text: 'Next: ' + ik.next }))
+      : h('div', { class: 'ik-badge done' }, icon('check_circle'), h('span', { text: 'Finished' }));
+    return h('button', { class: 'idea press has-sky ik-' + ik.k, type: 'button', onclick: function () { openIdea(x.id); } },
       skyStrip(x.day),
       h('span', { class: 'rank', text: String(rank) }),
-      K.ring(x.viability),
+      ik.k === 'doing' ? h('span', { class: 'ik-ring' }, svgRing(ik.pct, 22, 2 * Math.PI * 22)) : K.ring(x.viability),
       h('div', { class: 'grow' },
+        badge,
         h('div', { class: 't', text: x.title }),
         h('div', { class: 'sum', text: x.summary || x.note || 'No description yet.' }),
         h('div', { class: 'tags' },
@@ -14684,7 +14965,7 @@ var Kit = (function () {
       main.appendChild(rise(K.choices({
         row: true, label: 'Show', value: S.ideaFilter,
         options: [{ value: 'all', label: 'All' }, { value: 'review', label: 'To review' }, { value: 'progress', label: 'In progress' },
-          { value: 'needs', label: ADMIN ? 'Needs ' + artist() : 'Waiting on you' }, { value: 'live', label: 'Live' }, { value: 'parked', label: 'Resting' }],
+          { value: 'needs', label: ADMIN ? 'Needs ' + artist() : 'Waiting on you' }, { value: 'live', label: 'Finished' }],
         onChange: function (v) { S.ideaFilter = v; render(); }
       }), 1));
       var waiting = ideas.filter(researching);
@@ -14704,6 +14985,9 @@ var Kit = (function () {
         shown.forEach(function (x, i) { list.appendChild(ideaRowAdmin(x, i + 1)); });
         main.appendChild(rise(list, 2));
       }
+      var nParked = ideas.filter(function (x) { return x.stage === 'Parked'; }).length;
+      if (S.ideaFilter === 'parked') main.appendChild(rise(h('div', { style: 'text-align:center;margin-top:10px' }, h('button', { type: 'button', class: 'hm-link press', onclick: function () { S.ideaFilter = 'all'; render(); } }, icon('arrow_back'), 'Back to all')), 3));
+      else if (nParked) main.appendChild(rise(h('div', { style: 'text-align:center;margin-top:10px' }, h('button', { type: 'button', class: 'hm-link press', onclick: function () { S.ideaFilter = 'parked'; render(); } }, icon('bedtime'), 'Parked (' + nParked + ')')), 3));
     } else {
       var needs = needsList().filter(function (e) { return e.kind === 'idea'; });
       needs.forEach(function (e, i) { main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, needsCard(e)), 1)); });
@@ -15439,22 +15723,19 @@ var Kit = (function () {
     var P = privacy();
     if (ADMIN) return h('div', { class: 'priv-note' }, icon('lock'), h('span', { text: cap(artist()) + '\u2019s own notes, conversations and inspiration notes are private to her. You see only the decisions she chooses to send you.' }));
     if (!P.available || !P.mine) return null;
-    if (P.state === 'none') return h('div', { class: 'priv-card' }, h('div', { class: 'priv-h' }, icon('lock'), h('b', { text: 'Make your writing private' })),
-      h('p', { text: 'What you write here is yours. Choose a passphrase and it\u2019s locked away, so only you can ever read it.' }),
-      btn('filled', 'Choose a passphrase', { icon: 'lock', onclick: openPrivacySetup }), h('button', { type: 'button', class: 'priv-more', onclick: openPrivacyAbout }, 'How it works'));
+    // no lock on her side: once it's switched off nothing is asked again. A lock from before is opened one last time.
     if (P.state === 'locked') {
       var pass = K.textField({ label: 'Your passphrase', type: 'password', compact: true, maxlength: 200 });
-      var go = btn('filled', 'Unlock', { icon: 'lock_open', onclick: function () {
+      var go = btn('filled', 'Open it for good', { icon: 'lock_open', onclick: function () {
         K.setBusy(go, true);
-        api('vaultUnlock', pass.input.value).then(refresh).then(function () { K.haptic('success'); render(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+        api('vaultOff', pass.input.value).then(refresh).then(function () { K.haptic('success'); render(); toast('✓ Open. No more passphrase.'); }).catch(function (e) { K.setBusy(go, false); fail(e); });
       } });
       pass.input.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
-      return h('div', { class: 'priv-card' }, h('div', { class: 'priv-h' }, icon('lock'), h('b', { text: 'Your private writing is locked' })),
-        h('p', { text: 'Only your passphrase opens it. Nobody else can read it, not even ' + adminName() + '.' }), pass, h('div', { class: 'row', style: 'gap:10px;margin-top:10px;flex-wrap:wrap' }, go,
+      return h('div', { class: 'priv-card' }, h('div', { class: 'priv-h' }, icon('lock_open'), h('b', { text: 'One last time' })),
+        h('p', { text: 'Type your passphrase once more. After that there’s no lock to open.' }), pass, h('div', { class: 'row', style: 'gap:10px;margin-top:10px;flex-wrap:wrap' }, go,
           h('button', { type: 'button', class: 'priv-more', onclick: openPrivacyRecover }, 'Forgotten it?')));
     }
-    return h('div', { class: 'priv-note mine' }, icon('lock'), h('span', { text: 'Private to you. ' + adminName() + ' only sees decisions you choose to send him.' }),
-      h('button', { type: 'button', class: 'priv-more', onclick: function () { api('vaultLock').then(refresh).then(function () { toast('Locked.'); render(); }).catch(fail); } }, 'Lock now'));
+    return null;
   }
   function openPrivacyAbout() {
     K.sheet({ title: 'Your private writing', build: function (ctl) {
@@ -15488,12 +15769,12 @@ var Kit = (function () {
   }
   function openPrivacyRecover() {
     K.sheet({ title: 'Use your recovery code', build: function (ctl) {
-      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'The code you wrote down when you set this up, and a new passphrase to use from now on.' }));
-      var c = K.textField({ label: 'Recovery code', maxlength: 40 }), n = K.textField({ label: 'New passphrase', type: 'password', maxlength: 200 });
-      ctl.body.append(h('div', { class: 'field-gap' }, c, n));
-      var go = btn('filled', 'Unlock', { icon: 'lock_open', lg: true, block: true, onclick: function () {
+      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'The code you wrote down when you set it up.' }));
+      var c = K.textField({ label: 'Recovery code', maxlength: 40 });
+      ctl.body.appendChild(c);
+      var go = btn('filled', 'Open it for good', { icon: 'lock_open', lg: true, block: true, onclick: function () {
         K.setBusy(go, true);
-        api('vaultRecover', c.input.value, n.input.value).then(refresh).then(function () { K.haptic('success'); toast('Unlocked, with your new passphrase.'); ctl.close(); render(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
+        api('vaultOff', c.input.value).then(refresh).then(function () { K.haptic('success'); toast('✓ Open. No more passphrase.'); ctl.close(); render(); }).catch(function (e) { K.setBusy(go, false); fail(e); });
       } });
       ctl.foot.appendChild(go);
     } });
@@ -15693,42 +15974,47 @@ var Kit = (function () {
           if (!tp.mine && !ADMIN) ctl.body.appendChild(note('Waiting for ' + tp.by + ' to answer.', 'forum'));
           else {
             if (!tp.mine) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('These are ' + tp.by + '’s questions. You can answer for her if she asks you to.', 'info')));
-            var answers = round.questions.map(function (q) { return { picked: q.suggest >= 0 ? [q.suggest] : [], text: '' }; });
-            var allPicked = round.questions.every(function (q) { return q.suggest >= 0; });
-            if (allPicked) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('A suggested answer is picked for each. Change any that aren’t right, then send.', 'auto_awesome')));
-            round.questions.forEach(function (q, qi) {
-              var card = h('div', { class: 'card pad talk-q', style: 'margin-bottom:12px' });
-              card.appendChild(h('div', { class: 'title-m', text: q.question }));
-              if (q.why) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:4px;color:var(--on-surface-variant)', text: q.why }));
-              var chips = h('div', { class: 'choices', style: 'margin:12px 0 10px' });
-              var btns = q.options.map(function (o, oi) {
-                var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String(answers[qi].picked.indexOf(oi) >= 0) }, o);
-                b.addEventListener('click', function () {
-                  var on = answers[qi].picked.indexOf(oi) >= 0;
-                  if (q.multi) answers[qi].picked = on ? answers[qi].picked.filter(function (x) { return x !== oi; }) : answers[qi].picked.concat([oi]);
-                  else answers[qi].picked = on ? [] : [oi];
-                  btns.forEach(function (bb, bi) { bb.setAttribute('aria-pressed', String(answers[qi].picked.indexOf(bi) >= 0)); });
-                  K.haptic();
-                });
-                chips.appendChild(b);
-                return b;
+            // one question at a time: tap an answer and the next one comes; Later puts it off for a week
+            var answers = round.questions.map(function () { return { picked: [], text: '' }; }), qi = 0, total = round.questions.length;
+            var stage = h('div', { class: 'q1' }), sending = false;
+            ctl.body.appendChild(stage);
+            function finishRound(wrap) {
+              if (sending) return; sending = true;
+              stage.textContent = ''; stage.appendChild(note('Sending…', 'hourglass_top'));
+              api('answerRound', id, answers, wrap ? { wrap: true } : undefined).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (e) { sending = false; paint(); fail(e); });
+            }
+            function next() { K.haptic(); if (qi < total - 1) { qi++; paint(); } else finishRound(false); }
+            function paint() {
+              var q = round.questions[qi], a = answers[qi];
+              stage.textContent = '';
+              stage.appendChild(h('div', { class: 'q1-top' }, h('span', { class: 'q1-n', text: (qi + 1) + ' of ' + total }),
+                h('span', { class: 'q1-dots' }, round.questions.map(function (x, i) { return h('i', { class: i < qi ? 'done' : i === qi ? 'now' : '' }); }))));
+              var card = h('div', { class: 'q1-card' }, h('div', { class: 'q1-q', text: q.question }));
+              var chips = h('div', { class: 'q1-opts' });
+              var order = q.options.map(function (o, oi) { return oi; });
+              if (q.suggest >= 0) order = [q.suggest].concat(order.filter(function (x) { return x !== q.suggest; }));
+              order.forEach(function (oi) {
+                var on = a.picked.indexOf(oi) >= 0;
+                chips.appendChild(h('button', { type: 'button', class: 'q1-opt press' + (on ? ' on' : '') + (oi === q.suggest ? ' sug' : ''), 'aria-pressed': String(on), onclick: function () {
+                  if (q.multi) { a.picked = on ? a.picked.filter(function (x) { return x !== oi; }) : a.picked.concat([oi]); paint(); }
+                  else { a.picked = [oi]; a.later = false; next(); }
+                } }, q.options[oi]));
               });
-              if (q.multi) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Pick any that fit.' }));
-              if (q.suggest >= 0 && q.suggestWhy) card.appendChild(h('div', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Suggested: ' + q.options[q.suggest] + ' (' + q.suggestWhy + ')' }));
-              card.append(chips, K.textField({ label: 'In my own words', multiline: true, compact: true, maxlength: 2000, onInput: function (v) { answers[qi].text = v; } }));
-              ctl.body.appendChild(card);
-            });
-            ctl.body.appendChild(h('p', { class: 'tf-help', style: 'margin:0 4px 8px', text: 'Leave any you’d rather skip.' }));
-            var send = btn('filled', allPicked ? 'Send these answers' : 'Send answers', { icon: 'send', lg: true, block: true });
-            send.addEventListener('click', function () {
-              K.setBusy(send, true);
-              api('answerRound', id, answers).then(refresh).then(function () { K.haptic('success'); reopen(); }).catch(function (e) { K.setBusy(send, false); fail(e); });
-            });
-            ctl.foot.appendChild(send);
-            ctl.body.appendChild(h('div', { style: 'text-align:center;margin:6px 0 10px' }, btn('tonal', 'Write it up', { icon: 'done_all', onclick: function (e) {
-              K.setBusy(e.currentTarget, true);
-              api('answerRound', id, answers, { wrap: true }).then(refresh).then(reopen).catch(fail);
-            } })));
+              card.appendChild(chips);
+              var own = { open: !!a.text }, ownBox = h('div', { class: 'q1-own', hidden: !own.open });
+              var tf = K.textField({ label: 'My own answer', multiline: true, compact: true, maxlength: 2000, value: a.text, onInput: function (v) { a.text = v; } });
+              ownBox.append(tf, btn('filled', 'Next', { icon: 'arrow_forward', onclick: function () { if (!a.text.trim()) { tf.input.focus(); return; } a.later = false; next(); } }));
+              card.appendChild(ownBox);
+              card.appendChild(h('div', { class: 'q1-more' },
+                h('button', { type: 'button', class: 'q1-link press', onclick: function () { ownBox.hidden = !ownBox.hidden; if (!ownBox.hidden) tf.input.focus(); } }, icon('edit'), 'My own'),
+                h('button', { type: 'button', class: 'q1-link press', onclick: function () { a.picked = []; a.text = ''; a.later = true; toast('Back in a week'); next(); } }, icon('schedule'), 'Later'),
+                q.multi && a.picked.length ? btn('filled', 'Next', { sm: true, icon: 'arrow_forward', onclick: next }) : null));
+              stage.appendChild(card);
+              stage.appendChild(h('div', { class: 'q1-foot' },
+                qi > 0 ? btn('text', 'Back', { icon: 'arrow_back', onclick: function () { qi--; paint(); } }) : h('span'),
+                btn('text', 'That’s enough', { icon: 'done_all', onclick: function () { finishRound(true); } })));
+            }
+            paint();
           }
         } else if (tp.status === 'Done' && tp.outcome) {
           var o = tp.outcome, f = tp.filed || {};
@@ -15802,8 +16088,7 @@ var Kit = (function () {
     var T = talkData(), showParked = S.pipeFilter === 'parked';
     function resting(p) { return p.parked || p.retired; }
     main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note('From idea to live. ' + (ADMIN ? cap(artist()) + '’s' : 'Your') + ' OK moves each stage on; ' + adminName() + ' is asked too only if a check finds a problem or the price doesn’t cover the costs. First goal: ' + money(T.goal) + ' a week.', 'sell')), 2));
-    main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({ row: true, label: 'Show', value: showParked ? 'parked' : 'active',
-      options: [{ value: 'active', label: 'Active' }, { value: 'parked', label: 'Resting' }], onChange: function (v) { S.pipeFilter = v; render(); } })), 2));
+    if (showParked) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, h('button', { type: 'button', class: 'hm-link press', onclick: function () { S.pipeFilter = 'active'; render(); } }, icon('arrow_back'), 'Parked: back to all')), 2));
     var items = T.pipeline.filter(function (p) { return showParked ? resting(p) : !resting(p); }), i = 3;
     if (!items.length) main.appendChild(rise(emptyState('sell', 'Nothing here', ADMIN ? 'Add a product, or load the saved ideas.' : 'Products appear here as they’re planned.'), 3));
     T.stages.forEach(function (stage) {
@@ -15811,9 +16096,10 @@ var Kit = (function () {
       if (!here.length) return;
       var sec = section(stage), l = h('div', { class: 'list' });
       here.forEach(function (p) {
-        l.appendChild(h('button', { class: 'li press has-sky', type: 'button', onclick: function () { openItem(p.id); } },
+        var isNew = p.stage === 'Idea' || p.stage === 'Questions';
+        l.appendChild(h('button', { class: 'li press has-sky ' + (isNew ? 'ik-new' : p.stage === 'Live' ? 'ik-done' : 'ik-doing'), type: 'button', onclick: function () { openItem(p.id); } },
           skyStrip(p.day),
-          h('div', { class: 'th-blank' }, icon('sell')),
+          h('div', { class: 'th-blank ik-th' }, icon(isNew ? 'lightbulb' : p.stage === 'Live' ? 'check_circle' : 'flag')),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
             h('div', { class: 'li-sup wrap2', text: p.summary || ' ' }),
             p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null,
@@ -15824,6 +16110,8 @@ var Kit = (function () {
       sec.appendChild(l);
       main.appendChild(rise(sec, i++));
     });
+    var nRest = T.pipeline.filter(resting).length;
+    if (!showParked && nRest) main.appendChild(rise(h('div', { style: 'text-align:center;margin-top:10px' }, h('button', { type: 'button', class: 'hm-link press', onclick: function () { S.pipeFilter = 'parked'; render(); } }, icon('bedtime'), 'Parked (' + nRest + ')')), i++));
     if (ADMIN && !T.pipeline.length) main.appendChild(rise(h('div', { style: 'margin-top:12px' }, btn('outlined', 'Load the saved ideas', { icon: 'download', block: true, onclick: function (e) {
       K.setBusy(e.currentTarget, true); api('loadBacklog').then(function (r) { return refresh().then(function () { toast(r.added + ' added.'); render(); }); }).catch(fail);
     } })), i++));
@@ -15884,7 +16172,7 @@ var Kit = (function () {
         S.data.website && S.data.website.live ? h('a', { class: 'btn tonal sm press', href: S.data.website.live, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'See it on your website' })) : null,
         btn('text', 'Its shop page', { sm: true, icon: 'storefront', onclick: function () { saveFirst().then(function () { openPrint(n.print, reopen); }).catch(fail); } })) : null);
     var hers = n.who === 'hers';
-    var whoLine = h('div', { class: 'label-s next-who' }, icon(n.wait ? 'hourglass_top' : hers ? 'front_hand' : 'auto_awesome'), n.wait ? 'Working on it' : hers ? 'Your turn' : 'Tide Book can do this');
+    var whoLine = h('div', { class: 'label-s next-who' }, icon(n.wait ? 'hourglass_top' : hers ? 'front_hand' : 'auto_awesome'), n.wait ? 'Tide Book is on it' : hers ? 'Needed from you now' : 'Tide Book can do this now');
     if (n.wait) {
       var card = h('div', { class: 'card pad next-card wait', style: 'margin:10px 0 14px' }, whoLine,
         h('div', { class: 'title-m', style: 'margin-top:2px', text: n.label }),
@@ -15916,13 +16204,13 @@ var Kit = (function () {
     (n.more || []).forEach(function (m) { opts.push({ kind: m.kind, ic: 'verified', label: m.label, why: m.why || '' }); });
     if (n.no) opts.push({ kind: n.no, ic: n.no === 'fixno' || n.no === 'decline' ? 'front_hand' : 'close', label: n.noLabel || 'No go: I’ll do it myself', why: NO_WHY[n.no] || '' });
     var canOpen = opts.length > 0 || !!n.own || !!n.why;
-    var open = !!NEXT_OPEN[p.id];
-    var chev = canOpen ? h('span', { class: 'next-chev' }, icon('expand_more')) : null;
-    var head = h('div', { class: 'next-head', role: canOpen ? 'button' : null, tabindex: canOpen ? '0' : null, 'aria-expanded': canOpen ? String(open) : null },
+    var open = true;
+    var chev = null;
+    var head = h('div', { class: 'next-head' },
       h('div', { class: 'grow' }, whoLine, h('div', { class: 'title-m', style: 'margin-top:2px', text: n.label })), chev);
     var body = h('div', { class: 'next-body' });
     var card = h('div', { class: 'card pad next-card' + (hers ? ' hers' : '') + (open ? ' open' : ''), style: 'margin:10px 0 14px' }, head, body);
-    function toggle() { if (!canOpen) return; open = !open; NEXT_OPEN[p.id] = open; card.classList.toggle('open', open); head.setAttribute('aria-expanded', String(open)); }
+    function toggle() { return; open = !open; NEXT_OPEN[p.id] = open; card.classList.toggle('open', open); head.setAttribute('aria-expanded', String(open)); }
     head.addEventListener('click', toggle);
     head.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
     if (!open && opts.length) head.querySelector('.grow').appendChild(h('div', { class: 'body-s next-peek', text: opts.length + (n.own ? 1 : 0) + ' choices · tap to see them' }));
@@ -15950,7 +16238,7 @@ var Kit = (function () {
     return card;
   }
   /** Her checklist on a product: only what needs her own hands. Everything else is Tide Book's, with her go. */
-  var HAND_ALL = {}, HAND_PEEK = {}, HAND_SHOW = 5;
+  var HAND_ALL = {}, HAND_PEEK = {}, HAND_SHOW = 99;
   function handList(p, saveFirst, reopen) {
     var L = p.hands || [];
     if (!L.length) return null;
@@ -16034,13 +16322,14 @@ var Kit = (function () {
       paintAll();
       sec.appendChild(h('div', { style: 'margin-top:8px' }, allBtn));
     }
-    // what's later or done folds away
-    if (nLater || nDone) {
-      var rest = h('div', { hidden: true });
-      L.forEach(function (x) { if (x.state !== 'now') rowFor(x, rest); });
-      sec.appendChild(h('div', { style: 'margin-top:6px' }, btn('text', [nLater ? nLater + ' for later' : '', nDone ? nDone + ' done' : ''].filter(String).join(' · '), { sm: true, icon: 'unfold_more', onclick: function () { rest.hidden = !rest.hidden; } })));
-      sec.appendChild(rest);
-    }
+    // put off for later, and done: each in a section of its own
+    [['later', 'schedule', 'Later'], ['done', 'check_circle', 'Done']].forEach(function (g) {
+      var these = L.filter(function (x) { return x.state === g[0]; });
+      if (!these.length) return;
+      var box = h('div', { class: 'hand-sec ' + g[0] }, h('div', { class: 'hand-sec-h' }, icon(g[1]), h('span', { text: g[2] + ' (' + these.length + ')' })));
+      these.forEach(function (x) { rowFor(x, box); });
+      sec.appendChild(box);
+    });
     return sec;
   }
   /** The conversation on one checklist item: just the steps to get it done, with Tide Book doing what it can. */
@@ -16210,18 +16499,132 @@ var Kit = (function () {
     ]);
   }
 
+  function money2(n) { return money(Number(n) || 0, { cents: true }); }
+  /** The costing card on a product. Each size: her costs (lines she types, or read from a quote), her price, what
+   *  others charge for something like it (the research), what a venue takes, and what she keeps. */
+  function costingCard(p, f, touch, saveFirst, reopen) {
+    var s = S.data.settings, R = p.research || {}, mk = R.costing || {}, comps = (R.comparables || []).map(function (c) { return Number(c.price) || 0; }).filter(function (x) { return x > 0; });
+    var lo = comps.length ? Math.min.apply(null, comps) : 0, hi = comps.length ? Math.max.apply(null, comps) : 0;
+    var card = h('div', { class: 'cost-card' }), body = h('div');
+    card.append(h('div', { class: 'cost-h' }, icon('payments'), h('b', { text: 'Costing' })), body);
+    if (!f.sizes.length) f.sizes = [{ name: '', price: f.price || 0, lines: (f.parts || []).filter(function (x) { return x.cost > 0; }).map(function (x) { return { what: x.part, cost: Math.round(x.cost * (x.qty || 1) * 100) / 100 }; }) }];
+    function keepOf(z) {
+      var cost = z.lines.reduce(function (n, l) { return n + (Number(l.cost) || 0); }, 0), price = Number(z.price) || 0, V = f.venue || {};
+      var cut = V.kind === 'percent' ? price * (V.value || 0) / 100 : 0, gets = V.kind === 'wholesale' ? (V.value || 0) : price - cut;
+      var keep = gets > 0 ? TidePricing.keep(gets, cost, V.kind === 'wholesale' ? 0 : s.paymentFeePct, S.data.gstRegistered) : 0;
+      return { cost: cost, price: price, cut: cut, gets: gets, keep: keep };
+    }
+    var sums = [];
+    function paint() {
+      body.textContent = ''; sums = [];
+      // what others charge, from the research
+      if (lo || mk.price) body.appendChild(h('div', { class: 'cost-mkt' }, icon('travel_explore'), h('span', { text: (lo ? 'Others charge ' + (lo === hi ? money2(lo) : money2(lo) + '–' + money2(hi)) : 'Research suggests ' + money2(mk.price)) + (mk.low || mk.high ? ' · about ' + money2(mk.low || 0) + '–' + money2(mk.high || 0) + ' to make' : '') })));
+      f.sizes.forEach(function (z, zi) {
+        var k = keepOf(z), row = h('div', { class: 'cost-size' });
+        row.appendChild(h('div', { class: 'cost-top' },
+          h('input', { class: 'cost-name', value: z.name, placeholder: f.sizes.length > 1 ? 'Size ' + (zi + 1) : 'Size or kind (e.g. A6)', 'aria-label': 'Size', maxlength: 60, oninput: function (e) { z.name = e.target.value; touch(); } }),
+          h('label', { class: 'cost-price' }, h('span', { text: '$' }), h('input', { inputmode: 'decimal', value: z.price || '', placeholder: 'Price', 'aria-label': 'Price for ' + (z.name || 'this size'), oninput: function (e) { z.price = K.num(e.target.value); if (zi === 0) f.price = z.price; touch(); sum(); } })),
+          f.sizes.length > 1 ? K.iconBtn('close', 'Take this size off', function () { f.sizes.splice(zi, 1); touch(); paint(); }) : null));
+        var lines = h('div', { class: 'cost-lines' });
+        z.lines.forEach(function (l, li) {
+          lines.appendChild(h('div', { class: 'cost-line' },
+            h('input', { class: 'cost-what', value: l.what, placeholder: 'Cost (e.g. printing)', 'aria-label': 'What the cost is', maxlength: 80, oninput: function (e) { l.what = e.target.value; touch(); } }),
+            h('label', { class: 'cost-amt' }, h('span', { text: '$' }), h('input', { inputmode: 'decimal', value: l.cost || '', placeholder: '0', 'aria-label': 'How much', oninput: function (e) { l.cost = K.num(e.target.value); touch(); sum(); } })),
+            K.iconBtn('close', 'Take this cost off', function () { z.lines.splice(li, 1); touch(); paint(); })));
+        });
+        var sumEl = h('div', { class: 'cost-sum' });
+        function sum() {
+          var k2 = keepOf(z);
+          sumEl.textContent = '';
+          sumEl.appendChild(h('span', { text: 'Costs ' + money2(k2.cost) }));
+          if ((f.venue || {}).kind === 'percent' || (f.venue || {}).kind === 'wholesale') sumEl.appendChild(h('span', { text: (f.venue.name || 'Venue') + ' ' + (f.venue.kind === 'percent' ? 'takes ' + money2(k2.cut) : 'pays ' + money2(k2.gets)) }));
+          sumEl.appendChild(h('b', { class: k2.keep < 0 ? 'neg' : '', text: k2.price || f.venue.kind === 'wholesale' ? 'You keep ' + money2(k2.keep) : 'Add a price' }));
+        }
+        sum(); sums.push(sum);
+        row.append(lines, h('div', { class: 'cost-acts' },
+          h('button', { type: 'button', class: 'q1-link press', onclick: function () { z.lines.push({ what: '', cost: 0 }); paint(); setTimeout(function () { var ins = row.querySelectorAll('.cost-what'); if (ins.length) ins[ins.length - 1].focus(); }, 30); } }, icon('add'), 'Cost'),
+          h('button', { type: 'button', class: 'q1-link press', onclick: function () { readQuote(function (items) { items.forEach(function (it) { z.lines.push({ what: it.what, cost: it.amount }); }); touch(); paint(); }); } }, icon('upload_file'), 'From a quote')), sumEl);
+        body.appendChild(row);
+      });
+      body.appendChild(h('div', { class: 'cost-acts' }, h('button', { type: 'button', class: 'q1-link press', onclick: function () {
+        var from = f.sizes[f.sizes.length - 1];
+        f.sizes.push({ name: '', price: 0, lines: from ? from.lines.map(function (l) { return { what: l.what, cost: 0 }; }) : [] }); touch(); paint();
+      } }, icon('add'), 'Another size')));
+      // a place that sells it for her
+      var V = f.venue = f.venue || { name: '', kind: 'none', value: 0 };
+      var vbox = h('div', { class: 'cost-venue' }, h('div', { class: 'label-m', text: 'Sold through a shop or venue?' }),
+        K.choices({ row: true, label: 'Venue', value: V.kind, options: [{ value: 'none', label: 'No' }, { value: 'percent', label: 'They take a %' }, { value: 'wholesale', label: 'They buy it' }], onChange: function (v) { V.kind = v || 'none'; touch(); paint(); } }));
+      if (V.kind !== 'none') vbox.appendChild(h('div', { class: 'cols', style: 'margin-top:10px' },
+        K.textField({ label: 'Where', value: V.name, compact: true, maxlength: 60, placeholder: 'e.g. Irukandji', onInput: function (v) { V.name = v; touch(); } }),
+        K.textField({ label: V.kind === 'percent' ? 'They take' : 'They pay each', suffix: V.kind === 'percent' ? '%' : '', prefix: V.kind === 'percent' ? '' : '$', inputmode: 'decimal', compact: true, value: V.value || '', onInput: function (v) { V.value = K.num(v); touch(); sums.forEach(function (fn) { fn(); }); } })));
+      body.appendChild(vbox);
+    }
+    paint();
+    return card;
+  }
+  /** A supplier's quote or a receipt (photo, screenshot or PDF), read on the PC into lines she can tick. */
+  function pickReceiptFile(cb, opts) {
+    var input = h('input', { type: 'file', accept: opts && opts.camera ? 'image/*' : 'image/*,application/pdf', hidden: true });
+    if (opts && opts.camera) input.setAttribute('capture', 'environment');
+    input.addEventListener('change', function () { var file = input.files[0]; input.remove(); if (file) cb(file); });
+    document.body.appendChild(input); input.click();
+  }
+  function fileToData(file) {
+    if (/^image\//.test(file.type)) return K.prepareImage(file).then(function (p) { return { type: 'image', data: p.full, thumb: p.thumb, name: file.name }; });
+    return new Promise(function (ok, bad) { var fr = new FileReader(); fr.onload = function () { ok({ type: /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name) ? 'pdf' : 'other', data: String(fr.result), name: file.name }); }; fr.onerror = function () { bad(new Error('That file couldn’t be read.')); }; fr.readAsDataURL(file); });
+  }
+  /** Reads it (a few seconds to a minute), then calls back with the result. */
+  function scanFile(fd) {
+    return api('readReceipt', { type: fd.type, data: fd.data, name: fd.name }).then(function (r) {
+      return new Promise(function (ok, bad) {
+        var tries = 0;
+        (function poll() {
+          api('receiptResult', r.id).then(function (x) { if (x.status === 'done') ok(x.result); else if (x.status === 'failed') bad(new Error(x.error || 'It couldn’t be read. Type it in instead.')); else if (++tries > 90) bad(new Error('That took too long. Type it in instead.')); else setTimeout(poll, 2000); }).catch(bad);
+        })();
+      });
+    });
+  }
+  function readQuote(done) {
+    K.sheet({ title: 'From a quote', build: function (ctl) {
+      ctl.body.appendChild(h('p', { class: 'otg-lead', text: 'A photo, screenshot or PDF of the quote.' }));
+      var row = h('div', { class: 'rc-pick' });
+      [['photo_camera', 'Camera', { camera: true }], ['photo_library', 'Gallery', {}], ['upload_file', 'File', {}]].forEach(function (o) {
+        row.appendChild(h('button', { type: 'button', class: 'rc-src press', onclick: function () { pickReceiptFile(function (file) { go(file); }, o[2]); } }, icon(o[0]), h('span', { text: o[1] })));
+      });
+      ctl.body.appendChild(row);
+      function go(file) {
+        ctl.body.textContent = ''; ctl.body.appendChild(note('Reading it…', 'hourglass_top'));
+        fileToData(file).then(scanFile).then(function (res) {
+          var items = (res.items || []).filter(function (x) { return x.amount > 0; }), pick = items.map(function () { return true; });
+          ctl.body.textContent = '';
+          if (!items.length) { ctl.body.appendChild(note('No costs could be read from it. Type them in instead.', 'info')); return; }
+          var l = h('div', { class: 'rc-list' });
+          items.forEach(function (it, i) { l.appendChild(rcRow(it, function (v) { pick[i] = v; }, true)); });
+          ctl.body.appendChild(l);
+          ctl.foot.append(btn('filled', 'Add these', { icon: 'check', block: true, onclick: function () { done(items.filter(function (x, i) { return pick[i]; })); ctl.close(); } }));
+        }).catch(function (e) { ctl.body.textContent = ''; ctl.body.appendChild(note(String(e && e.message || e), 'error', 'warn')); });
+      }
+    } });
+  }
+  function rcRow(it, onPick, on) {
+    var box = h('input', { type: 'checkbox', class: 'rc-box', 'aria-label': 'Include ' + it.what });
+    box.checked = on !== false;
+    box.addEventListener('change', function () { onPick(box.checked); });
+    return h('label', { class: 'rc-row' }, box, h('span', { class: 'grow', text: it.what }), h('b', { text: money2(it.amount) }));
+  }
+
   function openItem(id) {
     var p = byId(talkData().pipeline, id);
     if (!p) return;
     if (p.research) markSeen(p.id, p.researchAt);
     var T = talkData(), s = S.data.settings, dirty = false, ctlRef = null;
-    var f = JSON.parse(JSON.stringify({ title: p.title, summary: p.summary, decisions: p.decisions, open: p.open, checks: p.checks, parts: p.parts,
+    var f = JSON.parse(JSON.stringify({ sizes: p.sizes || [], venue: p.venue || { name: '', kind: 'none', value: 0 }, title: p.title, summary: p.summary, decisions: p.decisions, open: p.open, checks: p.checks, parts: p.parts,
       price: p.price, sample: p.sample, listing: { copy: (p.listing || {}).copy || '', posts: ((p.listing || {}).posts || []).slice() } }));
     while (f.listing.posts.length < 3) f.listing.posts.push('');
     function touch() { dirty = true; paintCost(); }
     function reopen() { if (ctlRef && !ctlRef.gone()) K.swap(ctlRef, function () { openItem(id); }, true); else render(); }   // drawn again in place, where she was
     function fk(k) { return 'pp:' + id + ':' + k; }
-    function payload() { return { title: f.title, summary: f.summary, decisions: f.decisions, open: f.open, checks: f.checks, parts: f.parts, price: f.price, sample: f.sample, listing: f.listing }; }
+    function payload() { return { title: f.title, summary: f.summary, decisions: f.decisions, open: f.open, checks: f.checks, parts: f.parts, price: f.price, sizes: f.sizes, venue: f.venue, sample: f.sample, listing: f.listing }; }
     function saveFirst() { return dirty ? api('updateItem', id, payload()).then(function () { dirty = false; }) : Promise.resolve(); }
     var costEl = h('div', { class: 'keep' });
     function paintCost() {
@@ -16267,9 +16670,12 @@ var Kit = (function () {
         var s3 = sheetSection('Open questions'), oq = h('div', { class: 'field-gap' });
         function drawOpen() {
           oq.textContent = '';
-          f.open.forEach(function (o, i) { var opts = (o.options || []).slice(), sg = o.suggest >= 0 ? opts[o.suggest] : ''; if (sg) opts = [sg].concat(opts.filter(function (x) { return x !== sg; }));
+          var todayQ = ymd(new Date()), putOff = f.open.filter(function (o) { return o.laterUntil && o.laterUntil > todayQ && !o.a; }).length;
+          f.open.forEach(function (o, i) { if (o.laterUntil && o.laterUntil > todayQ && !o.a) return; var opts = (o.options || []).slice(), sg = o.suggest >= 0 ? opts[o.suggest] : ''; if (sg) opts = [sg].concat(opts.filter(function (x) { return x !== sg; }));
+            if (!o.a) oq.appendChild(h('div', { style: 'text-align:right;margin:0 0 -6px' }, h('button', { type: 'button', class: 'q1-link press', onclick: function () { o.laterUntil = ymd(new Date(Date.now() + 7 * 864e5)); touch(); drawOpen(); toast('Back in a week'); } }, icon('schedule'), 'Later')));
             oq.appendChild(K.textField({ suggest: opts.length >= 2 ? opts : ['Not sure yet', 'Let’s find out'], help: sg && !o.a ? 'Suggested: ' + sg + (o.suggestWhy ? ' (' + o.suggestWhy + ')' : '') : '', suggestReplace: true, label: o.q, value: o.a, multiline: true, compact: true, maxlength: 1000, onInput: function (v) { o.a = v; touch(); } })); });
           if (!f.open.length) oq.appendChild(h('p', { class: 'body-m', style: 'color:var(--on-surface-variant)', text: 'None open.' }));
+          if (putOff) oq.appendChild(h('p', { class: 'body-s', style: 'color:var(--on-surface-variant)', text: putOff + ' put off for a week.' }));
         }
         drawOpen();
         s3.append(oq, h('div', { style: 'margin-top:10px' }, btn('text', 'Add a question', { icon: 'add', onclick: function () {
@@ -16328,7 +16734,10 @@ var Kit = (function () {
         if (p.risks.length) { var rl = h('ul', { class: 'talk-list', style: 'margin-top:10px' }); p.risks.forEach(function (r) { rl.appendChild(h('li', { text: r })); }); s4.append(h('div', { class: 'label-s', style: 'margin:14px 4px 4px', text: 'Risks to watch' }), rl); }
         ctl.body.appendChild(fold(s4, fk('checks'), 'fact_check', checkSum, ADMIN && p.stage === 'Checks & costing'));
 
-        var s5 = sheetSection('Parts and costing'), pl = h('div');
+        // costing: a row per size with her own costs, what others charge (from the research), a venue's cut, what she keeps
+        var cs = costingCard(p, f, touch, saveFirst, reopen);
+        ctl.body.appendChild(cs);
+        var s5 = sheetSection('Parts (what one is made of)'), pl = h('div');
         function drawParts() {
           pl.textContent = '';
           f.parts.forEach(function (x, i) {
@@ -17900,7 +18309,7 @@ var Kit = (function () {
     var profitEl = h('div', { class: 'v' + (m.profit < 0 ? ' neg' : '') });
     main.appendChild(rise(h('div', { class: 'hero' },
       h('div', { class: 'label-s', text: 'Profit this financial year' }), profitEl,
-      h('div', { class: 'body-m', text: 'Sales ' + money(m.sales) + ' · Expenses ' + money(m.expenses) + (m.gst.registered ? ' · excluding GST' : '') })), n++));
+      h('div', { class: 'body-m', text: 'Sales ' + money(m.sales) + ' · Expenses ' + money(m.expenses) + (m.stockSold ? ' · Stock sold ' + money(m.stockSold) : '') + (m.gst.registered ? ' · excluding GST' : '') })), n++));
     if (S.animate) K.countUp(profitEl, m.profit, function (v) { return money(Math.round(v)); }); else profitEl.textContent = money(m.profit);
 
     var stats = h('div', { class: 'stats', style: 'margin-top:12px' });
@@ -17918,6 +18327,8 @@ var Kit = (function () {
     var bankN = ((S.data.links || {}).bank || {}).n || 0;
     main.appendChild(rise(bankN ? h('button', { type: 'button', class: 'hm-wait press soft', style: 'margin-top:12px', onclick: openBank }, h('b', { text: String(bankN) }), h('span', { class: 'grow', text: 'From your bank' }), icon('account_balance'), icon('chevron_right'))
       : h('div', { style: 'margin-top:8px;text-align:center' }, h('button', { type: 'button', class: 'hm-link press', onclick: openBank }, icon('account_balance'), 'Bank statement')), n++));
+    var stk = S.data.stock || [], stkLeft = stk.reduce(function (n2, x) { return n2 + x.left; }, 0);
+    main.appendChild(rise(h('div', { style: 'text-align:center' }, h('button', { type: 'button', class: 'hm-link press', onclick: openStock }, icon('inventory_2'), stk.length ? 'Opening stock · ' + stkLeft + ' left' : 'Stock you already had')), n++));
 
     // AI costs (admin): what Tide Book spent, beside the same work done entirely with Claude Opus 5.5 through the API
     var sv = ADMIN && S.data.aiSavings;
@@ -18085,7 +18496,7 @@ var Kit = (function () {
     var sale = kind === 'Sale', o = S.data.options, dirty = false;
     var f = t ? { amount: t.amount, date: t.date, channel: t.channel, category: t.category, description: t.description, gstInPrice: t.gst > 0, printId: t.printId || '', qty: t.qty || 1, taxShare: t.taxShare === '' ? 50 : t.taxShare }
       : Object.assign({ amount: 0, date: S.data.today, channel: sale ? 'Centre' : '', category: sale ? 'Prints' : '', description: '', gstInPrice: true, printId: '', qty: 1 }, preset || {});
-    var files = [];
+    var files = [], rc = { fd: null };
     var voided = t && t.status === 'Void';
     K.sheet({
       title: t ? (sale ? 'Sale' : 'Expense') : (sale ? 'Record a sale' : 'Record an expense'), tall: !sale || !!t, guard: function () { return dirty; },
@@ -18093,6 +18504,68 @@ var Kit = (function () {
         function touch() { dirty = true; }
         if (voided) ctl.body.appendChild(h('div', { style: 'margin-bottom:8px' }, note('This record was cancelled: ' + t.voidReason, 'block', 'warn')));
         var amount = K.amountField({ value: f.amount || '', onInput: function (v) { f.amount = v; touch(); } });
+        // a new expense starts from its receipt: a photo, a picture from the gallery, or a file (a PDF invoice)
+        var rcBox = h('div', { class: 'rc-box-wrap' });
+        if (!sale && !t) ctl.body.appendChild(rcBox);
+        function setReceipt(fd) {
+          rc.fd = fd; files.length = 0; touch();
+          if (fd.type === 'image') files.push({ file: fd.file, url: fd.thumb });
+          rcBox.textContent = '';
+          rcBox.appendChild(h('div', { class: 'rc-have' }, fd.type === 'image' ? h('img', { src: fd.thumb, alt: 'The receipt' }) : h('span', { class: 'rc-pdf' }, icon('picture_as_pdf')),
+            h('span', { class: 'grow', text: fd.name || 'Receipt' }), K.iconBtn('close', 'Take the receipt off', function () { rc.fd = null; files.length = 0; paintPick(); })));
+          if (t) return;
+          var reading = h('div', { class: 'rc-reading' }, note('Reading it…', 'hourglass_top'));
+          rcBox.appendChild(reading);
+          scanFile(fd).then(function (res) {
+            reading.remove();
+            var items = (res.items || []).filter(function (x) { return x.amount > 0; });
+            if (res.date) { f.date = res.date; date.input.value = res.date; }
+            f.gstInPrice = res.gstIncluded !== false;
+            if (items.length <= 1) {
+              var amt = items.length ? items[0].amount : res.total;
+              if (amt > 0) { f.amount = amt; amount.input.value = String(amt); }
+              if (!f.description) { f.description = (res.supplier ? res.supplier + (items[0] ? ': ' + items[0].what : '') : items[0] ? items[0].what : ''); desc.input.value = f.description; }
+              if (items[0] && items[0].category && !f.category) f.category = items[0].category;
+              drawTax();
+              return;
+            }
+            // several things on one receipt: tick the ones for the business
+            var pick = items.map(function () { return true; }), list = h('div', { class: 'rc-list' }), addN = btn('filled', '', { icon: 'check' });
+            function label() { var n = pick.filter(Boolean).length; addN.lastChild.textContent = n === items.length ? 'Add all ' + n : 'Add ' + n; addN.disabled = !n; }
+            items.forEach(function (it, i) {
+              var row = rcRow(it, function (v) { pick[i] = v; label(); }, true);
+              if (it.category) row.insertBefore(h('span', { class: 'rc-cat', text: it.category }), row.lastChild);
+              list.appendChild(row);
+            });
+            var all = h('div', { class: 'rc-items' }, h('div', { class: 'rc-items-h' }, h('b', { text: (res.supplier || 'This receipt') + ': ' + items.length + ' things' }),
+              h('span', { text: 'Untick anything that isn’t for your art.' })), list,
+              h('div', { class: 'rc-items-acts' }, addN, btn('text', 'Tick all', { onclick: function () { pick = pick.map(function () { return true; }); [].forEach.call(list.querySelectorAll('.rc-box'), function (b) { b.checked = true; }); label(); } })));
+            label();
+            addN.addEventListener('click', function () {
+              var chosen = items.filter(function (x, i) { return pick[i]; });
+              if (!chosen.length) return;
+              K.setBusy(addN, true);
+              var ids = [], dt = f.date || S.data.today;
+              chosen.reduce(function (pr, it) {
+                return pr.then(function () { return api('addTransaction', { kind: 'Expense', amount: it.amount, date: dt, description: (res.supplier ? res.supplier + ': ' : '') + it.what, category: it.category || '', gstInPrice: f.gstInPrice }).then(function (r) { ids.push(r.id); }); });
+              }, Promise.resolve())
+                .then(function () { return rc.fd.type === 'pdf' ? api('uploadReceiptFile', ids[0], rc.fd.data) : uploadAll('receipt', ids[0], files); })
+                .then(function () { return ids.length > 1 ? api('shareReceipt', ids[0], ids.slice(1)) : null; })
+                .then(refresh).then(function () { dirty = false; K.haptic('success'); render(); cheer(chosen.length + ' expenses added.'); ctl.close(); })
+                .catch(function (e) { K.setBusy(addN, false); fail(e); });
+            });
+            rcBox.appendChild(all);
+          }).catch(function (e) { reading.textContent = ''; reading.appendChild(note(String(e && e.message || e), 'info')); });
+        }
+        function paintPick() {
+          rcBox.textContent = '';
+          var row = h('div', { class: 'rc-pick' });
+          [['photo_camera', 'Camera', { camera: true }], ['photo_library', 'Gallery', {}], ['upload_file', 'File', {}]].forEach(function (o) {
+            row.appendChild(h('button', { type: 'button', class: 'rc-src press', onclick: function () { pickReceiptFile(function (file) { fileToData(file).then(function (fd) { fd.file = file; setReceipt(fd); }).catch(fail); }, o[2]); } }, icon(o[0]), h('span', { text: o[1] })));
+          });
+          rcBox.append(h('div', { class: 'label-m', style: 'margin:0 2px 8px', text: 'The receipt' }), row);
+        }
+        if (!sale && !t) paintPick();
         ctl.body.appendChild(amount);
         var date = K.textField({ label: 'Date', type: 'date', value: f.date, onInput: function (v) { f.date = v; touch(); } });
         date.input.max = S.data.today;
@@ -18144,6 +18617,21 @@ var Kit = (function () {
             artWrap.appendChild(stack);
           }
           s2.appendChild(artWrap); drawArt();
+          var stockAll = (S.data.stock || []).filter(function (x) { return x.left > 0 || x.id === f.stockId; });
+          if (stockAll.length && !t) {
+            var sk = sheetSection('From your opening stock?'), skWrap = h('div');
+            sk.appendChild(K.choices({ label: 'From stock', value: f.stockId || '', options: [{ value: '', label: 'No' }].concat(stockAll.map(function (x) { return { value: x.id, label: x.what + ' (' + x.left + ' left)' }; })),
+              onChange: function (v) { f.stockId = v || ''; touch(); drawSk(); } }));
+            function drawSk() {
+              skWrap.textContent = '';
+              var it = f.stockId ? byId(S.data.stock, f.stockId) : null; if (!it) return;
+              f.stockQty = f.stockQty || 1;
+              skWrap.appendChild(h('div', { class: 'field-gap', style: 'margin-top:10px' }, K.textField({ label: 'How many?', inputmode: 'numeric', value: f.stockQty, onInput: function (v) { f.stockQty = Math.max(1, Math.round(K.num(v)) || 1); touch(); } }),
+                h('p', { class: 'tf-help', text: 'Each cost about ' + money2(it.costEach) + ', so that comes off the profit.' })));
+            }
+            sk.appendChild(skWrap); drawSk();
+            ctl.body.appendChild(sk);
+          }
           var s3 = sheetSection('Details');
           s3.appendChild(h('div', { class: 'field-gap' }, date, desc));
           ctl.body.append(s1, s2, s3);
@@ -18158,9 +18646,8 @@ var Kit = (function () {
           if (t && t.receiptThumbId) {
             e2.appendChild(h('div', { class: 'thumbs' }, h('a', { href: t.receiptUrl || '#', target: '_blank', rel: 'noopener', 'aria-label': 'Open the receipt' }, h('img', { alt: 'Receipt', dataset: { thumb: t.receiptThumbId } }))));
           }
-          e2.appendChild(K.photoStrip({ files: files, max: 1, capture: true, label: t && t.receiptThumbId ? 'Replace' : 'Photograph it', onChange: touch }));
-          e2.appendChild(h('p', { class: 'tf-help', style: 'margin-left:4px', text: 'A clear photo of the receipt is kept with the record, so the paper can fade or go missing.' }));
-          ctl.body.append(e1, e2);
+          if (t) { e2.appendChild(rcBox); paintPick(); ctl.body.append(e1, e2); }
+          else ctl.body.append(e1);
         }
         if (t && !voided) {
           ctl.body.appendChild(h('div', { style: 'margin-top:24px;text-align:center' }, btn('text', 'Cancel this record', { danger: true, icon: 'block', onclick: function () {
@@ -18180,9 +18667,9 @@ var Kit = (function () {
           K.setBusy(save, true);
           var linked = sale && (f.category === 'Prints' || f.category === 'Originals') ? f.printId : '';
           var payload = { kind: kind, amount: f.amount, date: f.date, channel: f.channel, category: f.category, description: f.description, gstInPrice: f.gstInPrice,
-            printId: linked, qty: linked && f.category === 'Prints' ? f.qty : '', taxShare: f.taxShare };
+            printId: linked, qty: linked && f.category === 'Prints' ? f.qty : '', taxShare: f.taxShare, stockId: sale ? f.stockId || '' : '', stockQty: f.stockQty || 1 };
           (t ? api('updateTransaction', t.id, payload).then(function () { return t.id; }) : api('addTransaction', payload).then(function (r) { return r.id; }))
-            .then(function (tid) { return uploadAll('receipt', tid, files); }).then(refresh)
+            .then(function (tid) { return rc.fd && rc.fd.type === 'pdf' ? api('uploadReceiptFile', tid, rc.fd.data) : uploadAll('receipt', tid, files); }).then(refresh)
             .then(function () { dirty = false; K.haptic('success'); render(); toast(t ? 'Saved.' : (sale ? 'Sale recorded: ' : 'Expense recorded: ') + (t ? '' : money(f.amount))); ctl.close(); })
             .catch(function (e) { K.setBusy(save, false); fail(e); });
         });
@@ -18824,7 +19311,7 @@ var Kit = (function () {
     var today = ymd(new Date()), mine = (S.data.ownDays || []).filter(function (d) { return d.day === today || (d.day < today && !d.done && d.day >= addDays(today, -14)); })
       .sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.day < b.day ? -1 : a.day > b.day ? 1 : (a.at || '99') < (b.at || '99') ? -1 : 1); });
     var card = h('div', { class: 'hm-today' }, h('div', { class: 'hm-today-h' }, icon('today'), h('b', { text: 'Today' }), h('span', { class: 'grow' }),
-      K.iconBtn('calendar_month', 'Your calendar', function () { S.calMode = 'day'; S.calAt = today; S.calSel = today; go('calendar'); })));
+      null));
     // the goal steps that are on today
     (S.data.goals || []).forEach(function (g) {
       if (g.status === 'Done') return;
@@ -20845,6 +21332,16 @@ var Kit = (function () {
           K.textField({ label: 'Text on the picture or video (optional)', value: f.onScreen, multiline: true, maxlength: 600, onInput: function (v) { f.onScreen = v; touch(); } }),
           K.textField({ label: 'What you’re inviting people to do (optional)', value: f.cta, maxlength: 200, onInput: function (v) { f.cta = v; touch(); }, help: 'For example: tap the link to see the print.' })));
         ctl.body.appendChild(s1);
+        // a post that sells one of her artworks: on Instagram it carries the artwork's tag once Meta has approved her shop
+        var liveArt = (S.data.prints || []).filter(function (p) { return p.status === 'Live'; });
+        if (liveArt.length && c.type === 'Post') {
+          var sp = sheetSection('Sells');
+          sp.appendChild(K.choices({ row: true, label: 'Sells', value: c.sellsPrintId || '', options: [{ value: '', label: 'Nothing' }].concat(liveArt.map(function (p) { return { value: p.id, label: p.title }; })),
+            onChange: function (v) { api('setPostSells', c.id, v || '').then(refresh).then(function () { toast(v ? '✓ Tagged when it posts' : '✓ No tag'); }).catch(fail); } }));
+          var IS = (S.data.links || {}).insta || {};
+          if (c.sellsPrintId && IS.eligible !== true) sp.appendChild(h('p', { class: 'tf-help', text: 'The tag goes on once Meta approves your Instagram shop.' }));
+          ctl.body.appendChild(sp);
+        }
         var s3 = sheetSection('Kind of post');
         s3.appendChild(h('div', { class: 'field-gap' },
           K.choices({ label: 'Kind of post', value: f.format, options: POST_FORMATS, onChange: function (v) { f.format = v; touch(); } }),
@@ -21318,6 +21815,18 @@ var Kit = (function () {
       p.scanUrl ? btn('text', 'Remove', { sm: true, onclick: function () { api('setPrintScan', p.id, '').then(refresh).then(reopen).catch(fail); } }) : null, status);
   }
 
+  /** Where a to-do line takes her. */
+  function todoGo(t) {
+    if (t.mail) { openMail(); return; }
+    if (t.bank) { openBank(); return; }
+    if (t.link) { openLinkAccounts(); return; }
+    if (t.site) { openSiteWish(t); return; }
+    if (t.sitein) { openSiteIn(t.sitein); return; }
+    if (t.productId) { openItem(t.productId); return; }
+    if (/^Content/.test(t.where)) { S.contentTab = /Ready/.test(t.where) ? 'ready' : 'review'; go('content'); }
+    else if (/Admin/.test(t.where)) { S.adminTab = 'settings'; go('settings'); }
+    else K.confirm({ title: t.text, text: t.why, single: true, confirmLabel: 'OK' });
+  }
   function todoCard() {
     var items = S.data.todo || [], cleared = S.data.todoCleared || 0;
     if (!items.length && !cleared) return null;
@@ -21329,7 +21838,9 @@ var Kit = (function () {
         api('clearTodo', t.key, t.text).then(refresh).then(function () { render(); undoCard('Cleared.', function () { return api('unclearTodo', t.key); }, 'Back on your list.'); }).catch(fail);
       }
       clear.addEventListener('click', doClear); clear.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') doClear(e); });
-      list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () {
+      list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { todoGo(t); } }, h('div', { class: 'th-blank todo-ic' }, icon(t.mail ? 'mail' : t.bank ? 'account_balance' : t.site ? (t.kind === 'photo' ? 'photo_camera' : 'edit_note') : t.sitein ? 'language' : t.productId ? 'front_hand' : 'radio_button_unchecked')),
+        h('div', { class: 'grow' }, h('div', { class: 'li-head', text: t.text }), h('div', { class: 'li-sup', style: 'white-space:normal', text: t.why })), t.key ? clear : null, icon('chevron_right')));
+      if (false) list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () {
         if (t.mail) { openMail(); return; }
         if (t.bank) { openBank(); return; }
         if (t.link) { openLinkAccounts(); return; }
@@ -21479,7 +21990,8 @@ var Kit = (function () {
       }
       if (back && back.err) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note(back.err, 'warning', 'warn')));
       if (viewing) ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('You’re viewing as ' + artist() + ', so this is how her guide looks. Nothing links from here: she does it on her own phone.', 'visibility')));
-      var doneCount = (fb.connected ? 1 : 0) + (bz.mine ? 1 : 0), total = 2;
+      var ML0 = (S.data.links || {}).mail || {}, SH0 = S.data.shop || {};
+      var doneCount = (fb.connected ? 1 : 0) + (bz.mine ? 1 : 0) + (ML0.available && ML0.linked ? 1 : 0) + (SH0.stripe && SH0.stripe.linked ? 1 : 0) + (S.data.printful && S.data.printful.linked ? 1 : 0), total = 4 + (ML0.available ? 1 : 0);
       ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 14px;color:var(--on-surface-variant)',
         text: doneCount === total ? 'All linked. You can come back here any time.' : doneCount + ' of ' + total + ' linked. Each takes a minute or two, and you can stop part way: it remembers.' }));
       var n = 1;
@@ -21487,7 +21999,7 @@ var Kit = (function () {
       // the admin's one-time part: the Meta app that the sign-in goes through
       if (ADMIN && !L.appReady) {
         var mf = { id: '', secret: '', config: '' };
-        var perms = 'pages_show_list, pages_read_engagement, pages_manage_posts, read_insights, instagram_basic, instagram_content_publish, instagram_manage_insights, business_management, ads_management, ads_read';
+        var perms = 'pages_show_list, pages_read_engagement, pages_manage_posts, read_insights, instagram_basic, instagram_content_publish, instagram_manage_insights, business_management, ads_management, ads_read, catalog_management, instagram_shopping_tag_products';
         var body = h('div', {},
           h('p', { class: 'body-m', style: 'margin:0 0 8px', text: 'Once only, then ' + artist() + ' links everything herself by signing in. About 10 minutes.' }),
           steps(['At developers.facebook.com › My Apps › Create app. Pick “Other”, then “Business”. Any name, e.g. Tide Book.',
@@ -21586,6 +22098,49 @@ var Kit = (function () {
       drawBuzz(bz.topic || (bz.mine ? '' : ''));
       if (bz.mine && !bz.topic) bzBody.appendChild(btn('tonal', 'Test buzz', { icon: 'notifications', block: true, onclick: function (e) { var b = e.currentTarget; K.setBusy(b, true); api('testBuzz').then(function () { K.setBusy(b, false); toast('Sent. Did your phone buzz?'); }).catch(function (err) { K.setBusy(b, false); fail(err); }); } }));
       ctl.body.appendChild(stepCard(n++, 'Buzz my phone', !!bz.mine, bzBody, 'notifications'));
+
+      // her email (read only): she links it herself once the Google sign-in is set up
+      var ML = (S.data.links || {}).mail || {};
+      if (ML.available) ctl.body.appendChild(stepCard(n++, 'My email', !!ML.linked, h('div', {},
+        h('p', { class: 'body-m', style: 'margin:0 0 10px', text: ML.linked ? (ML.email || 'Linked') + '. Reading only.' : 'Receipts, dates and people asking, picked out for you.' }),
+        btn(ML.linked ? 'tonal' : 'filled', ML.linked ? 'Email settings' : 'Link my email', { icon: 'mail', block: true, onclick: function () { ctl.close(); setTimeout(function () { openMailLink(); }, 280); } })), 'mail'));
+
+      // payments and printing: hers to link too (each opens its own short guide)
+      var SHd = (S.data.shop || {}), stripeOn = !!(SHd.stripe && SHd.stripe.linked), pfOn = !!(S.data.printful && S.data.printful.linked);
+      ctl.body.appendChild(stepCard(n++, 'Payments (Stripe)', stripeOn, btn(stripeOn ? 'tonal' : 'filled', stripeOn ? 'Stripe settings' : 'Link Stripe', { icon: 'credit_card', block: true, onclick: function () { ctl.close(); setTimeout(openStripeLink, 280); } }), 'credit_card'));
+      ctl.body.appendChild(stepCard(n++, 'Printing (Printful)', pfOn, btn(pfOn ? 'tonal' : 'filled', pfOn ? 'Printful settings' : 'Link Printful', { icon: 'print', block: true, onclick: function () { ctl.close(); setTimeout(function () { openPrintfulLink(); }, 280); } }), 'print'));
+
+      // the Instagram shop: her catalogue, her artworks in it, and Meta's approval
+      var IS = (S.data.links || {}).insta || {};
+      if (IS.available && !ADMIN) {
+        var isBody = h('div', {});
+        function isStep(done, label, extra) { return h('div', { class: 'is-step' + (done ? ' done' : '') }, icon(done ? 'check_circle' : 'radio_button_unchecked'), h('div', { class: 'grow' }, h('b', { text: label }), extra || null)); }
+        isBody.appendChild(isStep(!!fb.connected, 'Facebook and Instagram linked', fb.connected ? null : h('span', { class: 'body-s', text: 'Step 1 above.' })));
+        var catBtn = btn(IS.catalogId ? 'text' : 'filled', IS.catalogId ? 'Change' : 'Find my catalogue', { icon: 'storefront', sm: !!IS.catalogId, onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('instaCatalogs').then(function (r) {
+            K.setBusy(b, false);
+            if (r.catalogs.length === 1 && r.chosen) { again('✓ Using “' + r.catalogs[0].name + '”'); return; }
+            K.sheet({ title: 'Your catalogue', build: function (c2) {
+              var l = h('div', { class: 'next-list' });
+              r.catalogs.forEach(function (c) { l.appendChild(h('button', { type: 'button', class: 'next-opt press', onclick: function () { api('instaUseCatalog', c.id, c.name).then(function () { c2.close(); again('✓ Using “' + c.name + '”'); }).catch(fail); } }, h('span', { class: 'next-opt-ic' }, icon('storefront')), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: c.name }), h('span', { class: 'next-opt-why', text: c.business + ' · ' + c.count + ' products' })))); });
+              r.businesses.forEach(function (bz2) { l.appendChild(h('button', { type: 'button', class: 'next-opt press', onclick: function (e2) { K.setBusy(e2.currentTarget, true); api('instaMakeCatalog', bz2.id).then(function () { c2.close(); again('✓ Catalogue made'); }).catch(fail); } }, h('span', { class: 'next-opt-ic' }, icon('add')), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: 'Make a new one' }), h('span', { class: 'next-opt-why', text: 'In ' + bz2.name })))); });
+              if (!r.businesses.length) c2.body.appendChild(note('Your Facebook sign-in didn’t share a business. Link Facebook again and tick your business.', 'info'));
+              c2.body.appendChild(l);
+            } });
+          }).catch(function (err) { K.setBusy(b, false); fail(err); });
+        } });
+        isBody.appendChild(isStep(!!IS.catalogId, IS.catalogId ? 'Catalogue: ' + IS.catalogName : 'A catalogue for your art', catBtn));
+        var sendBtn = btn(IS.count ? 'text' : 'filled', 'Send now', { icon: 'sync', sm: !!IS.count, onclick: function (e) {
+          var b = e.currentTarget; K.setBusy(b, true);
+          api('instaSync').then(function (r) { again('✓ ' + r.sent + ' sent' + (r.removed ? ', ' + r.removed + ' taken off' : '')); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+        } });
+        isBody.appendChild(isStep(IS.count > 0, IS.count ? IS.count + ' for sale in it' : IS.toSend + ' ready to go in', IS.catalogId ? h('div', {}, IS.lastError ? h('span', { class: 'body-s', style: 'color:var(--error)', text: IS.lastError }) : IS.lastAt ? h('span', { class: 'body-s', text: 'Kept in step by itself. Last ' + ago(IS.lastAt) }) : null, sendBtn) : null));
+        isBody.appendChild(isStep(IS.eligible === true, 'Meta approves your shop', IS.eligible === true ? h('span', { class: 'body-s', text: 'Posts that sell an artwork get its tag.' }) : h('div', {},
+          h('ol', { class: 'bullets', style: 'margin:6px 0 8px' }, ['Open Commerce Manager.', 'Add shop › Instagram, checkout on your website.', 'Pick this catalogue and send it for review.'].map(function (x) { return h('li', { text: x }); })),
+          h('a', { class: 'btn tonal sm press', href: IS.commerceUrl, target: '_blank', rel: 'noopener' }, icon('open_in_new'), h('span', { text: 'Commerce Manager' })))));
+        ctl.body.appendChild(stepCard(n++, 'Sell on Instagram', IS.eligible === true && IS.count > 0, isBody, 'storefront'));
+      }
       // back from Facebook: say what got linked, and leave the guide open on whatever is next
       if (back && back.ok && fb.connected) setTimeout(function () { K.haptic('success'); toast('Linked: ' + fb.page + (fb.instagram ? ' and @' + fb.instagram : '') + '.' + (bz.mine ? '' : ' One more step below.')); }, 300);
     } });
@@ -21787,6 +22342,46 @@ var Kit = (function () {
       }
       b.appendChild(h('p', { class: 'body-s', text: 'Looking…' }));
       paint();
+    } });
+  }
+  /** Stock she already had (bought before her ABN, say): what, where, how many, and a guess at the cost of each. */
+  function openStock() {
+    K.sheet({ title: 'Stock you already had', tall: true, build: function (ctl) {
+      function paint() {
+        var b = ctl.body; b.textContent = '';
+        b.appendChild(h('p', { class: 'otg-lead', text: 'Count it and guess what each cost. Selling it then shows the real profit.' }));
+        var L = S.data.stock || [];
+        if (L.length) {
+          var l = h('div', { class: 'list' });
+          L.forEach(function (x) {
+            l.appendChild(h('button', { type: 'button', class: 'li press', onclick: function () { edit(x); } }, h('div', { class: 'th-blank todo-ic' }, icon('inventory_2')),
+              h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.what }), h('div', { class: 'li-sup', text: x.left + ' of ' + x.qty + ' left · ' + money2(x.costEach) + ' each' + (x.where ? ' · ' + x.where : '') })), icon('chevron_right')));
+          });
+          b.appendChild(l);
+        }
+        b.appendChild(note('Bought before your ABN? Ask your accountant how to claim it.', 'info'));
+      }
+      function edit(x) {
+        var v = Object.assign({ what: '', where: '', qty: '', costEach: '', counted: S.data.today, note: '' }, x || {});
+        K.sheet({ title: x ? x.what : 'Add stock', build: function (c2) {
+          c2.body.appendChild(h('div', { class: 'field-gap' },
+            K.textField({ label: 'What', value: v.what, maxlength: 120, suggest: ['A6 prints', 'Postcards', '30x30 posters'], suggestReplace: true, onInput: function (t2) { v.what = t2; } }),
+            K.textField({ label: 'Where it is', value: v.where, maxlength: 60, suggest: ['Irukandji', 'At home'], suggestReplace: true, onInput: function (t2) { v.where = t2; } }),
+            h('div', { class: 'cols' }, K.textField({ label: 'How many', inputmode: 'numeric', value: v.qty, onInput: function (t2) { v.qty = K.num(t2); } }),
+              K.textField({ label: 'Cost each (a guess is fine)', prefix: '$', inputmode: 'decimal', value: v.costEach, onInput: function (t2) { v.costEach = K.num(t2); } })),
+            K.textField({ label: 'Counted on', type: 'date', value: v.counted, onInput: function (t2) { v.counted = t2; } })));
+          var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
+            K.setBusy(save, true);
+            api('saveStock', x ? x.id : '', v).then(refresh).then(function () { K.haptic('success'); c2.close(); render(); paint(); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+          } });
+          c2.foot.appendChild(save);
+          if (x) c2.body.appendChild(h('div', { style: 'margin-top:14px;text-align:center' }, btn('text', 'Remove', { icon: 'delete', onclick: function () {
+            api('deleteStock', x.id).then(refresh).then(function () { c2.close(); render(); paint(); undoCard('Removed.', function () { return api('undeleteStock', x.id).then(refresh).then(paint); }, 'Back.'); }).catch(fail);
+          } })));
+        } });
+      }
+      paint();
+      ctl.foot.appendChild(btn('filled', 'Add stock', { icon: 'add', lg: true, block: true, onclick: function () { edit(null); } }));
     } });
   }
   /** The bank's lines: add a statement, then a tap sorts each payee. Nothing is recorded until it's tapped. */

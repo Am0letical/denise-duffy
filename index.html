@@ -521,6 +521,9 @@ html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 .cart-sec { color: var(--muted); font-size: 12px; text-align: center; margin: 10px 0 0; }
 .btn[disabled] { opacity: .45; pointer-events: none; }
 .shipto #shipPost { width: 96px; }
+/* a portfolio first: the cart shows only once something is in it (from an artwork's buy page) */
+body:not(.has-cart) .cartp { display: none; }
+@media (max-width: 640px) { body:not(.has-cart) .pill { right: 10px; } }
 
 /* ================= Living gallery: an endless wall of her work, on warm paper ================= */
 .lg { position: fixed; inset: 0; z-index: 50; background: #FBF7F0; color: #1a1d22; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
@@ -1410,7 +1413,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
 <footer id="footer">
   <div class="cols">
     <div><div class="lbl" style="opacity:.6;margin-bottom:12px">Love · Peace · Joy · Presence · Wonder</div><div style="font:500 italic 24px/1.35 var(--display);max-width:380px">Art rooted in place, memory and presence.</div></div>
-    <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Shop</div><a href="#/gallery">All the art</a><a href="#/c/wear">Wear &amp; home</a><a href="#/c/sets">Sets &amp; gifts</a><a href="#/c/digital">Downloads</a></div>
+    <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Collections</div><a href="#/gallery">All the art</a><a href="#/c/wear">Wear &amp; home</a><a href="#/c/sets">Sets &amp; gifts</a><a href="#/c/digital">Downloads</a></div>
     <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Studio</div><a href="#/gallery">Living gallery</a><a href="#/originals">The originals</a><a href="#/about">About</a><a href="#/centre">At Irukandji</a></div>
     <div><div class="lbl" style="opacity:.6;margin-bottom:10px">Help</div><a href="#/about">Delivery</a><a href="#/about">Returns</a><a href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Instagram</a></div>
   </div>
@@ -3405,7 +3408,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       var titles = ['Love', 'Peace', 'Joy', 'Presence', 'Wonder'];
       return '<section class="hero"><div class="bg par" data-speed="0.18" style="background-image:url(' + IMG.flowersMacro + ')"></div>' +
         tag('flowersMacro', null, null, 'hot-hero') +
-        '<div class="base"><div class="cta"><a class="chipbtn" href="#/gallery">Shop the art +</a></div><div class="rule lbl"><span>Love</span><span>Peace</span><span>Joy</span><span>Presence</span><span>Wonder</span></div><div class="word">' + word + '</div></div></section>' +
+        '<div class="base"><div class="cta"><a class="chipbtn" href="#/gallery">Wander the gallery +</a></div><div class="rule lbl"><span>Love</span><span>Peace</span><span>Joy</span><span>Presence</span><span>Wonder</span></div><div class="word">' + word + '</div></div></section>' +
 
         '<section class="sec wrap"><div class="lbl reveal" style="color:var(--muted);margin-bottom:22px">✦ The studio</div>' +
         '<h2 class="statement" id="stmt">' + words('Art rooted in place,') + ' <span class="w it">memory</span> ' + words('and') + ' <span class="w it pk">presence</span>' + '</h2>' +
@@ -3432,15 +3435,10 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         '<p class="reveal">An endless wall of my work to drift through in any direction, at your own pace. Open any painting and sweep the light across it to see the surface of the real thing.</p>' +
         '<p style="display:flex;gap:10px;flex-wrap:wrap"><a class="chipbtn light" href="#/gallery">Enter the gallery +</a><a class="chipbtn ghost" href="#/originals">The originals</a></p></div><div class="hot"><div class="frame wipe"><img class="par" data-speed="-0.05" alt="" src="' + IMG.roots + '"></div>' + tag('roots', null, null, 'hot-frame') + '</div></div></section>' +
 
-        '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">Ways to <span class="it" style="color:var(--ocean)">bring it home</span></h2></div><div class="mlist" id="mlist">' +
-        [['Art prints', 'From $45', 'flowersTall', '#/c/forest'], ['Lounge wear', 'From $89', 'flowersMacro', '#/c/wear'], ['Cards & gifts', 'From $25', 'flowersDetail', '#/c/sets'],
-          ['Originals', 'One of a kind', 'rootsTall', '#/originals'],['Downloads', 'From $6', 'sharkTall', '#/c/digital']]
-          .map(function (m) { return '<a class="mrow reveal" href="' + m[3] + '" data-img="' + m[2] + '"><b>' + m[0] + '</b><span class="c">' + m[1] + '</span></a>'; }).join('') + '</div></section>' +
-
         '<section class="sec wrap"><div class="split"><div class="ph wipe"><img class="par" data-speed="-0.06" alt="The shark painting at the Irukandji Shark &amp; Ray Centre" src="' + IMG.oceanTall + '">' + tag('oceanTall', null, null, 'hot-shark') + '</div><div>' +
         '<div class="lbl" style="color:var(--teal)">Made with the Irukandji Shark &amp; Ray Centre</div><h2 class="reveal">Every ocean print <span class="it" style="color:var(--teal)">gives back</span></h2>' +
         '<p class="reveal">In collaboration with Irukandji Shark and Ray Centre at Port Stephens, I have a selection of originals and prints inspired by resident rays and sharks and my own passion for the ocean and marine life. 20% of every marine print goes to <a href="#/sea-shelter">Sea Shelter</a>, a volunteer-run ocean conservation group here in the Hunter region that rescues, rehabilitates and releases injured sea creatures.</p><p class="reveal"><a class="sea-link" href="#/sea-shelter">About Sea Shelter →</a></p>' +
-        '<p style="margin-top:24px" class="reveal"><a class="chipbtn" href="#/c/ocean">Shop the ocean collection +</a></p></div></div></section>' +
+        '<p style="margin-top:24px" class="reveal"><a class="chipbtn" href="#/c/ocean">See the ocean collection +</a></p></div></div></section>' +
 
         '<section class="pocket"><div class="wrap"><div class="lbl reveal">Pockets of magic</div>' +
         '<h2 class="reveal">What’s in <span class="it">your</span> pocket?</h2>' +
@@ -3781,6 +3779,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     keepCart();
     if (!fromQuote) getQuote();
     $('#cartN').textContent = String(cart.length);
+    document.body.classList.toggle('has-cart', cart.length > 0);
     var items = $('#items'), ft = $('#cartFt');
     if (!cart.length) { items.innerHTML = '<div class="empty">Nothing here yet.<br>Have a wander through the work.</div>'; ft.innerHTML = ''; return; }
     var t = totals(), away = FREE_SHIP - (t.sub - t.off);
