@@ -5471,6 +5471,17 @@ function tideContent(env, t) {
       return { ok: true };
     });
   }
+  /** Deletes a post for good (the admin only, when she has asked for it). Her photos and clips, and the ideas for
+   *  what to film, are never touched: only the post itself goes. */
+  function deletePost(id) {
+    t.need(['admin']);
+    return env.lock(function () {
+      var c = t.find('content', id);
+      if (c.type !== 'Post') t.fail('Only posts can be deleted here.');
+      env.table('content').remove(id);
+      return { ok: true };
+    });
+  }
   function decideContent(id, decision, reason) {
     var role = t.need(['admin', 'artist']);
     if (decision !== 'approve' && decision !== 'reject') t.fail('Unknown answer.');
@@ -5980,7 +5991,7 @@ function tideContent(env, t) {
       startRound: startRound, finishRound: finishRound, addFootage: addFootage, uploadFootagePhoto: uploadFootagePhoto,
       uploadFootageFrame: uploadFootageFrame, addEditedFootage: addEditedFootage, startVideoUpload: startVideoUpload, finishVideoUpload: finishVideoUpload,
       updateFootage: updateFootage, answerQuestion: answerQuestion,
-      decideContent: decideContent, undoApproval: undoApproval, undoReject: undoReject, steerContent: steerContent, requestRevision: requestRevision, updateContent: updateContent, markContent: markContent,
+      decideContent: decideContent, deletePost: deletePost, undoApproval: undoApproval, undoReject: undoReject, steerContent: steerContent, requestRevision: requestRevision, updateContent: updateContent, markContent: markContent,
       requestSuggestions: requestSuggestions, saveBrief: saveBrief, addNote: addNote, removeNote: removeNote,
       saveCampaign: saveCampaign, completeCampaign: completeCampaign, makePost: makePost
     },
@@ -9098,7 +9109,11 @@ var TIDE_CHANGES = [
   { id: '2026-11-18-whats-new-admin', on: '2026-11-18', to: 'admin', icon: 'campaign', title: 'What’s new, for Denise and for you',
     say: 'Every change now comes with an entry in TIDE_CHANGES (LogicSetup.gs). Denise sees hers the next time she opens Tide Book.',
     steps: ['Add an entry to TIDE_CHANGES with every change she’ll notice, newest first.', 'View as Denise (the practice copy) to see what she’ll get.', 'The tests check each entry’s shape, and that hers have no jargon.'],
-    go: { view: 'home', find: 'main button', text: 'What’s new', tip: 'The list lives here too.' } }
+    go: { view: 'home', find: 'main button', text: 'What’s new', tip: 'The list lives here too.' } },
+  { id: '2026-11-19-delete-post', on: '2026-11-19', to: 'admin', icon: 'delete', title: 'Delete a post for good',
+    say: 'When she asks for a post to be gone, open it and delete it. It stops showing everywhere; her photos and clips stay.',
+    steps: ['Go to Content and open the post.', 'Scroll to the bottom and tap “Delete this post for good”.', 'Confirm. It can’t be brought back.'],
+    go: { view: 'content', find: 'main', tip: 'Open a post; the delete button is at the bottom.' } }
 ];
 
 function tideSetup(env, t) {
@@ -14444,10 +14459,10 @@ var Kit = (function () {
         var w = section('Waiting on ' + artist());
         var wl = h('div', { class: 'list' });
         needs.forEach(function (e) {
-          wl.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { e.kind === 'print' ? openPrint(e.item.id) : openIdea(e.item.id); } },
+          wl.appendChild(swipeRow('idea', e.kind === 'idea' ? e.item : null, h('button', { class: 'li press', type: 'button', onclick: function () { e.kind === 'print' ? openPrint(e.item.id) : openIdea(e.item.id); } },
             e.item.thumbIds.length ? thumbImg(e.item.thumbIds[0]) : h('div', { class: 'th-blank' }, icon(e.kind === 'print' ? 'image' : 'lightbulb')),
             h('div', { class: 'grow' }, h('div', { class: 'li-head', text: e.item.title }), h('div', { class: 'li-sup', text: e.item.approvalRequest })),
-            chip('Waiting', 'pending')));
+            chip('Waiting', 'pending'))));
         });
         w.appendChild(wl);
         main.appendChild(rise(w, n++));
@@ -14810,9 +14825,9 @@ var Kit = (function () {
           if (it.done) acts.appendChild(act('task_alt', 'Finished', it.done, '✓ Finished: ' + it.title, function () { return api('updateGoal', it.id, { status: 'Open' }); }));
           if (it.rest) acts.appendChild(act('bedtime', 'Rest it', function () { return api('decideItem', it.kind, it.id, 'park'); }, 'Resting: ' + it.title, function () { return api('undoDecision', it.kind, it.id, 'park'); }));
           acts.appendChild(act('close', 'Let it go', it.drop || function () { return api('decideItem', it.kind, it.id, 'not'); }, 'Let go: ' + it.title, it.undrop || function () { return api('undoDecision', it.kind, it.id, 'not'); }));
-          b.appendChild(h('div', { class: 'otg-row' + (i === 0 ? ' first' : '') },
+          b.appendChild(swipeRow(it.kind, { id: it.id, title: it.title }, h('div', { class: 'otg-row' + (i === 0 ? ' first' : '') },
             h('button', { type: 'button', class: 'otg-main press', onclick: function () { ctl.close(); setTimeout(it.open, 280); } }, h('span', { class: 'otg-ic' }, icon(it.ic)),
-              h('span', { class: 'grow' }, h('b', { text: it.title }), h('em', { text: (i === 0 ? 'Nearest · ' : '') + it.sub }))), acts));
+              h('span', { class: 'grow' }, h('b', { text: it.title }), h('em', { text: (i === 0 ? 'Nearest · ' : '') + it.sub }))), acts), { after: paint }));
         });
       }
       paint();
@@ -15794,8 +15809,8 @@ var Kit = (function () {
       (navigator.clipboard ? navigator.clipboard.writeText('Do the Tide Book prompts') : Promise.reject()).then(function () { toast('Copied: paste it into Claude.'); }).catch(function () { toast('Tell Claude: “Do the Tide Book prompts”.'); });
     } }, h('span', { class: 'ic' }, icon('forum')), h('span', { class: 'grow' }, h('b', { text: chats + ' job' + (chats === 1 ? '' : 's') + ' for Claude chat' }), h('span', { class: 'body-m', text: 'Tap to copy “Do the Tide Book prompts”, then paste it into Claude.' })), icon('content_copy')));
     webs.forEach(function (x) {
-      sec.appendChild(h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openIdea(x.id); } },
-        h('span', { class: 'ic' }, icon('language')), h('span', { class: 'grow' }, h('b', { text: 'Website change to approve' }), h('span', { class: 'body-m', text: x.title })), icon('chevron_right')));
+      sec.appendChild(swipeRow('idea', x, h('button', { class: 'card pad press soft drafts', type: 'button', onclick: function () { openIdea(x.id); } },
+        h('span', { class: 'ic' }, icon('language')), h('span', { class: 'grow' }, h('b', { text: 'Website change to approve' }), h('span', { class: 'body-m', text: x.title })), icon('chevron_right'))));
     });
     waiting.forEach(function (tp) {
       sec.appendChild(h('div', { class: 'card pad', style: 'margin-bottom:10px' },
@@ -15807,11 +15822,11 @@ var Kit = (function () {
     if (oks.length) {
       var okList = h('div', { class: 'list' });
       oks.forEach(function (p) {
-        okList.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { openItem(p.id); } },
+        okList.appendChild(swipeRow('product', p, h('button', { class: 'li press', type: 'button', onclick: function () { openItem(p.id); } },
           h('div', { class: 'th-blank' }, icon('verified')),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
             h('div', { class: 'li-sup', text: 'Needs your OK · ' + p.stage })),
-          h('div', { class: 'li-trail' }, icon('chevron_right'))));
+          h('div', { class: 'li-trail' }, icon('chevron_right')))));
       });
       sec.appendChild(okList);
     }
@@ -21594,6 +21609,16 @@ var Kit = (function () {
           });
           ctl.foot.appendChild(saveBtn);
         }
+        // the admin can delete a post for good (it stops showing everywhere; her photos and clips stay)
+        if (ADMIN) ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' },
+          btn('text', 'Delete this post for good', { danger: true, icon: 'delete', onclick: function (e) {
+            var b = e.currentTarget;
+            K.confirm({ title: 'Delete this post for good?', text: 'It’s removed everywhere and can’t be brought back. The photos and clips in it stay.', confirmLabel: 'Delete it', danger: true }).then(function (yes) {
+              if (!yes) return;
+              K.setBusy(b, true);
+              api('deletePost', c.id).then(refresh).then(function () { dirty = false; K.haptic('success'); render(); toast('Deleted.'); ctl.close(); }).catch(function (err) { K.setBusy(b, false); fail(err); });
+            });
+          } })));
         setTimeout(loadThumbs, 0);
       }
     });
