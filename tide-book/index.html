@@ -3343,6 +3343,7 @@ function createTideLogic(env) {
     else if (kind === 'talk') { talk.ai.sent(id); talk.ai.save(id, result, by); }
     else if (kind === 'note') { notebook.expand.sent([id]); notebook.expand.save(id, result, by); }
     else if (kind === 'ad') { ads.research.sent([id]); ads.research.save(id, result, by); }
+    else if (kind === 'ask') { if (!ask.ai.context(id)) fail('That question isn’t waiting any more.'); ask.ai.sent(id); ask.ai.save(id, result, by); }
     else fail('Unknown kind of job: ' + kind);
     // done in Claude chat: no API cost; what it would have cost is counted for the savings tally
     if (env.setup && env.setup.meterChat) try { env.setup.meterChat(kind, JSON.stringify(result || {}).length); } catch (e) {}
@@ -3990,7 +3991,7 @@ if (env.workDone) env.workDone('publish');
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: todoShown(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), todoCleared: todoClearedCount(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), ask: ask.snapshot(), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(), links: { mail: link.snapshot(role), bank: bank.snapshot(role), insta: insta.snapshot() },
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
@@ -4279,6 +4280,10 @@ if (env.workDone) env.workDone('publish');
   // ---------- talk it through and the product pipeline (LogicTalk.gs)
   var talk = tideTalk(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, oneOf: oneOf, addDays: function (d, n) { return shiftDay(d, n); },
     createIdea: makeIdea, saveNote: notebook.addNote, push: publish.push, planState: planState, planStepOf: planStepOf, planWaits: planWaits, placeFor: placeFor, shop: shopLink });
+
+  // ---------- Ask: her research chats (LogicAsk.gs)
+  var ask = tideAsk(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso,
+    saveNote: function (p) { return notebook.api.saveNote(p); }, createItem: function (p) { return talk.api.createItem(p); } });
 
   // ---------- suggestions and problems (LogicReports.gs)
   var reports = tideReports(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, oneOf: oneOf, queueJob: talk.queueJob, push: publish.push });
@@ -5121,9 +5126,10 @@ if (env.workDone) env.workDone('publish');
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
   var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], post: ['content', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
-    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], milestone: ['milestones', 'deleted'], mentor: ['mentors', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], stock: ['stock', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], milestone: ['milestones', 'deleted'], mentor: ['mentors', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], stock: ['stock', 'deleted'], ask: ['askchats', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
+    if (privateRow(kind, id) && !herOwn()) fail('That’s private.');
     var b = BIN[kind];
     if (!b) fail('That can\u2019t be put back.');
     var res = env.lock(function () {
@@ -5161,12 +5167,13 @@ if (env.workDone) env.workDone('publish');
     reminder: function (id) { return out.api.removeNote(id); },
     contact: function (id) { return out.api.archiveContact(id); },
     account: function (id) { return out.api.removeAccount(id); },
-    consent: function (id) { return out.api.removeConsent(id); }
+    consent: function (id) { return out.api.removeConsent(id); },
+    ask: function (id) { return deleteAsk(id); }
   };
   /** Her private writing is hers alone: the admin (or the admin viewing as her) can't remove it or put it back. */
   function herOwn() { return env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist'; }
   function privateRow(kind, id) {
-    var tb = { note: 'notebook', topic: 'topics' }[kind];
+    var tb = { note: 'notebook', topic: 'topics', ask: 'askchats' }[kind];
     if (!tb) return false;
     var r = rows(tb).filter(function (x) { return x.id === id; })[0];
     return !!(r && (r.private || (kind === 'note' && (r.owner === 'artist' || r.updatedBy === 'artist'))));
@@ -5194,6 +5201,16 @@ if (env.workDone) env.workDone('publish');
     if (why && confirmed !== true) return { confirm: why };
     fn(id);
     return { ok: true, kind: kind, id: id };
+  }
+  /** Removes one of her Ask chats (or one of the admin's own). Undo puts it back. */
+  function deleteAsk(id) {
+    var role = need(['admin', 'artist']), owner = role === 'artist' && (env.user.realRole || role) === 'artist' ? 'artist' : 'admin';
+    return env.lock(function () {
+      var r = rows('askchats').filter(function (x) { return x.id === id && !x.deleted; })[0];
+      if (!r || r.owner !== owner) fail('That chat isn’t there any more.');
+      env.table('askchats').update(id, { deleted: true, updated: nowIso() });
+      return { ok: true };
+    });
   }
   function undoSwiped(kind, id) {
     need(['admin', 'artist']);
@@ -5239,7 +5256,9 @@ if (env.workDone) env.workDone('publish');
   Object.keys(direction.api).forEach(function (k) { out.api[k] = direction.api[k]; });
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
-  out.api.swipeDelete = swipeDelete; out.api.undoSwiped = undoSwiped;
+  Object.keys(ask.api).forEach(function (k) { out.api[k] = ask.api[k]; });
+  out.ask = ask;
+  out.api.swipeDelete = swipeDelete; out.api.undoSwiped = undoSwiped; out.api.deleteAsk = deleteAsk;
   out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock; out.api.vaultOff = vaultOff;
   Object.keys(siteWishes.api).forEach(function (k) { out.api[k] = siteWishes.api[k]; });
   Object.keys(siteEditor.api).forEach(function (k) { out.api[k] = siteEditor.api[k]; });
