@@ -14941,7 +14941,7 @@ var Kit = (function () {
     var badge = ik.k === 'new' ? h('div', { class: 'ik-badge new' }, icon('lightbulb'), h('span', { text: 'New idea · grow it' }))
       : ik.k === 'doing' ? h('div', { class: 'ik-badge doing' }, icon('flag'), h('span', { class: 'ik-next', text: 'Next: ' + ik.next }))
       : h('div', { class: 'ik-badge done' }, icon('check_circle'), h('span', { text: 'Finished' }));
-    return h('button', { class: 'idea press has-sky ik-' + ik.k, type: 'button', onclick: function () { openIdea(x.id); } },
+    return swipeRow('idea', x, h('button', { class: 'idea press has-sky ik-' + ik.k, type: 'button', onclick: function () { openIdea(x.id); } },
       skyStrip(x.day),
       h('span', { class: 'rank', text: String(rank) }),
       ik.k === 'doing' ? h('span', { class: 'ik-ring' }, svgRing(ik.pct, 22, 2 * Math.PI * 22)) : K.ring(x.viability),
@@ -14955,7 +14955,7 @@ var Kit = (function () {
           chip(x.timeline, 'outline', 'schedule'),
           x.stage === 'Parked' ? chip(pauseLabel(x.resumeOn), 'outline', 'calendar_month') : x.planWaits ? chip('Waits · step ' + x.planStep, 'outline', 'hourglass_top') : ADMIN ? chip(stageLabel(x.stage), K.slug(x.stage)) : null,
           x.approvalState === 'Change requested' ? chip('Changes asked', 'change-requested') : null,
-          x.health ? chip('Sensitive', 'high') : null)));
+          x.health ? chip('Sensitive', 'high') : null))));
   }
 
   // ---------------------------------------------------------------- Our direction (context, not ideas)
@@ -14969,8 +14969,8 @@ var Kit = (function () {
     if (list.length) {
       var l = h('div', { class: 'dir-list' });
       list.forEach(function (d) {
-        l.appendChild(h('button', { class: 'dir-item press', type: 'button', onclick: function () { openDirection(d.id); } },
-          h('b', { text: d.title }), h('span', { text: d.body.length > 180 ? d.body.slice(0, 180).replace(/\s+\S*$/, '') + '…' : d.body })));
+        l.appendChild(swipeRow('direction', d, h('button', { class: 'dir-item press', type: 'button', onclick: function () { openDirection(d.id); } },
+          h('b', { text: d.title }), h('span', { text: d.body.length > 180 ? d.body.slice(0, 180).replace(/\s+\S*$/, '') + '…' : d.body }))));
       });
       card.appendChild(l);
     }
@@ -15056,11 +15056,11 @@ var Kit = (function () {
       else {
         var mine = h('div', { class: 'list' });
         rankedIdeas(ideas).forEach(function (x) {
-          mine.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { openIdea(x.id); } },
+          mine.appendChild(swipeRow('idea', x, h('button', { class: 'li press', type: 'button', onclick: function () { openIdea(x.id); } },
             x.thumbIds.length ? thumbImg(x.thumbIds[0]) : h('div', { class: 'th-blank' }, icon(KIND_ICON[x.kind] || 'lightbulb')),
             h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.title }),
               h('div', { class: 'li-sup', text: x.kind + ' · ' + x.timeline + (x.scope.length ? ' · ' + x.scope.filter(function (s) { return s.done; }).length + '/' + x.scope.length + ' done' : '') })),
-            h('div', { class: 'li-trail' }, chip(x.status), x.priority === 'High' ? chip('High', 'high', 'flag') : null)));
+            h('div', { class: 'li-trail' }, chip(x.status), x.priority === 'High' ? chip('High', 'high', 'flag') : null))));
         });
         main.appendChild(rise(mine, 2));
       }
@@ -15649,10 +15649,10 @@ var Kit = (function () {
     if (!shown.length) { main.appendChild(rise(emptyState('favorite', all.length ? 'Nothing with that tag' : 'Nothing saved yet', 'Screenshots and links you save show up here.'), 3)); return; }
     var grid = h('div', { class: 'inspo-grid' });
     shown.forEach(function (i, n) {
-      var card = h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
+      var card = swipeRow('inspiration', i, h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
         inspoPreview(i, 'inspo-img'),
         h('div', { class: 'inspo-cap' }, h('div', { class: 'body-s inspo-tldr' + (i.note || i.tags.length ? '' : ' empty'), text: inspoTldr(i) }),
-          h('div', { class: 'label-s', text: [i.source, i.tags[0]].filter(Boolean).join(' · ') || ago(i.created) })));
+          h('div', { class: 'label-s', text: [i.source, i.tags[0]].filter(Boolean).join(' · ') || ago(i.created) }))), { label: 'Removed from your inspo.' });
       var del = h('button', { class: 'inspo-del press', type: 'button', 'aria-label': 'Remove', title: 'Remove', onclick: function (e) {
         e.stopPropagation(); del.disabled = true;
         api('deleteInspiration', i.id).then(refresh).then(function () { render(); binUndo('Removed from your inspo.', 'inspiration', i.id); }).catch(function (er) { del.disabled = false; fail(er); });
@@ -15732,11 +15732,11 @@ var Kit = (function () {
     return chip(tp.status === 'Wrapping' ? 'Writing it up' : 'Thinking', 'pending', 'hourglass_top');
   }
   function topicRow(tp) {
-    return h('button', { class: 'li press', type: 'button', onclick: function () { openTopic(tp.id); } },
+    return swipeRow('topic', tp, h('button', { class: 'li press', type: 'button', onclick: function () { openTopic(tp.id); } },
       h('div', { class: 'th-blank' }, icon(tp.status === 'Done' ? (TALK_ICON[tp.outcome && tp.outcome.kind] || 'check_circle') : 'forum')),
       h('div', { class: 'grow' }, h('div', { class: 'li-head', text: tp.status === 'Done' && tp.outcome ? tp.outcome.title : tp.title }),
         h('div', { class: 'li-sup', text: [ADMIN ? tp.by : '', tp.answered + ' answered', ago(tp.updated)].filter(String).join(' · ') })),
-      h('div', { class: 'li-trail' }, topicChip(tp)));
+      h('div', { class: 'li-trail' }, topicChip(tp))));
   }
   /** Cards for Home: questions waiting for this person, and products waiting for their OK. */
   function talkCards(main, n) {
@@ -16158,7 +16158,7 @@ var Kit = (function () {
       var sec = section(stage), l = h('div', { class: 'list' });
       here.forEach(function (p) {
         var isNew = p.stage === 'Idea' || p.stage === 'Questions';
-        l.appendChild(h('button', { class: 'li press has-sky ' + (isNew ? 'ik-new' : p.stage === 'Live' ? 'ik-done' : 'ik-doing'), type: 'button', onclick: function () { openItem(p.id); } },
+        l.appendChild(swipeRow('product', p, h('button', { class: 'li press has-sky ' + (isNew ? 'ik-new' : p.stage === 'Live' ? 'ik-done' : 'ik-doing'), type: 'button', onclick: function () { openItem(p.id); } },
           skyStrip(p.day),
           h('div', { class: 'th-blank ik-th' }, icon(isNew ? 'lightbulb' : p.stage === 'Live' ? 'check_circle' : 'flag')),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: p.title }),
@@ -16166,7 +16166,7 @@ var Kit = (function () {
             p.keep > 0 ? h('div', { class: 'li-sup', text: 'Keeps ' + money(p.keep, { cents: true }) + ' a sale · ' + p.perWeek + ' a week reaches ' + money(T.goal) }) : null,
             p.next && !p.next.done ? h('div', { class: 'li-sup next-line' + (p.next.who === 'hers' ? ' hers' : ''), text: (p.next.wait ? '' : p.next.who === 'hers' ? 'You: ' : 'Go? ') + p.next.label }) : null,
             h('div', { class: 'li-chips' }, itemChip(p))),
-          icon('chevron_right')));
+          icon('chevron_right'))));
       });
       sec.appendChild(l);
       main.appendChild(rise(sec, i++));
@@ -16890,13 +16890,13 @@ var Kit = (function () {
     bits.push(ago(n.updated));
     var conn = n.links.length + n.backlinks.length;
     if (conn) bits.push(conn + (conn === 1 ? ' link' : ' links'));
-    return h('button', { class: 'li press note-row', type: 'button', onclick: function () { openNote(n.id); } },
+    return swipeRow('note', n, h('button', { class: 'li press note-row', type: 'button', onclick: function () { openNote(n.id); } },
       h('div', { class: 'th-blank' }, icon(n.expansion ? 'auto_awesome' : 'sticky_note_2')),
       h('div', { class: 'grow' }, h('div', { class: 'li-head', text: n.title }),
         h('div', { class: 'li-sup', style: 'white-space:normal;-webkit-line-clamp:2', text: noteSnippet(n) || 'Empty note' }),
         h('div', { class: 'li-sup', text: bits.join(' · ') })),
       h('div', { class: 'li-trail' }, idea ? chip(idea.title.length > 18 ? idea.title.slice(0, 17) + '…' : idea.title, 'outline', 'lightbulb') : null,
-        n.expandStatus === 'Queued' || n.expandStatus === 'Expanding' ? chip('Thinking', 'pending', 'hourglass_top') : null));
+        n.expandStatus === 'Queued' || n.expandStatus === 'Expanding' ? chip('Thinking', 'pending', 'hourglass_top') : null)));
   }
 
   // ------------------------------------------------------------------ Notes: a place to keep things, like Samsung Notes
@@ -16976,10 +16976,10 @@ var Kit = (function () {
     });
     var has = { photo: /!\[photo\]\(att:/.test(body), drawing: /!\[drawing\]\(att:/.test(body), voice: /\[voice\]\(att:/.test(body) };
     var made = (n.madeInto || []).length;
-    return h('button', { type: 'button', class: 'nt-card press soft', style: 'background:' + (NOTE_COLOURS[n.colour] || '#fff'), onclick: function () { openNote(n.id); } },
+    return swipeRow('note', n, h('button', { type: 'button', class: 'nt-card press soft', style: 'background:' + (NOTE_COLOURS[n.colour] || '#fff'), onclick: function () { openNote(n.id); } },
       h('div', { class: 'nt-ct' }, n.pinned ? icon('push_pin') : null, h('b', { text: n.title })), prev,
       h('div', { class: 'nt-meta' }, h('span', { text: ago(n.updated) }), n.folder && !S.noteFolder ? h('span', { class: 'nt-fold', text: n.folder }) : null, h('span', { class: 'grow' }),
-        has.photo ? icon('image') : null, has.drawing ? icon('draw') : null, has.voice ? icon('mic') : null, made ? h('span', { class: 'nt-made', title: 'Turned into something' }, icon('auto_awesome')) : null));
+        has.photo ? icon('image') : null, has.drawing ? icon('draw') : null, has.voice ? icon('mic') : null, made ? h('span', { class: 'nt-made', title: 'Turned into something' }, icon('auto_awesome')) : null)));
   }
 
   // ---------- the note itself
@@ -18852,11 +18852,11 @@ var Kit = (function () {
       var gc = goalColour(g.id), steps = g.steps || [], left = steps.filter(function (s) { return !s.done; }), done = steps.filter(function (s) { return s.done; });
       var ko = 'g:' + g.id, isOpen = ko in open ? open[ko] : !!(now ? now.id === g.id : tops[0] && tops[0].id === g.id);
       var box = h('div', { class: 'gs-list' + (isOpen ? ' open' : '') + (g.status === 'Done' ? ' alldone' : ''), style: '--gc:' + gc });
-      box.appendChild(h('div', { class: 'gs-headrow' },
+      box.appendChild(swipeRow('goal', g, h('div', { class: 'gs-headrow' },
         h('button', { type: 'button', class: 'gs-head', 'aria-expanded': String(isOpen), onclick: function () { open[ko] = !isOpen; K.haptic(); render(); } }, h('i', { class: 'gs-dot' }, g.status === 'Done' ? icon('check') : null),
           h('span', { class: 'grow' }, h('b', { text: g.title }), now && now.id === g.id ? h('em', { class: 'gs-now', text: 'Now' }) : null),
           h('span', { class: 'gs-count', text: steps.length ? (left.length ? left.length + ' left' : 'Done') : '' }), icon(isOpen ? 'expand_less' : 'expand_more')),
-        K.iconBtn('more_vert', 'More for this goal', function () { openGoal(g.id); })));
+        K.iconBtn('more_vert', 'More for this goal', function () { openGoal(g.id); }))));
       if (!isOpen) return box;
       // the shop goal carries what selling needs: each ticks itself when it's done
       var sg = shopGoal();
@@ -18903,8 +18903,8 @@ var Kit = (function () {
     ms.forEach(function (m) {
       var mine = tops.filter(function (g) { return g.milestoneId === m.id; });
       var tot = 0, dn = 0; mine.forEach(function (g) { tot += (g.steps || []).length; dn += (g.steps || []).filter(function (x) { return x.done; }).length; });
-      wrap.appendChild(h('button', { type: 'button', class: 'gl-ms press soft', onclick: function () { openMilestone(m.id); } }, svgRing(tot ? dn / tot : 0, 22, 2 * Math.PI * 22),
-        h('span', { class: 'grow' }, h('span', { class: 'gl-ms-k' }, icon('wb_sunny'), 'Milestone'), h('b', { text: m.title })), icon('more_vert')));
+      wrap.appendChild(swipeRow('milestone', m, h('button', { type: 'button', class: 'gl-ms press soft', onclick: function () { openMilestone(m.id); } }, svgRing(tot ? dn / tot : 0, 22, 2 * Math.PI * 22),
+        h('span', { class: 'grow' }, h('span', { class: 'gl-ms-k' }, icon('wb_sunny'), 'Milestone'), h('b', { text: m.title })), icon('more_vert')), { label: 'Milestone removed. Its goals float free.' }));
       mine.forEach(function (g) { wrap.appendChild(list(g)); });
     });
     var free = tops.filter(function (g) { return !g.milestoneId || !ms.some(function (m) { return m.id === g.milestoneId; }); });
@@ -19016,12 +19016,12 @@ var Kit = (function () {
       h('div', { class: 'filter-row' }, (M.starters || []).slice(0, 4).map(function (s) { return h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { newMentorSheet(s); } }); }))));
     coaches.forEach(function (m) {
       var pct = m.total ? Math.round(m.done / m.total * 100) : 0;
-      sec.appendChild(h('button', { type: 'button', class: 'mn-card press soft', onclick: function () { S.mentorId = m.id; render(); } },
+      sec.appendChild(swipeRow('mentor', m.locked ? null : m, h('button', { type: 'button', class: 'mn-card press soft', onclick: function () { S.mentorId = m.id; render(); } },
         h('span', { class: 'mn-ic' }, icon('school')),
         h('span', { class: 'grow' }, h('b', { text: m.locked ? 'Locked' : m.title }), m.deep ? h('span', { class: 'mn-deep', text: 'Deep thinking' }) : null,
           h('span', { class: 'mn-sub', text: m.last && m.last.thinking ? 'Thinking…' : m.last ? (m.last.by === 'her' ? 'You: ' : '') + m.last.text : m.goal }),
           m.total ? h('span', { class: 'mn-prog' }, h('i', { style: 'width:' + pct + '%' }), h('em', { text: m.done + ' of ' + m.total + ' lessons' })) : null),
-        icon('chevron_right')));
+        icon('chevron_right'))));
     });
     main.appendChild(rise(sec, n++));
     talkHere(main, n);
@@ -19248,7 +19248,7 @@ var Kit = (function () {
       h('button', { type: 'button', class: 'cal-ev-main', onclick: e.open }, h('span', { class: 'cal-ev-ic' }, icon(e.icon)),
         h('span', { class: 'grow' }, h('span', { class: 'cal-ev-t', text: e.title }), h('span', { class: 'cal-ev-s', text: e.sub }))));
     if (e.kind === 'step' && !e.done) row.appendChild(K.iconBtn('edit_calendar', 'Change when', function () { openStepWhen(e.goal, e.step); }));
-    return row;
+    return e.kind === 'own' && e.own ? swipeRow('day', e.own, row, { title: e.title }) : row;
   }
   function byTime(a, b) {
     var x = a.at ? atMins(a.at) : -1, y = b.at ? atMins(b.at) : -1;
@@ -20439,9 +20439,9 @@ var Kit = (function () {
         var s1 = sheetSection('Suppliers');
         var sl = h('div', { class: 'list' });
         (S.data.suppliers || []).forEach(function (x) {
-          sl.appendChild(h('button', { class: 'li press soft', type: 'button', style: 'width:100%;text-align:left', onclick: function () { K.swap(ctl, function () { openSupplier(x.id); }); } },
+          sl.appendChild(swipeRow('supplier', x, h('button', { class: 'li press soft', type: 'button', style: 'width:100%;text-align:left', onclick: function () { K.swap(ctl, function () { openSupplier(x.id); }); } },
             h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.name }),
-              h('div', { class: 'li-sup', text: [x.makes.join(', '), x.defaultFor.length ? 'Default for ' + x.defaultFor.join(', ') : ''].filter(String).join(' · ') || 'Tap to say what they make' })), icon('chevron_right')));
+              h('div', { class: 'li-sup', text: [x.makes.join(', '), x.defaultFor.length ? 'Default for ' + x.defaultFor.join(', ') : ''].filter(String).join(' · ') || 'Tap to say what they make' })), icon('chevron_right'))));
         });
         if (!(S.data.suppliers || []).length) sl.appendChild(h('p', { class: 'body-m', style: 'margin:0;padding:12px;color:var(--on-surface-variant)', text: 'No suppliers yet. Add who prints or makes ' + your + ' things.' }));
         s1.append(sl, h('div', { style: 'margin-top:8px' }, btn('tonal', 'Add a supplier', { icon: 'add', onclick: function () { K.swap(ctl, function () { openSupplier(null); }); } })));
@@ -21041,8 +21041,8 @@ var Kit = (function () {
     else {
       var nl = h('div', { class: 'list' });
       S.data.notes.slice(0, 15).forEach(function (x) {
-        nl.appendChild(h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', style: '-webkit-line-clamp:3', text: x.text }), h('div', { class: 'li-sup', text: K.dateLabel(x.created) })),
-          K.iconBtn('close', 'Forget this', function () { api('removeNote', x.id).then(refresh).then(function () { render(); binUndo('Forgotten.', 'reminder', x.id); }).catch(fail); })));
+        nl.appendChild(swipeRow('reminder', x, h('div', { class: 'li' }, h('div', { class: 'grow' }, h('div', { class: 'li-head', style: '-webkit-line-clamp:3', text: x.text }), h('div', { class: 'li-sup', text: K.dateLabel(x.created) })),
+          K.iconBtn('close', 'Forget this', function () { api('removeNote', x.id).then(refresh).then(function () { render(); binUndo('Forgotten.', 'reminder', x.id); }).catch(fail); })), { label: 'Forgotten.' }));
       });
       ns.appendChild(nl);
     }
@@ -22515,8 +22515,8 @@ var Kit = (function () {
         if (L.length) {
           var l = h('div', { class: 'list' });
           L.forEach(function (x) {
-            l.appendChild(h('button', { type: 'button', class: 'li press', onclick: function () { edit(x); } }, h('div', { class: 'th-blank todo-ic' }, icon('inventory_2')),
-              h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.what }), h('div', { class: 'li-sup', text: x.left + ' of ' + x.qty + ' left · ' + money2(x.costEach) + ' each' + (x.where ? ' · ' + x.where : '') })), icon('chevron_right')));
+            l.appendChild(swipeRow('stock', x, h('button', { type: 'button', class: 'li press', onclick: function () { edit(x); } }, h('div', { class: 'th-blank todo-ic' }, icon('inventory_2')),
+              h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.what }), h('div', { class: 'li-sup', text: x.left + ' of ' + x.qty + ' left · ' + money2(x.costEach) + ' each' + (x.where ? ' · ' + x.where : '') })), icon('chevron_right')), { after: paint }));
           });
           b.appendChild(l);
         }
@@ -22746,11 +22746,11 @@ var Kit = (function () {
       if (!shown.length) { listEl.appendChild(emptyState('contacts', hub.contacts.length ? 'No one matches' : 'No contacts yet', 'Stockists, suppliers, customers and anyone else worth keeping.')); return; }
       var list = h('div', { class: 'list' });
       shown.forEach(function (c) {
-        list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { openContact(c.id); } },
+        list.appendChild(swipeRow('contact', c, h('button', { class: 'li press', type: 'button', onclick: function () { openContact(c.id); } },
           h('div', { class: 'th-blank avatar', 'aria-hidden': 'true', text: initials(c) }),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: c.name || c.email }),
             h('div', { class: 'li-sup', text: [c.organisation, c.kind, c.name ? c.email : ''].filter(String).join(' · ') })),
-          h('div', { class: 'li-trail' }, c.unsubscribed ? chip('Unsubscribed', 'void') : (c.lists.length ? chip(c.lists.length === 1 ? c.lists[0] : c.lists.length + ' lists', 'outline', 'mail') : null))));
+          h('div', { class: 'li-trail' }, c.unsubscribed ? chip('Unsubscribed', 'void') : (c.lists.length ? chip(c.lists.length === 1 ? c.lists[0] : c.lists.length + ' lists', 'outline', 'mail') : null))), { title: c.name || c.email }));
       });
       listEl.appendChild(list);
     }
@@ -22847,9 +22847,9 @@ var Kit = (function () {
     K.sheet({ title: name, tall: true, build: function (ctl) {
       var list = h('div', { class: 'list' });
       listMembers(name).forEach(function (c) {
-        list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { K.swap(ctl, function () { openContact(c.id); }); } },
+        list.appendChild(swipeRow('contact', c, h('button', { class: 'li press', type: 'button', onclick: function () { K.swap(ctl, function () { openContact(c.id); }); } },
           h('div', { class: 'th-blank avatar', 'aria-hidden': 'true', text: initials(c) }),
-          h('div', { class: 'grow' }, h('div', { class: 'li-head', text: c.name || c.email }), h('div', { class: 'li-sup', text: c.email + (c.source ? ' · ' + c.source : '') }))));
+          h('div', { class: 'grow' }, h('div', { class: 'li-head', text: c.name || c.email }), h('div', { class: 'li-sup', text: c.email + (c.source ? ' · ' + c.source : '') }))), { title: c.name || c.email }));
       });
       ctl.body.appendChild(list);
     } });
@@ -22897,11 +22897,11 @@ var Kit = (function () {
       var sec = section(k), list = h('div', { class: 'list' });
       groups[k].forEach(function (a) {
         var host = a.url.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
-        list.appendChild(h('div', { class: 'li acct' },
+        list.appendChild(swipeRow('account', a, h('div', { class: 'li acct' },
           h('a', { class: 'acct-go press', href: a.url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'Open ' + a.name },
             h('div', { class: 'th-blank' }, icon(ACCOUNT_ICON[a.kind] || 'link')),
             h('div', { class: 'grow' }, h('div', { class: 'li-head', text: a.name }), h('div', { class: 'li-sup', text: host + (a.login ? ' · ' + a.login : '') }))),
-          K.iconBtn('edit', 'Edit ' + a.name, function () { openAccount(a.id); })));
+          K.iconBtn('edit', 'Edit ' + a.name, function () { openAccount(a.id); }))));
       });
       sec.appendChild(list);
       main.appendChild(rise(sec, 3 + i));
@@ -22959,7 +22959,7 @@ var Kit = (function () {
       var sec = section(g[1]), list = h('div', { class: 'list' });
       group.forEach(function (c) {
         var flip = c.status === 'Go' ? 'No go' : 'Go';
-        list.appendChild(h('div', { class: 'li acct' },
+        list.appendChild(swipeRow('consent', c, h('div', { class: 'li acct' },
           h('button', { type: 'button', class: 'acct-go press', 'aria-label': 'Edit ' + c.term, onclick: function () { openConsent(c.id); } },
             h('div', { class: 'th-blank' }, icon(c.kind === 'Topic' ? 'sticky_note_2' : 'contacts')),
             h('div', { class: 'grow' }, h('div', { class: 'li-head' }, c.term, ' ', consentChip(c.status, c.often)),
@@ -22969,7 +22969,7 @@ var Kit = (function () {
             api('saveConsent', c.id, { term: c.term, kind: c.kind, note: c.note, status: flip, often: c.often }).then(refresh)
               .then(function () { K.haptic('success'); render(); toast(c.term + ' is now ' + (flip === 'Go' ? 'a go.' : 'a no go.')); })
               .catch(function (e) { K.setBusy(b, false); fail(e); });
-          } })));
+          } }))));
       });
       sec.appendChild(list);
       main.appendChild(rise(sec, 2 + i));
