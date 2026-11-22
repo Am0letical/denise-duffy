@@ -896,6 +896,14 @@ img, video { max-width: 100%; }
 .undo-card .undo-btn { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--r-full); padding: 10px 16px;
   background: transparent; color: var(--inverse-primary, oklch(82.9% 0.085 261.1)); font: 600 15px/20px var(--font); }
 @media (min-width: 840px) { .undo-card { left: auto; width: 420px; bottom: 28px; } }
+/* swipe left to delete (touch only): the row slides over a red bin; past halfway the bin grows to say it'll go */
+.sw-row { touch-action: pan-y pinch-zoom; }
+.sw-bg { position: absolute; z-index: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-end; padding-right: 22px;
+  background: oklch(51% 0.19 27); color: #fff; pointer-events: none; }
+.sw-bg .ms { font-size: 28px; font-variation-settings: 'wght' 300; transition: transform .18s var(--spring, ease); }
+.sw-bg.arm { background: oklch(45% 0.2 27); }
+.sw-bg.arm .ms { transform: scale(1.3); }
+@media (prefers-reduced-motion: reduce) { .sw-bg .ms { transition: none; } }
 
 /* the mic on writing boxes */
 .tf.has-mic input, .tf.has-mic textarea { padding-right: 56px; }
