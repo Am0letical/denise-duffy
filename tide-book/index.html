@@ -5133,6 +5133,66 @@ if (env.workDone) env.workDone('publish');
     return res;
   }
 
+  // ---------- swipe to delete: the same delete as the button, so Undo (undoDelete) puts it back exactly as it was.
+  // Nothing is wiped: a deleted row keeps its links, tags, sizes and place, and Undo only turns the flag back.
+  // Anything that reaches outside Tide Book, or that's part of her records, asks first (confirmed = true once she says yes).
+  var SWIPE = {
+    idea: function (id) { return decideItem('idea', id, 'del'); },
+    product: function (id) { return decideItem('product', id, 'del'); },
+    post: function (id) { return decideItem('post', id, 'del'); },
+    topic: function (id) { return decideItem('topic', id, 'del'); },
+    goal: function (id) { return deleteGoal(id); },
+    milestone: function (id) { return deleteMilestone(id); },
+    supplier: function (id) { return deleteSupplier(id); },
+    day: function (id) { return deleteOwnDay(id); },
+    stock: function (id) { return deleteStock(id); },
+    direction: function (id) { return out.api.deleteDirection(id); },
+    inspiration: function (id) { return out.api.deleteInspiration(id); },
+    mentor: function (id) { return out.api.deleteMentor(id); },
+    note: function (id) { return out.api.deleteNote(id); },
+    reminder: function (id) { return out.api.removeNote(id); },
+    contact: function (id) { return out.api.archiveContact(id); },
+    account: function (id) { return out.api.removeAccount(id); },
+    consent: function (id) { return out.api.removeConsent(id); }
+  };
+  /** Her private writing is hers alone: the admin (or the admin viewing as her) can't remove it or put it back. */
+  function herOwn() { return env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist'; }
+  function privateRow(kind, id) {
+    var tb = { note: 'notebook', topic: 'topics' }[kind];
+    if (!tb) return false;
+    var r = rows(tb).filter(function (x) { return x.id === id; })[0];
+    return !!(r && (r.private || (kind === 'note' && (r.owner === 'artist' || r.updatedBy === 'artist'))));
+  }
+  /** Why this one needs a yes before it goes, or '' if Undo is enough. */
+  function swipeAsk(kind, id) {
+    var tb = { product: 'pipeline', post: 'content', account: 'accounts', stock: 'stock' }[kind];
+    if (!tb) return '';
+    var r = rows(tb).filter(function (x) { return x.id === id; })[0];
+    if (!r) return '';
+    if (kind === 'product' && (r.stage === 'Live' || (r.printful && r.printful.productId)))
+      return 'It’s set up to sell (in your shop or with Printful). Removing it takes it off Tide Book’s lists, and the shop may need changing too.';
+    if (kind === 'post' && (r.postedAt || r.scheduledAt || /^(Scheduled|Posted|Published)$/.test(r.status || '')))
+      return r.postedAt ? 'It’s already been posted. Removing it here doesn’t take it off Instagram.' : 'It’s booked to go out. Removing it stops it.';
+    if (kind === 'account') return 'Tide Book stops using this account until it’s put back.';
+    if (kind === 'stock') return 'Your stock counts are part of your money records.';
+    return '';
+  }
+  function swipeDelete(kind, id, confirmed) {
+    need(['admin', 'artist']);
+    var fn = SWIPE[kind];
+    if (!fn) fail('That can’t be removed with a swipe.');
+    if (privateRow(kind, id) && !herOwn()) fail('That’s private.');
+    var why = swipeAsk(kind, id);
+    if (why && confirmed !== true) return { confirm: why };
+    fn(id);
+    return { ok: true, kind: kind, id: id };
+  }
+  function undoSwiped(kind, id) {
+    need(['admin', 'artist']);
+    if (privateRow(kind, id) && !herOwn()) fail('That’s private.');
+    return undoDelete(kind, id);
+  }
+
   var out = {
     // Everything the screens are allowed to call.
     api: {
@@ -20196,6 +20256,105 @@ var Kit = (function () {
   }
   /** After a delete: a card with Undo that puts it straight back. */
   function binUndo(msg, kind, id) { undoCard(msg, function () { return api('undoDelete', kind, id); }, 'Put back.', 12); }
+  // ------------------------------------------------------------------ swipe left to delete (touch only)
+  // Like email: a row that has a delete can also be swiped left. A red bin shows behind it; let go past halfway and it
+  // slides away and goes (the same delete as the button, so nothing is wiped), short of that and it springs back.
+  // Undo shows for 5 seconds; several in a row each keep their Undo (the newest shows, then the one before).
+  // Anything that reaches outside Tide Book, or that's part of her records, asks first (the server says which).
+  // Only a finger starts it, and only a clearly sideways one, so scrolling, mice and desktops are as they were.
+  var SWIPED = [], swipeTimer = null, swipedAt = 0;
+  function swipeUndoBar() {
+    var old = document.getElementById('undo-card'); if (old) old.remove();
+    clearTimeout(undoTimer); clearTimeout(swipeTimer);
+    var top = SWIPED[SWIPED.length - 1]; if (!top) return;
+    var more = SWIPED.length - 1;
+    var b = h('button', { type: 'button', class: 'undo-btn press' }, icon('undo'), 'Undo');
+    var card = h('div', { id: 'undo-card', class: 'undo-card', role: 'status' }, h('span', { class: 'grow', text: top.label + (more ? ' (' + more + ' more to undo)' : '') }), b);
+    b.addEventListener('click', function () {
+      b.disabled = true; clearTimeout(swipeTimer);
+      api('undoSwiped', top.kind, top.id).then(function () { var i = SWIPED.indexOf(top); if (i >= 0) SWIPED.splice(i, 1); return refresh(); }).then(function () {
+        K.haptic('success'); render(); var t = K.topSheet(); if (t && t.redraw) t.redraw(); if (top.after) top.after();
+        if (top.el && top.el.isConnected) { top.el.style.display = ''; top.el.style.opacity = ''; top.el.style.transform = ''; top.el.style.transition = ''; }
+        if (SWIPED.length) swipeUndoBar(); else { card.remove(); toast('Put back.'); }
+      }).catch(function (e) { b.disabled = false; fail(e); });
+    });
+    document.body.appendChild(card);
+    swipeTimer = setTimeout(function () { SWIPED = []; card.classList.add('out'); setTimeout(function () { card.remove(); }, 300); }, 5000);
+  }
+  /** Swipe-to-delete on a list row. kind: what the server's swipeDelete calls it; x: the item (needs x.id).
+   *  o.label: the Undo bar's words; o.title: its name for the question; o.after(): redraws the sheet it sits in. */
+  function swipeRow(kind, x, el, o) {
+    o = o || {};
+    if (!x || !x.id || !el) return el;
+    el.classList.add('sw-row');
+    var g = null;
+    function name() { var t = o.title || x.title || x.name || x.what || x.term || x.text || ''; return t.length > 40 ? t.slice(0, 38) + '…' : t; }
+    function reset(animate) {
+      el.style.transition = animate ? 'transform .26s cubic-bezier(.2,.9,.3,1.25)' : '';
+      el.style.transform = '';
+      var bg = g && g.bg; setTimeout(function () { if (bg) bg.remove(); el.style.transition = ''; el.style.position = el.dataset.swPos || ''; el.style.zIndex = ''; }, animate ? 280 : 0);
+    }
+    function blocked(t) { return !!(t && t.closest && t.closest('.site-ed, .se-frame, .cc-overlay, .cc-card, .thumbs, .carousel, .rail, [data-noswipe], input, textarea, select, [contenteditable], input[type=range]')); }
+    el.addEventListener('pointerdown', function (e) {
+      if (e.pointerType !== 'touch' || !e.isPrimary || blocked(e.target)) return;
+      g = { x: e.clientX, y: e.clientY, dir: '', tx: 0, id: e.pointerId, armed: false };
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (!g || e.pointerId !== g.id) return;
+      var dx = e.clientX - g.x, dy = e.clientY - g.y;
+      if (!g.dir) {
+        if (Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx)) { g = null; return; }          // scrolling: leave it alone
+        if (dx < -12 && Math.abs(dx) > Math.abs(dy) * 2) {                                      // clearly sideways, to the left
+          g.dir = 'h';
+          try { el.setPointerCapture(e.pointerId); } catch (er) {}
+          el.dataset.swPos = el.style.position || '';
+          if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+          el.style.zIndex = '1'; el.style.transition = '';
+          var cs = getComputedStyle(el);
+          g.bg = h('div', { class: 'sw-bg', 'aria-hidden': 'true', style: 'left:' + el.offsetLeft + 'px;top:' + el.offsetTop + 'px;width:' + el.offsetWidth + 'px;height:' + el.offsetHeight + 'px;border-radius:' + cs.borderRadius }, icon('delete'));
+          el.parentNode.insertBefore(g.bg, el);
+        } else return;
+      }
+      g.tx = Math.min(0, dx);
+      el.style.transform = 'translateX(' + g.tx + 'px)';
+      var past = -g.tx > el.offsetWidth * 0.5;
+      if (past !== g.armed) { g.armed = past; g.bg.classList.toggle('arm', past); if (past) K.haptic(); }
+      if (e.cancelable) e.preventDefault();
+    });
+    function end(e) {
+      if (!g || (e && e.pointerId !== g.id)) return;
+      var gg = g;
+      if (gg.dir !== 'h') { g = null; return; }
+      swipedAt = Date.now();
+      if (!gg.armed) { reset(true); g = null; return; }
+      el.style.transition = 'transform .2s ease-in, opacity .2s ease-in';
+      el.style.transform = 'translateX(-110%)'; el.style.opacity = '0';
+      var back = function () { el.style.opacity = ''; reset(true); g = null; };
+      var done = function () {
+        g = null;
+        SWIPED.push({ kind: kind, id: x.id, label: o.label || 'Removed: ' + name() + '.', after: o.after, el: el });
+        refresh().then(function () {
+          K.haptic('success'); render(); var t = K.topSheet(); if (t && t.redraw) t.redraw(); if (o.after) o.after();
+          if (el.isConnected) el.style.display = 'none';      // a list that isn't drawn again: just hide the row
+          var bg = el.previousSibling; if (bg && bg.classList && bg.classList.contains('sw-bg')) bg.remove();
+          swipeUndoBar();
+        });
+      };
+      api('swipeDelete', kind, x.id, false).then(function (r) {
+        if (!r || !r.confirm) return done();
+        back();
+        return K.confirm({ title: 'Remove “' + name() + '”?', text: r.confirm, confirmLabel: 'Remove', danger: true }).then(function (yes) {
+          if (!yes) return;
+          return api('swipeDelete', kind, x.id, true).then(done);
+        });
+      }).catch(function (er) { back(); fail(er); });
+    }
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', function (e) { if (g && g.dir === 'h') { reset(true); } g = null; });
+    // the tap that ends a swipe doesn't also open the row
+    el.addEventListener('click', function (e) { if (Date.now() - swipedAt < 400) { e.stopPropagation(); e.preventDefault(); } }, true);
+    return el;
+  }
   /** A card at the bottom for a few seconds after an action, with Undo. */
   // ------------------------------------------------------------------ the business setup
   /** Tap-to-pick chips where several can be on. */
@@ -20376,6 +20535,7 @@ var Kit = (function () {
   }
   var undoTimer = null;
   function undoCard(msg, undo, undoneMsg, secs) {
+    SWIPED = []; clearTimeout(swipeTimer);
     var old = document.getElementById('undo-card');
     if (old) old.remove();
     clearTimeout(undoTimer);
