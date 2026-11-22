@@ -15513,8 +15513,21 @@ var Kit = (function () {
       title: 'Suggestions and problems', tall: true,
       build: function (ctl) {
         ctl.body.appendChild(K.choices({ label: 'What is it?', value: f.kind, options: S.data.reportKinds || [], onChange: function (v) { f.kind = v; } }));
-        var tf = K.textField({ suggest: ['It froze or wouldn’t load', 'A button didn’t do anything', 'I couldn’t find something', 'An idea to make it easier'], label: 'What happened, or what would help?', multiline: true, maxlength: 4000, value: f.text, onInput: function (v) { f.text = v; } });
+        var tf = K.textField({ suggest: ['It froze or wouldn’t load', 'A button didn’t do anything', 'I couldn’t find something', 'An idea to make it easier'], label: 'What happened, or what would help?', multiline: true, maxlength: 4000, value: f.text, onInput: function (v) { f.text = v; linkTip(); } });
         ctl.body.appendChild(h('div', { style: 'margin-top:14px' }, tf));
+        // a Dropbox or Google Drive link: its photos and videos belong in Add content, not in a suggestion
+        var tipBox = h('div');
+        function linkTip() {
+          var m = /https?:\/\/\S*(dropbox\.com|dropboxusercontent\.com|drive\.google\.com)\S*/i.exec(f.text || '');
+          tipBox.textContent = '';
+          if (!m) return;
+          var n = note('Photos or videos in that link? Add content brings them straight in.', 'link');
+          n.lastElementChild.appendChild(h('div', { style: 'margin-top:8px' }, btn('tonal', 'Bring them in', { sm: true, icon: 'perm_media', onclick: function () {
+            var url = m[0]; K.swap(ctl, function () { openAddFootage({ link: url }); });
+          } })));
+          tipBox.appendChild(n);
+        }
+        ctl.body.appendChild(tipBox); linkTip();
         // circle something on the screen, and say what about it
         var sc = sheetSection('Circle it'), list = h('div', { class: 'cc-list' });
         function paintMarks() {
@@ -21701,6 +21714,16 @@ var Kit = (function () {
         } })));
         ctl.body.append(input, grid);
         if (files.length) setTimeout(draw, 0);
+        // opened with a link (from the suggestions box): bring its photos and videos in straight away
+        if (preset.link) setTimeout(function () {
+          status.textContent = 'Bringing them in…';
+          linkImport(preset.link).then(function (got) {
+            status.textContent = '';
+            if (!got) return;
+            got.forEach(function (file) { if (files.length < 30) { var video = /^video\//.test(file.type); files.push({ file: file, video: video, url: video ? '' : URL.createObjectURL(file) }); } });
+            dirty = true; draw(); toast(got.length + ' brought in. Tap Upload when you’re ready.');
+          }).catch(function (e) { status.textContent = ''; fail(e); });
+        }, 300);
         var s = sheetSection('Anything to say about these?');
         s.appendChild(K.textField({ suggest: S.data.contextIdeas || [], label: 'Context (optional)', multiline: true, maxlength: 2000, value: context, onInput: function (v) { context = v; dirty = true; },
           help: 'Where it was, which piece it is, what was happening. Or leave it blank: you may get a quick question instead.' }));
