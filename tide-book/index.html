@@ -8715,7 +8715,10 @@ var TIDE_GUIDE = [
     steps: ['Open Home from the menu.', 'Do it or Done for the next step.', 'Add to today, and tick things off.', 'Tap a Waiting count to open it.', 'Start something: the four big symbols.'], go: { view: 'home', tip: 'Home: the essentials.' } },
   { id: 'g-report', area: 'Getting around', to: 'all', icon: 'feedback', title: 'Tell Jye something isn’t right',
     say: 'The small speech button at the top right of every page sends a note (and a screenshot) straight to Jye.',
-    steps: ['Tap the speech button at the top right.', 'Say what happened or what you’d like.', 'Tap Send. Tide Book may ask a quick question so it’s done the way you mean.'], go: { view: 'home', find: '.fb-bubble', tip: 'Tell Jye here.' } },
+    steps: ['Tap the speech button at the top right.', 'Say what happened or what you’d like.', 'Tap Send. Tide Book may ask a quick question so it’s done the way you mean.', 'Closed it or pulled it down before sending? What you wrote is kept for that page until you send it or tap Clear it and start again.'], go: { view: 'home', find: '.fb-bubble', tip: 'Tell Jye here.' } },
+  { id: 'g-swipe', area: 'Getting around', to: 'all', icon: 'swipe_left', title: 'Swipe left to remove',
+    say: 'On a phone, slide a row to the left to remove it, like in email. Every row that has Remove can be swiped, and Undo puts it back just as it was.',
+    steps: ['Put your finger on a row (a goal, idea, note, contact…) and slide it left.', 'A red bin shows. Let go past halfway and it goes; stop short and it slides back.', 'Tap Undo at the bottom within 5 seconds. Remove a few in a row and each has its own Undo.', 'Things that sell, are booked to post, or are in your money records ask first. Sales and expenses can’t be swiped.'], go: { view: 'plan', tip: 'Slide a goal to the left.' } },
   { id: 'g-park', area: 'Getting around', to: 'all', icon: 'calendar_month', title: 'Park for now, or Remove',
     say: 'Every idea, product, post and conversation has Park for now (back on a day you pick) and Remove (just this, or not interested ever).',
     steps: ['Open the thing.', 'Tap Park for now and pick a day, or Remove.', 'Parked things come back by themselves on their day, with a reminder the day before.', 'Everything has an Undo.'] },
@@ -8850,6 +8853,10 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-22-swipe', on: '2026-11-22', to: 'all', icon: 'swipe_left', title: 'Swipe left to remove',
+    say: 'On your phone, slide a row to the left to remove it, like in email. Undo puts it back. And if you pull the suggestions box down by mistake, what you wrote, circled and added is still there next time.',
+    steps: ['Slide a goal, idea, note or other row to the left.', 'Past halfway it goes; stop short and it slides back.', 'Tap Undo at the bottom to put it back.', 'Things that sell, are booked to post, or are in your money records ask first.'],
+    go: { view: 'plan', tip: 'Slide a goal to the left.' } },
   { id: '2026-11-22-simpler', on: '2026-11-22', to: 'artist', icon: 'auto_awesome', title: 'Simpler everywhere',
     say: 'No more tapping ⓘ to read things: words are shorter and shown. Questions come one at a time with short answers, and every question has Later. Waiting is now “For you”: only what needs you, one button each. No more passphrase.',
     steps: ['Home › For you.', 'In a question: tap an answer, My own, or Later (it comes back in a week).'], go: { view: 'home', tip: 'For you.' } },
