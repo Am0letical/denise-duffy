@@ -5113,7 +5113,7 @@ if (env.workDone) env.workDone('publish');
     return env.lock(function () { ideaRow(id); env.table('ideas').update(id, { deleted: true, updated: nowIso() }); return { ok: true }; });
   }
   var BIN = { idea: ['ideas', 'deleted'], product: ['pipeline', 'deleted'], post: ['content', 'deleted'], inspiration: ['inspiration', 'deleted'], direction: ['direction', 'deleted'],
-    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], milestone: ['milestones', 'deleted'], mentor: ['mentors', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
+    supplier: ['suppliers', 'deleted'], goal: ['goals', 'deleted'], milestone: ['milestones', 'deleted'], mentor: ['mentors', 'deleted'], day: ['days', 'deleted'], topic: ['topics', 'deleted'], note: ['notebook', 'deleted'], stock: ['stock', 'deleted'], reminder: ['notes', 'active'], account: ['accounts', 'status'], consent: ['consent', 'status'], contact: ['contacts', 'status'] };
   function undoDelete(kind, id) {
     need(['admin', 'artist']);
     var b = BIN[kind];
@@ -5171,6 +5171,7 @@ if (env.workDone) env.workDone('publish');
   Object.keys(direction.api).forEach(function (k) { out.api[k] = direction.api[k]; });
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
+  out.api.swipeDelete = swipeDelete; out.api.undoSwiped = undoSwiped;
   out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock; out.api.vaultOff = vaultOff;
   Object.keys(siteWishes.api).forEach(function (k) { out.api[k] = siteWishes.api[k]; });
   Object.keys(siteEditor.api).forEach(function (k) { out.api[k] = siteEditor.api[k]; });
