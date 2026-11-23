@@ -8783,6 +8783,9 @@ var TIDE_GUIDE = [
   { id: 'g-ask', area: 'Ideas', to: 'all', icon: 'travel_explore', title: 'Ask a question',
     say: 'Ask anything about your art business and Tide Book looks into it. It’s the other way round from Talk it through: you ask, it digs.',
     steps: ['Open Ideas and tap Ask.', 'Tap New question, then a suggested question or your own words, and Ask.', 'While it looks into it, you can wait or come back later. Ask follow-ups in the same chat.', 'Save as note puts an answer in your notes. Make it an idea starts a product with it.', 'On your phone, slide an old question left to remove it (Undo puts it back).'], go: { view: 'ideas', tip: 'Tap Ask at the top.' } },
+  { id: 'g-more', area: 'Getting around', to: 'all', icon: 'apps', title: 'The menu, and More',
+    say: 'The menu shows your first six places. The rest, and Settings, are under More. You choose which six with Arrange.',
+    steps: ['Tap the round menu button at the bottom.', 'Tap More to see the rest. Tap Fewer to tuck them away again.', 'Tap Arrange, and drag the places you use most to the top. The first six show straight away.', 'In Settings, each heading opens with a tap and says what’s inside.'], go: { view: 'home', tip: 'Tap the menu button, bottom left.' } },
   { id: 'g-swipe', area: 'Getting around', to: 'all', icon: 'swipe_left', title: 'Swipe left to remove',
     say: 'On a phone, slide a row to the left to remove it, like in email. Every row that has Remove can be swiped, and Undo puts it back just as it was.',
     steps: ['Put your finger on a row (a goal, idea, note, contact…) and slide it left.', 'A red bin shows. Let go past halfway and it goes; stop short and it slides back.', 'Tap Undo at the bottom within 5 seconds. Remove a few in a row and each has its own Undo.', 'Things that sell, are booked to post, or are in your money records ask first. Sales and expenses can’t be swiped.'], go: { view: 'plan', tip: 'Slide a goal to the left.' } },
@@ -8920,6 +8923,10 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-23-fewer', on: '2026-11-23', to: 'all', icon: 'apps', title: 'Fewer buttons at once',
+    say: 'Screens show less at once, so the thing you came for is easier to spot. The menu shows your first six places, with the rest under More. Settings is a short list of headings that open. Money shows three suggested expenses, and the Website keeps Pages and your own address under More.',
+    steps: ['Menu › More shows To do, Website, Money and Settings (or whatever you’ve put last).', 'Menu › Arrange: drag the places you use most into the first six.', 'Settings: tap a heading, such as Prices and tax, to open it. Each one says what’s inside.', 'Website: the ••• button next to Ask for more has Pages and your own address.'],
+    go: { view: 'settings', tip: 'Tap a heading to open it.' } },
   { id: '2026-11-23-ask', on: '2026-11-23', to: 'all', icon: 'travel_explore', title: 'Ask a question',
     say: 'Ideas has a new Ask tab. Ask anything about your art business (what sells, what people pay, where to sell) and Tide Book looks into it. Keep asking follow-ups, and save any answer as a note or make it an idea.',
     steps: ['Ideas › Ask › New question.', 'Tap a suggested question, or type your own, then Ask.', 'Under an answer: Save as note, or Make it an idea.', 'Your questions are yours alone, and stay in the list to come back to.'],
