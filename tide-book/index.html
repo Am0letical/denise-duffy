@@ -1372,6 +1372,12 @@ body.inspecting .site-top { visibility: hidden; }
   background: var(--surface); box-shadow: var(--shadow-3); transform-origin: 30px 100%; animation: mpop .22s var(--spring); }
 .menu-pop.out, .menu-scrim.out { opacity: 0; transition: opacity .15s; }
 .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.menu-extra { margin-top: 6px; }
+.menu-extra[hidden] { display: none; }
+.menu-more { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; margin-top: 6px; padding: 8px 14px; border-radius: 16px; cursor: pointer; font: 500 16px/22px var(--font); color: var(--on-surface); background: var(--surface-low); -webkit-tap-highlight-color: transparent; }
+.menu-more .grow { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-more:active { background: var(--surface-mid); }
+.menu-more:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
 .menu-item { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px 10px; border-radius: 18px; cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent; }
 .menu-item:active { background: var(--surface-mid); }
 .menu-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
@@ -13451,6 +13457,7 @@ var Kit = (function () {
     // she runs the business, so she has the books too
     : [['home', 'Home', 'home'], ['content', 'Social', 'perm_media'], ['prints', 'Art', 'palette'], ['ideas', 'Ideas', 'lightbulb'], ['notes', 'Notes', 'sticky_note_2'], ['mentors', 'Chat', 'forum'], ['plan', 'To do', 'checklist'], ['site', 'Website', 'language'], ['money', 'Money', 'account_balance_wallet']];
   var NAV = NAV_ALL.slice();
+  var NAV_MAIN = 6;   // places shown first, in her order; the rest sit under More
   /** The menu in this person's order (anything new goes where it sits by default). */
   function navOrder() {
     var want = ((S.data && S.data.menuOrder) || []).filter(function (x) { return NAV_ALL.some(function (n) { return n[0] === x; }); });
@@ -13515,7 +13522,8 @@ var Kit = (function () {
     nav.textContent = '';
     var waiting = needsList().length;
     var toReview = S.data.ideas.filter(function (x) { return x.stage === 'New' && x.researchStatus !== 'Queued' && x.researchStatus !== 'Researching'; }).length;
-    NAV.forEach(function (n) {
+    var shown = NAV.slice(0, NAV_MAIN), tucked = NAV.slice(NAV_MAIN);
+    shown.forEach(function (n) {
       var current = S.view === n[0];
       var ind = h('span', { class: 'nav-ind' }, icon(n[2], current));
       var count = (!ADMIN && n[0] === 'home') ? waiting : (ADMIN && n[0] === 'ideas') ? toReview : n[0] === 'content' ? studioCount() : 0;
@@ -13524,6 +13532,16 @@ var Kit = (function () {
         onclick: function () { if (S.view !== n[0]) { K.haptic(); go(n[0]); } else window.scrollTo({ top: 0, behavior: 'smooth' }); } },
         ind, h('span', { text: n[1] })));
     });
+    // Hick's Law: six places on the bar at most; the rest (and Settings) are one tap away under More, in her order
+    if (tucked.length) {
+      var here = tucked.filter(function (n) { return n[0] === S.view; })[0] || (S.view === 'settings' ? ['settings', 'Settings', 'settings'] : null);
+      var more = tucked.reduce(function (t, n) { return t + (n[0] === S.view ? 0 : navCount(n[0])); }, 0);
+      var mi = h('span', { class: 'nav-ind' }, icon(here ? here[2] : 'more_horiz', !!here));
+      if (more) mi.appendChild(h('span', { class: 'nav-badge', text: String(more), 'aria-label': more + ' waiting' }));
+      nav.appendChild(h('button', { class: 'nav-item press soft flat', type: 'button', 'aria-current': here ? 'page' : null, 'aria-haspopup': 'dialog',
+        'aria-label': 'More: ' + tucked.map(function (n) { return n[1]; }).join(', ') + ', Settings' + (here ? '. You’re on ' + here[1] : ''),
+        onclick: function () { K.haptic(); openMenu(true); } }, mi, h('span', { text: here ? here[1] : 'More' })));
+    }
     menuBubble();
   }
   /** On a phone: one round button, bottom left, says where she is. Tap it for every section. */
@@ -13545,22 +13563,35 @@ var Kit = (function () {
     if (total) b.appendChild(h('span', { class: 'nav-badge mb-badge', text: String(total), 'aria-label': total + ' waiting elsewhere' }));
     b.setAttribute('aria-label', 'Menu. You’re on ' + cur[1] + (total ? '. ' + total + ' waiting elsewhere' : ''));
   }
-  function openMenu() {
-    var old = document.getElementById('menu-pop'); if (old) { old.remove(); return; }
+  function openMenu(showAll) {
+    var old = document.getElementById('menu-pop'); if (old) { old.remove(); var os = document.querySelector('.menu-scrim'); if (os) os.remove(); return; }
     var items = NAV.concat([['settings', 'Settings', 'settings']]);
+    var tuckedKeys = items.slice(NAV_MAIN).map(function (n) { return n[0]; });
+    var open = !!showAll || tuckedKeys.indexOf(S.view) >= 0;
     var pop = h('div', { id: 'menu-pop', class: 'menu-pop', role: 'dialog', 'aria-label': 'Sections' });
     var scrim = h('div', { class: 'menu-scrim' });
     function close() { pop.classList.add('out'); scrim.classList.add('out'); setTimeout(function () { pop.remove(); scrim.remove(); }, 160); document.removeEventListener('keydown', esc); }
     function esc(e) { if (e.key === 'Escape') close(); }
     scrim.addEventListener('click', close);
-    var grid = h('div', { class: 'menu-grid' });
-    items.forEach(function (n) {
+    var grid = h('div', { class: 'menu-grid' }), extra = h('div', { class: 'menu-grid menu-extra', id: 'menu-extra' });
+    extra.hidden = !open;
+    items.forEach(function (n, i) {
       var c = navCount(n[0]), here = S.view === n[0];
-      grid.appendChild(h('button', { type: 'button', class: 'menu-item press soft' + (here ? ' here' : ''), 'aria-current': here ? 'page' : null,
+      (i < NAV_MAIN ? grid : extra).appendChild(h('button', { type: 'button', class: 'menu-item press soft' + (here ? ' here' : ''), 'aria-current': here ? 'page' : null,
         onclick: function () { close(); K.haptic(); if (!here) go(n[0]); else window.scrollTo({ top: 0, behavior: 'smooth' }); } },
         h('span', { class: 'menu-ic' }, icon(n[2], here), c ? h('span', { class: 'nav-badge', text: String(c) }) : null), h('span', { class: 'menu-l', text: n[1] })));
     });
     pop.appendChild(grid);
+    if (items.length > NAV_MAIN) {
+      var moreN = items.slice(NAV_MAIN).reduce(function (t, n) { return t + (n[0] === S.view ? 0 : navCount(n[0])); }, 0);
+      var mb = h('button', { type: 'button', class: 'menu-more press soft', 'aria-expanded': String(open), 'aria-controls': 'menu-extra' },
+        icon(open ? 'expand_less' : 'more_horiz'), h('span', { class: 'grow', text: open ? 'Fewer' : 'More: ' + items.slice(NAV_MAIN).map(function (n) { return n[1]; }).join(', ') }),
+        moreN && !open ? h('span', { class: 'nav-badge', text: String(moreN) }) : null);
+      mb.addEventListener('click', function () { K.haptic(); open = !open; extra.hidden = !open; mb.setAttribute('aria-expanded', String(open));
+        mb.textContent = ''; mb.append(icon(open ? 'expand_less' : 'more_horiz'), h('span', { class: 'grow', text: open ? 'Fewer' : 'More: ' + items.slice(NAV_MAIN).map(function (n) { return n[1]; }).join(', ') }));
+        if (open) { var f1 = extra.querySelector('.menu-item'); if (f1) f1.focus({ preventScroll: true }); } });
+      pop.append(mb, extra);
+    }
     pop.appendChild(h('div', { class: 'menu-foot' }, btn('text', 'Arrange', { sm: true, icon: 'swap_vert', onclick: function () { close(); setTimeout(openMenuOrder, 180); } })));
     document.body.append(scrim, pop);
     document.addEventListener('keydown', esc);
@@ -22297,7 +22328,7 @@ var Kit = (function () {
       sw('Post automatically', 'Once you’ve both approved, posts take the next posting time.', 'postingEnabled', !acct.connected),
       sw('Dry run', 'Schedule and check everything, but don’t post. Start with this on.', 'postingDryRun'),
       st.learnedSlots.length ? note('Posting times learned from results: ' + st.learnedSlots.join(', ') + '. Change them under When posts go out.', 'schedule') : null));
-    main.appendChild(rise(ps, n++));
+    var psSlot = h('div'); main.appendChild(psSlot);
 
     // AI helpers: local models on the PC first
     var ai = S.data.ai || {}, af = { localFirst: ai.localFirst, localFallbackMins: ai.fallbackMins };
@@ -22347,14 +22378,14 @@ var Kit = (function () {
           api('saveClaudeBudget', Math.round(K.num(bud.v) / fxRate() * 100) / 100).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
         } })));
     }
-    main.appendChild(rise(as, n++));
+    main.appendChild(rise(fold(as, 'set-ai', 'memory', (af.localFirst ? 'The PC’s models first' : 'Claude first') + (sp ? ' · Claude ' + audFromUsd(sp.usd, true) + ' this week' : ''), false), n++));
 
     // Everygen edits
     var es = section('Video edits (Everygen)');
     es.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' },
       sw('Edit reels in Everygen', 'A scheduled Claude task edits each reel before review. See the setup guide.', 'editEnabled'),
       K.textField({ label: 'Credits a week, at most', inputmode: 'numeric', value: f.editWeeklyCredits, help: st.editSpent + ' used in the last 7 days.', onInput: function (v) { f.editWeeklyCredits = K.num(v); } })));
-    main.appendChild(rise(es, n++));
+    ps.appendChild(es);
 
     // Buzzes
     var bs = section('Phone buzzes');
@@ -22374,7 +22405,8 @@ var Kit = (function () {
       K.setBusy(save, true);
       api('savePosting', f).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
     });
-    main.appendChild(rise(h('div', { style: 'margin-top:16px' }, save), n++));
+    ps.appendChild(h('div', { style: 'margin-top:16px' }, save));
+    psSlot.replaceWith(rise(fold(ps, 'set-posting', 'share', !st.direct ? 'By hand for now' : acct.connected ? 'Linked: ' + acct.page : 'Not linked yet', false), n++));
     return n;
   }
 
@@ -23288,7 +23320,8 @@ var Kit = (function () {
           options: [{ value: 'dollar', label: 'Whole dollar' }, { value: 'five', label: 'Nearest $5' }, { value: 'none', label: 'Don’t round' }] })),
       K.textField({ label: 'Card fee', suffix: '%', inputmode: 'decimal', value: f.paymentFeePct, onInput: function (v) { f.paymentFeePct = K.num(v); },
         help: 'What the payment provider keeps from each sale. A placeholder until the store is chosen.' })));
-    main.appendChild(rise(p, 1));
+    var pm = section('Prices and tax');
+    pm.appendChild(p);
 
     var ed = section('Originals and limited prints');
     f.editionBufferDays = s.editionBufferDays; f.editionSize = s.editionSize; f.quickEditionPct = s.quickEditionPct;
@@ -23299,7 +23332,7 @@ var Kit = (function () {
         help: 'Filled in for each new piece. Change it per artwork.' }),
       K.textField({ label: 'Run if it sells in the head start', suffix: '%', inputmode: 'numeric', value: f.quickEditionPct, onInput: function (v) { f.quickEditionPct = K.num(v); },
         help: 'A quick buyer gets more exclusivity: 50% halves the run.' })));
-    if (S.data.limitedRuns) main.appendChild(rise(ed, 1));
+    if (S.data.limitedRuns) pm.appendChild(ed);
 
     var t = section('Tax');
     var dateField = K.textField({ label: 'Registered from', type: 'date', value: f.gstRegisteredFrom, onInput: function (v) { f.gstRegisteredFrom = v; } });
@@ -23311,7 +23344,7 @@ var Kit = (function () {
       dateField,
       K.textField({ label: 'Put aside for tax', suffix: '%', inputmode: 'decimal', value: f.taxSetAsidePct, onInput: function (v) { f.taxSetAsidePct = K.num(v); },
         help: 'Share of profit shown as “put aside for tax”. Confirm the right figure with an accountant.' })));
-    main.appendChild(rise(t, 2));
+    pm.appendChild(t);
 
     var save = btn('filled', 'Save settings', { icon: 'check', lg: true, block: true });
     save.addEventListener('click', function () {
@@ -23321,7 +23354,9 @@ var Kit = (function () {
         editionBufferDays: f.editionBufferDays, editionSize: f.editionSize, quickEditionPct: f.quickEditionPct })
         .then(refresh).then(function () { K.haptic('success'); render(); toast('Settings saved.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
     });
-    main.appendChild(rise(h('div', { style: 'margin-top:16px' }, save), 3));
+    pm.appendChild(h('div', { style: 'margin-top:16px' }, save));
+    var rounding = { dollar: 'whole dollars', five: 'nearest $5', none: 'not rounded' }[f.priceRounding] || '';
+    main.appendChild(rise(fold(pm, 'set-money', 'sell', f.defaultMarkupPct + '% markup · ' + rounding + ' · ' + (f.gstOn ? 'GST registered' : 'no GST'), false), 1));
 
     // when posts go out: hers to set (suggested times and the buzz come from these)
     var pt = section('When posts go out'), pf = { slotTimes: S.data.posting.slotTimes, postsPerDay: S.data.posting.postsPerDay };
@@ -23347,7 +23382,7 @@ var Kit = (function () {
         btn('text', 'Save', { icon: 'check', onclick: function () { api('saveAdLimit', lim.v).then(refresh).then(function () { toast('Ad limit saved.'); render(); }).catch(fail); } })));
     }
     pt.appendChild(ptCard);
-    main.appendChild(rise(pt, 3));
+    main.appendChild(rise(fold(pt, 'set-times', 'schedule', (pf.slotTimes || 'No times set') + ' · ' + (pf.postsPerDay || 0) + ' a day at most', false), 3));
     if (!ADMIN && S.data.posting.direct) {
       var lks = S.data.posting.links || {}, lkDone = (lks.facebook && lks.facebook.connected ? 1 : 0) + (lks.buzz && lks.buzz.mine ? 1 : 0);
       var la = section('Linked accounts');
@@ -23359,7 +23394,7 @@ var Kit = (function () {
     if (!ADMIN) {
       var stA = section('Online store');
       stA.appendChild(h('div', { class: 'btn-row' }, btn('tonal', 'Import store orders', { icon: 'upload', onclick: openImport })));
-      main.appendChild(rise(stA, 4));
+      main.appendChild(rise(fold(stA, 'set-store', 'storefront', 'Bring in orders from a store export', false), 4));
       return;   // the rest (AI helpers, connections, Facebook) is the admin's back end
     }
 
@@ -23367,7 +23402,7 @@ var Kit = (function () {
     r.appendChild(S.data.features.research
       ? note('On. New ideas are researched before they appear in the ranked list, and new footage is turned into drafted posts.', 'travel_explore', 'good')
       : note('Off. Ideas go straight to the list marked “not researched”. To switch it on, add an Anthropic API key in the script settings (see the setup guide).', 'travel_explore'));
-    main.appendChild(rise(r, 4));
+    main.appendChild(rise(fold(r, 'set-research', 'travel_explore', S.data.features.research ? 'On' : 'Off', false), 4));
 
     postingSettings(main, 5);
 
@@ -23378,7 +23413,7 @@ var Kit = (function () {
       h('div', { class: 'btn-row' },
         btn('tonal', 'Import store orders', { icon: 'upload', onclick: openImport }),
         S.data.sheetUrl ? h('a', { class: 'btn outlined press', href: S.data.sheetUrl, target: '_blank', rel: 'noopener' }, icon('table_view'), h('span', { text: 'Open the Sheet' })) : null)));
-    main.appendChild(rise(st, 9));
+    main.appendChild(rise(fold(st, 'set-store', 'storefront', 'No store connected yet', false), 9));
   }
 
   function openImport() {
