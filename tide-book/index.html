@@ -14067,16 +14067,25 @@ var Kit = (function () {
     SITE.ready = false;
     main.appendChild(rise(h('div', { class: 'site-frame-wrap' }, SITE.frame), 2));
     var DM = E.domain || {};
+    // Hick's Law: the two she reaches for most, and the rest under More
+    function siteMore() {
+      K.sheet({ title: 'More for your website', build: function (ctl) {
+        var acts = h('div', { class: 'next-opts' });
+        function a(ic, label, why, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null))); }
+        a('description', 'Pages', 'Add a page, rename one or change their order.', openSitePages);
+        a('link', DM.on ? DM.name : 'Your own address', DM.on ? 'Your web address and how it’s set up.' : 'A web address of your own, like yourname.com.au.', openSiteDomain);
+        if (E.changed) a('restart_alt', 'Start again from live', 'Drops the changes you haven’t published. You can undo it.', function () {
+          K.confirm({ title: 'Start over?', text: 'The changes you haven’t published go, and the preview shows the live website again. You can undo this.', confirmLabel: 'Start over' }).then(function (yes) {
+            if (yes) api('discardSiteDraft').then(function (snap) { siteAfter(snap, 'Back to the live website.'); render(); }).catch(fail);
+          });
+        });
+        ctl.body.appendChild(acts);
+      } });
+    }
     main.appendChild(rise(h('div', { class: 'site-tools' },
-      btn('tonal', DM.on ? DM.name : 'Your own address', { icon: 'link', sm: true, onclick: openSiteDomain }),
       btn('tonal', 'Colours and fonts', { icon: 'palette', sm: true, onclick: openSiteStyle }),
-      btn('tonal', 'Pages', { icon: 'description', sm: true, onclick: openSitePages }),
-      btn('tonal', 'Ask for more', { icon: 'forum', sm: true, onclick: function () { openSiteAsk(null); } })), 3));
-    if (E.changed) main.appendChild(rise(h('div', { style: 'text-align:center;margin-top:4px' }, btn('text', 'Start again from live', { sm: true, icon: 'restart_alt', onclick: function () {
-      K.confirm({ title: 'Start over?', text: 'The changes you haven’t published go, and the preview shows the live website again. You can undo this.', confirmLabel: 'Start over' }).then(function (yes) {
-        if (yes) api('discardSiteDraft').then(function (snap) { siteAfter(snap, 'Back to the live website.'); render(); }).catch(fail);
-      });
-    } })), 3));
+      btn('tonal', 'Ask for more', { icon: 'forum', sm: true, onclick: function () { openSiteAsk(null); } }),
+      K.iconBtn('more_horiz', 'More: pages, your own address' + (E.changed ? ', start again from live' : ''), function () { K.haptic(); siteMore(); })), 3));
     // what she's asked for: the bigger changes, and where each is up to
     var asks = E.asks || [];
     if (asks.length) {
