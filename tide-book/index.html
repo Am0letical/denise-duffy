@@ -13597,6 +13597,13 @@ var Kit = (function () {
     document.addEventListener('keydown', esc);
     var first = pop.querySelector('.menu-item.here') || pop.querySelector('.menu-item'); if (first) first.focus({ preventScroll: true });
   }
+  /** Her menu in her own order. The first six are on the bar; the rest wait under More. */
+  function openMenuOrder() {
+    var all = NAV_ALL.slice(), byK = {}; all.forEach(function (n) { byK[n[0]] = n; });
+    arrangeSheet({ title: 'Arrange the menu', intro: 'Hold the dotted handle on the right and drag each one to where you want it. The first ' + NAV_MAIN + ' show straight away; the rest are under More.',
+      order: NAV.map(function (n) { return n[0]; }), defaults: all.map(function (n) { return n[0]; }), label: function (k) { return byK[k][1]; }, icon: function (k) { return byK[k][2]; },
+      save: function (order) { return api('saveMenuOrder', order); }, done: 'The menu is in your order.' });
+  }
   /** Places that moved keep working: Goals and Calendar are Plan's two views, Orders is a tab of Money. */
   function placeFor(view) {
     if (view === 'goals') { S.planView = 'list'; return 'plan'; }
@@ -18683,12 +18690,12 @@ var Kit = (function () {
     if (EI.length && m.isCurrent) {
       var esec = section('Expenses you might have'), elist = h('div', { class: 'card pad exp-ideas' }), showAll = !!S.allExpIdeas;
       elist.appendChild(h('p', { class: 'body-s', style: 'margin:0 0 6px;color:var(--on-surface-variant)', text: 'Things you may already pay for, so nothing claimable is missed. Tap one to record it.' }));
-      EI.slice(0, showAll ? 14 : 5).forEach(function (e) {
+      EI.slice(0, showAll ? 14 : 3).forEach(function (e) {
         elist.appendChild(h('div', { class: 'exp-idea' }, h('div', { class: 'grow' }, h('b', { text: e.description + (e.amount ? ' · about ' + money(e.amount) : '') }), h('div', { class: 'body-s', text: e.why }), h('div', { class: 'label-s exp-from', text: e.from })),
           h('div', { class: 'exp-acts' }, btn('tonal', 'Record it', { sm: true, onclick: function () { openTxn('Expense', null, { category: e.category, description: e.description, amount: e.amount || 0 }); } }),
             btn('text', 'Not mine', { sm: true, onclick: function (ev) { K.setBusy(ev.currentTarget, true); api('hideExpenseIdea', e.key).then(refresh).then(render).catch(fail); } }))));
       });
-      if (EI.length > 5) elist.appendChild(btn('text', showAll ? 'Fewer' : 'All ' + EI.length, { sm: true, onclick: function () { S.allExpIdeas = !showAll; render(); } }));
+      if (EI.length > 3) elist.appendChild(btn('text', showAll ? 'Fewer' : 'Show ' + (Math.min(EI.length, 14) - 3) + ' more', { sm: true, onclick: function () { S.allExpIdeas = !showAll; render(); } }));
       esec.appendChild(elist);
       main.appendChild(rise(esec, n++));
     }
