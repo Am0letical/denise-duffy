@@ -7041,7 +7041,10 @@ function tideNotes(env, t) {
     var done = queued && route === 'claude' && env.expandNow ? env.expandNow(id) : false;
     return { ok: true, route: route, done: !!done };
   }
-  function askClaude(id) { return expandNote(id, { claude: true, why: 'Asked for Claude' }); }
+  function askClaude(id) {
+    if (env.doorFeedback) try { env.doorFeedback(id); } catch (e) {}   // she turned the PC's answer down
+    return expandNote(id, { claude: true, why: 'Asked for Claude' });
+  }
 
   /** Moves a note's expand to Claude, keeping the reason. Called inside a lock. */
   function escalate(n, why) {
@@ -7315,12 +7318,12 @@ function tideNotes(env, t) {
       }
       return { ok: true, escalated: false };
     },
-    fail: function (id, why) {
+    fail: function (id, why, now) {
       var out = { ok: true, escalated: false };
       env.lock(function () {
         var n = t.rows('notebook').filter(function (x) { return x.id === id; })[0];
         if (!n || n.expandStatus !== 'Expanding' || n.expandRoute !== 'local') return;
-        var tries = (Number(n.expandTries) || 0) + 1;
+        var tries = now ? N.LOCAL_TRIES : (Number(n.expandTries) || 0) + 1;   // now: the PC wasn't sure, so no second try
         if (tries >= N.LOCAL_TRIES && env.features.research) { escalate(n, 'The PC’s model couldn’t do it: ' + t.text(why, 140)); out.escalated = true; }
         else env.table('notebook').update(id, { expandTries: tries, expandNote: t.text(why, 300), expandStatus: tries >= N.LOCAL_TRIES ? 'Failed' : 'Queued' });
       });
@@ -7663,11 +7666,11 @@ function tideTalk(env, t) {
       save(id, res, 'PC (' + t.text(model || 'local model', 40) + ')');
       return { ok: true, escalated: false };
     },
-    fail: function (id, why) {
+    fail: function (id, why, now) {
       var out = { ok: true, escalated: false };
       env.lock(function () {
         var r = rowOf(id); if (!r || r.aiStatus !== 'Working' || r.aiRoute !== 'local') return;
-        var tries = (Number(r.aiTries) || 0) + 1;
+        var tries = now ? K.LOCAL_TRIES : (Number(r.aiTries) || 0) + 1;   // now: the PC wasn't sure, so no second try
         if (tries >= K.LOCAL_TRIES && env.features.research) { escalate(r, 'The PC’s model couldn’t do it: ' + t.text(why, 140)); out.escalated = true; }
         else env.table(tableOf(id)).update(id, { aiTries: tries, aiNote: t.text(why, 300), aiStatus: tries >= K.LOCAL_TRIES ? 'Failed' : 'Queued' });
       });
