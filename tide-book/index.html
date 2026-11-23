@@ -1084,6 +1084,9 @@ img, video { max-width: 100%; }
 .sheet-body.swap-in { animation: swap-in 0.22s var(--ease); }
 @keyframes swap-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .fold-group { font: 500 13px/18px var(--font); letter-spacing: 0.4px; text-transform: uppercase; color: var(--on-surface-variant); margin: 26px 4px 2px; }
+.section.fold { margin-top: 10px; border-radius: var(--r-l); background: var(--surface-lowest); box-shadow: var(--shadow-1); }
+.section.fold .fold-body > .section:first-child { margin-top: 4px; }
+.section.fold .fold-body .section { margin-top: 18px; }
 .sheet-section.fold { margin-top: 8px; border-radius: var(--r-l); background: var(--surface-lowest); box-shadow: var(--shadow-1); }
 .fold-head { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 10px 12px 10px 14px; cursor: pointer; border-radius: var(--r-l); -webkit-tap-highlight-color: transparent; }
 .fold-head:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
@@ -22364,7 +22367,7 @@ var Kit = (function () {
         api('savePosting', { notifyAdmin: f.notifyAdmin, notifyArtist: f.notifyArtist }).then(function () { return api('testBuzz'); })
           .then(function () { K.setBusy(b, false); toast('Sent. Check your phone.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
       } })));
-    main.appendChild(rise(bs, n++));
+    ps.appendChild(bs);
 
     var save = btn('filled', 'Save posting settings', { icon: 'check', lg: true, block: true });
     save.addEventListener('click', function () {
