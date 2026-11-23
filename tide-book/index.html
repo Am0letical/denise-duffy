@@ -8923,6 +8923,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-23-shared-budget', on: '2026-11-23', to: 'admin', icon: 'savings', title: 'One AI budget for every app',
+    say: 'Claude now comes out of one US$100-a-month budget shared with Dev HQ and Peanuts Paws, kept by Dev HQ’s gateway on this PC. Tide Book asks it before each Claude call and records what each answer cost. Jobs nobody is waiting on count as background work. If the gateway isn’t running, the weekly limit applies as before.',
+    steps: ['Settings › AI helpers shows the month across every app, and Tide Book’s share.', 'The weekly limit stays as the fallback.'], go: { view: 'settings', tip: 'Open AI helpers.' } },
   { id: '2026-11-23-fewer', on: '2026-11-23', to: 'all', icon: 'apps', title: 'Fewer buttons at once',
     say: 'Screens show less at once, so the thing you came for is easier to spot. The menu shows your first six places, with the rest under More. Settings is a short list of headings that open. Money shows three suggested expenses, and the Website keeps Pages and your own address under More.',
     steps: ['Menu › More shows To do, Website, Money and Settings (or whatever you’ve put last).', 'Menu › Arrange: drag the places you use most into the first six.', 'Settings: tap a heading, such as Prices and tax, to open it. Each one says what’s inside.', 'Website: the ••• button next to Ask for more has Pages and your own address.'],
@@ -9014,10 +9017,10 @@ var TIDE_CHANGES = [
     say: 'Her Notes shows only her notes (what she writes, her private notes, and what her talks file). The notes made when Tide Book was set up (Who Denise is, Still to ask Denise…) are in your Notes, and Tide Book still uses them.',
     steps: ['Open Notes to see yours.'], go: { view: 'notes', tip: 'Your notes.' } },
   { id: '2026-11-19-weekly-limit', on: '2026-11-19', to: 'admin', icon: 'savings', title: 'The Claude limit is weekly now',
-    say: 'The Claude limit is A$10 a week, starting again each Monday. When it’s reached, Denise’s mentors keep talking on the PC’s own model (no tools: no goals, drafts or web search) until Monday; other Claude jobs wait as before.',
+    say: 'Claude spending comes out of one monthly budget shared with Dev HQ and Peanuts Paws (Dev HQ’s gateway keeps it). Without the gateway, the A$10-a-week limit applies, starting again each Monday. When it’s reached, Denise’s mentors keep talking on the PC’s own model (no tools: no goals, drafts or web search) until it starts again; other Claude jobs wait as before.',
     steps: ['Open Settings › AI to see this week’s spend and change the limit.'], go: { view: 'settings', tip: 'Settings › AI.' } },
   { id: '2026-11-19-mentors-light', on: '2026-11-19', to: 'artist', icon: 'school', title: 'Your mentors don’t stop',
-    say: 'Each week your mentors have their full help: looking things up, making goals and drafting posts. If that’s used up, they keep talking with you in a lighter way until Monday.',
+    say: 'Each week your mentors have their full help: looking things up, making goals and drafting posts. If that’s used up, they keep talking with you in a lighter way until it starts again.',
     steps: ['Open Mentors. A note at the top says when they’re in their lighter mode.'], go: { view: 'mentors', tip: 'Your mentors.' } },
   { id: '2026-11-19-notes', on: '2026-11-19', to: 'all', icon: 'sticky_note_2', title: 'Notes, with its own place',
     say: 'Notes has moved out of Ideas into its own place in the menu, and works like Samsung Notes: tick lists, bold and highlight, colours, pins, folders, photos, drawings and voice memos. Notes are just for keeping, until you tap “Turn into…” to make one a goal, an idea, a post, a day on the calendar and more.',
@@ -22372,12 +22375,15 @@ var Kit = (function () {
     var sp = S.data.aiSpend;
     if (sp) {
       var bud = { v: sp.budget > 0 ? Math.round(sp.budget * fxRate()) : 0 }, pct = sp.budget > 0 ? Math.min(100, Math.round(sp.usd / sp.budget * 100)) : 100;
-      var usd = function (x) { return audFromUsd(x, true); };
+      var usd = function (x) { return audFromUsd(x, true); }, SH = sp.shared;
+      if (SH) pct = SH.budget > 0 ? Math.min(100, Math.round(SH.spent / SH.budget * 100)) : 100;
       as.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest);margin-top:12px' },
-        h('div', { class: 'title-m', text: 'Claude this week: ' + usd(sp.usd) + (sp.budget > 0 ? ' of ' + usd(sp.budget) : '') }),
+        h('div', { class: 'title-m', text: SH ? 'AI this month, every app: ' + usd(SH.spent) + ' of ' + usd(SH.budget) : 'Claude this week: ' + usd(sp.usd) + (sp.budget > 0 ? ' of ' + usd(sp.budget) : '') }),
         h('div', { class: 'meter', style: 'height:6px;border-radius:3px;background:var(--surface-high);overflow:hidden' },
           h('div', { style: 'height:100%;width:' + pct + '%;background:' + (sp.paused ? 'var(--error)' : 'var(--primary)') })),
-        h('p', { class: 'body-m', text: sp.budget <= 0 ? 'Claude is off: only the PC’s free model is used.' : sp.paused ? 'The limit’s reached, so Claude has stopped until Monday. The PC’s free model carries on (her chats too, in a lighter mode); idea research and post drafts wait.' :
+        SH ? h('p', { class: 'body-m', text: 'One budget shared by Tide Book, Dev HQ and Peanuts Paws, kept by Dev HQ’s gateway on this PC. Tide Book this month: ' + usd(SH.mine) + '. ' +
+          (sp.paused ? 'It’s used up, so Claude has stopped until the month starts again. The PC’s free model carries on.' : usd(SH.left) + ' left, ' + SH.daysLeft + ' day' + (SH.daysLeft === 1 ? '' : 's') + ' to go; background jobs may use ' + usd(SH.backgroundLeft) + ' more today.') }) : null,
+        h('p', { class: 'body-m', text: SH ? sp.calls + ' Claude answer' + (sp.calls === 1 ? '' : 's') + ' this week.' : sp.budget <= 0 ? 'Claude is off: only the PC’s free model is used.' : sp.paused ? 'The limit’s reached, so Claude has stopped until Monday. The PC’s free model carries on (her chats too, in a lighter mode); idea research and post drafts wait.' :
           sp.calls + ' Claude answer' + (sp.calls === 1 ? '' : 's') + ' so far.' }),
         h('div', { class: 'switch-row', style: 'margin-top:6px' }, h('div', {}, h('div', { class: 'title-m', text: 'Do Claude jobs in Claude chat instead' }),
           h('div', { class: 'body-m', text: sp.via === 'chat' ? (sp.chatWaiting ? sp.chatWaiting + ' job' + (sp.chatWaiting === 1 ? '' : 's') + ' waiting. Tell Claude: “Do the Tide Book prompts”.' : 'On: no API cost. Nothing waiting right now.') : 'No API cost: jobs wait as prompts, and you ask Claude chat to do them.' })),
@@ -22395,13 +22401,13 @@ var Kit = (function () {
               api('saveClaudeUpgrade', j[0], v).then(refresh).then(function () { K.haptic('success'); render(); toast(j[1] + (v ? ': Claude Sonnet.' : ': Claude Haiku.')); }).catch(fail);
             } }));
         }),
-        K.textField({ label: 'Weekly limit (A$)', prefix: 'A$', inputmode: 'decimal', value: bud.v, help: 'Claude stops at this amount until Monday, when the week starts again. 0 turns Claude off. ' + fxNote(), onInput: function (v) { bud.v = v; } }),
+        K.textField({ label: 'Weekly limit (A$)', prefix: 'A$', inputmode: 'decimal', value: bud.v, help: (SH ? 'Only used when the shared budget can’t be reached. ' : '') + 'Claude stops at this amount until Monday, when the week starts again. 0 turns Claude off. ' + fxNote(), onInput: function (v) { bud.v = v; } }),
         btn('tonal', 'Save limit', { icon: 'savings', block: true, onclick: function (e) {
           var b = e.currentTarget; K.setBusy(b, true);
           api('saveClaudeBudget', Math.round(K.num(bud.v) / fxRate() * 100) / 100).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (err) { K.setBusy(b, false); fail(err); });
         } })));
     }
-    main.appendChild(rise(fold(as, 'set-ai', 'memory', (af.localFirst ? 'The PC’s models first' : 'Claude first') + (sp ? ' · Claude ' + audFromUsd(sp.usd, true) + ' this week' : ''), false), n++));
+    main.appendChild(rise(fold(as, 'set-ai', 'memory', (af.localFirst ? 'The PC’s models first' : 'Claude first') + (sp ? (sp.shared ? ' · ' + audFromUsd(sp.shared.spent, true) + ' of ' + audFromUsd(sp.shared.budget, true) + ' this month, every app' : ' · Claude ' + audFromUsd(sp.usd, true) + ' this week') : ''), false), n++));
 
     // Everygen edits
     var es = section('Video edits (Everygen)');
