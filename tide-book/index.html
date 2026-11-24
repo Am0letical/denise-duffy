@@ -5291,6 +5291,9 @@ if (env.workDone) env.workDone('publish');
   Object.keys(reports.api).forEach(function (k) { out.api[k] = reports.api[k]; });
   Object.keys(ads.api).forEach(function (k) { out.api[k] = ads.api[k]; });
   Object.keys(ask.api).forEach(function (k) { out.api[k] = ask.api[k]; });
+  // each person's own answer about their private writing (Mentor.gs; kept by the door)
+  out.api.aiConsent = function () { need(['admin', 'artist']); return env.aiConsent ? env.aiConsent.state() : { available: false }; };
+  out.api.saveAiConsent = function (p) { need(['admin', 'artist']); if (!env.aiConsent) fail('Not available here.'); return env.aiConsent.save(p); };
   out.ask = ask;
   out.api.swipeDelete = swipeDelete; out.api.undoSwiped = undoSwiped; out.api.deleteAsk = deleteAsk;
   out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock; out.api.vaultOff = vaultOff;
@@ -7028,6 +7031,8 @@ function tideNotes(env, t) {
     t.need(['admin', 'artist']);
     opts = opts || {};
     var route = opts.claude || !localFirst() ? 'claude' : 'local';
+    // their own words go out only on their own yes (and then only cleaned: Notes.gs)
+    if (route === 'claude' && !mayGo(get(id))) { if (opts.claude) t.fail(N_KEPT); route = 'local'; }
     if (route === 'claude' && !env.features.research) t.fail(env.user.role === 'admin' ? 'Claude isn’t switched on yet. It needs the API key (setup guide, step 8).' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
     var queued = env.lock(function () {
       var n = get(id);
@@ -7045,6 +7050,10 @@ function tideNotes(env, t) {
     if (env.doorFeedback) try { env.doorFeedback(id); } catch (e) {}   // she turned the PC's answer down
     return expandNote(id, { claude: true, why: 'Asked for Claude' });
   }
+
+  /** Their own words go to Claude only on their own yes, kept by the app door. */
+  function mayGo(n) { return !env.privateClaude || env.privateClaude(n) === true; }
+  var N_KEPT = 'Your private writing is staying on the PC. You can change that in Settings › Your private writing.';
 
   /** Moves a note's expand to Claude, keeping the reason. Called inside a lock. */
   function escalate(n, why) {
@@ -7235,7 +7244,7 @@ function tideNotes(env, t) {
         linked: picked.slice(1).map(function (x) { return { title: x.title, body: plain(x.body).slice(0, N.CONTEXT_CHARS), relation: linked.indexOf(x) >= 0 ? 'linked from this note' : 'links to this note' }; }),
         leftOut: left,
         idea: idea ? { title: idea.title, kind: idea.kind, summary: idea.summary || '', steer: tideSteer(tideDay({ stage: idea.stage, since: idea.stageChanged }, env.now().getTime())) } : null,
-        why: n.expandWhy || ''
+        why: n.expandWhy || '', row: { createdBy: n.createdBy, owner: n.owner, private: n.private === true }
       };
     },
     save: function (id, r, by) {
@@ -7265,12 +7274,21 @@ function tideNotes(env, t) {
       if (!mins || !env.features.research) return 0;
       env.lock(function () {
         live().forEach(function (n) {
-          if (n.expandStatus === 'Queued' && n.expandRoute === 'local' && Date.parse(n.expandQueued) < env.now().getTime() - mins * 60000) {
+          if (n.expandStatus === 'Queued' && n.expandRoute === 'local' && Date.parse(n.expandQueued) < env.now().getTime() - mins * 60000 && mayGo(n)) {
             escalate(n, 'The PC didn’t pick it up within ' + mins + ' minutes'); moved++;
           }
         });
       });
       return moved;
+    },
+    /** It mustn't go to Claude after all: the PC's answer stands, or the PC gets its turn, or it says so plainly. */
+    keepHere: function (id) {
+      env.lock(function () {
+        var n = t.rows('notebook').filter(function (x) { return x.id === id; })[0];
+        if (!n || (n.expandStatus !== 'Queued' && n.expandStatus !== 'Expanding')) return;
+        var done = n.expansion && n.expansion.summary, waited = /didn’t pick it up/.test(n.expandWhy || '');
+        env.table('notebook').update(id, done ? { expandStatus: 'Done', expandRoute: 'local', expandNote: '' } : waited ? { expandStatus: 'Queued', expandRoute: 'local', expandQueued: t.nowIso() } : { expandStatus: 'Failed', expandRoute: 'local', expandNote: N_KEPT });
+      });
     },
     fail: function (id, message, final) {
       env.lock(function () {
@@ -7310,7 +7328,7 @@ function tideNotes(env, t) {
       expand.save(id, r, by);
       if (model) env.settings.set({ localModel: t.text(model, 40) });
       var facts = N.FACT_WORDS.test(n.title + ' ' + n.body);
-      if ((r.needs_claude === true || facts) && env.features.research) {
+      if ((r.needs_claude === true || facts) && env.features.research && mayGo(n)) {
         var why = r.needs_claude === true ? 'The PC’s model passed it on: ' + (t.text(r.claude_reason, 160) || 'needs a stronger model')
           : 'It’s about prices, suppliers or rules, which need current facts';
         env.lock(function () { escalate(get(id), why); });
@@ -7318,13 +7336,13 @@ function tideNotes(env, t) {
       }
       return { ok: true, escalated: false };
     },
-    fail: function (id, why, now) {
+    fail: function (id, why, now, refused) {
       var out = { ok: true, escalated: false };
       env.lock(function () {
         var n = t.rows('notebook').filter(function (x) { return x.id === id; })[0];
         if (!n || n.expandStatus !== 'Expanding' || n.expandRoute !== 'local') return;
         var tries = now ? N.LOCAL_TRIES : (Number(n.expandTries) || 0) + 1;   // now: the PC wasn't sure, so no second try
-        if (tries >= N.LOCAL_TRIES && env.features.research) { escalate(n, 'The PC’s model couldn’t do it: ' + t.text(why, 140)); out.escalated = true; }
+        if (tries >= N.LOCAL_TRIES && env.features.research && !refused && mayGo(n)) { escalate(n, 'The PC’s model couldn’t do it: ' + t.text(why, 140)); out.escalated = true; }
         else env.table('notebook').update(id, { expandTries: tries, expandNote: t.text(why, 300), expandStatus: tries >= N.LOCAL_TRIES ? 'Failed' : 'Queued' });
       });
       return out;
@@ -7419,6 +7437,7 @@ function tideTalk(env, t) {
     opts = opts || {};
     var needsFacts = job === 'checks' || job === 'clear';
     var route = opts.claude || needsFacts || !localFirst() ? 'claude' : 'local';
+    if (route === 'claude' && !mayGo(rowOf(id))) route = 'local';   // their own words: only on their own yes
     if (route === 'claude' && !env.features.research) {
       if (localFirst()) route = 'local';
       else t.fail(env.user.role === 'admin' ? 'The AI isn’t switched on yet. It needs the Claude API key (setup guide, step 8) or the PC helper.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
@@ -7427,6 +7446,9 @@ function tideTalk(env, t) {
       aiWhy: route === 'claude' ? t.text(opts.why || (needsFacts ? 'Needs current facts' : ''), 200) : '' });
     return route;
   }
+  /** Talks are private writing: they go to Claude only on that person's own yes (products and reports are the business side). */
+  function mayGo(r) { return !r || tableOf(r.id) !== 'topics' || !env.privateClaude || env.privateClaude(r) === true; }
+  var T_KEPT = 'Your private writing is staying on the PC. You can change that in Settings › Your private writing.';
   /** While the PC's own model is still thinking: hand it to Claude for a quicker answer (a small cost). */
   function askClaudeNow(id) {
     t.need(['admin', 'artist']);
@@ -7435,6 +7457,7 @@ function tideTalk(env, t) {
       var r = rowOf(id);
       if (!r || !(r.aiStatus === 'Queued' || r.aiStatus === 'Working')) return false;
       if (r.aiRoute === 'claude') return true;
+      if (!mayGo(r)) t.fail(T_KEPT);
       escalate(r, 'Asked for a quicker answer');
       return true;
     });
@@ -7456,7 +7479,7 @@ function tideTalk(env, t) {
     }
     if (tableOf(id) === 'topics') {
       return {
-        kind: 'topic', job: r.aiJob, title: r.title, detail: r.detail || '', by: who(r.createdBy),
+        kind: 'topic', row: { createdBy: r.createdBy, private: r.private === true }, job: r.aiJob, title: r.title, detail: r.detail || '', by: who(r.createdBy),
         rounds: t.list(r.rounds).map(function (rd) {
           return { questions: t.list(rd.questions).map(function (q, i) {
             var a = rd.answers ? t.list(rd.answers)[i] || {} : null;
@@ -7624,13 +7647,21 @@ function tideTalk(env, t) {
         env.table(tableOf(id)).update(id, { aiTries: tries, aiNote: t.text(message, 300), aiStatus: (final || tries >= K.MAX_TRIES) ? 'Failed' : 'Queued' });
       });
     },
+    /** It mustn't go to Claude after all: the PC gets its turn if it hasn't had one, otherwise it says so plainly. */
+    keepHere: function (id) {
+      env.lock(function () {
+        var r = rowOf(id); if (!r || (r.aiStatus !== 'Queued' && r.aiStatus !== 'Working')) return;
+        var had = /^The PC’s model/.test(r.aiWhy || '');
+        env.table(tableOf(id)).update(id, had ? { aiStatus: 'Failed', aiRoute: 'local', aiNote: T_KEPT } : { aiStatus: 'Queued', aiRoute: 'local', aiQueued: t.nowIso(), aiTries: 0 });
+      });
+    },
     fallback: function () {
       var mins = Number(setting('localFallbackMins')) || 0, moved = 0;
       if (!mins || !env.features.research) return 0;
       env.lock(function () {
         AI_TABLES.forEach(function (tb) {
           t.rows(tb).forEach(function (r) {
-            if (!r.locked && r.aiStatus === 'Queued' && r.aiRoute === 'local' && Date.parse(r.aiQueued) < env.now().getTime() - mins * 60000) { escalate(r, 'The PC didn’t pick it up within ' + mins + ' minutes'); moved++; }
+            if (!r.locked && r.aiStatus === 'Queued' && r.aiRoute === 'local' && Date.parse(r.aiQueued) < env.now().getTime() - mins * 60000 && mayGo(r)) { escalate(r, 'The PC didn’t pick it up within ' + mins + ' minutes'); moved++; }
           });
         });
       });
@@ -7659,19 +7690,19 @@ function tideTalk(env, t) {
     done: function (id, result, model) {
       var r = rowOf(id), res = result || {};
       if (!r || r.aiStatus !== 'Working' || r.aiRoute !== 'local') return { ok: false, why: 'Not waiting for the PC.' };
-      if (res.needs_claude === true && env.features.research) {
+      if (res.needs_claude === true && env.features.research && mayGo(r)) {
         env.lock(function () { escalate(r, 'The PC’s model passed it on: ' + (t.text(res.claude_reason, 160) || 'needs a stronger model')); });
         return { ok: true, escalated: true };
       }
       save(id, res, 'PC (' + t.text(model || 'local model', 40) + ')');
       return { ok: true, escalated: false };
     },
-    fail: function (id, why, now) {
+    fail: function (id, why, now, refused) {
       var out = { ok: true, escalated: false };
       env.lock(function () {
         var r = rowOf(id); if (!r || r.aiStatus !== 'Working' || r.aiRoute !== 'local') return;
         var tries = now ? K.LOCAL_TRIES : (Number(r.aiTries) || 0) + 1;   // now: the PC wasn't sure, so no second try
-        if (tries >= K.LOCAL_TRIES && env.features.research) { escalate(r, 'The PC’s model couldn’t do it: ' + t.text(why, 140)); out.escalated = true; }
+        if (tries >= K.LOCAL_TRIES && env.features.research && !refused && mayGo(r)) { escalate(r, 'The PC’s model couldn’t do it: ' + t.text(why, 140)); out.escalated = true; }
         else env.table(tableOf(id)).update(id, { aiTries: tries, aiNote: t.text(why, 300), aiStatus: tries >= K.LOCAL_TRIES ? 'Failed' : 'Queued' });
       });
       return out;
@@ -8833,11 +8864,13 @@ var TIDE_GUIDE = [
   { id: 'g-link-photos', area: 'Social', to: 'artist', icon: 'link', title: 'Photos from a link', say: 'Someone sent you photos or videos as a link? Paste any link (Dropbox, Google Drive, Google Photos, WeTransfer, OneDrive or a web page) and they come straight in.', steps: ['Home › Add content.', 'Tap From a link, paste it, then Bring them in.', 'Big ones can take a minute or two.', 'Take out any you don’t want, then tap Upload.'], go: { view: 'home', tip: 'Tap Add content, then From a link.' } },
   { id: 'g-use-website', area: 'Your website', to: 'artist', icon: 'language', title: 'Use an idea’s words on your website', say: '“Use on my website” on an idea puts its wording on your website’s draft.', steps: ['Open the idea.', 'Tap Use on my website.', 'Check the draft, then Publish.'], go: { view: 'ideas', tip: 'Open an idea.' } },
   { id: 'g-mentor-chat', area: 'Chat', to: 'artist', icon: 'forum', title: 'Chat',
-    say: 'A conversation about anything: ask a question, think out loud, talk something through. It’s yours alone.',
+    say: 'A conversation about anything: ask a question, think out loud, talk something through. Tide Book shows it only to you; it’s usually sent outside the house to be answered.',
     steps: ['Open the menu and tap Chat.', 'It opens on your chat.', 'Write, or tap one of the replies it offers. Your own words always work.'], go: { view: 'mentors', find: '.mn-chat', tip: 'Just chat.' } },
   { id: 'g-mentor', area: 'Chat', to: 'artist', icon: 'school', title: 'A coach for one thing',
     say: 'Make a mentor for anything you want to learn or get done, like growing your audience. It teaches a little at a time, gives you something to try, checks in on how it went, and does the busywork: goals and steps on your calendar, posts and ideas drafted for you to approve.',
     steps: ['In Chat, tap the coach symbol, then Coach me.', 'Say what you’d like to learn or get done (or tap a suggestion), then Start.', 'Answer its first questions: it sets out your course along the top.', 'Tap a lesson to start it or go over it again.', 'Tap what it made (a goal, a drafted post) to open it.', '⋮ switches it to Deep thinking for big plans, renames it, or removes it.'], go: { view: 'mentors', find: '.mn-h', tip: 'New mentor is here.' } },
+  { id: 'g-private-choice', area: 'Getting around', to: 'all', icon: 'lock', title: 'Choose what happens with your private writing', say: 'Three switches: what may be learnt from your private writing, and whether any may be sent outside the house for help. All off until you say yes. Chat isn’t covered.',
+    steps: ['Settings › Your private writing.', 'Switch on what you’re happy with.', 'Tap Save my choices.'], go: { view: 'settings', tip: 'Open Your private writing.' } },
   { id: 'g-mentor-admin', area: 'Chat', to: 'admin', icon: 'lock', title: 'Mentors (private to her)',
     say: 'Her mentor chats are sealed with her passphrase: you never see them. You see the count and the month’s cost, and what they make (goals, drafted posts, ideas) in their usual places. Quick replies run on Haiku, Deep thinking on Opus, within the weekly Claude limit; once it’s reached they carry on in a lighter mode on the PC’s own model (talk only) until Monday.',
     steps: ['Open Mentors to see the count and cost.', 'Mentors need the Claude API key and the month’s limit not reached (Settings › AI).'], go: { view: 'mentors', tip: 'Private to her.' } },
@@ -8926,6 +8959,12 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-25-private-choice', on: '2026-11-25', to: 'artist', icon: 'lock', title: 'Your private writing: your choice',
+    say: 'You choose what may be learnt from your private writing, and whether any of it may be sent outside the house for help. Everything is off until you say yes, so some answers may be simpler. Chat isn’t covered: what you write there is usually sent out to be answered.',
+    steps: ['Settings › Your private writing.', 'Switch on only what you’re happy with, then Save my choices.', 'Change your mind any time, in the same place.'], go: { view: 'settings', tip: 'Open Your private writing.' } },
+  { id: '2026-11-25-private-choice-admin', on: '2026-11-25', to: 'admin', icon: 'lock', title: 'Private writing needs each person’s own yes',
+    say: 'Notes, talks, Ask questions and “Turn into…” go to Claude only if the person whose writing it is has said yes, and then only cleaned by Dev HQ’s app door on this PC. Unanswered means no. Chat isn’t covered. Finished private notes are no longer sent to be counted for the savings tally, so those are estimates. In Claude chat mode, her Ask questions stay on the PC.',
+    steps: ['Each person is asked once. Only they can answer, from their own sign-in.', 'Your own answer is in Settings › Your private writing.'], go: { view: 'settings', tip: 'Your private writing.' } },
   { id: '2026-11-24-any-link', on: '2026-11-24', to: 'artist', icon: 'link', title: 'Photos from any link',
     say: 'When someone sends you photos or videos as a link, you can bring them in yourself now, whatever the link: Dropbox (Transfer links too), Google Drive, Google Photos, WeTransfer, OneDrive or a web page.',
     steps: ['Home › Add content.', 'Tap From a link, paste it, then Bring them in.', 'Big ones can take a minute or two.', 'Take out any you don’t want, then tap Upload.'], go: { view: 'home', tip: 'Tap Add content, then From a link.' } },
@@ -8938,7 +8977,7 @@ var TIDE_CHANGES = [
     go: { view: 'settings', tip: 'Tap a heading to open it.' } },
   { id: '2026-11-23-ask', on: '2026-11-23', to: 'all', icon: 'travel_explore', title: 'Ask a question',
     say: 'Ideas has a new Ask tab. Ask anything about your art business (what sells, what people pay, where to sell) and Tide Book looks into it. Keep asking follow-ups, and save any answer as a note or make it an idea.',
-    steps: ['Ideas › Ask › New question.', 'Tap a suggested question, or type your own, then Ask.', 'Under an answer: Save as note, or Make it an idea.', 'Your questions are yours alone, and stay in the list to come back to.'],
+    steps: ['Ideas › Ask › New question.', 'Tap a suggested question, or type your own, then Ask.', 'Under an answer: Save as note, or Make it an idea.', 'Tide Book shows your questions only to you, and they stay in the list to come back to.'],
     go: { view: 'ideas', tip: 'Tap Ask at the top.' } },
   { id: '2026-11-22-links-receipts', on: '2026-11-22', to: 'artist', icon: 'link', title: 'Dropbox links and receipts',
     say: 'Paste a Dropbox or Google Drive link in the suggestions box and it offers to bring the photos in for you. For a receipt, Gallery now opens your photos and screenshots, and File opens your PDFs.',
@@ -11601,7 +11640,7 @@ function tideNoteTurn(env, t) {
     var n = t.notebook().get(id), by = 'tide book', got = [];
     if (env.noteSuggestAi) {
       try {
-        var ai = env.noteSuggestAi({ words: words(n), goals: goals(), milestones: milestones(), series: t.allSeries(), pages: X.PAGES, categories: T_EXP(), today: env.today(), artist: env.brand.artistName });
+        var ai = env.noteSuggestAi({ row: { createdBy: n.createdBy, owner: n.owner, private: n.private === true }, words: words(n), goals: goals(), milestones: milestones(), series: t.allSeries(), pages: X.PAGES, categories: T_EXP(), today: env.today(), artist: env.brand.artistName });
         if (ai && ai.length) { got = ai.map(clean).filter(Boolean); if (got.length) by = 'quick'; }
       } catch (e) { got = []; }
     }
@@ -15273,7 +15312,7 @@ var Kit = (function () {
     if (moved) { if (S.ideasTab === 'inspo') S.noteFolder = '__inspo'; S.ideasTab = 'ideas'; S.view = moved; render(); return; }
     var tab = S.ideasTab === 'products' ? 'products' : S.ideasTab === 'ask' ? 'ask' : 'ideas', nb = false, T = talkData();
     var yourTurn = T.topics.filter(function (tp) { return tp.status === 'Your turn' && tp.mine; }).length, oks = T.pipeline.filter(function (p) { return p.needsMe; }).length;
-    pageTitle(main, 'Ideas', tab === 'ask' ? 'Ask a question and Tide Book looks into it. Your questions are yours alone.' : tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
+    pageTitle(main, 'Ideas', tab === 'ask' ? 'Ask a question and Tide Book looks into it. Tide Book shows your questions only to you.' : tab === 'goals' ? 'Where you want to get to. The most important goal sets the order of everything.' : tab === 'inspo' ? 'Posts and pictures that inspire you.' : tab === 'talk' ? 'Talk anything through, a few questions at a time.' : tab === 'products' ? 'Every product, from idea to live.'
       : nb ? 'Jot things down, link them up, and grow them into ideas.'
       : 'Ranked by ' + (ADMIN ? artist() + '’s' : 'your') + ' priority, then by viability.');
     main.appendChild(rise(h('div', { style: 'margin-bottom:16px' }, K.segmented({
@@ -15436,6 +15475,70 @@ var Kit = (function () {
           by('stripe').done ? null : btn('text', 'Mark as done', { icon: 'check', onclick: function () { api('markSetupStep', 'stripe').then(function () { reopen(); }).catch(fail); } }))));
       }
     });
+  }
+
+  // ------------------------------------------------------------------ each person's own choice about their private writing
+  // Asked once, the next time they open Tide Book (Mentor.gs; the answer is kept by Dev HQ's app door). Every switch
+  // starts off, closing it is not an answer, and it can be changed in Settings. Claude is named here on purpose: it's
+  // what they are agreeing to.
+  function consentIntro() {
+    return ADMIN ? 'Your own private writing in Tide Book (your Ask questions and your notes). Every switch starts off.'
+      : 'Tide Book doesn’t show ' + adminName() + ' your private notes. What the PC learns is kept in ordinary files on ' + adminName() + '’s PC. If any of it is shown to ' + adminName() + ', it’s cleaned first, and cleaning can miss things. This changes what you were told before, so it’s your choice.';
+  }
+  function consentForm(f, onChange) {
+    var pc = ADMIN ? 'your PC' : adminName() + '’s PC', box = h('div', { class: 'consent-list', 'data-full': '1' });   // data-full: every word shows (nothing here may be shortened)
+    [['learn', 'Learn from my private writing', 'The AI on ' + pc + ' can learn from your private notes, talks, questions and Chat to help you better in Tide Book. It stays on that PC and is only used for your own private work.'],
+      ['health', 'Learn from health-related writing', 'The same, for writing we spot as being about health. We can miss some, and it would then count as your other private writing.'],
+      ['claude', 'Ask Claude when the PC’s AI is stuck', 'When it’s stuck, or a question needs up-to-date facts, your private text is sent to Claude, an outside AI service, with names and contact details removed first. The removal can miss things, and what you wrote about may still point to you. We try to stop anything about health being sent, but the check can miss things. Photos aren’t sent.']
+    ].forEach(function (x) {
+      box.appendChild(h('div', { class: 'switch-row', style: 'align-items:flex-start;padding:10px 0' }, h('div', {}, h('div', { class: 'title-m', text: x[1] }), h('div', { class: 'body-m', text: x[2] })),
+        K.switchBtn({ checked: f[x[0]] === true, label: x[1], onChange: function (v) { f[x[0]] = v; if (onChange) onChange(); } })));
+    });
+    box.appendChild(note('This doesn’t cover Chat. What you write in Chat is usually sent to Claude as you wrote it, whatever you choose here.', 'chat'));
+    return box;
+  }
+  function consentSoon(then) {
+    if (window.TIDE_DEMO || previewing()) return then();
+    api('aiConsent').then(function (c) {
+      if (c && c.available && !c.answered) openPrivateChoice();
+      then();
+    }).catch(function () { then(); });
+  }
+  function openPrivateChoice(n) {
+    if (K.openSheets() || document.querySelector('.dialog-wrap')) { if ((n || 0) < 120) setTimeout(function () { openPrivateChoice((n || 0) + 1); }, 1000); return; }
+    var f = { learn: false, health: false, claude: false };
+    K.sheet({ title: 'Your private writing: your choice', tall: true, build: function (ctl) {
+      ctl.body.appendChild(h('p', { class: 'body-l', 'data-full': '1', style: 'margin:0 0 8px', text: consentIntro() }));
+      ctl.body.appendChild(consentForm(f));
+      ctl.body.appendChild(h('p', { class: 'body-m', 'data-full': '1', style: 'margin:12px 0 0', text: 'Tide Book works whatever you choose. With the last one off, some answers will be simpler, and some questions may not get one. You can change your mind in Settings › Your private writing.' }));
+      var save = btn('filled', 'Save my choices', { icon: 'check', lg: true, block: true }), no = btn('outlined', 'No to all', { lg: true, block: true });
+      function send(b, v) {
+        K.setBusy(b, true);
+        api('saveAiConsent', v).then(function () { K.haptic('success'); ctl.close(); toast('✓ Saved. You can change it in Settings.'); }).catch(function (e) { K.setBusy(b, false); fail(e); });
+      }
+      save.addEventListener('click', function () { send(save, { learn: f.learn, health: f.health, claude: f.claude }); });
+      no.addEventListener('click', function () { send(no, { learn: false, health: false, claude: false }); });
+      ctl.foot.appendChild(h('div', { style: 'display:grid;gap:8px' }, save, no));
+    } });
+  }
+  /** Settings › Your private writing: the same three switches. */
+  function consentSection() {
+    var sec = section('Your private writing'), card = h('div', { class: 'card pad', 'data-full': '1', style: '--sheet-bg:var(--surface-lowest)' }, h('p', { class: 'body-m', text: 'Looking…' }));
+    sec.appendChild(card);
+    var out = fold(sec, 'set-private', 'lock', 'Your three choices', false);
+    function off() { card.textContent = ''; card.appendChild(h('p', { class: 'body-m', style: 'margin:0', text: 'This can’t be changed right now. Until you’ve said yes, nothing here is switched on. Try again later.' })); }
+    api('aiConsent').then(function (c) {
+      if (!c || !c.available) { off(); return; }
+      var f = { learn: c.learn, health: c.health, claude: c.claude };
+      card.textContent = '';
+      var save = btn('filled', 'Save my choices', { icon: 'check', block: true, onclick: function () {
+        K.setBusy(save, true);
+        api('saveAiConsent', { learn: f.learn, health: f.health, claude: f.claude }).then(function () { K.setBusy(save, false); K.haptic('success'); toast('✓ Saved.'); }).catch(function (e) { K.setBusy(save, false); fail(e); });
+      } });
+      card.append(h('p', { class: 'body-m', style: 'margin:0 0 6px', text: consentIntro() }), consentForm(f),
+        h('p', { class: 'body-m', style: 'margin:10px 0 12px', text: 'Switching off either of the first two deletes what was learnt that way.' }), save);
+    }).catch(off);
+    return out;
   }
 
   // ------------------------------------------------------------------ what's new since she was last here (TIDE_CHANGES, LogicSetup.gs)
@@ -16084,16 +16187,16 @@ var Kit = (function () {
   }
   function openPrivacyAbout() {
     K.sheet({ title: 'Your private writing', build: function (ctl) {
-      [['lock', 'Only you can read it', 'Your notes, what you say when you talk things through, and what you write about your inspiration are locked with a passphrase only you know. They\u2019re stored scrambled on the family computer, so nobody can open them there either.'],
-        ['visibility_off', adminName() + ' doesn\u2019t see it', 'Not in the app, and not on the computer. When something you\u2019ve talked through becomes a decision for the business, like a product, a price or a date, you\u2019ll see exactly what ' + adminName() + ' will get, and nothing goes to him until you send it.'],
-        ['auto_awesome', 'Your helpers still work', 'While you\u2019re signed in, your helpers can read your writing to grow your notes and ask you questions. Sometimes a helper outside the house reads a piece for a moment to help; it isn\u2019t kept.'],
+      [['lock', 'Locked on the computer', 'Your notes, what you say when you talk things through, and what you write about your inspiration are stored scrambled on the family computer, and opened with your passphrase. While they\u2019re open, and if you let the PC learn from them, they can be read there.'],
+        ['visibility_off', 'Tide Book doesn\u2019t show ' + adminName(), 'When something you\u2019ve talked through becomes a decision for the business, like a product, a price or a date, you\u2019ll see exactly what ' + adminName() + ' will get, and nothing goes to him until you send it.'],
+        ['auto_awesome', 'Your helpers still work', 'While you\u2019re signed in, your helpers can read your writing to grow your notes and ask you questions. Whether any of it may be sent outside the house is your choice, in Settings \u203a Your private writing. Chat is usually answered from outside.'],
         ['key', 'Keep your passphrase safe', 'You\u2019ll get a recovery code when you set it up. Write it down and keep it somewhere safe: it\u2019s the only way back in if you forget your passphrase.']]
         .forEach(function (r) { ctl.body.appendChild(h('div', { class: 'priv-row' }, icon(r[0]), h('div', {}, h('b', { text: r[1] }), h('p', { text: r[2] })))); });
     } });
   }
   function openPrivacySetup() {
     K.sheet({ title: 'Choose a passphrase', build: function (ctl) {
-      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'A few words you\u2019ll remember, like a line from a favourite song or place. At least 8 letters. Only you will know it.' }));
+      ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'A few words you\u2019ll remember, like a line from a favourite song or place. At least 8 letters. Keep it to yourself.' }));
       var a = K.textField({ label: 'Passphrase', type: 'password', maxlength: 200 }), b = K.textField({ label: 'Once more', type: 'password', maxlength: 200 });
       ctl.body.append(h('div', { class: 'field-gap' }, a, b));
       var go = btn('filled', 'Lock my writing', { icon: 'lock', lg: true, block: true, onclick: function () {
@@ -16102,7 +16205,7 @@ var Kit = (function () {
         K.setBusy(go, true);
         api('vaultSetup', a.input.value).then(function (r) {
           ctl.body.textContent = ''; ctl.foot.textContent = '';
-          ctl.body.appendChild(h('div', { class: 'priv-done' }, icon('check_circle', true), h('b', { text: 'Locked. Only you can read it now.' }),
+          ctl.body.appendChild(h('div', { class: 'priv-done' }, icon('check_circle', true), h('b', { text: 'Locked with your passphrase.' }),
             h('p', { text: 'Here\u2019s your recovery code. Write it down and keep it somewhere safe, away from your phone. It\u2019s the only way back in if you forget your passphrase, and it won\u2019t be shown again.' }),
             h('div', { class: 'priv-code', text: r.recovery })));
           ctl.foot.appendChild(btn('filled', 'I\u2019ve written it down', { lg: true, block: true, onclick: function () { refresh().then(function () { ctl.close(); render(); }); } }));
@@ -16132,7 +16235,7 @@ var Kit = (function () {
       var sh = tp.shared || {};
       sec.appendChild(h('div', { class: 'priv-sent' }, icon('check_circle'), h('div', {}, h('b', { text: 'Sent: ' + (sh.title || '') }), sh.summary ? h('p', { text: sh.summary }) : null,
         (sh.decisions || []).length ? h('ul', { class: 'talk-list' }, sh.decisions.map(function (d) { return h('li', { text: d }); })) : null)));
-      sec.appendChild(h('p', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Everything else you said stays private to you.' }));
+      sec.appendChild(h('p', { class: 'body-s', style: 'margin-top:8px;color:var(--on-surface-variant)', text: 'Tide Book doesn’t show ' + adminName() + ' anything else you said.' }));
       return sec;
     }
     if (st === 'Kept') { sec.appendChild(h('p', { class: 'body-m', text: 'You kept all of this to yourself. Nothing went to ' + adminName() + '.' })); return sec; }
@@ -19333,7 +19436,7 @@ var Kit = (function () {
         h('div', { class: 'label-m', style: 'margin:16px 2px 6px', text: 'How should it think?' }),
         K.choices({ label: 'How should it think?', value: 'quick', options: [{ value: 'quick', label: 'Everyday', icon: 'bolt' }, { value: 'deep', label: 'Deep thinking', icon: 'psychology' }], onChange: function (v) { f.deep = v === 'deep'; } }),
         h('p', { class: 'tf-help', style: 'margin:6px 2px 0', text: 'Everyday answers quickly and suits most things. Deep thinking is slower and costs more: for big plans. You can switch any time.' }),
-        note('Yours alone. A coach can look at your art, sales, posts and goals (never your private notes), look things up, and make goals and drafts for you to approve.', 'lock'));
+        h('div', { 'data-full': '1' }, note('Tide Book shows this only to you. What you write here is usually sent outside the house to be answered. A coach can look at your art, sales, posts and goals (never your private notes), look things up, and make goals and drafts for you to approve.', 'lock')));
       var go = btn('filled', 'Start', { icon: 'school', lg: true, block: true, onclick: function () {
         if (!f.goal.trim()) { toast('Say what you’d like to learn or get done.'); goalF.input.focus(); return; }
         K.setBusy(go, true);
@@ -23393,6 +23496,8 @@ var Kit = (function () {
     var rounding = { dollar: 'whole dollars', five: 'nearest $5', none: 'not rounded' }[f.priceRounding] || '';
     main.appendChild(rise(fold(pm, 'set-money', 'sell', f.defaultMarkupPct + '% markup · ' + rounding + ' · ' + (f.gstOn ? 'GST registered' : 'no GST'), false), 1));
 
+    if (!window.TIDE_DEMO && !previewing()) main.appendChild(rise(consentSection(), 2));
+
     // when posts go out: hers to set (suggested times and the buzz come from these)
     var pt = section('When posts go out'), pf = { slotTimes: S.data.posting.slotTimes, postsPerDay: S.data.posting.postsPerDay };
     var ptSave = btn('tonal', 'Save posting times', { icon: 'schedule', block: true, onclick: function () {
@@ -23552,7 +23657,7 @@ var Kit = (function () {
   }
 
   textSize(null);
-  refresh().then(render).then(function () { if (!takeShare() && !takeShortcut() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); setTimeout(whatsNewSoon, 900); }, 600); }).catch(function (e) {
+  refresh().then(render).then(function () { if (!takeShare() && !takeShortcut() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); consentSoon(function () { setTimeout(whatsNewSoon, 900); }); }, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
