@@ -8830,7 +8830,7 @@ var TIDE_GUIDE = [
   { id: 'g-text-size', area: 'Getting around', to: 'all', icon: 'format_size', title: 'Bigger text', say: 'Make everything bigger on this phone.', steps: ['Open Settings.', 'Text size: A, A+ or A++.'], go: { view: 'settings', tip: 'At the top.' } },
   { id: 'g-shortcuts', area: 'Getting around', to: 'artist', icon: 'touch_app', title: 'Shortcuts on the icon', say: 'Long-press the Tide Book icon on your phone: Today, Calendar, Inspo, New note.', steps: ['Long-press the Tide Book icon.', 'Tap where you want to go.'], go: { view: 'home', tip: 'From your phone’s home screen.' } },
   { id: 'g-share', area: 'Getting around', to: 'artist', icon: 'send', title: 'Share to Tide Book', say: 'From Photos, Dropbox or Instagram: Share › Tide Book, then pick Inspo, Photos for posts or a Note.', steps: ['In another app, tap Share.', 'Pick Tide Book.', 'Choose where it goes.'], go: { view: 'home', tip: 'From another app.' } },
-  { id: 'g-link-photos', area: 'Social', to: 'artist', icon: 'link', title: 'Photos from a Dropbox link', say: 'Paste a Dropbox or Google Drive link in Add photos, and its photos and videos come in.', steps: ['Start something › Photos (or Posts › Add).', 'Tap From a link and paste.', 'Tap Upload.'], go: { view: 'content', tip: 'Add photos.' } },
+  { id: 'g-link-photos', area: 'Social', to: 'artist', icon: 'link', title: 'Photos from a link', say: 'Someone sent you photos or videos as a link? Paste any link (Dropbox, Google Drive, Google Photos, WeTransfer, OneDrive or a web page) and they come straight in.', steps: ['Home › Add content.', 'Tap From a link, paste it, then Bring them in.', 'Big ones can take a minute or two.', 'Take out any you don’t want, then tap Upload.'], go: { view: 'home', tip: 'Tap Add content, then From a link.' } },
   { id: 'g-use-website', area: 'Your website', to: 'artist', icon: 'language', title: 'Use an idea’s words on your website', say: '“Use on my website” on an idea puts its wording on your website’s draft.', steps: ['Open the idea.', 'Tap Use on my website.', 'Check the draft, then Publish.'], go: { view: 'ideas', tip: 'Open an idea.' } },
   { id: 'g-mentor-chat', area: 'Chat', to: 'artist', icon: 'forum', title: 'Chat',
     say: 'A conversation about anything: ask a question, think out loud, talk something through. It’s yours alone.',
@@ -8926,6 +8926,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-24-any-link', on: '2026-11-24', to: 'artist', icon: 'link', title: 'Photos from any link',
+    say: 'When someone sends you photos or videos as a link, you can bring them in yourself now, whatever the link: Dropbox (Transfer links too), Google Drive, Google Photos, WeTransfer, OneDrive or a web page.',
+    steps: ['Home › Add content.', 'Tap From a link, paste it, then Bring them in.', 'Big ones can take a minute or two.', 'Take out any you don’t want, then tap Upload.'], go: { view: 'home', tip: 'Tap Add content, then From a link.' } },
   { id: '2026-11-23-shared-budget', on: '2026-11-23', to: 'admin', icon: 'savings', title: 'One AI budget for every app',
     say: 'Claude now comes out of one US$100-a-month budget shared with Dev HQ and Peanuts Paws, kept by Dev HQ’s gateway on this PC. Tide Book asks it before each Claude call and records what each answer cost. Jobs nobody is waiting on count as background work. If the gateway isn’t running, the weekly limit applies as before.',
     steps: ['Settings › AI helpers shows the month across every app, and Tide Book’s share.', 'The weekly limit stays as the fallback.'], go: { view: 'settings', tip: 'Open AI helpers.' } },
