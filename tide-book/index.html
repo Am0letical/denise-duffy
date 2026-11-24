@@ -8959,6 +8959,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-25-private-counts', on: '2026-11-25', to: 'admin', icon: 'lock', title: 'How often private writing was sent or held back',
+    say: 'Once someone says yes to asking Claude, Settings › AI helpers counts how many times a day something of theirs was sent or held back, and from which part of Tide Book. No words, times or reasons are kept. The choice screen tells them.',
+    steps: ['Settings › AI helpers › Private writing and Claude.'], go: { view: 'settings', tip: 'Open AI helpers.' } },
   { id: '2026-11-25-private-choice', on: '2026-11-25', to: 'artist', icon: 'lock', title: 'Your private writing: your choice',
     say: 'You choose what may be learnt from your private writing, and whether any of it may be sent outside the house for help. Everything is off until you say yes, so some answers may be simpler. Chat isn’t covered: what you write there is usually sent out to be answered.',
     steps: ['Settings › Your private writing.', 'Switch on only what you’re happy with, then Save my choices.', 'Change your mind any time, in the same place.'], go: { view: 'settings', tip: 'Open Your private writing.' } },
@@ -15489,7 +15492,7 @@ var Kit = (function () {
     var pc = ADMIN ? 'your PC' : adminName() + '’s PC', box = h('div', { class: 'consent-list', 'data-full': '1' });   // data-full: every word shows (nothing here may be shortened)
     [['learn', 'Learn from my private writing', 'The AI on ' + pc + ' can learn from your private notes, talks, questions and Chat to help you better in Tide Book. It stays on that PC and is only used for your own private work.'],
       ['health', 'Learn from health-related writing', 'The same, for writing we spot as being about health. We can miss some, and it would then count as your other private writing.'],
-      ['claude', 'Ask Claude when the PC’s AI is stuck', 'When it’s stuck, or a question needs up-to-date facts, your private text is sent to Claude, an outside AI service, with names and contact details removed first. The removal can miss things, and what you wrote about may still point to you. We try to stop anything about health being sent, but the check can miss things. Photos aren’t sent.']
+      ['claude', 'Ask Claude when the PC’s AI is stuck', 'When it’s stuck, or a question needs up-to-date facts, your private text is sent to Claude, an outside AI service, with names and contact details removed first. The removal can miss things, and what you wrote about may still point to you. We try to stop anything about health being sent, but the check can miss things. Photos aren’t sent.' + (ADMIN ? '' : ' If this is on, ' + adminName() + ' can see how many times a day something was sent or held back, and from which part of Tide Book. Never the words, or why.')]
     ].forEach(function (x) {
       box.appendChild(h('div', { class: 'switch-row', style: 'align-items:flex-start;padding:10px 0' }, h('div', {}, h('div', { class: 'title-m', text: x[1] }), h('div', { class: 'body-m', text: x[2] })),
         K.switchBtn({ checked: f[x[0]] === true, label: x[1], onChange: function (v) { f[x[0]] = v; if (onChange) onChange(); } })));
@@ -15520,6 +15523,20 @@ var Kit = (function () {
       no.addEventListener('click', function () { send(no, { learn: false, health: false, claude: false }); });
       ctl.foot.appendChild(h('div', { style: 'display:grid;gap:8px' }, save, no));
     } });
+  }
+  /** Admin: how often private writing went to Claude or was held back. Counts only: no words, times or reasons exist. */
+  function privateCountsCard() {
+    var log = (S.data.aiSpend || {}).privateCounts || {}, days = Object.keys(log).sort().reverse().slice(0, 7);
+    var box = h('div', { 'data-full': '1' }, h('div', { class: 'title-m', text: 'Private writing and Claude' }));
+    if (!days.length) box.appendChild(h('div', { class: 'body-m', text: 'Nothing has been sent or held back yet. Counting starts once someone has said yes.' }));
+    days.forEach(function (d) {
+      ['artist', 'owner'].forEach(function (w) {
+        var x = log[d][w]; if (!x) return;
+        box.appendChild(h('div', { class: 'body-m', text: K.dateLabel(d) + ' · ' + (w === 'artist' ? cap(artist()) : 'You') + ': ' + Object.keys(x).map(function (k) { return k + ' ' + (x[k].sent || 0) + ' sent, ' + (x[k].held || 0) + ' held back'; }).join(' · ') }));
+      });
+    });
+    box.appendChild(h('div', { class: 'body-m', text: 'Counts only, kept for the last 30 days that have any. No words, and no reasons: a reason could say it touched health.' }));
+    return box;
   }
   /** Settings › Your private writing: the same three switches. */
   function consentSection() {
@@ -22479,7 +22496,7 @@ var Kit = (function () {
         K.switchBtn({ checked: af.localFirst, label: 'Use the PC’s models first', onChange: function (v) { af.localFirst = v; } })),
       K.textField({ label: 'Claude takes over after', suffix: 'min', inputmode: 'numeric', value: af.localFallbackMins,
         help: 'If the PC hasn’t picked a note up by then. 0 means always wait for the PC.', onInput: function (v) { af.localFallbackMins = K.num(v); } }),
-      note(seen, 'computer', ai.pcOnline ? 'good' : ''), aiSave));
+      note(seen, 'computer', ai.pcOnline ? 'good' : ''), aiSave, privateCountsCard()));
     // what Claude has cost this month, and the cap
     var sp = S.data.aiSpend;
     if (sp) {
