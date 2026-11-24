@@ -15483,7 +15483,7 @@ var Kit = (function () {
   // what they are agreeing to.
   function consentIntro() {
     return ADMIN ? 'Your own private writing in Tide Book (your Ask questions and your notes). Every switch starts off.'
-      : 'Tide Book doesn’t show ' + adminName() + ' your private notes. What the PC learns is kept in ordinary files on ' + adminName() + '’s PC. If any of it is shown to ' + adminName() + ', it’s cleaned first, and cleaning can miss things. This changes what you were told before, so it’s your choice.';
+      : 'Tide Book doesn’t show ' + adminName() + ' your private notes. What the PC learns is kept in encrypted files on ' + adminName() + '’s PC, which that PC can open. If any of it is shown to ' + adminName() + ', it’s cleaned first, and cleaning can miss things. This changes what you were told before, so it’s your choice.';
   }
   function consentForm(f, onChange) {
     var pc = ADMIN ? 'your PC' : adminName() + '’s PC', box = h('div', { class: 'consent-list', 'data-full': '1' });   // data-full: every word shows (nothing here may be shortened)
