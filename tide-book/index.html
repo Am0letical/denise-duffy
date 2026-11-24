@@ -15756,10 +15756,10 @@ var Kit = (function () {
         ctl.body.appendChild(K.choices({ label: 'What is it?', value: f.kind, options: S.data.reportKinds || [], onChange: function (v) { f.kind = v; } }));
         var tf = K.textField({ suggest: ['It froze or wouldn’t load', 'A button didn’t do anything', 'I couldn’t find something', 'An idea to make it easier'], label: 'What happened, or what would help?', multiline: true, maxlength: 4000, value: f.text, onInput: function (v) { f.text = v; linkTip(); } });
         ctl.body.appendChild(h('div', { style: 'margin-top:14px' }, tf));
-        // a Dropbox or Google Drive link: its photos and videos belong in Add content, not in a suggestion
+        // a link (any kind): its photos and videos belong in Add content, not in a suggestion
         var tipBox = h('div');
         function linkTip() {
-          var m = /https?:\/\/\S*(dropbox\.com|dropboxusercontent\.com|drive\.google\.com)\S*/i.exec(f.text || '');
+          var m = /https?:\/\/[^\s<>"]+/i.exec(f.text || '');
           tipBox.textContent = '';
           if (!m) return;
           var n = note('Photos or videos in that link? Add content brings them straight in.', 'link');
@@ -21960,9 +21960,9 @@ var Kit = (function () {
           h('span', { class: 'ic' }, icon('perm_media')), h('b', { text: 'Choose photos and videos' }),
           h('span', { class: 'body-m', text: 'As many as you like. No titles needed.' })));
         ctl.body.append(h('div', { class: 'btn-row', style: 'margin-top:8px;justify-content:center' }, btn('text', 'From a link', { sm: true, icon: 'link', onclick: function () {
-          K.ask({ title: 'Photos from a link', label: 'Paste a Dropbox or Google Drive link', maxlength: 2000, confirmLabel: 'Bring them in' }).then(function (u) {
+          K.ask({ title: 'Photos from a link', text: 'Any link works: Dropbox, Google Drive, Google Photos, WeTransfer, OneDrive, or a web page.', label: 'Paste the link', maxlength: 2000, confirmLabel: 'Bring them in' }).then(function (u) {
             if (!u) return;
-            status.textContent = 'Bringing them in…';
+            status.textContent = 'Bringing them in… Big ones can take a minute or two.';
             linkImport(u).then(function (got) {
               status.textContent = '';
               if (!got) return;
@@ -21975,7 +21975,7 @@ var Kit = (function () {
         if (files.length) setTimeout(draw, 0);
         // opened with a link (from the suggestions box): bring its photos and videos in straight away
         if (preset.link) setTimeout(function () {
-          status.textContent = 'Bringing them in…';
+          status.textContent = 'Bringing them in… Big ones can take a minute or two.';
           linkImport(preset.link).then(function (got) {
             status.textContent = '';
             if (!got) return;
@@ -23506,9 +23506,9 @@ var Kit = (function () {
       return Promise.all(r.files.map(function (f, i) { return fetch('shared/' + r.id + '/' + i).then(function (x) { return x.blob(); }).then(function (b) { return new File([b], f.name, { type: f.type }); }); }));
     });
   }
-  /** Shared from another app: save it as inspiration, photos for posts, or a note (a Dropbox or Drive link can bring its files in). */
+  /** Shared from another app: save it as inspiration, photos for posts, or a note (a link can bring its photos and videos in). */
   function shareChoice(text, link, files) {
-    var media = files.length, isDrop = /dropbox\.com|drive\.google\.com/i.test(link);
+    var media = files.length, isDrop = /^https?:\/\//i.test(link || '');
     K.sheet({ title: 'Save this as…', build: function (ctl) {
       var acts = h('div', { class: 'next-opts' });
       function a(ic, label, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label })))); }
