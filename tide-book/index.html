@@ -1706,6 +1706,29 @@ body.map-full { overflow: hidden; }
 .nt-top { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .nt-tools { display: flex; align-items: center; gap: 6px; }
 .nt-folders .choice .ms { font-size: 18px; }
+.bz-notice { display: grid; gap: 8px; margin-bottom: 14px; }
+.bz-due { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border-radius: 18px; cursor: pointer;
+  background: var(--secondary-container); color: var(--on-secondary-container); font: 400 16px/22px var(--font); }
+.bz-due.late { box-shadow: inset 0 0 0 2px var(--error); }
+.bz-due:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.bz-due b, .bz-due span span { display: block; overflow-wrap: anywhere; }
+.bz-due .ms { display: inline-block; flex: none; }
+.page-head.bz-head { display: flex; align-items: center; gap: 8px; padding-bottom: 14px; }
+.bz-files { display: grid; gap: 8px; }
+.bz-file { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.bz-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 12px 6px 6px; border-radius: 14px; background: var(--surface-highest); color: inherit; text-decoration: none; font: 400 16px/22px var(--font); }
+.bz-open img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; flex: none; }
+.bz-open > .ms { width: 44px; text-align: center; flex: none; }
+.bz-open .grow { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-list { display: grid; gap: 14px; }
+.rp-row + .rp-row { border-top: 1px solid oklch(0% 0 0 / 0.1); padding-top: 14px; }
+.rp-row b { overflow-wrap: anywhere; }
+.rp-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.rp-acts .btn { min-height: 44px; }
+.rp-match { display: flex; gap: 8px; margin-top: 6px; font: 400 16px/22px var(--font); overflow-wrap: anywhere; }
+.rp-match .ms, .rp-tag .ms { font-size: 18px; flex: none; }
+.rp-spot { margin-top: 12px; }
+.rp-tag { display: flex; align-items: center; gap: 4px; margin-top: 2px; color: var(--on-surface-variant); font: 400 14px/18px var(--font); }
 .nt-group { margin: 6px 4px 8px; color: var(--on-surface-variant); }
 .nt-grid { columns: 2 160px; column-gap: 10px; margin-bottom: 14px; }
 .nt-grid .nt-card { break-inside: avoid; margin-bottom: 10px; }
@@ -2301,6 +2324,8 @@ var TIDE_SETTING_DEFAULTS = {
   sitePublishedAt: '',      // when the website was last published from Tide Book
   sitePublishedSig: '',     // what the shop looked like then, to tell when it has changes that aren't on the website yet
   siteDomain: '', siteDomainOn: false, siteDomainCheck: '',  // her own web address (LogicSite.gs): the name, in use or not, the last check
+  bizDueDays: 7,            // Business info: how many days before something's due Home says so
+  repeatHidden: [],         // expenses that looked like they repeat, and she said they don't
   expenseIdeasHidden: [],   // suggested expenses she said aren't hers (Money)
   shopRates: '', shopSelfSizes: [], shopPrintfulAuto: true, shopRatesChecked: false, shopFromPostcode: '2318', shopFromPlace: 'Medowie, NSW',  // the shop (LogicShop.gs): her postage rates, the sizes she posts, Printful straight away
   calPlanMode: 'plan', calHours: '', calDayMax: 180, calTokens: '', calMoved: '', calNudged: '',  // the calendar (LogicCal.gs): plan her days or let her set them, her working hours, the most in a day, her phone links, what last moved
@@ -2539,7 +2564,7 @@ var TIDE_SCHEMAS = {
       ['receiptThumbId', 'Receipt thumb', 'text'], ['source', 'Source', 'text'],
       ['externalRef', 'External ref', 'text'], ['status', 'Status', 'text'], ['voidReason', 'Void reason', 'text'], ['stockId', 'From stock', 'text'], ['stockQty', 'Stock used', 'number'], ['stockCost', 'Stock cost', 'number'],
       ['enteredBy', 'Entered by', 'text'], ['created', 'Created', 'date'], ['editedBy', 'Edited by', 'text'],
-      ['edited', 'Edited', 'date'], ['notes', 'Notes', 'text'], ['taxClaim', 'Tax: likely claimable?', 'text'], ['taxShare', 'Tax: business share %', 'number']
+      ['edited', 'Edited', 'date'], ['notes', 'Notes', 'text'], ['taxClaim', 'Tax: likely claimable?', 'text'], ['taxShare', 'Tax: business share %', 'number'], ['repeatId', 'Repeat', 'text']
     ]
   },
   footage: {
@@ -2711,6 +2736,23 @@ var TIDE_SCHEMAS = {
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['title', 'Name', 'text'],
       ['body', 'In our words', 'text'], ['order', 'Order', 'number'], ['fromIdea', 'Moved from idea', 'text'],
       ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date'], ['updatedBy', 'Updated by', 'text']
+    ]
+  },
+  // what the business runs on: web address, host, insurance… (tideBiz, LogicHub.gs)
+  bizinfo: {
+    sheet: 'Business Info',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['name', 'Name', 'text'], ['type', 'Type', 'text'], ['provider', 'Who with', 'text'],
+      ['due', 'Due', 'day'], ['notes', 'Notes', 'text'], ['files', 'Files', 'json'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date'], ['updatedBy', 'Updated by', 'text']
+    ]
+  },
+  // expenses that repeat: a schedule, never a record (tideRepeats, LogicBank.gs)
+  repeats: {
+    sheet: 'Repeats',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Added by', 'text'], ['ledgerId', 'First record', 'text'], ['description', 'Description', 'text'], ['category', 'Category', 'text'],
+      ['amount', 'Amount', 'number'], ['gst', 'GST included', 'bool'], ['taxClaim', 'Tax', 'text'], ['taxShare', 'Business share %', 'number'], ['every', 'How often', 'text'], ['first', 'First date', 'day'],
+      ['next', 'Next', 'number'], ['done', 'Dealt with', 'json'], ['matched', 'Already there', 'json'], ['status', 'Status', 'text'], ['updated', 'Updated', 'date']
     ]
   },
   // screenshots and links to posts that inspire her (LogicInspo.gs)
@@ -3701,7 +3743,8 @@ if (env.workDone) env.workDone('publish');
       amount: t.amount, gst: t.gst || 0, qty: t.qty || '', printId: t.printId || '', notes: t.notes || '',
       receiptThumbId: t.receiptThumbId || '', receiptUrl: t.receiptId ? env.files.viewUrl(t.receiptId) : '',
       source: t.source, status: t.status || 'OK', voidReason: t.voidReason || '', created: t.created || '',
-      taxClaim: t.kind === 'Expense' ? (t.taxClaim || tideTaxGuess(t.category, t.description).claim) : '', taxShare: t.taxShare === '' || t.taxShare == null ? '' : Number(t.taxShare)
+      taxClaim: t.kind === 'Expense' ? (t.taxClaim || tideTaxGuess(t.category, t.description).claim) : '', taxShare: t.taxShare === '' || t.taxShare == null ? '' : Number(t.taxShare),
+      repeat: t.kind === 'Expense' && t.repeatId ? repeats.of(t) : null
     };
   }
 
@@ -4027,6 +4070,7 @@ if (env.workDone) env.workDone('publish');
       posting: publishData.posting, todo: todoShown(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), todoCleared: todoClearedCount(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
       notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), ask: ask.snapshot(), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(), links: { mail: link.snapshot(role), bank: bank.snapshot(role), insta: insta.snapshot() },
+      biz: biz.snapshot(), repeats: repeats.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
       aiSavings: role === 'admin' && env.setup && env.setup.savings ? env.setup.savings() : null,
       fx: env.setup && env.setup.fx ? env.setup.fx() : { rate: 1.55, estimate: true },
@@ -4307,6 +4351,17 @@ if (env.workDone) env.workDone('publish');
 
   // ---------- admin hub (LogicHub.gs)
   var hub = tideHub(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso });
+  // ---------- business info (LogicHub.gs) and expenses that repeat (LogicBank.gs)
+  var biz = tideBiz(env, { fail: fail, need: need, text: text, list: list, rows: rows, nowIso: nowIso, isDay: isDay, checkImage: checkImage });
+  var repeats = tideRepeats(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, isDay: isDay, addTransaction: function (p) { return addTransaction(p); } });
+  /** Recording or changing an expense, with how it repeats (left alone when that isn't said). */
+  function withRepeat(p, fn) {
+    var says = p && typeof p === 'object' && 'repeat' in p && p.kind !== 'Sale';
+    if (says && p.repeat && !tideRepeatKind(p.repeat)) fail('Choose how often it repeats.');
+    var r = fn();
+    if (says) env.lock(function () { repeats.set(r.id || p.repeatOf, p.repeat); });
+    return r;
+  }
 
   // ---------- notebook (LogicNotes.gs)
   var notebook = tideNotes(env, { fail: fail, need: need, text: text, list: list, rows: rows, find: find, nowIso: nowIso, createIdea: createIdea });
@@ -5282,6 +5337,10 @@ if (env.workDone) env.workDone('publish');
   };
   Object.keys(content.api).forEach(function (k) { out.api[k] = content.api[k]; });
   Object.keys(hub.api).forEach(function (k) { out.api[k] = hub.api[k]; });
+  Object.keys(biz.api).forEach(function (k) { out.api[k] = biz.api[k]; });
+  Object.keys(repeats.api).forEach(function (k) { out.api[k] = repeats.api[k]; });
+  out.api.addTransaction = function (p) { return withRepeat(p, function () { return addTransaction(p); }); };
+  out.api.updateTransaction = function (id, p) { return withRepeat(p && typeof p === 'object' ? Object.assign({}, p, { repeatOf: id }) : p, function () { return updateTransaction(id, p); }); };
   Object.keys(publish.api).forEach(function (k) { out.api[k] = publish.api[k]; });
   Object.keys(notebook.api).forEach(function (k) { out.api[k] = notebook.api[k]; });
   Object.keys(talk.api).forEach(function (k) { out.api[k] = talk.api[k]; });
@@ -6278,6 +6337,97 @@ function tideHub(env, t) {
     },
     snapshot: snapshot
   };
+}
+
+/**
+ * Tide Book: Business info. One place for what the business runs on (web address, web host, insurance…): who it's with,
+ * when it's due, notes, and the screenshots and PDFs that go with it. Home shows what's due soon. Both people see it, like
+ * Money. Files are checked here, stored under Tide Book's own names, and really removed when they're taken off.
+ */
+var TIDE_BIZ = { TYPES: ['Web address', 'Web host', 'Insurance', 'Membership or licence', 'Other'], MAX_FILES: 10, MAX_PDF: 25 * 1024 * 1024 };
+
+function tideBiz(env, t) {
+  var B = TIDE_BIZ;
+  function live() { return t.rows('bizinfo').filter(function (r) { return !r.deleted; }); }
+  function get(id) { var r = live().filter(function (x) { return x.id === id; })[0]; if (!r) t.fail('That has been removed.'); return r; }
+  function days() { var n = Number(env.settings.get().bizDueDays); return isFinite(n) && n >= 0 && Math.floor(n) === n && env.settings.get().bizDueDays !== '' ? n : 7; }
+  function gap(day) { return Math.round((Date.parse(day + 'T00:00:00Z') - Date.parse(env.today() + 'T00:00:00Z')) / 86400000); }
+  function fields(p) {
+    p = p || {};
+    var name = t.text(p.name, 120), due = String(p.due || '');
+    if (!name) t.fail('Give it a name.');
+    if (due && !t.isDay(due)) t.fail('Choose the date it’s due, or leave it empty.');
+    return { name: name, type: B.TYPES.indexOf(p.type) >= 0 ? p.type : 'Other', provider: t.text(p.provider, 160), due: due, notes: t.text(p.notes, 2000), updated: t.nowIso(), updatedBy: env.user.email };
+  }
+  function saveBiz(id, p) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var f = fields(p);
+      if (id) { get(id); env.table('bizinfo').update(id, f); return { id: id }; }
+      var nid = env.nextId('BI', 4);
+      env.table('bizinfo').append(Object.assign({ id: nid, created: t.nowIso(), createdBy: env.user.email, files: [], deleted: false }, f));
+      return { id: nid };
+    });
+  }
+  function drop(file) { [file.id, file.thumb].forEach(function (x) { if (x && env.files.remove) env.files.remove(x); }); }
+  /** The item goes, and its files with it. */
+  function removeBiz(id) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var r = get(id), fs = t.list(r.files);
+      env.table('bizinfo').update(id, { deleted: true, files: [], updated: t.nowIso() });
+      fs.forEach(drop);
+      return { ok: true, files: fs.length };
+    });
+  }
+  /** A photo, screenshot or PDF. What it is comes from its own first bytes, never from its name. */
+  function addBizFile(id, p) {
+    t.need(['admin', 'artist']);
+    p = p || {};
+    var s = String(p.data || ''), m = /^data:(image\/jpeg|image\/png|image\/webp|application\/pdf);base64,([A-Za-z0-9+\/]+=*)$/.exec(s);
+    var starts = { 'image/jpeg': '/9j/', 'image/png': 'iVBORw0KGgo', 'image/webp': 'UklGR', 'application/pdf': 'JVBERi0' };
+    if (!m || m[2].indexOf(starts[m[1]]) !== 0) t.fail('That kind of file can’t be kept here. Use a photo, a screenshot or a PDF.');
+    var pdf = m[1] === 'application/pdf';
+    if (pdf) { if (s.length * 0.75 > B.MAX_PDF) t.fail('That PDF is too big (25 MB at most).'); } else t.checkImage(s);
+    var thumb = !pdf && p.thumb ? t.checkImage(p.thumb) : '';
+    return env.lock(function () {
+      var r = get(id), fs = t.list(r.files).slice();
+      if (fs.length >= B.MAX_FILES) t.fail('That’s the most files one can hold (' + B.MAX_FILES + ').');
+      var folder = env.files.folder(['Business info']), n = Date.now().toString(36);
+      var file = { id: env.files.save(folder, id + ' file ' + n, s), thumb: thumb ? env.files.save(folder, id + ' thumb ' + n, thumb) : '', kind: pdf ? 'pdf' : 'image',
+        name: t.text(String(p.name || '').split(/[\\\/]/).pop().replace(/[\u0000-\u001f<>:"|?*]/g, ''), 100) || (pdf ? 'PDF' : 'Photo'), at: t.nowIso() };
+      fs.push(file);
+      env.table('bizinfo').update(id, { files: fs, updated: t.nowIso() });
+      return { ok: true, files: fs.length };
+    });
+  }
+  function removeBizFile(id, fileId) {
+    t.need(['admin', 'artist']);
+    return env.lock(function () {
+      var r = get(id), hit = t.list(r.files).filter(function (x) { return x.id === fileId; })[0];
+      if (!hit) t.fail('That file has been taken off already.');
+      env.table('bizinfo').update(id, { files: t.list(r.files).filter(function (x) { return x.id !== fileId; }), updated: t.nowIso() });
+      drop(hit);
+      return { ok: true };
+    });
+  }
+  function saveBizDays(n) {
+    t.need(['admin', 'artist']);
+    var v = Number(n);
+    if (String(n).trim() === '' || !isFinite(v) || v < 0 || v > 365 || Math.floor(v) !== v) t.fail('Use a whole number of days, from 0 to 365.');
+    env.settings.set({ bizDueDays: v });
+    return { ok: true };
+  }
+  function snapshot() {
+    var d = days(), items = live().map(function (r) {
+      var left = r.due ? gap(r.due) : null;
+      return { id: r.id, name: r.name, type: r.type, provider: r.provider || '', due: r.due || '', notes: r.notes || '', left: left,
+        state: left === null ? '' : left < 0 ? 'overdue' : left <= d ? (left === 0 ? 'today' : 'soon') : '',
+        files: t.list(r.files).map(function (x) { return { id: x.id, name: x.name, kind: x.kind, thumb: x.thumb || '', url: env.files.viewUrl(x.id) }; }) };
+    }).sort(function (a, b) { return (a.due || '9999') < (b.due || '9999') ? -1 : (a.due || '9999') > (b.due || '9999') ? 1 : a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1; });
+    return { days: d, types: B.TYPES, items: items };
+  }
+  return { snapshot: snapshot, api: { saveBiz: saveBiz, removeBiz: removeBiz, addBizFile: addBizFile, removeBizFile: removeBizFile, saveBizDays: saveBizDays } };
 }
 
 /**
@@ -8927,6 +9077,10 @@ var TIDE_GUIDE = [
   { id: 'g-products', area: 'Ideas', to: 'all', icon: 'inventory_2', title: 'From a product idea to on sale',
     say: 'A product goes from idea to on sale one step at a time. Tide Book does what it can; you say go.',
     steps: ['On an idea, tap “Make it a product”.', 'In Ideas › Products, tap the step at the top each time.', 'When it’s on sale, its shop page is made for you: add a photo, then publish.'], go: { view: 'ideas', state: { ideasTab: 'products' }, tip: 'Each product shows its next step.' } },
+  { id: 'g-biz', area: 'Money', to: 'all', icon: 'folder_open', title: 'Business info', say: 'Your web address, web host, insurance and the like, with their files and when they’re due.',
+    steps: ['Home › Business info, at the bottom.', 'Tap Add, and add a screenshot or PDF.', 'Home says so when something is due soon.'], go: { view: 'biz', tip: 'Tap Add.' } },
+  { id: 'g-repeats', area: 'Money', to: 'all', icon: 'sync', title: 'Expenses that repeat', say: 'Offered each time they’re due. Nothing is recorded until you tap Add.',
+    steps: ['Record an expense and choose Repeats.', 'Money › Due: Add it, or Skip.', 'Money › Repeating to change or stop one.'], go: { view: 'money', tip: 'Record an expense.' } },
   { id: 'g-inspo', area: 'Ideas', to: 'all', icon: 'favorite', title: 'Save inspiration',
     say: 'A screenshot, a link or a few words about something that caught your eye.',
     steps: ['Open Ideas › Inspo, or tap “Save inspiration” on Home.', 'Add the picture or link, and a word on why.'], go: { view: 'ideas', state: { ideasTab: 'inspo' }, tip: 'Your inspiration.' } },
@@ -8988,6 +9142,12 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-25-business-info', on: '2026-11-25', to: 'all', icon: 'folder_open', title: 'Business info, and when it’s due',
+    say: 'One place for your web address, web host, insurance and anything like them: who it’s with, when it’s due, and the screenshots and PDFs. Home says so a week before something is due.',
+    steps: ['Home › Business info, at the bottom.', 'Tap Add, fill in what you know, and add a screenshot or PDF.', 'When it’s renewed, move the date on.', 'Settings › Business info changes how many days before.'], go: { view: 'biz', tip: 'Tap Add.' } },
+  { id: '2026-11-25-repeats', on: '2026-11-25', to: 'all', icon: 'sync', title: 'Expenses that repeat',
+    say: 'Say how often an expense repeats, and Money offers it each time it’s due. Nothing is recorded until you tap Add. If something looks regular, Tide Book asks whether to repeat it.',
+    steps: ['Record an expense and choose Repeats.', 'When it’s due: Money › Due, then Add it or Skip.', 'Money › Repeating to change or stop one.'], go: { view: 'money', tip: 'Record an expense.' } },
   { id: '2026-11-25-own-helper', on: '2026-11-25', to: 'all', icon: 'forum', title: 'A helper of your own',
     say: 'There’s a round button on every page for a helper that’s all yours. Give it a name, a voice and a look, then type or talk to it: it answers, takes you to the right page, and can fill things in. It knows your Notes, so you don’t have to explain twice, and it remembers what you were talking about. It asks before it deletes or sends anything, and it can’t see Chat or Ask. If you agree, it can ask outside when it’s stuck, with names, contacts and numbers taken out first; otherwise what you say goes to the home computer and nowhere else.',
     steps: ['Tap the round button with the plus. Choose its name, voice, look and manner.', 'Ask it anything, like “where do I add a print?” or “open my money”.', 'Tap the microphone to talk out loud.', 'In the way? Drag it, or swipe it off the side. Swipe it back from the edge when you want it.', 'Its ••• shows what it remembers (take anything off) and what gets sent.'], go: { view: 'home', tip: 'It’s the round button at the side.' } },
@@ -13566,7 +13726,7 @@ var Kit = (function () {
   }
   // Settings is a button at the bottom of Home, so the bottom bar stays at five. The back-end parts are admin-only.
   function homeGear() {
-    return h('div', { class: 'home-gear' }, btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
+    return h('div', { class: 'home-gear' }, btn('tonal', 'Business info', { icon: 'folder_open', onclick: function () { K.haptic(); go('biz'); } }), btn('tonal', 'Settings', { icon: 'settings', onclick: function () { K.haptic(); go('settings'); } }));
   }
 
   // Swapping views. The switch lives in Settings; while you're in someone else's view a pill at the top says so,
@@ -14486,7 +14646,7 @@ var Kit = (function () {
     var main = $('#main');
     main.textContent = '';
     S.view = placeFor(S.view);
-    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, notes: viewNotes, mentors: viewMentors, plan: viewPlan, settings: viewAdmin }[S.view] || viewHome)(main);
+    ({ home: viewHome, content: viewContent, ideas: viewIdeas, prints: viewPrints, money: viewMoney, site: viewSite, notes: viewNotes, mentors: viewMentors, plan: viewPlan, settings: viewAdmin, biz: viewBiz }[S.view] || viewHome)(main);
     if ((S.view === 'home' || !S.view) && !main.querySelector('.hm-foot')) main.insertBefore(homeGear(), main.querySelector('.fab-space'));
     S.animate = false;
     loadThumbs();
@@ -14601,6 +14761,7 @@ var Kit = (function () {
     pageTitle(main, hello, 'Here’s where everything is up to.');
     var needs = needsList(), n = 1;
     n = setupCard(main, n);
+    var bz = bizNotice(); if (bz) main.appendChild(rise(bz, n++));
     n = reportCards(main, n);
     var rest = S.data.rest;
     if (rest) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, note(cap(artist()) + ' is taking it easy' + (rest.until ? ' until ' + restDay(rest.until) : '') + '. Her buzzes and footage questions come to you; posts still wait for her approval.', 'spa')), n++));
@@ -14789,6 +14950,7 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { class: 'hm-mode' }, K.segmented({ label: 'Today I want to', value: mode, options: [{ value: 'finish', label: 'Finish' }, { value: 'create', label: 'Create' }],
       onChange: function (v) { S.data.homeMode = v; S.animate = true; render(); api('saveHomeMode', v).catch(fail); } })), n++));
     var wk = rest ? null : weekCard(); if (wk) main.appendChild(rise(wk, n++));
+    var bz = bizNotice(); if (bz) main.appendChild(rise(bz, n++));
     if (mode === 'create') {
       main.appendChild(rise(startTiles(true), n++));
       main.appendChild(rise(h('button', { type: 'button', class: 'hm-wait press soft hm-talk', onclick: function () { go('mentors'); } }, icon('forum'), h('span', { class: 'grow', text: 'Talk an idea through' }), icon('chevron_right')), n++));
@@ -14806,7 +14968,156 @@ var Kit = (function () {
     main.appendChild(rise(h('div', { class: 'hm-foot' },
       unseen ? h('button', { type: 'button', class: 'hm-link press', onclick: function () { whatsNew(false); } }, icon('campaign'), 'New · ' + unseen) : null,
       rest ? null : h('button', { type: 'button', class: 'hm-link press', 'aria-label': 'Taking it easy?', onclick: openRest }, icon('spa'), 'Rest'),
+      h('button', { type: 'button', class: 'hm-link press', onclick: function () { K.haptic(); go('biz'); } }, icon('folder_open'), 'Business info'),
       h('button', { type: 'button', class: 'hm-link press', onclick: function () { K.haptic(); go('settings'); } }, icon('settings'), 'Settings')), n++));
+  }
+  // ------------------------------------------------------------------ Business info: what the business runs on, and when it's due
+  function bizWhen(x) { return !x.due ? '' : x.left < 0 ? 'Overdue by ' + (x.left === -1 ? '1 day' : -x.left + ' days') : x.left === 0 ? 'Due today' : x.left === 1 ? 'Due tomorrow' : 'Due in ' + x.left + ' days'; }
+  /** On Home: what's due soon or overdue. Two at most, and the rest a tap away. */
+  function bizNotice() {
+    var due = ((S.data.biz || {}).items || []).filter(function (x) { return x.state; });
+    if (!due.length) return null;
+    var box = h('div', { class: 'bz-notice' });
+    due.slice(0, 2).forEach(function (x) {
+      box.appendChild(h('button', { type: 'button', class: 'bz-due press soft' + (x.state === 'overdue' ? ' late' : ''), onclick: function () { go('biz'); openBiz(x.id); } },
+        icon(x.state === 'overdue' ? 'warning' : 'event'), h('span', { class: 'grow' }, h('b', { text: x.name }), h('span', { text: bizWhen(x) })), icon('chevron_right')));
+    });
+    if (due.length > 2) box.appendChild(h('button', { type: 'button', class: 'hm-link press', onclick: function () { go('biz'); } }, icon('folder_open'), (due.length - 2) + ' more due'));
+    return box;
+  }
+  function viewBiz(main) {
+    var items = (S.data.biz || {}).items || [];
+    main.appendChild(rise(h('div', { class: 'page-head bz-head' }, K.iconBtn('arrow_back', 'Back to Home', function () { go('home'); }), h('h1', { class: 'page-title', text: 'Business info' })), 0));
+    if (!items.length) main.appendChild(rise(emptyState('folder_open', 'Nothing here yet', 'Keep your web address, web host and insurance here.'), 1));
+    var list = h('div', { class: 'list' });
+    items.forEach(function (x) {
+      var when = x.due ? (x.state ? bizWhen(x) : 'Due ' + K.dayLabel(x.due, true)) : '';
+      list.appendChild(h('button', { class: 'li press', type: 'button', onclick: function () { openBiz(x.id); } },
+        h('div', { class: 'th-blank' }, icon(x.type === 'Insurance' ? 'verified' : x.type === 'Web address' ? 'language' : x.type === 'Web host' ? 'computer' : 'folder_open')),
+        h('div', { class: 'grow' }, h('div', { class: 'li-head', text: x.name }), h('div', { class: 'li-sup', 'data-full': '1', text: [x.type, x.provider, x.state ? '' : when].filter(Boolean).join(' · ') })),
+        h('div', { class: 'li-trail' }, x.state ? chip(when, x.state === 'overdue' ? 'high' : 'pending', x.state === 'overdue' ? 'warning' : 'event') : null, x.files.length ? chip(String(x.files.length), 'outline', 'attach_file') : null)));
+    });
+    if (items.length) main.appendChild(rise(list, 1));
+    fab(main, 'Add', 'add', function () { openBiz(null); });
+  }
+  function openBiz(id) {
+    var x = id ? byId((S.data.biz || {}).items || [], id) : null, dirty = false, fresh = [];
+    if (id && !x) { toast('That has been removed.'); return; }
+    var f = x ? { name: x.name, type: x.type, provider: x.provider, due: x.due, notes: x.notes } : { name: '', type: 'Web address', provider: '', due: '', notes: '' };
+    K.sheet({ title: x ? x.name : 'Add to Business info', tall: true, guard: function () { return dirty; }, onClose: function () { render(); }, build: function (ctl) {
+      function touch() { dirty = true; }
+      if (x && x.state) ctl.body.appendChild(h('div', { style: 'margin-bottom:22px' }, note(bizWhen(x) + '. When it’s renewed, move the date on.', x.state === 'overdue' ? 'warning' : 'event', 'warn')));
+      ctl.body.appendChild(h('div', { class: 'field-gap' },
+        K.textField({ label: 'Name', value: f.name, maxlength: 120, suggest: x ? null : ['Website address', 'Public liability insurance'], onInput: function (v) { f.name = v; touch(); } }),
+        K.pickField({ label: 'What is it?', value: f.type, options: S.data.biz.types, onChange: function (v) { f.type = v; touch(); } }),
+        K.textField({ label: 'Who it’s with, or where you bought it', value: f.provider, maxlength: 160, onInput: function (v) { f.provider = v; touch(); } }),
+        K.textField({ label: 'Due or runs out (optional)', type: 'date', value: f.due, onInput: function (v) { f.due = v; touch(); } }),
+        K.textField({ label: 'Notes', multiline: true, value: f.notes, maxlength: 2000, help: 'Don’t keep passwords here.', onInput: function (v) { f.notes = v; touch(); } })));
+      var sec = sheetSection('Photos and files'), box = h('div', { class: 'bz-files' });
+      sec.appendChild(box);
+      function have() { return x ? (byId(S.data.biz.items, x.id) || { files: [] }).files : []; }
+      function draw() {
+        box.textContent = '';
+        have().forEach(function (file) {
+          box.appendChild(h('div', { class: 'bz-file' }, h('a', { href: file.url, target: '_blank', rel: 'noopener', class: 'bz-open press' }, file.thumb ? h('img', { alt: '', dataset: { thumb: file.thumb } }) : icon('picture_as_pdf'), h('span', { class: 'grow', text: file.name })),
+            K.iconBtn('close', 'Take off ' + file.name, function () {
+              K.confirm({ title: 'Take this off?', text: file.name + ' will be deleted.', confirmLabel: 'Take it off', danger: true }).then(function (ok) { if (ok) api('removeBizFile', x.id, file.id).then(refresh).then(draw).catch(fail); });
+            })));
+        });
+        fresh.forEach(function (n, i) { box.appendChild(h('div', { class: 'bz-file' }, h('span', { class: 'bz-open' }, n.thumb ? h('img', { alt: '', src: n.thumb }) : icon('picture_as_pdf'), h('span', { class: 'grow', text: n.name })), K.iconBtn('close', 'Take off ' + n.name, function () { fresh.splice(i, 1); draw(); }))); });
+        var row = h('div', { class: 'rc-pick' });
+        [['photo_camera', 'Camera', { camera: true }], ['photo_library', 'Gallery', { gallery: true }], ['upload_file', 'File', {}]].forEach(function (o) {
+          row.appendChild(h('button', { type: 'button', class: 'rc-src press', onclick: function () { pickReceiptFile(take, o[2]); } }, icon(o[0]), h('span', { text: o[1] })));
+        });
+        box.appendChild(row);
+        setTimeout(loadThumbs, 0);
+      }
+      function take(file) {
+        if (have().length + fresh.length >= 10) { toast('That’s the most files one can hold (10).'); return; }
+        fileToData(file).then(function (fd) {
+          if (fd.type === 'other') throw new Error('That kind of file can’t be kept here. Use a photo, a screenshot or a PDF.');
+          var n = { name: fd.name || (fd.type === 'pdf' ? 'PDF' : 'Photo'), data: fd.type === 'pdf' ? String(fd.data).replace(/^data:[^;]*;/, 'data:application/pdf;') : fd.data, thumb: fd.thumb || '' };
+          if (x) return api('addBizFile', x.id, n).then(refresh).then(function () { K.haptic('success'); draw(); toast('Added.'); });
+          fresh.push(n); touch(); draw();
+        }).catch(fail);
+      }
+      draw();
+      ctl.body.appendChild(sec);
+      if (x) ctl.body.appendChild(h('div', { style: 'margin-top:20px;text-align:center' }, btn('text', 'Delete this', { icon: 'delete', danger: true, bare: false, onclick: function () {
+        K.confirm({ title: 'Delete ' + x.name + '?', text: have().length ? 'Its ' + (have().length === 1 ? 'file goes' : have().length + ' files go') + ' too. This can’t be undone.' : 'This can’t be undone.', confirmLabel: 'Delete it', danger: true }).then(function (ok) {
+          if (ok) api('removeBiz', x.id).then(refresh).then(function () { dirty = false; ctl.close(); toast('Deleted.'); }).catch(fail);
+        });
+      } })));
+      var save = btn('filled', 'Save', { icon: 'check', lg: true, block: true, onclick: function () {
+        if (!f.name.trim()) { toast('Give it a name.'); return; }
+        K.setBusy(save, true);
+        api('saveBiz', x ? x.id : '', f).then(function (r) {
+          // it's saved: from here on anything that goes wrong is about a file, and trying again won't make a second one
+          return refresh().then(function () { x = x || byId(S.data.biz.items, r.id); return fresh.slice().reduce(function (p, n) { return p.then(function () { return api('addBizFile', r.id, n).then(function () { fresh.splice(fresh.indexOf(n), 1); }); }); }, Promise.resolve()); });
+        }).then(refresh).then(function () { dirty = false; K.haptic('success'); ctl.close(); toast('Saved.'); }).catch(function (e) { K.setBusy(save, false); refresh().then(draw); fail(e); });
+      } });
+      ctl.foot.appendChild(save);
+    } });
+  }
+  // ------------------------------------------------------------------ expenses that repeat
+  function repeatData() { return S.data.repeats || { kinds: [], due: [], list: [], spotted: [] }; }
+  function repeatCards(main, n) {
+    var R = repeatData();
+    if (R.due.length) {
+      var sec = section('Due'), list = h('div', { class: 'card pad rp-list' });
+      R.due.slice(0, S.allDue ? 60 : 3).forEach(function (d) {
+        var row = h('div', { class: 'rp-row' }, h('div', { class: 'grow' }, h('b', { text: d.description + ' · ' + money2(d.amount) }), h('div', { class: 'body-s', text: d.label + ' · due ' + K.dayLabel(d.date, true) }),
+          d.match ? h('div', { class: 'rp-match', 'data-full': '1' }, icon('info'), h('span', { text: d.match.kind === 'bank' ? 'It looks like it’s in your bank list: ' + d.match.text + ', ' + K.dayLabel(d.match.date) + '. Leave it for there?' : 'Already recorded on ' + K.dayLabel(d.match.date) + '? (' + d.match.text + ')' })) : null));
+        var acts = h('div', { class: 'rp-acts' });
+        function moved(b, what) {
+          K.setBusy(b, true);
+          api('skipRepeat', d.id, d.date, what ? d.match.id : '').then(refresh).then(function () { render(); undoCard(what ? 'Left as it is.' : 'Skipped.', function () { return api('unskipRepeat', d.id, d.date); }, 'It’s due again.'); }).catch(function (e) { K.setBusy(b, false); fail(e); });
+        }
+        if (d.match) acts.append(btn('filled', d.match.kind === 'bank' ? 'Yes, leave it' : 'Yes, it’s there', { sm: true, onclick: function (e) { moved(e.currentTarget, true); } }), btn('text', 'No, add it', { sm: true, onclick: function () { openRepeatAdd(d); } }));
+        else acts.append(btn('filled', 'Add it', { sm: true, onclick: function () { openRepeatAdd(d); } }));
+        acts.appendChild(btn('text', 'Skip', { sm: true, onclick: function (e) { moved(e.currentTarget, false); } }));
+        row.appendChild(acts); list.appendChild(row);
+      });
+      if (R.due.length > 3) list.appendChild(btn('text', S.allDue ? 'Fewer' : 'Show ' + (R.due.length - 3) + ' more', { sm: true, onclick: function () { S.allDue = !S.allDue; render(); } }));
+      sec.appendChild(list); main.appendChild(rise(sec, n++));
+    }
+    R.spotted.forEach(function (s) {
+      main.appendChild(rise(h('div', { class: 'card pad rp-spot' }, h('b', { text: s.description + ' looks ' + s.label.toLowerCase() }), h('div', { class: 'body-s', text: 'Shall I offer it each time it’s due?' }),
+        h('div', { class: 'rp-acts' }, btn('tonal', 'Yes, repeat it', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('setRepeat', s.id, s.every).then(refresh).then(function () { render(); toast('It’ll be offered each time.'); }).catch(fail); } }),
+          btn('text', 'No', { sm: true, onclick: function (e) { K.setBusy(e.currentTarget, true); api('hideSpotted', s.key).then(refresh).then(render).catch(fail); } }))), n++));
+    });
+    return n;
+  }
+  /** Add one that's due: the amount and date can be changed first. */
+  function openRepeatAdd(d) {
+    var f = { amount: d.amount, date: d.date };
+    K.sheet({ title: d.description, build: function (ctl) {
+      ctl.body.append(K.amountField({ value: f.amount, onInput: function (v) { f.amount = v; } }), h('div', { class: 'field-gap', style: 'margin-top:12px' }, K.textField({ label: 'Date', type: 'date', value: f.date, onInput: function (v) { f.date = v; } })),
+        h('p', { class: 'tf-help', text: d.category + '. Not in your records until you add it.' }));
+      var go2 = btn('filled', 'Add the expense', { icon: 'check', lg: true, block: true, onclick: function () {
+        if (!(f.amount > 0)) { toast('Enter the amount.'); return; }
+        K.setBusy(go2, true); go2.disabled = true;
+        api('addRepeat', d.id, d.date, { amount: f.amount, date: f.date }).then(function (r) { return refresh().then(function () { K.haptic('success'); ctl.close(); render(); toast(r.already ? 'That one was already added.' : 'Expense recorded: ' + money(f.amount)); }); }).catch(function (e) { go2.disabled = false; K.setBusy(go2, false); fail(e); });
+      } });
+      ctl.foot.appendChild(go2);
+    } });
+  }
+  function openRepeats() {
+    K.sheet({ title: 'Repeating expenses', build: function (ctl) {
+      function draw() {
+        ctl.body.textContent = '';
+        var L = repeatData().list, box = h('div', { class: 'rp-list' });
+        if (!L.length) ctl.body.appendChild(emptyState('sync', 'None', 'Set Repeats on an expense.'));
+        L.forEach(function (r) {
+          box.appendChild(h('div', { class: 'rp-row' }, h('div', { class: 'grow' }, h('b', { text: r.description + ' · ' + money2(r.amount) }), h('div', { class: 'body-s', text: r.label + ' · next ' + K.dayLabel(r.next, true) })),
+            h('div', { class: 'rp-acts' }, btn('tonal', 'Change', { sm: true, onclick: function () {
+              K.pickFromList({ title: 'How often?', value: r.every, options: repeatData().kinds }).then(function (v) { if (v) api('setRepeat', r.ledgerId, v).then(refresh).then(function () { draw(); render(); }).catch(fail); });
+            } }), btn('text', 'Stop', { sm: true, bare: false, onclick: function () { api('stopRepeat', r.id).then(refresh).then(function () { draw(); render(); undoCard('It won’t be offered again.', function () { return api('startRepeat', r.id).then(function () { setTimeout(draw, 600); }); }, 'It repeats again.'); }).catch(fail); } }))));
+        });
+        ctl.body.appendChild(box);
+      }
+      draw();
+    } });
   }
   /** Finish mode: the three things nearest to done, each a tap from its next step. */
   function nearList() {
@@ -18893,11 +19204,14 @@ var Kit = (function () {
       h('button', { class: 'action press g', type: 'button', onclick: function () { openTxn('Sale'); } }, h('span', { class: 'ic' }, icon('point_of_sale')), h('b', { text: 'Record a sale' })),
       h('button', { class: 'action press w', type: 'button', onclick: function () { openTxn('Expense'); } }, h('span', { class: 'ic' }, icon('receipt_long')), h('b', { text: 'Record an expense' }))), n++));
 
+    if (m.isCurrent) n = repeatCards(main, n);
     var bankN = ((S.data.links || {}).bank || {}).n || 0;
     main.appendChild(rise(bankN ? h('button', { type: 'button', class: 'hm-wait press soft', style: 'margin-top:12px', onclick: openBank }, h('b', { text: String(bankN) }), h('span', { class: 'grow', text: 'From your bank' }), icon('account_balance'), icon('chevron_right'))
       : h('div', { style: 'margin-top:8px;text-align:center' }, h('button', { type: 'button', class: 'hm-link press', onclick: openBank }, icon('account_balance'), 'Bank statement')), n++));
     var stk = S.data.stock || [], stkLeft = stk.reduce(function (n2, x) { return n2 + x.left; }, 0);
     main.appendChild(rise(h('div', { style: 'text-align:center' }, h('button', { type: 'button', class: 'hm-link press', onclick: openStock }, icon('inventory_2'), stk.length ? 'Opening stock · ' + stkLeft + ' left' : 'Stock you already had')), n++));
+
+    if (repeatData().list.length) main.appendChild(rise(h('div', { style: 'text-align:center' }, h('button', { type: 'button', class: 'hm-link press', onclick: openRepeats }, icon('sync'), 'Repeating · ' + repeatData().list.length)), n++));
 
     // AI costs (admin): what Tide Book spent, beside the same work done entirely with Claude Opus 5.5 through the API
     var sv = ADMIN && S.data.aiSavings;
@@ -19022,7 +19336,8 @@ var Kit = (function () {
         list.appendChild(h('button', { class: 'li press' + (t.status === 'Void' ? ' void' : ''), type: 'button', onclick: function () { openTxn(t.kind, t); } },
           h('div', { class: 'th-blank ' + (sale ? 'sale' : 'expense') }, icon(sale ? 'south_west' : 'north_east')),
           h('div', { class: 'grow' }, h('div', { class: 'li-head', text: t.description || t.category }),
-            h('div', { class: 'li-sup', text: K.dayLabel(t.date) + ' · ' + (sale ? t.channel + ' · ' : '') + t.category + (t.source !== 'App' ? ' · ' + t.source.toLowerCase() : '') })),
+            h('div', { class: 'li-sup', text: K.dayLabel(t.date) + ' · ' + (sale ? t.channel + ' · ' : '') + t.category + (t.source !== 'App' ? ' · ' + t.source.toLowerCase() : '') }),
+            t.repeat && t.status !== 'Void' ? h('div', { class: 'rp-tag' }, icon('sync'), h('span', { text: t.repeat.label + ' · next ' + K.dayLabel(t.repeat.next, true) })) : null),
           h('div', { class: 'li-trail' }, h('span', { class: 'amt' + (sale ? ' in' : ''), text: (sale ? '+' : '−') + money(t.amount).replace('−', '') }),
             t.status === 'Void' ? chip('Cancelled', 'void') : (!sale && !t.receiptThumbId ? chip('No receipt', 'outline') : null))));
       });
@@ -19066,7 +19381,8 @@ var Kit = (function () {
     var f = t ? { amount: t.amount, date: t.date, channel: t.channel, category: t.category, description: t.description, gstInPrice: t.gst > 0, printId: t.printId || '', qty: t.qty || 1, taxShare: t.taxShare === '' ? 50 : t.taxShare }
       : Object.assign({ amount: 0, date: S.data.today, channel: sale ? 'Centre' : '', category: sale ? 'Prints' : '', description: '', gstInPrice: true, printId: '', qty: 1 }, preset || {});
     var files = [], rc = { fd: null };
-    var voided = t && t.status === 'Void';
+    var voided = t && t.status === 'Void', repeatSaid = false;
+    f.repeat = t && t.repeat ? t.repeat.every : (f.repeat || '');
     K.sheet({
       title: t ? (sale ? 'Sale' : 'Expense') : (sale ? 'Record a sale' : 'Record an expense'), tall: !sale || !!t, guard: function () { return dirty; },
       build: function (ctl) {
@@ -19209,6 +19525,8 @@ var Kit = (function () {
           var e1 = sheetSection('Details'); e1.style.marginTop = '12px';
           e1.appendChild(h('div', { class: 'field-gap' },
             K.pickField({ label: 'What was it for?', value: f.category, options: o.expenseCategories, onChange: function (v) { f.category = v; touch(); drawTax(); } }), desc, taxBox, date,
+            voided ? null : K.pickField({ label: 'Repeats', value: f.repeat, empty: 'Does not repeat', options: [{ value: '', label: 'Does not repeat' }].concat(repeatData().kinds), onChange: function (v) { f.repeat = v; repeatSaid = true; touch(); } }),
+            t && t.repeat ? h('p', { class: 'tf-help', style: 'margin:-6px 4px 0', text: 'Next due ' + K.dayLabel(t.repeat.next, true) + '.' }) : null,
             h('div', { class: 'switch-row' }, h('div', {}, h('div', { class: 'title-m', text: 'Price included GST' }), h('div', { class: 'body-m', text: 'Most Australian receipts do. Check the receipt.' })),
               K.switchBtn({ checked: f.gstInPrice, label: 'Price included GST', onChange: function (v) { f.gstInPrice = v; touch(); } }))));
           var e2 = sheetSection('Receipt');
@@ -19237,6 +19555,7 @@ var Kit = (function () {
           var linked = sale && (f.category === 'Prints' || f.category === 'Originals') ? f.printId : '';
           var payload = { kind: kind, amount: f.amount, date: f.date, channel: f.channel, category: f.category, description: f.description, gstInPrice: f.gstInPrice,
             printId: linked, qty: linked && f.category === 'Prints' ? f.qty : '', taxShare: f.taxShare, stockId: sale ? f.stockId || '' : '', stockQty: f.stockQty || 1 };
+          if (!sale && repeatSaid) payload.repeat = f.repeat || '';
           (t ? api('updateTransaction', t.id, payload).then(function () { return t.id; }) : api('addTransaction', payload).then(function (r) { return r.id; }))
             .then(function (tid) { return rc.fd && rc.fd.type === 'pdf' ? api('uploadReceiptFile', tid, rc.fd.data) : uploadAll('receipt', tid, files); }).then(refresh)
             .then(function () { dirty = false; K.haptic('success'); render(); toast(t ? 'Saved.' : (sale ? 'Sale recorded: ' : 'Expense recorded: ') + (t ? '' : money(f.amount))); ctl.close(); })
@@ -23610,6 +23929,12 @@ var Kit = (function () {
     main.appendChild(rise(fold(pm, 'set-money', 'sell', f.defaultMarkupPct + '% markup · ' + rounding + ' · ' + (f.gstOn ? 'GST registered' : 'no GST'), false), 1));
 
     if (!window.TIDE_DEMO && !previewing()) main.appendChild(rise(consentSection(), 2));
+
+    // business info: how long before something's due Home says so
+    var bs = section('Business info'), bd = { v: (S.data.biz || {}).days };
+    var bSave = btn('tonal', 'Save', { icon: 'check', block: true, onclick: function () { K.setBusy(bSave, true); api('saveBizDays', bd.v).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (e) { K.setBusy(bSave, false); fail(e); }); } });
+    bs.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' }, K.textField({ label: 'Days before', suffix: 'days', inputmode: 'numeric', value: bd.v, help: 'Home says so this many days before something is due. 0 is on the day.', onInput: function (v) { bd.v = v; } }), bSave));
+    main.appendChild(rise(fold(bs, 'set-biz', 'folder_open', bd.v === 0 ? 'Home says so on the day' : 'Home says so ' + bd.v + (bd.v === 1 ? ' day' : ' days') + ' before', false), 3));
 
     // when posts go out: hers to set (suggested times and the buzz come from these)
     var pt = section('When posts go out'), pf = { slotTimes: S.data.posting.slotTimes, postsPerDay: S.data.posting.postsPerDay };
