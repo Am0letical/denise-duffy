@@ -15548,7 +15548,7 @@ var Kit = (function () {
       ctl.body.appendChild(box);
       load().then(function (x) {
         box.textContent = '';
-        box.append(h('p', { class: 'body-l', style: 'margin:0 0 10px', text: 'It stays at home unless you agree. Claude is an outside AI service. It would get exactly this, with nothing taken out:' }),
+        box.append(h('p', { class: 'body-l', style: 'margin:0 0 10px', text: 'It stays at home unless you agree. Claude is an outside AI service. It would get exactly this, with any names or health details left in:' }),
           h('div', { class: 'card pad agree-words', style: 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:34vh;overflow:auto', tabindex: '0', text: x.text }),
           h('p', { class: 'body-l', style: 'margin:10px 0 0', text: also }),
           h('p', { class: 'body-l', style: 'margin:10px 0 0', text: 'This is for this one only. Nothing is learnt from it. If it’s about someone else, check they’re OK with it.' }));
