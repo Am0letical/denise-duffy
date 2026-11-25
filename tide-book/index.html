@@ -7867,6 +7867,30 @@ function tideTalk(env, t) {
     if (env.talkNow) env.talkNow(id);
     return res;
   }
+  /** A talk that got stuck at home, and that its own person may choose to send: the exact words, or ''. */
+  function agreeWords(x) {
+    if (!env.agree || x.locked || x.deleted || x.aiStatus !== 'Failed' || x.aiRoute !== 'local') return '';
+    var words = env.agree.talkText(context(x.id));
+    return env.agree.may({ createdBy: x.createdBy, owner: x.owner, private: x.private === true }, words) ? words : '';
+  }
+  function topicAgreeText(id) {
+    t.need(['admin', 'artist']);
+    var words = agreeWords(topic(id));
+    if (!words) t.fail('This one is staying on the PC.');
+    return { text: words };
+  }
+  /** She agreed: `words` is what she was shown, and it must be exactly what would go. */
+  function topicAgree(id, words) {
+    t.need(['admin', 'artist']);
+    env.lock(function () {
+      var w = agreeWords(topic(id));
+      if (!w) t.fail('This one is staying on the PC.');
+      if (String(words) !== w) t.fail('That isn’t what you were shown. Open it again.');
+      env.table('topics').update(id, { aiStatus: 'Working', aiRoute: 'local', aiClaimed: t.nowIso(), aiTries: 0, aiNote: '', aiWhy: '' });
+    });
+    env.agree.talk(id, String(words));
+    return { ok: true };
+  }
   function deleteTopic(id) {
     var role = t.need(['admin', 'artist']);
     return env.lock(function () {
@@ -8597,7 +8621,7 @@ function tideTalk(env, t) {
       }
       return { id: x.id, title: x.locked ? 'Private talk (locked)' : x.title, detail: x.detail || '', by: who(x.createdBy), mine: x.createdBy === role, status: x.status, parked: x.parked === true, resumeOn: x.parked === true ? x.resumeOn || '' : '', dropped: x.dropped === true,
         rounds: t.list(x.rounds), answered: asked(x), max: Number(x.maxQ) || K.MAX_Q, min: K.MIN_Q,
-        outcome: x.outcome || null, filed: x.filed || null, aiStatus: x.aiStatus || '', aiRoute: x.aiRoute || '', aiNote: x.aiNote || '', aiWhy: x.aiWhy || '',
+        outcome: x.outcome || null, filed: x.filed || null, aiStatus: x.aiStatus || '', aiRoute: x.aiRoute || '', aiNote: x.aiNote || '', aiWhy: x.aiWhy || '', agree: !!agreeWords(x),
         private: x.private === true, locked: x.locked === true, shared: x.shared || null, created: x.created, updated: x.updated,
         next: x.locked ? null : topicNext(x, role) };
     }).sort(function (a, b) { return a.updated < b.updated ? 1 : -1; });
@@ -8738,7 +8762,7 @@ function tideTalk(env, t) {
   }
   return {
     ai: ai, local: local, snapshot: snapshot, wakePaused: wakePaused, queueJob: queueJob, research: research, autoClear: autoClear,
-    api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
+    api: { startTopic: startTopic, askQuestions: askQuestions, answerOpenQuestions: answerOpenQuestions, itemNote: itemNote, noteToQuestions: noteToQuestions, answerRound: answerRound, keepTalking: keepTalking, retryTopic: retryTopic, topicAgreeText: topicAgreeText, topicAgree: topicAgree, deleteTopic: deleteTopic, refileTopic: refileTopic, shareTopic: shareTopic,
       createItem: function (p) { var r = createItem(p); if (r && r.id) clearSoon(r.id); return r; }, updateItem: function (id, ch) { var r = updateItem(id, ch); clearSoon(id); return r; }, approveItem: approve, advanceItem: advance, askClaudeNow: askClaudeNow, parkItem: setParked, deleteItem: deleteItem, laterHand: laterHand, retireItem: setRetired, draftItem: draftItem, loadBacklog: loadBacklog, researchItem: researchItem, prepareProducts: prepareProducts,
       takeNext: takeNext, takeTopicNext: takeTopicNext, tickHand: tickHand, untickHand: untickHand, helpStart: helpStart, helpPick: helpPick }
   };
@@ -8871,6 +8895,8 @@ var TIDE_GUIDE = [
     steps: ['In Chat, tap the coach symbol, then Coach me.', 'Say what you’d like to learn or get done (or tap a suggestion), then Start.', 'Answer its first questions: it sets out your course along the top.', 'Tap a lesson to start it or go over it again.', 'Tap what it made (a goal, a drafted post) to open it.', '⋮ switches it to Deep thinking for big plans, renames it, or removes it.'], go: { view: 'mentors', find: '.mn-h', tip: 'New mentor is here.' } },
   { id: 'g-private-choice', area: 'Getting around', to: 'all', icon: 'lock', title: 'Choose what happens with your private writing', say: 'Three switches: what may be learnt from your private writing, and whether any may be sent outside the house for help. All off until you say yes. Chat isn’t covered.',
     steps: ['Settings › Your private writing.', 'Switch on what you’re happy with.', 'Tap Save my choices.'], go: { view: 'settings', tip: 'Open Your private writing.' } },
+  { id: 'g-agree-one', area: 'Getting around', to: 'all', icon: 'lock', title: 'Send just one private thing', say: 'When a question or a talk stays at home, you can choose to have just that one answered from outside the house. You see exactly what would be sent, and nothing goes unless you agree. Anything with a No go word always stays.',
+    steps: ['In Ask, or a talk that got stuck, tap the button under it.', 'Read what would be sent.', 'Tap Agree and send, or Keep it at home.'], go: { view: 'ideas', tip: 'Ask and your talks.' } },
   { id: 'g-mentor-admin', area: 'Chat', to: 'admin', icon: 'lock', title: 'Mentors (private to her)',
     say: 'Her mentor chats are sealed with her passphrase: you never see them. You see the count and the month’s cost, and what they make (goals, drafted posts, ideas) in their usual places. Quick replies run on Haiku, Deep thinking on Opus, within the weekly Claude limit; once it’s reached they carry on in a lighter mode on the PC’s own model (talk only) until Monday.',
     steps: ['Open Mentors to see the count and cost.', 'Mentors need the Claude API key and the month’s limit not reached (Settings › AI).'], go: { view: 'mentors', tip: 'Private to her.' } },
@@ -8959,6 +8985,12 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-25-agree-one', on: '2026-11-25', to: 'artist', icon: 'lock', title: 'Send just one thing, if you agree',
+    say: 'When a question or a talk stays at home because it’s private, you can now choose to have just that one answered from outside the house. You see exactly what would be sent and who to, and nothing goes unless you agree. Anything with one of your No go words always stays.',
+    steps: ['In Ask, or a talk that got stuck, tap the button under it.', 'Read what would be sent.', 'Tap Agree and send, or Keep it at home.'], go: { view: 'ideas', tip: 'Ask and your talks are here.' } },
+  { id: '2026-11-25-agree-one-admin', on: '2026-11-25', to: 'admin', icon: 'lock', title: 'People can send one kept thing themselves',
+    say: 'In Ask and in talks, the person whose words they are can choose to send one thing that stayed home to Claude, after seeing exactly what would go. Only from their own sign-in, one at a time. It isn’t learnt from, and it isn’t in the counts. Their No go words always stay.',
+    steps: ['For your own: tap “Ask Claude instead?” under an Ask question or a stuck talk that stayed home.'], go: { view: 'ideas', tip: 'Ask and talks.' } },
   { id: '2026-11-25-private-counts', on: '2026-11-25', to: 'admin', icon: 'lock', title: 'How often private writing was sent or held back',
     say: 'Once someone says yes to asking Claude, Settings › AI helpers counts how many times a day something of theirs was sent or held back, and from which part of Tide Book. No words, times or reasons are kept. The choice screen tells them.',
     steps: ['Settings › AI helpers › Private writing and Claude.'], go: { view: 'settings', tip: 'Open AI helpers.' } },
@@ -15248,6 +15280,12 @@ var Kit = (function () {
         if (busy()) return;
         opts.slice(0, 2).forEach(function (s) { sugBox.appendChild(h('button', { type: 'button', class: 'choice press soft', text: s, onclick: function () { field.input.value = s; ASK_DRAFT[key()] = s; field.input.focus(); } })); });
       }
+      function agreeBtn(m) {
+        return !m.agree || busy() ? null : btn('text', 'Ask Claude instead?', { sm: true, icon: 'travel_explore', onclick: function () {
+          openAgreeOne(function () { return api('askAgreeText', chat.id, m.id); }, 'Only that is sent, with Tide Book’s own plain instructions: not your name, and not the rest of the chat. It may search the web using it.',
+            function (words) { return api('askAgree', chat.id, m.id, words).then(function (c) { chat = c; paint(); poll(); }); });
+        } });
+      }
       function paint() {
         ctl.setTitle(chat ? chat.title : 'New question');
         thread.textContent = ''; extra.textContent = '';
@@ -15259,7 +15297,7 @@ var Kit = (function () {
           }
           if (m.status === 'failed') {
             thread.appendChild(h('div', { class: 'ak-msg ai failed', role: 'alert' }, h('p', { style: 'margin:0 0 8px', text: m.error || 'That didn’t come through.' }),
-              btn('tonal', 'Try again', { sm: true, icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('askRetry', chat.id).then(function (c) { chat = c; paint(); poll(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); }); } })));
+              btn('tonal', 'Try again', { sm: true, icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('askRetry', chat.id).then(function (c) { chat = c; paint(); poll(); }).catch(function (er) { K.setBusy(e.currentTarget, false); fail(er); }); } }), agreeBtn(m)));
             return;
           }
           var bub = h('div', { class: 'ak-msg ai' }, mdLite(m.text));
@@ -15268,7 +15306,10 @@ var Kit = (function () {
             m.sources.forEach(function (s) { ul.appendChild(h('li', {}, h('a', { href: s.url, target: '_blank', rel: 'noopener', text: s.title || s.url }))); });
             det.appendChild(ul); bub.appendChild(det);
           }
+          if (m.agreed) bub.appendChild(h('p', { class: 'body-m', style: 'margin:8px 0 0', text: 'You agreed to send this one to Claude.' }));
+          if (m.error) bub.appendChild(h('p', { class: 'body-m', style: 'margin:8px 0 0', text: m.error }));
           var acts = h('div', { class: 'ak-acts' });
+          if (m.agree) acts.appendChild(agreeBtn(m));
           acts.appendChild(m.saved.note ? chip('Saved as a note', 'approved', 'check') : btn('tonal', 'Save as note', { sm: true, icon: 'sticky_note_2', onclick: function (e) {
             K.setBusy(e.currentTarget, true);
             api('askSaveNote', chat.id, m.id).then(function () { return refresh(); }).then(function () { return api('askOpen', chat.id); }).then(function (c) { chat = c; paint(); K.haptic('success'); toast('Saved to your notes.'); }).catch(fail);
@@ -15492,13 +15533,32 @@ var Kit = (function () {
     var pc = ADMIN ? 'your PC' : adminName() + '’s PC', box = h('div', { class: 'consent-list', 'data-full': '1' });   // data-full: every word shows (nothing here may be shortened)
     [['learn', 'Learn from my private writing', 'The AI on ' + pc + ' can learn from your private notes, talks, questions and Chat to help you better in Tide Book. It stays on that PC and is only used for your own private work.'],
       ['health', 'Learn from health-related writing', 'The same, for writing we spot as being about health. We can miss some, and it would then count as your other private writing.'],
-      ['claude', 'Ask Claude when the PC’s AI is stuck', 'When it’s stuck, or a question needs up-to-date facts, your private text is sent to Claude, an outside AI service, with names and contact details removed first. The removal can miss things, and what you wrote about may still point to you. We try to stop anything about health being sent, but the check can miss things. Photos aren’t sent.' + (ADMIN ? '' : ' If this is on, ' + adminName() + ' can see how many times a day something was sent or held back, and from which part of Tide Book. Never the words, or why.')]
+      ['claude', 'Ask Claude when the PC’s AI is stuck', 'When it’s stuck, or a question needs up-to-date facts, your private text is sent to Claude, an outside AI service, with names and contact details removed first. The removal can miss things, and what you wrote about may still point to you. We try to stop anything about health being sent, but the check can miss things. Photos aren’t sent. If something stays at home, you can still choose to send that one, after seeing exactly what would go.' + (ADMIN ? '' : ' If this is on, ' + adminName() + ' can see how many times a day something was sent or held back, and from which part of Tide Book. Never the words, or why.')]
     ].forEach(function (x) {
       box.appendChild(h('div', { class: 'switch-row', style: 'align-items:flex-start;padding:10px 0' }, h('div', {}, h('div', { class: 'title-m', text: x[1] }), h('div', { class: 'body-m', text: x[2] })),
         K.switchBtn({ checked: f[x[0]] === true, label: x[1], onChange: function (v) { f[x[0]] = v; if (onChange) onChange(); } })));
     });
     box.appendChild(note('This doesn’t cover Chat. What you write in Chat is usually sent to Claude as you wrote it, whatever you choose here.', 'chat'));
     return box;
+  }
+  /** One thing that stayed home: shows exactly what would be sent, and sends nothing unless she taps Agree and send. */
+  function openAgreeOne(load, also, send) {
+    K.sheet({ title: 'Send this to Claude?', build: function (ctl) {
+      var box = h('div', { 'data-full': '1' }, h('p', { class: 'body-l', text: 'Looking…' }));
+      ctl.body.appendChild(box);
+      load().then(function (x) {
+        box.textContent = '';
+        box.append(h('p', { class: 'body-l', style: 'margin:0 0 10px', text: 'It stays at home unless you agree. Claude is an outside AI service. It would get exactly this, with nothing taken out:' }),
+          h('div', { class: 'card pad agree-words', style: 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:34vh;overflow:auto', tabindex: '0', text: x.text }),
+          h('p', { class: 'body-l', style: 'margin:10px 0 0', text: also }),
+          h('p', { class: 'body-l', style: 'margin:10px 0 0', text: 'This is for this one only. Nothing is learnt from it. If it’s about someone else, check they’re OK with it.' }));
+        var yes = btn('tonal', 'Agree and send', { icon: 'send', lg: true, block: true, onclick: function () {
+          K.setBusy(yes, true);
+          send(x.text).then(function (r) { ctl.close(); return r; }).catch(function (e) { K.setBusy(yes, false); fail(e); });
+        } });
+        ctl.foot.appendChild(h('div', { style: 'display:grid;gap:8px' }, yes, btn('tonal', 'Keep it at home', { lg: true, block: true, onclick: function () { ctl.close(); } })));
+      }).catch(function (e) { ctl.close(); fail(e); });
+    } });
   }
   function consentSoon(then) {
     if (window.TIDE_DEMO || previewing()) return then();
@@ -16427,6 +16487,10 @@ var Kit = (function () {
         if (tp.aiStatus === 'Failed') {
           ctl.body.appendChild(h('div', { style: 'margin-bottom:12px' }, note('It got stuck' + (ADMIN && tp.aiNote ? ': ' + tp.aiNote : '. Try it again.'), 'warning', 'warn')));
           ctl.body.appendChild(btn('tonal', 'Try again', { icon: 'refresh', onclick: function (e) { K.setBusy(e.currentTarget, true); api('retryTopic', id).then(refresh).then(reopen).catch(fail); } }));
+          if (tp.agree) ctl.body.appendChild(btn('text', 'Ask Claude instead?', { icon: 'travel_explore', onclick: function () {
+            openAgreeOne(function () { return api('topicAgreeText', id); }, 'Only that is sent, with Tide Book’s own plain instructions: not your name, and none of your other notes or talks.',
+              function (words) { return api('topicAgree', id, words).then(refresh).then(reopen); });
+          } }));
         } else if (tp.status === 'Thinking' || tp.status === 'Wrapping') {
           ctl.body.appendChild(note(tp.status === 'Wrapping' ? 'Writing it all up… You can close this; it’ll be filed when it’s done.' : 'Thinking of the next questions… You can close this; they’ll be waiting on Home.', 'hourglass_top'));
           if (tp.aiRoute === 'local') ctl.body.appendChild(quickerBtn(id));
