@@ -15637,11 +15637,11 @@ var Kit = (function () {
   function helperStart() {
     if (!window.Assistant || Assistant.ready || window.TIDE_DEMO) return;
     Assistant.start({ title: 'Tide Book', home: ADMIN ? '' : adminName(), url: 'assistant/', names: ['Wren', 'Marlow', 'Juno', 'Pearl'],
-      alsoSent: 'It can read and write in your Notes, when you’re there or ask it to open them. That stays on the home computer too, isn’t shown to ' + (ADMIN ? 'anyone' : adminName()) + ', and isn’t learnt from. Before anything from your Notes goes anywhere else in Tide Book, or into what it remembers, it shows you the words and asks. It can’t see or use Chat, Ask or your email. This chat and what it remembers are kept sealed, like your notes.',
+      alsoSent: 'It can read and write in your Notes, when you’re there or ask it to open them. That stays on the home computer too, isn’t shown to ' + (ADMIN ? 'anyone' : adminName()) + ', and isn’t learnt from. Before anything from your Notes goes anywhere else in Tide Book, or into what it remembers, it shows you the words and asks. It can’t see or use Chat, Ask or your email. This chat and what it remembers are kept with the same protection as your notes. If your private writing is locked, it lets go of what it read.',
       places: function () { return NAV_ALL.concat([['settings', 'Settings', 'settings']]).map(function (n) { return { id: n[0], name: n[1], about: HELPER_ABOUT[n[0]] || '' }; }); },
       go: function (id) { go(id); return new Promise(function (r) { setTimeout(r, 420); }); }, view: function () { return (NAV_ALL.filter(function (n) { return n[0] === S.view; })[0] || [0, 'Settings'])[1]; },
-      hidden: function () { return !!(document.querySelector('.dialog-wrap') || (K.openSheets && K.openSheets())); }, blocked: function () { return privateView() && S.view !== 'notes'; },
-      priv: function () { return S.view === 'notes'; }, leaves: /^(turn (it )?into|make it|copy|share|print|export|download)\b/i,
+      hidden: function () { return !!(document.querySelector('.dialog-wrap') || (K.openSheets && K.openSheets())); }, blocked: function () { return privateView() && (S.view !== 'notes' || isLocked()); },
+      priv: function () { return S.view === 'notes' && !isLocked(); }, inside: function (el) { return !el.closest('.sheet, .dialog, [role=dialog]'); }, leaves: /^(turn (it )?into|make it|copy|share|print|export|download)\b/i,
       only: /\b(ask claude|agree|i consent|allow claude|send to claude|checked? online|learn from|open it for good|forgotten it)\b/i,
       skip: function () { var a = PRIVATE_AREA.replace(', .tf, textarea, input', ''); return S.view === 'notes' ? a.replace('[class*="nt-"], ', '') : a; },
       used: function (kind) { if (window.UsageWatch && UsageWatch.on && HELPER_USED[kind]) UsageWatch.note(HELPER_USED[kind]); },
