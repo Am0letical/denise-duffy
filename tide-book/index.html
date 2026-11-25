@@ -8841,6 +8841,9 @@ var TIDE_GUIDE = [
   { id: 'g-ask', area: 'Ideas', to: 'all', icon: 'travel_explore', title: 'Ask a question',
     say: 'Ask anything about your art business and Tide Book looks into it. It’s the other way round from Talk it through: you ask, it digs.',
     steps: ['Open Ideas and tap Ask.', 'Tap New question, then a suggested question or your own words, and Ask.', 'While it looks into it, you can wait or come back later. Ask follow-ups in the same chat.', 'Save as note puts an answer in your notes. Make it an idea starts a product with it.', 'On your phone, slide an old question left to remove it (Undo puts it back).'], go: { view: 'ideas', tip: 'Tap Ask at the top.' } },
+  { id: 'g-helper', area: 'Getting around', to: 'all', icon: 'forum', title: 'Your own helper',
+    say: 'The round button at the side is a helper you name yourself. It answers, takes you to the right page, and fills things in when you ask.',
+    steps: ['Tap it to type, or tap the microphone to talk.', 'Swipe it off the side when it’s in the way, and swipe it back from the edge.', 'Its ••• changes its name, voice or look, and shows what it remembers.', 'It can help in your Notes. Nothing from them goes anywhere else unless you say yes to the words it shows you. It can’t see Chat or Ask.'], go: { view: 'home', tip: 'The round button at the side.' } },
   { id: 'g-more', area: 'Getting around', to: 'all', icon: 'apps', title: 'The menu, and More',
     say: 'The menu shows your first six places. The rest, and Settings, are under More. You choose which six with Arrange.',
     steps: ['Tap the round menu button at the bottom.', 'Tap More to see the rest. Tap Fewer to tuck them away again.', 'Tap Arrange, and drag the places you use most to the top. The first six show straight away.', 'In Settings, each heading opens with a tap and says what’s inside.'], go: { view: 'home', tip: 'Tap the menu button, bottom left.' } },
@@ -8985,6 +8988,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-25-own-helper', on: '2026-11-25', to: 'all', icon: 'forum', title: 'A helper of your own',
+    say: 'There’s a round button on every page for a helper that’s all yours. Give it a name, a voice and a look, then type or talk to it: it answers, takes you to the right page, and can fill things in. It can read and write in your Notes when you ask, and nothing from them goes anywhere else unless you say yes to the words. It asks before it deletes or sends anything, it can’t see Chat or Ask, and what you say to it goes to the home computer and nowhere else.',
+    steps: ['Tap the round button with the plus. Choose its name, voice, look and manner.', 'Ask it anything, like “where do I add a print?” or “open my money”.', 'Tap the microphone to talk out loud.', 'In the way? Drag it, or swipe it off the side. Swipe it back from the edge when you want it.', 'Its ••• shows what it remembers (take anything off) and what gets sent.'], go: { view: 'home', tip: 'It’s the round button at the side.' } },
   { id: '2026-11-25-agree-one', on: '2026-11-25', to: 'artist', icon: 'lock', title: 'Send just one thing, if you agree',
     say: 'When a question or a talk stays at home because it’s private, you can now choose to have just that one answered from outside the house. You see exactly what would be sent and who to, and nothing goes unless you agree.',
     steps: ['In Ask, or a talk that got stuck, tap the button under it.', 'Read what would be sent.', 'Tap Agree and send, or Keep it at home.'], go: { view: 'ideas', tip: 'Ask and your talks are here.' } },
@@ -15620,6 +15626,27 @@ var Kit = (function () {
         h('p', { class: 'body-m', style: 'margin:10px 0 12px', text: 'Switching off either of the first two deletes what was learnt that way.' }), save);
     }).catch(off);
     return out;
+  }
+
+  // ------------------------------------------------------------------ a helper of their own (Dev HQ's kit): nameless until they make it
+  // It can't see or use Chat or Ask, or her email. It can read and write in Notes (Jye, 25 Nov 2026: "it can go into her notes, it just
+  // should go through the pipeline to not share it"): on the home computer only, and nothing from a note goes anywhere else without
+  // her yes to the exact words. A yes to Claude is only ever her own tap.
+  var HELPER_ABOUT = { home: 'the next step, what’s waiting, and quick starts', content: 'photos and videos to share, posts to check, and the posting plan', prints: 'artworks, prints, products, prices and stock', ideas: 'ideas, products being made, inspiration, and Ask', notes: 'the private notebook: it can be read and written in here', mentors: 'private chats', plan: 'goals, steps to tick off, and the calendar', site: 'the website and its editor', money: 'sales, expenses, orders and the books', hub: 'contacts and lists', settings: 'settings and how-to' };
+  var HELPER_USED = { chat: 'Helper: chatting', guide: 'Helper: showing the way', create: 'Helper: writing', organise: 'Helper: changing things' };
+  function helperStart() {
+    if (!window.Assistant || Assistant.ready || window.TIDE_DEMO) return;
+    Assistant.start({ title: 'Tide Book', home: ADMIN ? '' : adminName(), url: 'assistant/', names: ['Wren', 'Marlow', 'Juno', 'Pearl'],
+      alsoSent: 'It can read and write in your Notes, when you’re there or ask it to open them. That stays on the home computer too, isn’t shown to ' + (ADMIN ? 'anyone' : adminName()) + ', and isn’t learnt from. Before anything from your Notes goes anywhere else in Tide Book, or into what it remembers, it shows you the words and asks. It can’t see or use Chat, Ask or your email. This chat and what it remembers are kept sealed, like your notes.',
+      places: function () { return NAV_ALL.concat([['settings', 'Settings', 'settings']]).map(function (n) { return { id: n[0], name: n[1], about: HELPER_ABOUT[n[0]] || '' }; }); },
+      go: function (id) { go(id); return new Promise(function (r) { setTimeout(r, 420); }); }, view: function () { return (NAV_ALL.filter(function (n) { return n[0] === S.view; })[0] || [0, 'Settings'])[1]; },
+      hidden: function () { return !!(document.querySelector('.dialog-wrap') || (K.openSheets && K.openSheets())); }, blocked: function () { return privateView() && S.view !== 'notes'; },
+      priv: function () { return S.view === 'notes'; }, leaves: /^(turn (it )?into|make it|copy|share|print|export|download)\b/i,
+      only: /\b(ask claude|agree|i consent|allow claude|send to claude|checked? online|learn from|open it for good|forgotten it)\b/i,
+      skip: function () { var a = PRIVATE_AREA.replace(', .tf, textarea, input', ''); return S.view === 'notes' ? a.replace('[class*="nt-"], ', '') : a; },
+      used: function (kind) { if (window.UsageWatch && UsageWatch.on && HELPER_USED[kind]) UsageWatch.note(HELPER_USED[kind]); },
+      colours: [['#A8CBE6', 'sea blue', 'calm'], ['#A9D6C5', 'sea glass', 'calm'], ['#E9B7C6', 'shell pink', 'warm'], ['#F2D28B', 'sand', 'playful'], ['#E8B58F', 'clay', 'warm'], ['#C9B8E8', 'dusk', 'calm']],
+      look: { paper: 'var(--surface-lowest, #fff)', ink: 'var(--on-surface, #23302f)', soft: 'var(--surface-low, #f1eadf)', line: 'rgb(0 0 0 / .12)', main: 'var(--primary, #23465a)', onMain: 'var(--on-primary, #fff)', font: 'Figtree, system-ui, sans-serif', radius: 24 } });
   }
 
   // ------------------------------------------------------------------ what's new since she was last here (TIDE_CHANGES, LogicSetup.gs)
@@ -23742,7 +23769,7 @@ var Kit = (function () {
   }
 
   textSize(null);
-  refresh().then(render).then(function () { if (!takeShare() && !takeShortcut() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); consentSoon(function () { setTimeout(whatsNewSoon, 900); }); }, 600); }).catch(function (e) {
+  refresh().then(render).then(function () { if (!takeShare() && !takeShortcut() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); consentSoon(function () { setTimeout(whatsNewSoon, 900); }); setTimeout(helperStart, 900); }, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
