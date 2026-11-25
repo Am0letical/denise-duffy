@@ -1403,6 +1403,7 @@ html.ow-open .pill, html.ow-open .mock, html.ow-open .cartp { visibility: hidden
     <a href="#/"><small>00</small><span>Home</span></a>
     <a href="#/gallery"><small>05</small><span>Living gallery</span></a>
     <a href="#/originals"><small>06</small><span>The originals</span></a>
+    <a href="#/portfolio" data-pf-nav hidden><small>07</small><span>Portfolio</span></a>
     <a href="#/about"><small>07</small><span>About</span></a>
     <a href="#/sea-shelter"><small>08</small><span>Sea Shelter</span></a>
   </nav>
@@ -3396,7 +3397,30 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       }).catch(function () {});
     })();
   }
+  // ---------- her portfolio from Instagram (Dev HQ's portfolio kit; build_site.py puts it in as PORTFOLIO_DATA) ----------
+  var PF = window.PORTFOLIO_DATA && window.PORTFOLIO_DATA.series && window.PORTFOLIO_DATA.series.length ? window.PORTFOLIO_DATA : null;
+  if (PF) {
+    document.querySelectorAll('[data-pf-nav]').forEach(function (a) { a.hidden = false; });
+    // IKEA rule: a post of an artwork that's for sale gets that artwork's + (the piece's title or words name it)
+    window.PORTFOLIO_LINK = function (p) {
+      var words = (p.title + ' ' + p.text).toLowerCase();
+      var a = (typeof ARTWORKS !== 'undefined' ? ARTWORKS : []).filter(function (x) { return x.title && x.title.length > 3 && words.indexOf(String(x.title).toLowerCase()) >= 0; })[0];
+      return a ? { href: '#/a/' + a.id, label: 'See ' + a.title + ' in the shop +' } : null;
+    };
+  }
+  function pfStrip() {
+    if (!PF) return '';
+    return '<section class="sec wrap pf-home" style="--portfolio-heading:var(--display);--portfolio-ink:var(--ink);--portfolio-accent:var(--teal);--portfolio-card:rgb(255 255 255 / .55)"><div class="sec-head"><h2 class="reveal">Lately in <span class="it" style="color:var(--teal)">the studio</span></h2><a href="#/portfolio" class="reveal">See my portfolio</a></div>' +
+      '<div data-portfolio="" data-limit="8"></div></section>';
+  }
   var views = {
+    portfolio: function () {
+      if (!PF) return views.home();
+      return '<div class="page wrap" style="--portfolio-heading:var(--display);--portfolio-ink:var(--ink);--portfolio-accent:var(--teal);--portfolio-card:rgb(255 255 255 / .55)"><div class="crumbs"><a href="#/">Home</a> · Portfolio</div>' +
+        '<h1 class="ptitle reveal">My <span class="it" style="color:var(--pink-deep)">portfolio</span></h1>' +
+        '<p class="lead" style="max-width:620px">What I’ve been making, straight from my studio and my Instagram.</p><div data-portfolio=""></div>' +
+        '<p style="margin-top:24px"><a class="chipbtn" href="https://www.instagram.com/deniseduffyartist/" target="_blank" rel="noopener">Follow along on Instagram +</a></p></div>';
+    },
     thanks: function () {
       return '<div class="page wrap" style="min-height:60vh"><div class="crumbs"><a href="#/">Home</a> · Thank you</div><h1 class="ptitle reveal">Thank <span class="it" style="color:var(--pink-deep)">you</span></h1>' +
         '<p class="lead" style="max-width:560px">Your order is in. Denise will be in touch when it’s on its way, with how to follow it.</p><p id="thanksRef" class="lbl" style="opacity:.75">Checking your order…</p>' +
@@ -3426,6 +3450,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
           ['Carving, sculpting, assemblage', 'A constant dialogue between hands, heart, and the natural world.', '']]
           .map(function (m, i) { return '<div class="made-c reveal' + (m[2] ? ' has-ph' : '') + '">' + (m[2] ? '<img class="made-ph" alt="" src="' + IMG[m[2]] + '">' : '') + '<span class="lbl">0' + (i + 1) + '</span><b>' + m[0] + '</b><p>' + m[1] + '</p></div>'; }).join('') + '</div></section>' +
 
+        pfStrip() +
         '<section class="sec wrap"><div class="sec-head"><h2 class="reveal">New &amp; <span class="it" style="color:var(--pink-deep)">loved</span></h2><a href="#/gallery" class="reveal">See everything</a></div>' +
         '<div class="cards">' + ARTWORKS.slice(0, 3).map(function (a) { return card(a); }).join('') + (ARTWORKS[1] && ARTWORKS[1].products[1] ? card(ARTWORKS[1], ARTWORKS[1].products[1]) : '') + '</div></section>' +
 
@@ -3591,6 +3616,7 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     if (state.o) paintPrice();
     observe(); setupList();
     if (window.OriginalsHall) window.OriginalsHall.after();
+    if (window.PortfolioGallery) window.PortfolioGallery.start();
     requestAnimationFrame(function () { requestAnimationFrame(function () { document.body.classList.add('ready'); }); });
     onScroll();
   }
@@ -4708,6 +4734,9 @@ window.ART = {"footage-ocean": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
   hook(); apply();
 })();
 
+</script>
+<script>
+/*__PORTFOLIO_JS__*/
 </script>
 </body>
 </html>

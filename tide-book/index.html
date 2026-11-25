@@ -1706,6 +1706,13 @@ body.map-full { overflow: hidden; }
 .nt-top { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .nt-tools { display: flex; align-items: center; gap: 6px; }
 .nt-folders .choice .ms { font-size: 18px; }
+.nt-folders.roomy { margin-bottom: 2px; }
+@media (min-width: 840px) { .filter-row.nt-folders.roomy { flex-wrap: wrap; overflow: visible; -webkit-mask: none; mask: none; } }   /* a mouse can't swipe: show them all */
+.nt-folders .fr-name { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+.is-name { font: 500 24px/30px var(--font); margin: 4px 0 6px; overflow-wrap: anywhere; }
+.is-undo { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 4px 0 14px; margin-bottom: 12px; border-radius: 14px; background: var(--surface-highest); font: 400 16px/22px var(--font); }
+.is-undo .grow { overflow: hidden; text-overflow: ellipsis; }
+.io-name { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .bz-notice { display: grid; gap: 8px; margin-bottom: 14px; }
 .bz-due { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border-radius: 18px; cursor: pointer;
   background: var(--secondary-container); color: var(--on-secondary-container); font: 400 16px/22px var(--font); }
@@ -2761,9 +2768,17 @@ var TIDE_SCHEMAS = {
     columns: [
       ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['createdBy', 'Saved by', 'text'], ['url', 'Link', 'text'],
       ['source', 'From', 'text'], ['note', 'What caught her eye', 'text'], ['tags', 'Tags', 'list'], ['photoIds', 'Photo IDs', 'list'],
-      ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['topicId', 'Talked through', 'text'], ['ideaId', 'Idea', 'text'],
+      ['thumbIds', 'Thumb IDs', 'list'], ['folderUrl', 'Folder', 'text'], ['folderId', 'Inspo folder', 'text'], ['topicId', 'Talked through', 'text'], ['ideaId', 'Idea', 'text'],
       ['embed', 'Shows here', 'text'], ['embedTries', 'Embed checks', 'number'],
       ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
+    ]
+  },
+  // her folders for inspiration (LogicInspo.gs): the names are sealed like her notes
+  inspofolders: {
+    sheet: 'Inspo Folders',
+    columns: [
+      ['id', 'ID', 'text'], ['created', 'Created', 'date'], ['owner', 'Whose', 'text'], ['private', 'Private', 'bool'], ['name', 'Name', 'text'],
+      ['held', 'Held', 'list'], ['deleted', 'Removed', 'bool'], ['updated', 'Updated', 'date']
     ]
   },
   // photos, drawings and voice memos in her notes (sealed with her passphrase, like the notes)
@@ -3467,6 +3482,25 @@ function createTideLogic(env) {
     return out;
   }
 
+  // ---- her portfolio from Instagram (run by the PC: pc-server/server.js, Dev HQ's portfolio kit)
+  function portfolio() {
+    need(['admin', 'artist']);
+    if (typeof HOST === 'undefined' || !HOST.portfolio) return { available: false };
+    return portfolioFor(HOST.portfolio.view());
+  }
+  function portfolioDo(action, id) {
+    need(['admin', 'artist']);
+    if (typeof HOST === 'undefined' || !HOST.portfolio) fail(env.user.role === 'admin' ? 'This works on the PC version of Tide Book.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
+    action = text(action, 20);
+    if (['check', 'undo', 'putOn', 'auto', 'autoOff'].indexOf(action) < 0) fail('Unknown action.');
+    if (action === 'putOn' && env.user.role !== 'artist') fail('Only ' + env.brand.artistName + ' can add one that was held back.');
+    return portfolioFor(HOST.portfolio.act(action, text(id, 40)));
+  }
+  // which posts were held back, and why, is hers alone: it would show what she keeps private
+  function portfolioFor(v) {
+    if (env.user.role !== 'artist') v = Object.assign({}, v, { held: [] });
+    return v;
+  }
   function publishWebsite() {
     need(['admin', 'artist']);
     if (!env.site) fail(env.user.role === 'admin' ? 'Publishing the website works on the PC version of Tide Book.' : 'Not available yet. ' + env.brand.adminName + ' can switch it on.');
@@ -4068,7 +4102,7 @@ if (env.workDone) env.workDone('publish');
       footage: studioData.footage, content: studioData.content, studio: studioData.studio, contextIdeas: studioData.contextIdeas,
       rounds: studioData.rounds, questions: studioData.questions, campaigns: studioData.campaigns,
       posting: publishData.posting, todo: todoShown(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), todoCleared: todoClearedCount(publishData.todo.concat(role === 'admin' ? adminLinkTodos() : []), role), rest: publishData.rest, coverPrintId: publishData.coverPrintId,
-      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), ask: ask.snapshot(), privacy: privacyState(), inspoTags: inspo.tags, direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
+      notes: studioData.notes, brief: studioData.brief, notebook: notebook.snapshot(role), noteFolders: notebook.folders(), noteColours: notebook.colours, ai: notebook.ai(role), talk: talkData, setup: setup.status(), news: setup.news(role), guide: tideGuideFor(role), shop: shop.snapshot(role), cal: cal.snapshot(role), mentors: mentors.snapshot(env.user.realRole === 'admin' && !env.practice ? 'admin' : role), siteEd: siteEditor.snapshot(role), inspiration: inspo.snapshot(role), ask: ask.snapshot(), privacy: privacyState(), inspoTags: inspo.tags, inspoFolders: inspo.folders(), direction: direction.snapshot(), reports: reports.snapshot(role), reportKinds: reports.kinds, reportStatuses: reports.statuses,
       hub: hub.snapshot(), links: { mail: link.snapshot(role), bank: bank.snapshot(role), insta: insta.snapshot() },
       biz: biz.snapshot(), repeats: repeats.snapshot(),
       aiSpend: role === 'admin' && env.setup && env.setup.spend ? setup.spend() : null,
@@ -5318,7 +5352,7 @@ if (env.workDone) env.workDone('publish');
       sendForApproval: sendForApproval, respondApproval: respondApproval,
       createPrint: createPrint, updatePrint: updatePrint, setPrintStatus: setPrintStatus, startScanUpload: startScanUpload, setPrintScan: setPrintScan,
       addTransaction: addTransaction, updateTransaction: updateTransaction, voidTransaction: voidTransaction, readReceipt: readReceipt, receiptResult: receiptResult, saveStock: saveStock, deleteStock: deleteStock, undeleteStock: undeleteStock, shareReceipt: shareReceipt, uploadReceiptFile: uploadReceiptFile,
-      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveHomeMode: saveHomeMode, saveFocusHide: saveFocusHide, saveMenuOrder: saveMenuOrder, clearTodo: clearTodo, unclearTodo: unclearTodo, ideaToWebsite: ideaToWebsite, keepLinkForAdmin: keepLinkForAdmin, publishWebsite: publishWebsite, chatResult: chatResult,
+      getMoney: getMoney, importSales: importSales, exportRecords: exportRecords, saveSettings: saveSettings, saveHomeOrder: saveHomeOrder, saveHomeMode: saveHomeMode, saveFocusHide: saveFocusHide, saveMenuOrder: saveMenuOrder, clearTodo: clearTodo, unclearTodo: unclearTodo, ideaToWebsite: ideaToWebsite, keepLinkForAdmin: keepLinkForAdmin, publishWebsite: publishWebsite, portfolio: portfolio, portfolioDo: portfolioDo, chatResult: chatResult,
       websiteRequest: websiteRequest, approveWebsite: approveWebsite, websiteDone: websiteDone
     },
     research: research,
@@ -5353,6 +5387,9 @@ if (env.workDone) env.workDone('publish');
   // each person's own answer about their private writing (Mentor.gs; kept by the door)
   out.api.aiConsent = function () { need(['admin', 'artist']); return env.aiConsent ? env.aiConsent.state() : { available: false }; };
   out.api.saveAiConsent = function (p) { need(['admin', 'artist']); if (!env.aiConsent) fail('Not available here.'); return env.aiConsent.save(p); };
+  // "Help make it easier": may the app notice which buttons get tapped? Each person's own answer; no answer is no
+  out.api.usageChoice = function () { need(['admin', 'artist']); return env.usage ? env.usage.state() : { available: false }; };
+  out.api.saveUsageChoice = function (yes) { need(['admin', 'artist']); if (!env.usage) fail('Not available here.'); if (typeof yes !== 'boolean') fail('Yes or no?'); return env.usage.save(yes); };
   out.ask = ask;
   out.api.swipeDelete = swipeDelete; out.api.undoSwiped = undoSwiped; out.api.deleteAsk = deleteAsk;
   out.api.vaultSetup = vaultSetup; out.api.vaultUnlock = vaultUnlock; out.api.vaultRecover = vaultRecover; out.api.vaultLock = vaultLock; out.api.vaultOff = vaultOff;
@@ -8997,6 +9034,9 @@ var TIDE_GUIDE = [
   { id: 'g-more', area: 'Getting around', to: 'all', icon: 'apps', title: 'The menu, and More',
     say: 'The menu shows your first six places. The rest, and Settings, are under More. You choose which six with Arrange.',
     steps: ['Tap the round menu button at the bottom.', 'Tap More to see the rest. Tap Fewer to tuck them away again.', 'Tap Arrange, and drag the places you use most to the top. The first six show straight away.', 'In Settings, each heading opens with a tap and says what’s inside.'], go: { view: 'home', tip: 'Tap the menu button, bottom left.' } },
+  { id: 'g-easier', area: 'Getting around', to: 'all', icon: 'touch_app', title: 'Help make it easier',
+    say: 'If you say yes, Tide Book notices which buttons get tapped, when you go back and how long screens are open, so fiddly bits can be fixed. Never what you write, your pictures or your numbers.',
+    steps: ['Open Settings, then Help make it easier.', 'Switch it on or off. Off deletes what was noticed. Weekly summaries already made are kept.'], go: { view: 'settings', tip: 'Open Help make it easier.' } },
   { id: 'g-swipe', area: 'Getting around', to: 'all', icon: 'swipe_left', title: 'Swipe left to remove',
     say: 'On a phone, slide a row to the left to remove it, like in email. Every row that has Remove can be swiped, and Undo puts it back just as it was.',
     steps: ['Put your finger on a row (a goal, idea, note, contact…) and slide it left.', 'A red bin shows. Let go past halfway and it goes; stop short and it slides back.', 'Tap Undo at the bottom within 5 seconds. Remove a few in a row and each has its own Undo.', 'Things that sell, are booked to post, or are in your money records ask first. Sales and expenses can’t be swiped.'], go: { view: 'plan', tip: 'Slide a goal to the left.' } },
@@ -9077,6 +9117,8 @@ var TIDE_GUIDE = [
   { id: 'g-products', area: 'Ideas', to: 'all', icon: 'inventory_2', title: 'From a product idea to on sale',
     say: 'A product goes from idea to on sale one step at a time. Tide Book does what it can; you say go.',
     steps: ['On an idea, tap “Make it a product”.', 'In Ideas › Products, tap the step at the top each time.', 'When it’s on sale, its shop page is made for you: add a photo, then publish.'], go: { view: 'ideas', state: { ideasTab: 'products' }, tip: 'Each product shows its next step.' } },
+  { id: 'g-inspo-folders', area: 'Ideas', to: 'artist', icon: 'folder_open', title: 'Inspo folders', say: 'Folders of your own for what inspires you. Tags still work inside them.',
+    steps: ['Notes › Inspo: tap Folder to make one.', 'Open something you saved and choose its folder.', 'Sort my pile suggests folders; you OK each one.', 'Tap a folder again to rename or remove it.'], go: { view: 'notes', state: { noteFolder: '__inspo' }, tip: 'Your inspo folders.' } },
   { id: 'g-biz', area: 'Money', to: 'all', icon: 'folder_open', title: 'Business info', say: 'Your web address, web host, insurance and the like, with their files and when they’re due.',
     steps: ['Home › Business info, at the bottom.', 'Tap Add, and add a screenshot or PDF.', 'Home says so when something is due soon.'], go: { view: 'biz', tip: 'Tap Add.' } },
   { id: 'g-repeats', area: 'Money', to: 'all', icon: 'sync', title: 'Expenses that repeat', say: 'Offered each time they’re due. Nothing is recorded until you tap Add.',
@@ -9142,6 +9184,16 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-25-help-easier', on: '2026-11-25', to: 'all', icon: 'touch_app', title: 'Help make Tide Book easier, if you like',
+    say: 'Tide Book can notice which buttons get tapped, when you go back and how long screens are open, so fiddly bits get fixed. It asks first, and nothing is noticed unless you say yes. What you write, your pictures and your numbers are never part of it.',
+    steps: ['When it asks, tap Yes, that’s fine or No thanks. Either is okay.', 'Changed your mind? Open Settings, then Help make it easier.', 'Switching it off deletes what was noticed. Weekly summaries already made are kept.'], go: { view: 'settings', tip: 'Open Help make it easier.' } },
+  { id: '2026-11-25-inspo-folders', on: '2026-11-25', to: 'artist', icon: 'folder_open', title: 'Folders for your inspo',
+    say: 'Keep what inspires you in folders of your own. Sort my pile suggests a few, and nothing moves until you say so. Tide Book shows your folders only to you.',
+    steps: ['Notes › Inspo: tap Folder to make one.', 'Open something you saved to choose its folder.', 'Tap Sort my pile, then OK, rename or skip each group.', 'Tap a folder again to rename or remove it.'], go: { view: 'notes', state: { noteFolder: '__inspo' }, tip: 'Your inspo folders.' } },
+  { id: '2026-11-24-portfolio', on: '2026-11-24', to: 'all', icon: 'photo_library', title: 'Your Instagram can go on your website',
+    say: 'Once Instagram is linked, your posts become a Portfolio page on your website, sorted into groups, with your newest on the home page. Nothing shows until your website has been published. Anything that mentions something you keep private stays off until you say, and you can undo what went on lately.',
+    steps: ['Website › From your Instagram shows what went on lately.', 'Rather it wasn’t there? Tap the undo arrow next to it.', 'A post that wasn’t added says why: tap Add it if you want it on.', 'Prefer to choose each one? Tap Let me choose each one.'],
+    go: { view: 'site', tip: 'Scroll down to From your Instagram.' } },
   { id: '2026-11-25-business-info', on: '2026-11-25', to: 'all', icon: 'folder_open', title: 'Business info, and when it’s due',
     say: 'One place for your web address, web host, insurance and anything like them: who it’s with, when it’s due, and the screenshots and PDFs. Home says so a week before something is due.',
     steps: ['Home › Business info, at the bottom.', 'Tap Add, fill in what you know, and add a screenshot or PDF.', 'When it’s renewed, move the date on.', 'Settings › Business info changes how many days before.'], go: { view: 'biz', tip: 'Tap Add.' } },
@@ -9570,8 +9622,13 @@ function tideSetup(env, t) {
 
 var TIDE_INSPO = {
   TAGS: ['Ocean', 'Forest', 'Skies & Waters', 'Living in Gratitude', 'Colour', 'Texture', 'Composition', 'Product idea', 'Content idea', 'Packaging'],
-  MAX_PHOTOS: 4
+  MAX_PHOTOS: 4,
+  MAX_FOLDERS: 40,
+  SORT_BATCH: 24,      // how many are sorted at a time (newest first)
+  JOB_MINS: 10
 };
+/** What the AI has proposed, per person, kept in memory only until they've answered: nothing moves until they OK it. */
+var INSPO_JOBS = {};
 
 function tideInspo(env, t) {
   var I = TIDE_INSPO;
@@ -9592,6 +9649,168 @@ function tideInspo(env, t) {
   }
   function tags(list) { return t.list(list).filter(function (x) { return I.TAGS.indexOf(x) >= 0; }); }
 
+  // ---------------------------------------------------------------- her folders
+  // Inspo's own folders (Notes has its own, kept apart). They're hers: the names are sealed like her notes, and the
+  // admin's screens get no names, no ids and no counts. An item is in one folder or none. (Someone looking at the
+  // practice copy as her has folders of their own there, so hers never show.)
+  function me() {
+    if (env.user.role !== 'artist') return '';
+    return (env.user.realRole || env.user.role) === 'artist' ? 'artist' : env.practice ? 'preview' : '';
+  }
+  function need() { t.need(['admin', 'artist']); var who = me(); if (!who) t.fail('Folders here are ' + (env.brand.artistName || 'the artist') + '’s own.'); return who; }
+  function mine(who) { return t.rows('inspofolders').filter(function (r) { return r.owner === who; }); }
+  function live(who) { return mine(who).filter(function (r) { return !r.deleted; }); }
+  function open(who) { var l = live(who); if (l.some(function (r) { return r.locked; })) t.fail('Open your private writing first.'); return l; }
+  function folder(id) { var r = open(need()).filter(function (x) { return x.id === id; })[0]; if (!r) t.fail('That folder has been removed.'); return r; }
+  function key(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+  function called(list, name) { return list.filter(function (r) { return key(r.name) === key(name); })[0]; }
+  /** The folder an item is in, as its owner sees it ('' for none, or one that's gone). */
+  function folderOf(r, who) { return r.folderId && live(who).some(function (x) { return x.id === r.folderId; }) ? r.folderId : ''; }
+  function items() { return t.rows('inspiration').filter(function (r) { return !r.deleted; }); }
+  function isPrivate(r) { return r.private === true || r.createdBy !== 'admin'; }
+  function makeFolder(who, name) {
+    name = t.text(name, 40);
+    if (!key(name)) t.fail('Name the folder.');
+    var l = open(who);
+    if (called(l, name)) t.fail('There’s already a folder called “' + name + '”.');
+    if (l.length >= I.MAX_FOLDERS) t.fail('That’s a lot of folders. Remove one first.');
+    var id = env.nextId('IF', 4), now = t.nowIso();
+    env.table('inspofolders').append({ id: id, created: now, owner: who, private: who === 'artist', name: name, held: [], deleted: false, updated: now });
+    return id;
+  }
+  /** A new folder (no id), or a new name for one. */
+  function saveInspoFolder(name, id) {
+    var who = need();
+    return env.lock(function () {
+      if (!id) return { id: makeFolder(who, name) };
+      var r = folder(id), n = t.text(name, 40), same = called(live(who), n);
+      if (!key(n)) t.fail('Name the folder.');
+      if (same && same.id !== id) t.fail('There’s already a folder called “' + n + '”.');
+      env.table('inspofolders').update(id, { name: n, updated: t.nowIso() });
+      return { id: id };
+    });
+  }
+  /** The folder goes; what was in it stays, in No folder. Remembered, so Undo can put it back. */
+  function removeInspoFolder(id) {
+    var who = need();
+    return env.lock(function () {
+      folder(id);
+      var held = items().filter(function (r) { return r.folderId === id; }).map(function (r) { return r.id; });
+      env.table('inspofolders').update(id, { deleted: true, held: held, updated: t.nowIso() });
+      held.forEach(function (x) { env.table('inspiration').update(x, { folderId: '' }); });
+      return { ok: true, moved: held.length };
+    });
+  }
+  function restoreInspoFolder(id) {
+    var who = need();
+    return env.lock(function () {
+      open(who);
+      var r = mine(who).filter(function (x) { return x.id === id && x.deleted; })[0];
+      if (!r) t.fail('That can’t be put back.');
+      if (called(live(who), r.name)) t.fail('There’s a folder with that name now.');
+      var held = t.list(r.held);
+      env.table('inspofolders').update(id, { deleted: false, held: [], updated: t.nowIso() });
+      items().forEach(function (x) { if (held.indexOf(x.id) >= 0 && !folderOf(x, who)) env.table('inspiration').update(x.id, { folderId: id }); });
+      return { ok: true };
+    });
+  }
+  function moveInspo(id, folderId) {
+    need();
+    return env.lock(function () { get(id); env.table('inspiration').update(id, { folderId: folderId ? folder(folderId).id : '', updated: t.nowIso() }); return { ok: true }; });
+  }
+  function folders() {
+    var who = me();
+    if (!who) return null;
+    var l = live(who);
+    return { locked: l.some(function (r) { return r.locked; }), list: l.filter(function (r) { return !r.locked; }).map(function (r) { return { id: r.id, name: r.name }; }), sort: !!env.inspoSort };
+  }
+
+  // ---------------------------------------------------------------- sorting her pile: the AI proposes, she OKs by group
+  function jobKey(kind) { return kind + '|' + env.user.email + '|' + (env.user.realRole || '') + '|' + env.user.role; }
+  function job(kind) {
+    var now = env.now().getTime();
+    Object.keys(INSPO_JOBS).forEach(function (k) { if (now - INSPO_JOBS[k].at > I.JOB_MINS * 60000) delete INSPO_JOBS[k]; });
+    return INSPO_JOBS[jobKey(kind)];
+  }
+  /** An item as the AI gets it: only the words this person may see. Which model may have it is decided by isPrivate. */
+  function forAi(r, who) {
+    var words = isPrivate(r) && who !== 'artist' ? '' : String(r.note || '');
+    return { id: r.id, private: isPrivate(r), note: words.replace(/\s+/g, ' ').slice(0, 240), tags: t.list(r.tags), source: r.source || '', url: String(r.url || '').slice(0, 160), thumb: t.list(r.thumbIds)[0] || '' };
+  }
+  function localFirst() { var v = env.settings.get().localFirst; return v === undefined || v === null || v === '' || v === true || v === 'true' || v === 'TRUE'; }
+  function aiCtx(who, list) {
+    return { items: list.map(function (r) { return forAi(r, who); }), folders: live(who).map(function (r) { return r.name; }), localFirst: localFirst(), hers: who === 'artist' };
+  }
+  function pile(who) { return items().filter(function (r) { return !r.locked && !folderOf(r, who); }).sort(function (a, b) { return a.created < b.created ? 1 : -1; }); }
+  /** Starts it, when she taps it. The answer is fetched with sortInspoState; nothing is moved or stored. */
+  function sortInspo() {
+    var who = need(), all = pile(who), list = all.slice(0, I.SORT_BATCH);
+    open(who);
+    if (!env.inspoSort) t.fail('Sorting isn’t available here.');
+    if (list.length < 2) t.fail('There’s nothing to sort.');
+    var j = INSPO_JOBS[jobKey('sort')] = { at: env.now().getTime(), state: 'working', more: all.length - list.length }, ids = list.map(function (r) { return r.id; });
+    env.inspoSort(aiCtx(who, list), function (res) { j.groups = tidy(res && res.groups, ids, who); j.aside = t.list(res && res.aside).filter(function (id) { return ids.indexOf(id) >= 0; }); j.state = 'done'; });
+    return sortInspoState();
+  }
+  /** Each item once, only items that were asked about, plain names, her own folders where the name matches. */
+  function tidy(groups, ids, who) {
+    var used = {}, out = [], have = live(who);
+    t.list(groups).forEach(function (g) {
+      var name = t.text(g && g.name, 40), pick = t.list(g && g.items).filter(function (id) { if (ids.indexOf(id) < 0 || used[id]) return false; used[id] = true; return true; });
+      if (!key(name) || !pick.length) { pick.forEach(function (id) { delete used[id]; }); return; }
+      var f = called(have, name), same = out.filter(function (o) { return key(o.name) === key(name); })[0];
+      if (same) same.items = same.items.concat(pick);
+      else out.push({ name: f ? f.name : name, folderId: f ? f.id : '', items: pick });
+    });
+    return out.slice(0, 8);
+  }
+  function sortInspoState() {
+    var who = need(), j = job('sort');
+    if (!j) return { state: 'none' };
+    if (j.state !== 'done') return { state: 'working' };
+    var still = {}; pile(who).forEach(function (r) { still[r.id] = true; });
+    return { state: 'done', more: j.more, aside: t.list(j.aside).filter(function (id) { return still[id]; }).length,
+      groups: t.list(j.groups).map(function (g) { return { name: g.name, folderId: g.folderId, items: g.items.filter(function (id) { return still[id]; }) }; }).filter(function (g) { return g.items.length; }) };
+  }
+  /** She OK'd one group: only now do its items move, and only ones still in No folder. */
+  function okInspoGroup(p) {
+    var who = need(); p = p || {};
+    return env.lock(function () {
+      var here = {}; pile(who).forEach(function (r) { here[r.id] = true; });
+      var go = t.list(p.items).filter(function (id, i, a) { return here[id] && a.indexOf(id) === i; });
+      if (!go.length) t.fail('There’s nothing left in that group.');
+      var name = t.text(p.name, 40), f = p.folderId ? folder(p.folderId) : called(open(who), name), made = !f, id = f ? f.id : makeFolder(who, name);
+      go.forEach(function (x) { env.table('inspiration').update(x, { folderId: id, updated: t.nowIso() }); });
+      return { folderId: id, made: made, items: go };
+    });
+  }
+  /** Undo for one OK'd group: its items go back to No folder, and a folder made just for them goes too. */
+  function undoInspoGroup(p) {
+    var who = need(); p = p || {};
+    return env.lock(function () {
+      folder(p.folderId);
+      var ids = t.list(p.items);
+      items().forEach(function (r) { if (r.folderId === p.folderId && ids.indexOf(r.id) >= 0) env.table('inspiration').update(r.id, { folderId: '' }); });
+      if (p.made === true && !items().some(function (r) { return r.folderId === p.folderId; })) env.table('inspofolders').update(p.folderId, { deleted: true, updated: t.nowIso() });
+      return { ok: true };
+    });
+  }
+  /** After a save: one folder it might go in. Asked for separately, so the save itself never waits for it. */
+  function suggestInspo(id) {
+    var who = need(), r = get(id);
+    if (!env.inspoSort || r.locked || folderOf(r, who) || live(who).some(function (x) { return x.locked; })) return { state: 'done', name: '' };
+    var j = INSPO_JOBS[jobKey('new|' + id)] = { at: env.now().getTime(), state: 'working' };
+    env.inspoSort(Object.assign(aiCtx(who, [r]), { one: true }), function (res) { j.groups = tidy(res && res.groups, [id], who); j.state = 'done'; });
+    return suggestInspoState(id);
+  }
+  function suggestInspoState(id) {
+    var who = need(), j = job('new|' + id);
+    if (!j) return { state: 'done', name: '' };
+    if (j.state !== 'done') return { state: 'working' };
+    var r = items().filter(function (x) { return x.id === id; })[0], g = j.groups[0];
+    return g && r && !folderOf(r, who) ? { state: 'done', name: g.name, folderId: g.folderId } : { state: 'done', name: '' };
+  }
+
   function addInspiration(p) {
     var role = t.need(['admin', 'artist']);
     p = p || {};
@@ -9600,7 +9819,7 @@ function tideInspo(env, t) {
     return env.lock(function () {
       var id = env.nextId('IN', 4), now = t.nowIso();
       env.table('inspiration').append({ id: id, created: now, createdBy: role, private: role === 'artist', url: url, source: sourceOf(url), note: note, tags: tags(p.tags),
-        photoIds: [], thumbIds: [], folderUrl: '', topicId: '', ideaId: '', deleted: false, updated: now });
+        photoIds: [], thumbIds: [], folderUrl: '', folderId: me() && p.folderId ? folder(p.folderId).id : '', topicId: '', ideaId: '', deleted: false, updated: now });
       return { id: id };
     });
   }
@@ -9612,6 +9831,7 @@ function tideInspo(env, t) {
       if ('url' in ch) { out.url = cleanUrl(ch.url); out.source = sourceOf(out.url); if (out.url !== r.url) { out.embed = ''; out.embedTries = 0; } }
       if ('note' in ch) out.note = t.text(ch.note, 2000);
       if ('tags' in ch) out.tags = tags(ch.tags);
+      if ('folderId' in ch && me()) out.folderId = ch.folderId ? folder(ch.folderId).id : '';
       env.table('inspiration').update(id, out);
       return { ok: true };
     });
@@ -9651,15 +9871,20 @@ function tideInspo(env, t) {
   }
 
   function snapshot(role) {
+    var who = me();
     return t.rows('inspiration').filter(function (r) { return !r.deleted; }).map(function (r) {
       // what she writes about it is hers; the admin sees the picture and the link, never her words
       var hide = r.private && !(env.user.role === 'artist' && (env.user.realRole || env.user.role) === 'artist');
-      return { id: r.id, url: r.url || '', source: r.source || '', embed: r.embed || '', note: hide ? '' : r.note || '', private: r.private === true, locked: r.locked === true, tags: t.list(r.tags), thumbIds: t.list(r.thumbIds),
+      var o = { id: r.id, url: r.url || '', source: r.source || '', embed: r.embed || '', note: hide ? '' : r.note || '', private: r.private === true, locked: r.locked === true, tags: t.list(r.tags), thumbIds: t.list(r.thumbIds),
         photoUrls: t.list(r.photoIds).map(function (x) { return env.files.viewUrl(x); }), topicId: r.topicId || '', by: r.createdBy === 'artist' ? env.brand.artistName : (env.brand.adminName || 'admin'), created: r.created };
+      if (who) o.folderId = folderOf(r, who);   // hers alone: the admin's list has no trace of her folders
+      return o;
     }).sort(function (a, b) { return a.created < b.created ? 1 : -1; });
   }
 
-  return { snapshot: snapshot, checkEmbeds: checkEmbeds, tags: I.TAGS, api: { addInspiration: addInspiration, updateInspiration: updateInspiration, deleteInspiration: deleteInspiration, talkAboutInspiration: talkAbout } };
+  return { snapshot: snapshot, folders: folders, checkEmbeds: checkEmbeds, tags: I.TAGS, api: { saveInspoFolder: saveInspoFolder, removeInspoFolder: removeInspoFolder, restoreInspoFolder: restoreInspoFolder, moveInspo: moveInspo,
+    sortInspo: sortInspo, sortInspoState: sortInspoState, okInspoGroup: okInspoGroup, undoInspoGroup: undoInspoGroup, suggestInspo: suggestInspo, suggestInspoState: suggestInspoState,
+     addInspiration: addInspiration, updateInspiration: updateInspiration, deleteInspiration: deleteInspiration, talkAboutInspiration: talkAbout } };
 }
 
 /**
@@ -14306,6 +14531,37 @@ var Kit = (function () {
       }
     });
   }
+  /** "From your Instagram": her posts become her website's portfolio (Dev HQ's portfolio kit, on the PC). */
+  function paintPortfolio(box, again) {
+    api('portfolio').then(function (P) {
+      if (!document.contains(box)) return;
+      box.textContent = '';
+      if (!P || !P.available) return;
+      var sec = section('From your Instagram');
+      var line = !P.linked.ok ? (ADMIN ? 'Link Instagram in Settings › Posting, and her posts become her website’s portfolio by themselves.' : 'Once Instagram is linked, your posts become your website’s portfolio by themselves.')
+        : P.busy ? (P.job && P.job.note) || 'Looking at your posts…'
+        : !P.built ? 'Linked as @' + P.linked.username + '. Your posts are brought in within half an hour.'
+        : P.count + ' of your posts are on your website' + (P.auto ? '. New ones go on by themselves.' : '. New ones wait for you.');
+      sec.appendChild(h('p', { class: 'body-m', style: 'margin:0 4px 10px', text: line }));
+      var l = h('div', { class: 'list' });
+      (P.recent || []).forEach(function (r) {
+        l.appendChild(h('div', { class: 'li' }, h('img', { src: r.thumb, alt: '', style: 'width:48px;height:60px;object-fit:cover;border-radius:10px;flex:none' }),
+          h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.title }), h('div', { class: 'li-sup', text: 'Added ' + ago(r.at) })),
+          btn('text', 'Undo', { sm: true, icon: 'undo', onclick: function (e) { K.setBusy(e.currentTarget, true); api('portfolioDo', 'undo', r.id).then(function () { K.haptic('success'); toast('Taken off your website.'); paintPortfolio(box); }).catch(fail); } })));
+      });
+      (P.held || []).forEach(function (r) {
+        l.appendChild(h('div', { class: 'li', style: 'align-items:flex-start' }, h('img', { src: r.thumb, alt: '', style: 'width:48px;height:60px;object-fit:cover;border-radius:10px;flex:none' }),
+          h('div', { class: 'grow' }, h('div', { class: 'li-head', text: r.title }), h('div', { class: 'li-sup wrap2', text: 'Not added: ' + r.why })),
+          btn('tonal', 'Add it', { sm: true, icon: 'add', onclick: function (e) { K.setBusy(e.currentTarget, true); api('portfolioDo', 'putOn', r.id).then(function () { K.haptic('success'); toast('Added to your website.'); paintPortfolio(box); }).catch(fail); } })));
+      });
+      if (l.children.length) sec.appendChild(l);
+      if (P.linked.ok) sec.appendChild(h('div', { class: 'btn-row', style: 'margin-top:8px;flex-wrap:wrap' },
+        btn('text', 'Look now', { sm: true, icon: 'refresh', disabled: P.busy, onclick: function (e) { K.setBusy(e.currentTarget, true); api('portfolioDo', 'check').then(function () { toast('Looking at your posts…'); setTimeout(function () { paintPortfolio(box); }, 4000); }).catch(fail); } }),
+        btn('text', P.auto ? 'Let me choose each one' : 'Add them by themselves', { sm: true, icon: P.auto ? 'pan_tool' : 'bolt', onclick: function (e) { K.setBusy(e.currentTarget, true); api('portfolioDo', P.auto ? 'autoOff' : 'auto').then(function () { paintPortfolio(box); }).catch(fail); } })));
+      box.appendChild(sec);
+      if (P.busy && !again) setTimeout(function () { paintPortfolio(box, false); }, 5000);
+    }).catch(function () {});
+  }
   function viewSite(main) {
     var E = siteEd();
     pageTitle(main, 'Website', ADMIN ? 'Her website, with her changes on a draft. Tap anything to change it.' : 'Tap anything on your website to change it. Nothing goes live until you publish.');
@@ -14345,6 +14601,10 @@ var Kit = (function () {
       btn('tonal', 'Colours and fonts', { icon: 'palette', sm: true, onclick: openSiteStyle }),
       btn('tonal', 'Ask for more', { icon: 'forum', sm: true, onclick: function () { openSiteAsk(null); } }),
       K.iconBtn('more_horiz', 'More: pages, your own address' + (E.changed ? ', start again from live' : ''), function () { K.haptic(); siteMore(); })), 3));
+    // her portfolio from Instagram: what went on by itself (each with Undo), and anything held back
+    var pfBox = h('div');
+    main.appendChild(rise(pfBox, 4));
+    paintPortfolio(pfBox);
     // what she's asked for: the bigger changes, and where each is up to
     var asks = E.asks || [];
     if (asks.length) {
@@ -15961,6 +16221,55 @@ var Kit = (function () {
       look: { paper: 'var(--surface-lowest, #fff)', ink: 'var(--on-surface, #23302f)', soft: 'var(--surface-low, #f1eadf)', line: 'rgb(0 0 0 / .12)', main: 'var(--primary, #23465a)', onMain: 'var(--on-primary, #fff)', font: 'Figtree, system-ui, sans-serif', radius: 24 } });
   }
 
+  // ------------------------------------------------------------------ "Help make it easier": asked once, nothing is noticed before a yes
+  function usageHere() { return !!window.UsageWatch && !window.TIDE_DEMO && !previewing() && !(S.data && S.data.practice); }
+  function usageOn() {
+    window.UsageWatch.start({ view: function () { return String(S.view || ''); },
+      send: function (sit, events) { fetch('usage', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ s: sit, events: events }) }).catch(function () {}); } });
+  }
+  function usageWords() {
+    var who = ADMIN ? 'your PC' : adminName() + '’s computer';
+    return [h('p', { class: 'body-l', 'data-full': '1', style: 'margin:0 0 10px', text: 'Tide Book can notice which buttons you tap, when you go back, and how long each screen is open. It shows ' + (ADMIN ? 'you' : adminName()) + ' what’s fiddly, so it can be made easier.' }),
+      h('p', { class: 'body-l', 'data-full': '1', style: 'margin:0 0 10px', text: 'It never sees what you write, your pictures, your notes or your numbers: only Tide Book’s own button names.' }),
+      h('p', { class: 'body-m', 'data-full': '1', style: 'margin:0', text: 'What’s noticed stays on ' + who + ' for 90 days. A short summary, like “this button is hard to find”, may be sent to Claude, an outside AI service, when changes are planned.' })];
+  }
+  function usageSave(b, yes, then) {
+    if (b) K.setBusy(b, true);
+    api('saveUsageChoice', yes).then(function () { if (b) K.setBusy(b, false); K.haptic('success'); if (yes) usageOn(); else window.UsageWatch.stop(); toast(yes ? '✓ Thank you. You can change it in Settings.' : '✓ Nothing will be noticed.'); if (then) then(); }).catch(function (e) { if (b) K.setBusy(b, false); fail(e); });
+  }
+  function usageSoon() {
+    if (!usageHere()) return;
+    api('usageChoice').then(function (c) {
+      if (!c || !c.available) return;
+      if (c.yes) return usageOn();
+      if (c.answered) return;
+      // never on top of something else, and not again for a week if it was closed without an answer
+      var later = 0; try { later = Number(localStorage.getItem('tb-usage-later')) || 0; } catch (e) {}
+      if (Date.now() < later || K.openSheets() || document.querySelector('.dialog-wrap')) return;
+      try { localStorage.setItem('tb-usage-later', String(Date.now() + 7 * 86400000)); } catch (e) {}
+      K.sheet({ title: 'Help make Tide Book easier?', build: function (ctl) {
+        usageWords().forEach(function (p) { ctl.body.appendChild(p); });
+        ctl.body.appendChild(h('p', { class: 'body-m', style: 'margin:10px 0 0', text: 'Tide Book works just the same either way.' }));
+        var yes = btn('filled', 'Yes, that’s fine', { icon: 'check', lg: true, block: true, onclick: function () { usageSave(yes, true, ctl.close); } }), no = btn('outlined', 'No thanks', { lg: true, block: true, onclick: function () { usageSave(no, false, ctl.close); } });
+        ctl.foot.appendChild(h('div', { style: 'display:grid;gap:8px' }, yes, no));
+      } });
+    }).catch(function () {});
+  }
+  /** Settings › Help make it easier: the same choice, any time. */
+  function usageSection() {
+    var sec = section('Help make it easier'), card = h('div', { class: 'card pad', 'data-full': '1', style: '--sheet-bg:var(--surface-lowest)' }, h('p', { class: 'body-m', text: 'Looking…' }));
+    sec.appendChild(card);
+    var out = fold(sec, 'set-usage', 'touch_app', 'Whether Tide Book may notice what’s fiddly', false);
+    api('usageChoice').then(function (c) {
+      card.textContent = '';
+      if (!c || !c.available) { card.appendChild(h('p', { class: 'body-m', style: 'margin:0', text: 'This can’t be changed right now. Try again later.' })); return; }
+      usageWords().forEach(function (p) { card.appendChild(p); });
+      card.appendChild(h('div', { class: 'switch-row', style: 'padding:14px 0 4px' }, h('div', {}, h('div', { class: 'title-m', text: 'Notice what’s fiddly' }), h('div', { class: 'body-m', text: 'Switching it off deletes what was noticed. Weekly summaries already made are kept.' })),
+        K.switchBtn({ checked: c.yes === true, label: 'Notice what’s fiddly', onChange: function (v) { usageSave(null, v); } })));
+    }).catch(function () { card.textContent = 'This can’t be changed right now. Try again later.'; });
+    return out;
+  }
+
   // ------------------------------------------------------------------ what's new since she was last here (TIDE_CHANGES, LogicSetup.gs)
   function newsList(all) {
     var N = S.data.news || { unseen: [], list: [] };
@@ -16442,6 +16751,112 @@ var Kit = (function () {
     if (i.private && (ADMIN || previewing())) return 'Her note on it is private';
     return 'Tap to add what caught your eye';
   }
+  // ------------------------------------------------------------------ Inspo's own folders (hers; the admin has none of this)
+  function inspoFolders() { var F = S.data.inspoFolders; return F && !F.locked ? F : null; }
+  function inspoFolderName(id) { var F = inspoFolders(), f = F && byId(F.list, id); return f ? f.name : ''; }
+  function askFolder(title, value) { return K.ask({ title: title, label: 'Its name', value: value || '', maxlength: 40, confirmLabel: value ? 'Save' : 'Make it' }); }
+  function inspoFolderMore(id) {
+    var name = inspoFolderName(id);
+    K.sheet({ title: name, build: function (ctl) {
+      var acts = h('div', { class: 'next-opts' });
+      function a(ic, label, why, fn) { acts.appendChild(h('button', { class: 'next-opt', type: 'button', onclick: function () { ctl.close(); setTimeout(fn, 280); } }, h('span', { class: 'next-opt-ic' }, icon(ic)), h('span', { class: 'grow' }, h('span', { class: 'next-opt-label', text: label }), why ? h('span', { class: 'next-opt-why', text: why }) : null))); }
+      a('edit', 'Rename the folder', '', function () { askFolder('The folder’s name', name).then(function (v) { if (v) api('saveInspoFolder', v, id).then(refresh).then(render).catch(fail); }); });
+      a('folder_open', 'Remove the folder', 'What’s in it stays, in No folder.', function () {
+        api('removeInspoFolder', id).then(refresh).then(function () { S.inspoFolder = ''; S.inspoTag = ''; render(); undoCard('Folder removed.', function () { return api('restoreInspoFolder', id); }, 'Folder put back.', 12); }).catch(fail);
+      });
+      ctl.body.appendChild(acts);
+    } });
+  }
+  function newInspoFolder() {
+    return askFolder('A new folder').then(function (v) { return v ? api('saveInspoFolder', v).then(function (r) { return refresh().then(function () { return r.id; }); }) : null; });
+  }
+  /** After a save: one folder it might go in, offered quietly. Ignoring it changes nothing. */
+  function offerInspoFolder(id) {
+    var tries = 0;
+    function poll(r) {
+      if (r.state === 'working') { if (++tries < 20) setTimeout(function () { api('suggestInspoState', id).then(poll).catch(function () {}); }, 2000); return; }
+      if (!r.name) return;
+      var old = document.getElementById('inspo-offer'); if (old) old.remove();
+      if (document.getElementById('undo-card') || K.openSheets()) { if (++tries < 20) setTimeout(function () { poll(r); }, 2000); return; }
+      var card = h('div', { id: 'inspo-offer', class: 'undo-card', role: 'status' }, h('span', { class: 'grow io-name', text: 'Put it in “' + r.name + '”?' }));
+      function gone() { card.classList.add('out'); setTimeout(function () { card.remove(); }, 300); }
+      var yes = h('button', { class: 'undo-btn press', type: 'button', onclick: function () {
+        yes.disabled = true;
+        api('okInspoGroup', { folderId: r.folderId, name: r.name, items: [id] }).then(function (d) { return refresh().then(function () { card.remove(); render(); undoCard('In ' + r.name + '.', function () { return api('undoInspoGroup', d); }, 'Back in No folder.'); }); }).catch(function (e) { yes.disabled = false; fail(e); });
+      } }, icon('check'), 'Yes');
+      card.append(yes, h('button', { class: 'undo-btn press', type: 'button', 'aria-label': 'No thanks', onclick: gone }, icon('close')));
+      document.body.appendChild(card);
+      setTimeout(gone, 15000);
+    }
+    api('suggestInspo', id).then(poll).catch(function () {});
+  }
+  /** "Sort my pile": a few groups, one at a time. Nothing moves until she OKs a group. */
+  function openInspoSort() {
+    var G = [], at = 0, done = 0, info = {}, closed = false, last = null;
+    K.sheet({ title: 'Sort my pile', tall: true, onClose: function () { closed = true; render(); }, build: function (ctl) {
+      function wait(text) { ctl.body.textContent = ''; ctl.foot.textContent = ''; ctl.body.appendChild(h('div', { class: 'empty', role: 'status' }, icon('hourglass_top'), h('p', { class: 'title-m', text: text }), h('p', { class: 'body-m', text: 'This can take a minute. Nothing moves until you say so.' }))); }
+      function poll(r, n) {
+        if (closed) return;
+        if (r.state === 'working') { if (n > 150) { end('That’s taking too long.'); return; } setTimeout(function () { if (!closed) api('sortInspoState').then(function (x) { poll(x, n + 1); }).catch(function () { end('That didn’t come through.'); }); }, 2000); return; }
+        info = r; G = (r.groups || []).map(function (g) { return { name: g.name, folderId: g.folderId, items: g.items.slice() }; }); draw();
+      }
+      /** Undo for the group she just OK'd, in the sheet (a bar at the bottom would cover OK): back to that group. */
+      function undoLine() {
+        if (!last) return null;
+        var l = last, b = btn('text', 'Undo', { sm: true, icon: 'undo', bare: false, onclick: function () {
+          K.setBusy(b, true);
+          api('undoInspoGroup', l.d).then(refresh).then(function () { done--; at = l.at; if (l.d.made) G.forEach(function (x) { if (x.folderId === l.d.folderId) x.folderId = ''; }); last = null; draw(); }).catch(function (e) { K.setBusy(b, false); fail(e); });
+        } });
+        return h('div', { class: 'is-undo', role: 'status' }, h('span', { class: 'grow', text: 'In ' + l.name + '.' }), b);
+      }
+      function end(say) {
+        ctl.body.textContent = ''; ctl.foot.textContent = '';
+        var lines = [];
+        if (say) lines.push(say + ' Everything is still in No folder.');
+        else {
+          if (info.aside) lines.push((info.aside === 1 ? 'One couldn’t be sorted' : info.aside + ' couldn’t be sorted') + ' right now, so ' + (info.aside === 1 ? 'it’s' : 'they’re') + ' still in No folder. Open one to choose its folder.');
+          if (done && info.more > 0) lines.push('There are more. Sort again when you’re ready.');
+          if (!lines.length && !done) lines.push('Nothing has moved.');
+        }
+        if (last) ctl.body.appendChild(undoLine());
+        ctl.body.appendChild(h('div', { class: 'empty', 'data-full': '1' }, icon(done ? 'check_circle' : 'folder_open'), h('p', { class: 'title-m', text: done ? 'Done' : 'Nothing sorted' }), lines.map(function (l) { return h('p', { class: 'body-m', text: l }); })));
+        ctl.foot.appendChild(btn('filled', 'Close', { lg: true, block: true, onclick: function () { ctl.close(); } }));
+      }
+      function where(it) {
+        var g = G[at], opts = G.map(function (x, i) { return i > at ? { value: 'g' + i, label: x.name } : null; }).filter(Boolean);
+        inspoFolders().list.forEach(function (f) { if (f.id !== g.folderId && !G.some(function (x, i) { return i > at && x.folderId === f.id; })) opts.push({ value: 'f' + f.id, label: f.name }); });
+        opts.push({ value: 'none', label: 'Leave it in No folder' });
+        K.pickFromList({ title: 'Where should it go?', options: opts }).then(function (v) {
+          if (!v) return;
+          g.items = g.items.filter(function (x) { return x !== it.id; });
+          if (v.charAt(0) === 'g') G[Number(v.slice(1))].items.push(it.id);
+          else if (v.charAt(0) === 'f') G.push({ name: inspoFolderName(v.slice(1)), folderId: v.slice(1), items: [it.id] });
+          draw();
+        });
+      }
+      function draw() {
+        while (at < G.length && !G[at].items.length) at++;
+        if (at >= G.length) { end(''); return; }
+        var g = G[at], left = G.filter(function (x, i) { return i >= at && x.items.length; }).length;
+        ctl.body.textContent = ''; ctl.foot.textContent = ''; ctl.body.scrollTop = 0;
+        if (last) ctl.body.appendChild(undoLine());
+        ctl.body.append(h('div', { class: 'label-l', text: left === 1 ? 'The last one' : left + ' to look at' }), h('h3', { class: 'is-name', text: g.name }),
+          h('p', { class: 'body-m', style: 'margin:0 0 12px', text: 'Tap any that don’t belong.' }));
+        var grid = h('div', { class: 'inspo-grid' });
+        g.items.forEach(function (id) { var it = byId(inspoList(), id); if (it) grid.appendChild(h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Move: ' + inspoTldr(it), onclick: function () { where(it); } }, inspoPreview(it, 'inspo-img'), h('div', { class: 'inspo-cap' }, h('div', { class: 'body-s inspo-tldr', text: inspoTldr(it) })))); });
+        ctl.body.appendChild(grid);
+        var ok = btn('filled', 'OK, put ' + (g.items.length === 1 ? 'it' : 'them') + ' there', { icon: 'check', lg: true, block: true, onclick: function () {
+          K.setBusy(ok, true);
+          api('okInspoGroup', { folderId: g.folderId, name: g.name, items: g.items }).then(function (d) { return refresh().then(function () { last = { d: d, at: at, name: g.name }; done++; at++; K.haptic('success'); G.forEach(function (x, i) { if (i >= at && x.name === g.name) x.folderId = d.folderId; }); draw(); }); }).catch(function (e) { K.setBusy(ok, false); fail(e); });
+        } });
+        ctl.foot.appendChild(h('div', { style: 'display:grid;gap:8px' }, ok, h('div', { class: 'btn-row', style: 'justify-content:center' },
+          btn('text', 'Rename', { icon: 'edit', onclick: function () { askFolder('The folder’s name', g.name).then(function (v) { if (!v) return; g.name = v.trim(); var f = inspoFolders().list.filter(function (x) { return x.name.toLowerCase() === g.name.toLowerCase(); })[0]; g.folderId = f ? f.id : ''; draw(); }); } }),
+          btn('text', 'Skip', { onclick: function () { at++; last = null; draw(); } }))));
+      }
+      wait('Looking through your pile…');
+      api('sortInspo').then(function (r) { poll(r, 0); }).catch(function (e) { end(''); fail(e); });
+    } });
+  }
   function viewInspo(main, inNotes) {
     var all = inspoList(), tag = S.inspoTag || '', pbi = inNotes ? null : privacyBar();
     if (pbi) main.appendChild(rise(h('div', { style: 'margin-bottom:14px' }, pbi), 1));
@@ -16449,11 +16864,21 @@ var Kit = (function () {
       h('div', { class: 'title-m', text: 'Saw something that inspired you?' }),
       h('p', { class: 'body-m', style: 'margin:6px 0 12px', text: 'Save a screenshot or paste the link to the post, and a word on what caught your eye.' }),
       btn('filled', 'Save inspiration', { icon: 'add', onclick: function () { openInspo(null); } })), 2));
+    var F = inspoFolders(), every = all;
+    if (F) {
+      var loose = all.filter(function (i) { return !i.folderId; }), cur = S.inspoFolder || '';
+      if ((cur === '__none' && !loose.length) || (cur && cur !== '__none' && !byId(F.list, cur))) cur = S.inspoFolder = '';
+      if (all.length || F.list.length) main.appendChild(rise(folderRow({ label: 'Inspo folders', roomy: true, value: cur, list: [['', 'All']].concat(F.list.map(function (x) { return [x.id, x.name, 'folder_open', true]; })).concat(loose.length && F.list.length ? [['__none', 'No folder']] : []),
+        onPick: function (v) { S.inspoFolder = v; S.inspoTag = ''; render(); }, onMore: inspoFolderMore,
+        onAdd: function () { newInspoFolder().then(function (id) { if (id) { S.inspoFolder = id; S.inspoTag = ''; render(); } }).catch(fail); } }), 2));
+      if (cur) all = all.filter(function (i) { return cur === '__none' ? !i.folderId : i.folderId === cur; });
+      if (F.sort && loose.length >= 3 && (!cur || cur === '__none')) main.appendChild(rise(h('div', { style: 'margin:0 0 12px' }, btn('tonal', 'Sort my pile', { icon: 'auto_awesome_motion', onclick: openInspoSort })), 2));
+    }
     if (all.length) main.appendChild(rise(h('div', { style: 'margin-bottom:12px' }, K.choices({ row: true, label: 'Show', value: tag, allowNone: true,
       options: [{ value: '', label: 'All' }].concat((S.data.inspoTags || []).filter(function (x) { return all.some(function (i) { return i.tags.indexOf(x) >= 0; }); })),
       onChange: function (v) { S.inspoTag = v; render(); } })), 2));
     var shown = all.filter(function (i) { return !tag || i.tags.indexOf(tag) >= 0; });
-    if (!shown.length) { main.appendChild(rise(emptyState('favorite', all.length ? 'Nothing with that tag' : 'Nothing saved yet', 'Screenshots and links you save show up here.'), 3)); return; }
+    if (!shown.length) { main.appendChild(rise(emptyState('favorite', all.length ? 'Nothing with that tag' : every.length ? 'Nothing in here yet' : 'Nothing saved yet', every.length && !all.length ? 'Open one, then choose its folder.' : 'Screenshots and links you save show up here.'), 3)); return; }
     var grid = h('div', { class: 'inspo-grid' });
     shown.forEach(function (i, n) {
       var card = swipeRow('inspiration', i, h('button', { class: 'inspo-card press soft', type: 'button', 'aria-label': 'Open', onclick: function () { openInspo(i.id); } },
@@ -16476,7 +16901,7 @@ var Kit = (function () {
   function openInspo(id, preset) {
     var it = id ? byId(inspoList(), id) : null;
     preset = preset || {};
-    var f = { url: it ? it.url : (preset.url || ''), note: it ? it.note : (preset.note || ''), tags: it ? it.tags.slice() : [],
+    var f = { url: it ? it.url : (preset.url || ''), note: it ? it.note : (preset.note || ''), tags: it ? it.tags.slice() : [], folderId: it ? it.folderId || '' : inspoFolderName(S.inspoFolder) ? S.inspoFolder : '',
       files: (preset.files || []).slice(0, 4).map(function (file) { return { file: file, url: URL.createObjectURL(file) }; }) }, dirty = !!(preset.url || preset.files);
     K.sheet({
       title: it ? (it.source ? 'From ' + it.source : 'Inspiration') : 'Save inspiration', tall: true, guard: function () { return dirty; }, onClose: function () { render(); },
@@ -16500,6 +16925,17 @@ var Kit = (function () {
         });
         s4.appendChild(chips);
         ctl.body.append(s1, s2, s3, s4);
+        if (inspoFolders()) {
+          var s5 = sheetSection('Folder'), fv = h('div', { class: 'v' }), fb = h('button', { type: 'button', class: 'pick press soft' }, h('div', { class: 'grow' }, h('div', { class: 'k', text: 'In' }), fv), icon('expand_more'));
+          var paintF = function () { fv.textContent = inspoFolderName(f.folderId) || 'No folder'; };
+          fb.addEventListener('click', function () {
+            K.pickFromList({ title: 'Which folder?', value: f.folderId, options: [{ value: '', label: 'No folder' }].concat(inspoFolders().list.map(function (x) { return { value: x.id, label: x.name }; })).concat([{ value: '__new', label: 'A new folder…' }]) }).then(function (v) {
+              if (v === undefined) return;
+              (v === '__new' ? newInspoFolder() : Promise.resolve(v)).then(function (id) { if (id == null) return; f.folderId = id; dirty = true; paintF(); }).catch(fail);
+            });
+          });
+          paintF(); s5.appendChild(fb); ctl.body.appendChild(s5);
+        }
         if (it) {
           ctl.body.appendChild(h('div', { class: 'field-gap', style: 'margin-top:18px' },
             btn('tonal', it.topicId ? 'Open the talk about it' : 'Talk it through', { icon: 'forum', block: true, onclick: function (e) {
@@ -16517,10 +16953,11 @@ var Kit = (function () {
         save.addEventListener('click', function () {
           if (!f.url.trim() && !f.files.length && !(it && it.thumbIds.length) && !f.note.trim()) { toast('Add a screenshot or paste a link.'); return; }
           K.setBusy(save, true);
-          var step = it ? api('updateInspiration', it.id, { url: f.url, note: f.note, tags: f.tags }).then(function () { return it.id; })
-            : api('addInspiration', { url: f.url, note: f.note, tags: f.tags, hasPhotos: f.files.length > 0 }).then(function (r) { return r.id; });
-          step.then(function (iid) { return uploadAll('inspiration', iid, f.files, function (i, n) { K.setLabel(save, 'Screenshot ' + i + ' of ' + n); }); })
-            .then(refresh).then(function () { dirty = false; K.haptic('success'); toast(it ? 'Saved.' : 'Saved to your inspiration.'); ctl.close(); })
+          var newId = '';
+          var step = it ? api('updateInspiration', it.id, inspoFolders() ? { url: f.url, note: f.note, tags: f.tags, folderId: f.folderId } : { url: f.url, note: f.note, tags: f.tags }).then(function () { return it.id; })
+            : api('addInspiration', { url: f.url, note: f.note, tags: f.tags, folderId: f.folderId, hasPhotos: f.files.length > 0 }).then(function (r) { return r.id; });
+          step.then(function (iid) { newId = it ? '' : iid; return uploadAll('inspiration', iid, f.files, function (i, n) { K.setLabel(save, 'Screenshot ' + i + ' of ' + n); }); })
+            .then(refresh).then(function () { dirty = false; K.haptic('success'); toast(it ? 'Saved.' : 'Saved to your inspiration.'); ctl.close(); if (newId && !f.folderId && inspoFolders() && inspoFolders().sort) offerInspoFolder(newId); })
             .catch(function (e) { K.setBusy(save, false); fail(e); });
         });
         ctl.foot.appendChild(save);
@@ -17742,15 +18179,10 @@ var Kit = (function () {
     var search = K.textField({ label: 'Search your notes', compact: true, value: S.noteQuery || '', onInput: function (v) { S.noteQuery = v; draw(); } });
     var tools = h('div', { class: 'nt-tools' }, h('div', { class: 'grow' }, search),
       K.iconBtn(S.noteGrid === false ? 'grid_view' : 'view_agenda', S.noteGrid === false ? 'Show as a grid' : 'Show as a list', function () { S.noteGrid = S.noteGrid === false; render(); }));
-    var fr = h('div', { class: 'filter-row nt-folders' });
-    [['', 'All notes'], ['__inspo', 'Inspo']].concat(folders.map(function (f) { return [f, f]; })).forEach(function (f) {
-      var b = h('button', { type: 'button', class: 'choice press soft', 'aria-pressed': String((S.noteFolder || '') === f[0]) }, f[0] ? icon(f[0] === '__inspo' ? 'favorite' : 'folder_open') : null, f[1]);
-      b.addEventListener('click', function () { if ((S.noteFolder || '') === f[0] && f[0] && f[0] !== '__inspo') { folderMore(f[0]); return; } S.noteFolder = f[0]; render(); });
-      fr.appendChild(b);
-    });
-    fr.appendChild(h('button', { type: 'button', class: 'choice press soft', 'aria-label': 'New folder', onclick: function () {
+    var fr = folderRow({ label: 'Folders', value: S.noteFolder || '', list: [['', 'All notes'], ['__inspo', 'Inspo', 'favorite']].concat(folders.map(function (f) { return [f, f, 'folder_open', true]; })),
+      onPick: function (v) { S.noteFolder = v; render(); }, onMore: folderMore, onAdd: function () {
       K.ask({ title: 'A new folder', label: 'Its name', maxlength: 40, confirmLabel: 'Make it' }).then(function (v) { if (v) api('saveNoteFolder', v).then(refresh).then(function () { S.noteFolder = v.trim(); render(); }).catch(fail); });
-    } }, icon('create_new_folder'), 'Folder'));
+    } });
     main.appendChild(rise(h('div', { class: 'nt-top' }, S.noteFolder === '__inspo' ? null : tools, fr), 2));
     if (S.noteFolder === '__inspo') { viewInspo(main, true); fab(main, 'Inspo', 'add', function () { openInspo(null); }); return; }
     var box = h('div');
@@ -17772,6 +18204,18 @@ var Kit = (function () {
     }
     draw();
     fab(main, 'New note', 'edit_note', function () { openNote(null, { folder: S.noteFolder || '' }); });
+  }
+  /** A row of folder buttons (Notes and Inspo). list: [value, name, icon, hers?]; tapping the one that's open again offers
+   *  rename and remove for her own folders. */
+  function folderRow(o) {
+    var fr = h('div', { class: 'filter-row nt-folders' + (o.roomy ? ' roomy' : ''), role: 'group', 'aria-label': o.label });
+    o.list.forEach(function (f) {
+      var on = o.value === f[0];
+      fr.appendChild(h('button', { type: 'button', class: 'choice press soft', title: f[1], 'aria-pressed': String(on), onclick: function () { if (on && f[3]) o.onMore(f[0]); else o.onPick(f[0]); } }, f[2] ? icon(f[2]) : null, h('span', { class: 'fr-name', text: f[1] })));
+    });
+    fr.appendChild(h('button', { type: 'button', class: 'choice press soft', 'aria-label': 'New folder', onclick: o.onAdd }, icon('create_new_folder'), 'Folder'));
+    setTimeout(function () { var b = fr.querySelector('[aria-pressed=true]'); if (b && b.offsetLeft + b.offsetWidth > fr.clientWidth) fr.scrollLeft = b.offsetLeft - 24; }, 0);
+    return fr;
   }
   function folderMore(name) {
     K.sheet({ title: name, build: function (ctl) {
@@ -23929,6 +24373,13 @@ var Kit = (function () {
     main.appendChild(rise(fold(pm, 'set-money', 'sell', f.defaultMarkupPct + '% markup · ' + rounding + ' · ' + (f.gstOn ? 'GST registered' : 'no GST'), false), 1));
 
     if (!window.TIDE_DEMO && !previewing()) main.appendChild(rise(consentSection(), 2));
+    if (usageHere()) main.appendChild(rise(usageSection(), 2));
+
+    // business info: how long before something's due Home says so
+    var bs = section('Business info'), bd = { v: (S.data.biz || {}).days };
+    var bSave = btn('tonal', 'Save', { icon: 'check', block: true, onclick: function () { K.setBusy(bSave, true); api('saveBizDays', bd.v).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (e) { K.setBusy(bSave, false); fail(e); }); } });
+    bs.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' }, K.textField({ label: 'Days before', suffix: 'days', inputmode: 'numeric', value: bd.v, help: 'Home says so this many days before something is due. 0 is on the day.', onInput: function (v) { bd.v = v; } }), bSave));
+    main.appendChild(rise(fold(bs, 'set-biz', 'folder_open', bd.v === 0 ? 'Home says so on the day' : 'Home says so ' + bd.v + (bd.v === 1 ? ' day' : ' days') + ' before', false), 3));
 
     // business info: how long before something's due Home says so
     var bs = section('Business info'), bd = { v: (S.data.biz || {}).days };
@@ -24095,7 +24546,7 @@ var Kit = (function () {
   }
 
   textSize(null);
-  refresh().then(render).then(function () { if (!takeShare() && !takeShortcut() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); consentSoon(function () { setTimeout(whatsNewSoon, 900); }); setTimeout(helperStart, 900); }, 600); }).catch(function (e) {
+  refresh().then(render).then(function () { if (!takeShare() && !takeShortcut() && !takeLinkReturn()) setTimeout(function () { artistWelcome(); consentSoon(function () { setTimeout(whatsNewSoon, 900); setTimeout(usageSoon, 2600); }); setTimeout(helperStart, 900); }, 600); }).catch(function (e) {
     var main = $('#main');
     main.textContent = '';
     main.appendChild(h('div', { class: 'empty', style: 'margin-top:48px' }, icon('cloud_off'),
