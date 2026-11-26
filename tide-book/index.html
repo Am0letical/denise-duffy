@@ -116,7 +116,7 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- no top bar: floating feedback bubble, and the "viewing as" pill ---------- */
 .fb-bubble {
-  position: fixed; top: calc(env(safe-area-inset-top) + 10px); right: 12px; z-index: 22; width: 40px; height: 40px; border: 0; border-radius: 50%;
+  position: fixed; top: calc(max(env(safe-area-inset-top), var(--notice-h, 0px)) + 10px); right: 12px; z-index: 22; width: 40px; height: 40px; border: 0; border-radius: 50%;
   display: flex; align-items: center; justify-content: center; color: var(--on-surface-variant);
   background: oklch(98.3% 0.007 80.7 / 0.82); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px);
   box-shadow: 0 1px 3px oklch(32.1% 0.088 251.4 / 0.16); transition: opacity 0.2s var(--ease), transform 0.25s var(--ease);
@@ -124,7 +124,7 @@ h1, h2, h3, p { margin: 0; }
 .fb-bubble .ms { font-size: 20px; }
 .fb-bubble.away { opacity: 0; transform: translateY(-56px); pointer-events: none; }
 .view-pill {
-  position: fixed; top: calc(env(safe-area-inset-top) + 12px); left: 50%; transform: translateX(-50%); z-index: 23; max-width: calc(100% - 128px);
+  position: fixed; top: calc(max(env(safe-area-inset-top), var(--notice-h, 0px)) + 12px); left: 50%; transform: translateX(-50%); z-index: 23; max-width: calc(100% - 128px);
   display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px 0 10px; border: 0; border-radius: 999px;
   background: var(--tertiary-container); color: var(--on-tertiary-container); font: 500 13px/18px var(--font); box-shadow: 0 1px 3px oklch(32.1% 0.088 251.4 / 0.16);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -668,7 +668,7 @@ table.data td.n, table.data th.n { text-align: right; }
 .ftile.off img { opacity: 0.45; }
 .ftile.sel { outline: 3px solid var(--primary); outline-offset: -3px; }
 .pick-n { position: absolute; top: 6px; left: 6px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: var(--primary); color: var(--on-primary, oklch(100% 0 0)); font: 600 13px/24px system-ui, sans-serif; text-align: center; }
-.pick-bar { position: sticky; top: 8px; z-index: 3; margin-bottom: 12px; }
+.pick-bar { position: sticky; top: calc(8px + var(--notice-h, 0px)); z-index: 3; margin-bottom: 12px; }
 .ftile .x { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border: 0; border-radius: 50%; background: oklch(20% 0.009 264.4 / 0.6); color: oklch(100% 0 0); display: flex; align-items: center; justify-content: center; }
 .ftile .x .ms { font-size: 18px; }
 .drop { width: 100%; border: 0; border-radius: var(--r-xl); padding: 26px 16px; background: var(--surface-lowest); box-shadow: inset 0 0 0 1.5px var(--outline-variant); display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--on-surface); text-align: center; }
@@ -1242,7 +1242,7 @@ img, video { max-width: 100%; }
 .view-pill.away { opacity: 0; transform: translate(-50%, -56px); pointer-events: none; }
 /* the Website tab */
 .nav-ind { width: 56px; }
-.site-top { position: sticky; top: calc(env(safe-area-inset-top) + 4px); z-index: 5; padding: 8px; margin: 0 -8px 10px; border-radius: var(--r-l); background: oklch(98.3% 0.007 80.7 / 0.92); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.site-top { position: sticky; top: calc(max(env(safe-area-inset-top), var(--notice-h, 0px)) + 4px); z-index: 5; padding: 8px; margin: 0 -8px 10px; border-radius: var(--r-l); background: oklch(98.3% 0.007 80.7 / 0.92); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
 .site-bar { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
 .site-page { all: unset; box-sizing: border-box; flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 10px; border-radius: var(--r-m); background: var(--surface-lowest); box-shadow: inset 0 0 0 1px var(--outline-variant); cursor: pointer; font: 500 14px/20px var(--font); }
 .site-page .grow { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1657,7 +1657,7 @@ body.map-full { overflow: hidden; }
 .mn-empty { padding: 14px; border-radius: var(--r-l); background: var(--surface-low); }
 .mn-empty p { margin: 0 0 10px; font: 400 14px/20px var(--font); color: var(--on-surface-variant); }
 .mn-view { display: flex; flex-direction: column; gap: 10px; min-height: calc(100dvh - 140px); }
-.mn-top { display: flex; align-items: center; gap: 6px; position: sticky; top: 0; z-index: 4; padding: 6px 0; background: var(--surface, oklch(97.5% 0.012 79.8)); }
+.mn-top { display: flex; align-items: center; gap: 6px; position: sticky; top: var(--notice-h, 0px); z-index: 4; padding: 6px 0; background: var(--surface, oklch(97.5% 0.012 79.8)); }
 .mn-top .grow { min-width: 0; display: flex; flex-direction: column; }
 .mn-title { font: 500 18px/24px var(--display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mn-top .mn-sub { -webkit-line-clamp: 1; }
@@ -1754,7 +1754,7 @@ body.map-full { overflow: hidden; }
 .nt-fold { padding: 0 6px; border-radius: 8px; background: oklch(0% 0 0 / 0.06); }
 .nt-made .ms { color: var(--primary); }
 .nt-page { display: flex; flex-direction: column; min-height: calc(100dvh - 120px); }
-.nt-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 6px 0; background: var(--surface, oklch(97.5% 0.012 79.8)); }
+.nt-bar { position: sticky; top: var(--notice-h, 0px); z-index: 5; display: flex; align-items: center; gap: 2px; padding: 6px 0; background: var(--surface, oklch(97.5% 0.012 79.8)); }
 .nt-bar .on { color: oklch(55.2% 0.077 79.7); background: oklch(55.2% 0.077 79.7 / 0.12); }
 .nt-saved { font: 400 12px/16px var(--font); color: var(--on-surface-variant); padding-left: 4px; }
 .nt-paper { flex: 1; border-radius: 20px; padding: 14px 16px 24px; box-shadow: inset 0 0 0 1px oklch(0% 0 0 / 0.06); color: oklch(22.5% 0.011 73.3); transition: background .25s; }
@@ -9031,6 +9031,9 @@ var TIDE_GUIDE = [
   { id: 'g-helper', area: 'Getting around', to: 'all', icon: 'forum', title: 'Your own helper',
     say: 'The round button at the side is a helper you name yourself. It answers, takes you to the right page, and fills things in when you ask.',
     steps: ['Tap it to type, or tap the microphone to talk.', 'Swipe it off the side when it’s in the way, and swipe it back from the edge.', 'Its ••• changes its name, voice or look, and shows what it remembers.', 'It knows what’s in your Notes, so you don’t have to explain twice. It only puts things from them elsewhere when you ask. It can’t see Chat or Ask.', 'If you agreed, it asks outside when it’s stuck, with names, contacts and numbers taken out first. Its ••• shows everything it asked, and turns it off.'], go: { view: 'home', tip: 'The round button at the side.' } },
+  { id: 'g-headsup', area: 'Getting around', to: 'all', icon: 'schedule', title: 'When it’s going to be away',
+    say: 'A strip at the top counts down to when Tide Book will be away, turns red when it starts, and goes when it’s back.',
+    steps: ['Finish what you’re doing before it starts.', 'While it’s red, wait until the time it shows.'] },
   { id: 'g-more', area: 'Getting around', to: 'all', icon: 'apps', title: 'The menu, and More',
     say: 'The menu shows your first six places. The rest, and Settings, are under More. You choose which six with Arrange.',
     steps: ['Tap the round menu button at the bottom.', 'Tap More to see the rest. Tap Fewer to tuck them away again.', 'Tap Arrange, and drag the places you use most to the top. The first six show straight away.', 'In Settings, each heading opens with a tap and says what’s inside.'], go: { view: 'home', tip: 'Tap the menu button, bottom left.' } },
@@ -9184,6 +9187,9 @@ var TIDE_GUIDE = [
 function tideGuideFor(role) { return TIDE_GUIDE.filter(function (c) { return c.to === 'all' || c.to === role; }); }
 
 var TIDE_CHANGES = [
+  { id: '2026-11-26-heads-up', on: '2026-11-26', to: 'all', icon: 'schedule', title: 'A heads-up before it’s away',
+    say: 'When Tide Book is going to be away for a while, a strip at the top says so and counts down. It turns red when it starts, and goes by itself when it’s over.',
+    steps: ['Finish what you’re doing before the countdown ends. Everything saved is safe.', 'While it’s red, wait until the time it shows.'], go: { view: 'home', tip: 'The strip only shows when something’s planned.' } },
   { id: '2026-11-25-help-easier', on: '2026-11-25', to: 'all', icon: 'touch_app', title: 'Help make Tide Book easier, if you like',
     say: 'Tide Book can notice which buttons get tapped, when you go back and how long screens are open, so fiddly bits get fixed. It asks first, and nothing is noticed unless you say yes. What you write, your pictures and your numbers are never part of it.',
     steps: ['When it asks, tap Yes, that’s fine or No thanks. Either is okay.', 'Changed your mind? Open Settings, then Help make it easier.', 'Switching it off deletes what was noticed. Weekly summaries already made are kept.'], go: { view: 'settings', tip: 'Open Help make it easier.' } },
