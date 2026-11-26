@@ -5387,6 +5387,9 @@ if (env.workDone) env.workDone('publish');
   // each person's own answer about their private writing (Mentor.gs; kept by the door)
   out.api.aiConsent = function () { need(['admin', 'artist']); return env.aiConsent ? env.aiConsent.state() : { available: false }; };
   out.api.saveAiConsent = function (p) { need(['admin', 'artist']); if (!env.aiConsent) fail('Not available here.'); return env.aiConsent.save(p); };
+  // "Forget what the AI learnt from me": the signed-in person's own, nobody else's (Mentor.gs aiForget_)
+  out.api.aiForgetState = function () { need(['admin', 'artist']); return env.aiForget ? env.aiForget.state() : { available: false }; };
+  out.api.aiForget = function (p) { need(['admin', 'artist']); if (!env.aiForget) fail('Not available here.'); return env.aiForget.run(p); };
   // "Help make it easier": may the app notice which buttons get tapped? Each person's own answer; no answer is no
   out.api.usageChoice = function () { need(['admin', 'artist']); return env.usage ? env.usage.state() : { available: false }; };
   out.api.saveUsageChoice = function (yes) { need(['admin', 'artist']); if (!env.usage) fail('Not available here.'); if (typeof yes !== 'boolean') fail('Yes or no?'); return env.usage.save(yes); };
@@ -16201,8 +16204,69 @@ var Kit = (function () {
       } });
       card.append(h('p', { class: 'body-m', style: 'margin:0 0 6px', text: consentIntro() }), consentForm(f),
         h('p', { class: 'body-m', style: 'margin:10px 0 12px', text: 'Switching off either of the first two deletes what was learnt that way.' }), save);
+      forgetPart(card, c);
     }).catch(off);
     return out;
+  }
+  // "Forget what the AI learnt from me": theirs only (the server makes sure). It says forgotten only once both parts are done.
+  var FORGET_LEFT = { door: 'what the AI on the PC learnt from you', helper: 'your helper’s memory and chats', locked: 'your helper’s memory and chats (open your private writing first)' };
+  function forgetPart(card, c) {
+    var box = h('div', { 'data-full': '1', style: 'margin-top:20px;padding-top:16px;border-top:1px solid var(--outline-variant)' });
+    card.appendChild(box);
+    function draw() {
+      api('aiForgetState').then(function (st) {
+        box.textContent = '';
+        if (!st || !st.available) return;
+        if (st.due) {
+          var left = [st.due.door ? FORGET_LEFT.door : '', st.due.helper ? FORGET_LEFT.helper : ''].filter(Boolean);
+          box.appendChild(note('Forgetting isn’t finished. Still to go: ' + left.join(' and ') + '. Nothing is forgotten until both are done.', 'warning', 'warn'));
+          box.appendChild(h('div', { style: 'height:10px' }));
+          var again = btn('filled', 'Try again', { icon: 'refresh', block: true, onclick: function () { run(again, {}); } });
+          box.appendChild(again);
+          return;
+        }
+        box.appendChild(btn('outlined', 'Forget what the AI learnt from me', { icon: 'delete_sweep', block: true, bare: false, onclick: ask }));
+      }).catch(function () { box.textContent = ''; });
+    }
+    function run(b, p, ctl) {
+      K.setBusy(b, true);
+      api('aiForget', p).then(function (r) {
+        if (ctl) ctl.close();
+        if (r.done) {
+          K.haptic('success');
+          toast(r.learnOff === false ? '✓ Forgotten. Learning couldn’t be switched off just now: switch it off above.' : '✓ Forgotten.' + (r.learnOff ? ' It won’t learn from your private writing now.' : ''));
+          setTimeout(function () { location.reload(); }, 2200);   // so the helper starts fresh
+        } else {
+          K.setBusy(b, false);
+          toast('Not finished: ' + r.left.map(function (k) { return FORGET_LEFT[k]; }).join(' and ') + '. Try again in a minute.');
+          draw();
+        }
+      }).catch(function (e) { K.setBusy(b, false); fail(e); draw(); });
+    }
+    function ask() {
+      var p = { look: false, learnOff: false };
+      K.sheet({ title: 'Forget what it learnt?', tall: true, build: function (ctl) {
+        var pc = ADMIN ? 'your PC' : adminName() + '’s PC', list = function (head, items) {
+          return h('div', { style: 'margin:0 0 12px' }, h('div', { class: 'title-m', text: head }), h('ul', { class: 'body-m', style: 'margin:4px 0 0;padding-left:20px' }, items.map(function (t) { return h('li', { text: t }); })));
+        };
+        ctl.body.appendChild(h('div', { 'data-full': '1' },
+          h('p', { class: 'body-l', style: 'margin:0 0 12px;font-weight:600', text: 'This can’t be undone.' }),
+          list('What goes', ['Everything the AI on ' + pc + ' learnt from your private writing.', 'What your helper remembers about you, and your chats with it.']),
+          list('What stays', ['Your notes, talks, questions and everything else you’ve made in Tide Book.', 'Your three choices above.', 'Your helper’s name, voice and look, unless you tick below.']),
+          list('Not covered', ['What it learnt from writing that isn’t private.', 'Tide Book’s daily copies, which keep older versions for up to 30 days.'])));
+        var rows = h('div', { 'data-full': '1' });
+        var tick = function (key, label) {   // the whole row can be tapped (the switch itself is small)
+          var sw = K.switchBtn({ checked: false, label: label, onChange: function (v) { p[key] = v; } });
+          rows.appendChild(h('div', { class: 'switch-row', style: 'align-items:flex-start;padding:10px 0;min-height:48px;cursor:pointer', onclick: function (e) { if (e.target !== sw) sw.click(); } }, h('div', { class: 'title-m', text: label }), sw));
+        };
+        tick('look', 'Also forget my helper’s name, voice and look');
+        if (c && (c.learn || c.health)) tick('learnOff', 'Also stop it learning from my private writing');
+        ctl.body.appendChild(rows);
+        var go = btn('tonal', 'Forget it', { lg: true, block: true, bare: false, onclick: function () { run(go, p, ctl); } });
+        ctl.foot.appendChild(h('div', { style: 'display:grid;gap:8px' }, go, btn('tonal', 'Keep it', { lg: true, block: true, bare: false, onclick: function () { ctl.close(); } })));
+      } });
+    }
+    draw();
   }
 
   // ------------------------------------------------------------------ a helper of their own (Dev HQ's kit): nameless until they make it
@@ -24380,12 +24444,6 @@ var Kit = (function () {
 
     if (!window.TIDE_DEMO && !previewing()) main.appendChild(rise(consentSection(), 2));
     if (usageHere()) main.appendChild(rise(usageSection(), 2));
-
-    // business info: how long before something's due Home says so
-    var bs = section('Business info'), bd = { v: (S.data.biz || {}).days };
-    var bSave = btn('tonal', 'Save', { icon: 'check', block: true, onclick: function () { K.setBusy(bSave, true); api('saveBizDays', bd.v).then(refresh).then(function () { K.haptic('success'); render(); toast('Saved.'); }).catch(function (e) { K.setBusy(bSave, false); fail(e); }); } });
-    bs.appendChild(h('div', { class: 'card pad field-gap', style: '--sheet-bg:var(--surface-lowest)' }, K.textField({ label: 'Days before', suffix: 'days', inputmode: 'numeric', value: bd.v, help: 'Home says so this many days before something is due. 0 is on the day.', onInput: function (v) { bd.v = v; } }), bSave));
-    main.appendChild(rise(fold(bs, 'set-biz', 'folder_open', bd.v === 0 ? 'Home says so on the day' : 'Home says so ' + bd.v + (bd.v === 1 ? ' day' : ' days') + ' before', false), 3));
 
     // business info: how long before something's due Home says so
     var bs = section('Business info'), bd = { v: (S.data.biz || {}).days };
